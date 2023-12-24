@@ -1,7 +1,7 @@
 import {Figure} from "../models/Figure";
 import {Cup} from "../models/Cup";
 import {Coords} from "../math/Coords";
-import {BaseFigure} from "../BaseFigure"
+import {FourBlocksFigure} from "../FourBlocksFigure"
 
 enum CamelState {
   top = 0,
@@ -13,7 +13,7 @@ enum CamelState {
 /**
  * It is a camel
  */
-export class Camel extends BaseFigure implements Figure
+export class Camel extends FourBlocksFigure implements Figure
 {
   // current position of the figure
   protected _state:CamelState = CamelState.bottom
@@ -28,11 +28,11 @@ export class Camel extends BaseFigure implements Figure
     
     // random position
     const enumValues = Object.keys(CamelState).map(n => Number.parseInt(n))
-    const randomIndex = Math.floor(Math.random() * enumValues.length)
+    const randomIndex = Math.floor(Math.random() * 4) // 4 it is a magic, you know is count of states
     this._state = enumValues[randomIndex] as CamelState
     
     //
-    const coords = this.getCoordsOfAllCellsByStateAndCenter(this._state, this.center)
+    const coords = this.getCoordsOfAllCellsByStateAndCenter(this._state, this.center.x, this.center.y)
     
     // move coords to fields
     this._fields = coords.map((c:Coords) => {
@@ -56,24 +56,31 @@ export class Camel extends BaseFigure implements Figure
       default: nextPosition = CamelState.top; break;
     }
     
-    
-    // update fields
+    // check can we update
     const capWidth = this._cap.getWidthInCells()
     
-    // we take next position
-    // let nextPosition = this._position+1;
-    // if (nextPosition > 3) nextPosition = 0
+    // this center if we need to move it
+    let centerX = this.center.x
     
-    // the center is presented in coords 0
-    // const center = this._cap.getCoordsByIndex(this._fields[0]);
+    // this is special situation
+    // if center next to right age
+    // we move center for rotate
+    if (this._state === CamelState.left && this.center.x === capWidth - 1) {
+      centerX -= 1
+    }
+    
+    // this is special situation
+    // if center next to right age
+    // we move center for rotate
+    if (this._state === CamelState.right && this.center.x === 0) {
+      centerX += 1
+    }
     
     // fields after rotate
-    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(nextPosition, this.center)
+    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(nextPosition, centerX, this.center.y)
     
     // update buy position
     // this.updateByPosition(this._position);
-    
-    // check can we update
     const sinfulnessIndex:number = coordsAfterRotate.findIndex((c:Coords) =>
     {
       // check min max
@@ -107,11 +114,15 @@ export class Camel extends BaseFigure implements Figure
     // save position
     this._state = nextPosition
     
+    // move center if id happens
+    this.center.x = centerX;
+    
     return true;
   }
   
   rotateCounterClockwise(): boolean
   {
+    // previous rotate state
     let previousPosition;
     switch (this._state) {
       case CamelState.top: previousPosition = CamelState.left; break;
@@ -120,19 +131,25 @@ export class Camel extends BaseFigure implements Figure
       default: previousPosition = CamelState.bottom; break;
     }
     
-    // update fields
     const capWidth = this._cap.getWidthInCells()
     
-    // the center is presented in coords 0
-    // const center = this._cap.getCoordsByIndex(this._fields[0]);
+    // this center if we need to move it
+    let centerX = this.center.x
+    
+    // this is special situation
+    // if center next to right age
+    // we move center for rotate
+    if (this._state === CamelState.left) {
+      if (this.center.x === capWidth - 1){
+        centerX -= 1
+      }
+    }
     
     // fields after rotate
-    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(previousPosition, this.center)
+    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(previousPosition, centerX, this.center.y)
     
     // update buy position
     // this.updateByPosition(this._position);
-    
-    // check can we update
     const sinfulnessIndex = coordsAfterRotate.findIndex((c:{x:number, y:number}) =>
     {
       // check min max
@@ -144,7 +161,7 @@ export class Camel extends BaseFigure implements Figure
       // cell index in field coords
       const createIndexByCoords = this._cap.getCellIndexByCoords(c)
       
-      // check in fields
+      // check is field is busy in cup
       if (this._cap.getFieldValueByIndex(createIndexByCoords)) {
         return true
       }
@@ -165,6 +182,9 @@ export class Camel extends BaseFigure implements Figure
     // save position
     this._state = previousPosition
     
+    // move cennter if id happens
+    this.center.x = centerX;
+    
     return true;
   }
   
@@ -173,18 +193,18 @@ export class Camel extends BaseFigure implements Figure
    * returns an array of points with coordinates after rotation
    * @var number state horse's state from 0 to 3
    */
-  getCoordsOfAllCellsByStateAndCenter (state:CamelState, center:Coords): Array<Coords>
+  getCoordsOfAllCellsByStateAndCenter (state:CamelState, centerX:number, centerY:number): Array<Coords>
   {
-    
+    console.log(state, 'camel state')
     //  o
     // o0o
     if (state === CamelState.top)
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x -1, y: center.y},
-        {x: center.x +1, y: center.y},
-        {x: center.x, y: center.y +1}
+        {x: centerX, y: centerY},
+        {x: centerX -1, y: centerY},
+        {x: centerX +1, y: centerY},
+        {x: centerX, y: centerY +1}
       ];
     }
     
@@ -194,10 +214,10 @@ export class Camel extends BaseFigure implements Figure
     else if (state === CamelState.right)
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x, y: center.y -1},
-        {x: center.x, y: center.y +1},
-        {x: center.x + 1, y: center.y}
+        {x: centerX, y: centerY},
+        {x: centerX, y: centerY -1},
+        {x: centerX, y: centerY +1},
+        {x: centerX + 1, y: centerY}
       ];
     }
     
@@ -207,10 +227,10 @@ export class Camel extends BaseFigure implements Figure
     if (state === CamelState.bottom)
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x +1, y: center.y},
-        {x: center.x -1, y: center.y},
-        {x: center.x, y: center.y -1}
+        {x: centerX, y: centerY},
+        {x: centerX +1, y: centerY},
+        {x: centerX -1, y: centerY},
+        {x: centerX, y: centerY -1}
       ];
     }
     
@@ -220,10 +240,10 @@ export class Camel extends BaseFigure implements Figure
     else
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x, y: center.y - 1},
-        {x: center.x, y: center.y + 1},
-        {x: center.x -1, y: center.y}
+        {x: centerX, y: centerY},
+        {x: centerX, y: centerY - 1},
+        {x: centerX, y: centerY + 1},
+        {x: centerX -1, y: centerY}
       ];
     }
     

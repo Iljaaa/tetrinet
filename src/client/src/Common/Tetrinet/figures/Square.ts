@@ -1,12 +1,12 @@
 import {Figure} from "../models/Figure";
 import {Cup} from "../models/Cup";
 import {Coords} from "../math/Coords";
-import {BaseFigure} from "../BaseFigure"
+import {FourBlocksFigure} from "../FourBlocksFigure"
 
 /**
  * the horse figure like in chess
  */
-export class Square extends BaseFigure implements Figure
+export class Square extends FourBlocksFigure implements Figure
 {
   
   /**

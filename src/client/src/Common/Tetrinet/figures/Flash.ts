@@ -1,12 +1,12 @@
 import {Figure} from "../models/Figure";
 import {Cup} from "../models/Cup";
 import {Coords} from "../math/Coords";
-import {BaseFigure} from "../BaseFigure"
+import {FourBlocksFigure} from "../FourBlocksFigure"
 
 /**
  * the horse figure like in chess
  */
-export abstract class Flash extends BaseFigure implements Figure
+export abstract class Flash extends FourBlocksFigure implements Figure
 {
   
   // current position of the figure
@@ -153,71 +153,6 @@ export abstract class Flash extends BaseFigure implements Figure
    * @var number state horse's state from 0 to 3
    */
   abstract getCoordsOfAllCellsByStateAndCenter (isVertical:boolean, center:Coords): Array<Coords>
-  
-  
-  updateByPosition = (position:number):void =>
-  {
-    
-    //
-    const capWidth = this._cap.getWidthInCells()
-    
-    // the center is presented in coords 0
-    const center = this._cap.getCoordsByIndex(this._fields[0]);
-    
-    // O
-    // 0OO
-    if (position === 0)
-    {
-      const p1 = {x: center.x + 1, y: center.y} // center
-      const p2 = {x: center.x + 2, y: center.y}
-      const p3 = {x: center.x, y: center.y + 1}
-      
-      this._fields[1] = p1.y * capWidth + p1.x
-      this._fields[2] = p2.y * capWidth + p2.x
-      this._fields[3] = p3.y * capWidth + p3.x
-    }
-    
-    //  O
-    //  O
-    // O0
-    else if (position === 1)
-    {
-      const p1 = {x: center.x - 1, y: center.y} // center
-      const p2 = {x: center.x, y: center.y + 1}
-      const p3 = {x: center.x, y: center.y + 2}
-      
-      this._fields[1] = p1.y * capWidth + p1.x
-      this._fields[2] = p2.y * capWidth + p2.x
-      this._fields[3] = p3.y * capWidth + p3.x
-    }
-    
-    // OO0
-    //   O
-    else if (position === 2)
-    {
-      const p1 = {x: center.x - 1, y: center.y} // center
-      const p2 = {x: center.x - 2, y: center.y}
-      const p3 = {x: center.x, y: center.y - 1}
-      
-      this._fields[1] = p1.y * capWidth + p1.x
-      this._fields[2] = p2.y * capWidth + p2.x
-      this._fields[3] = p3.y * capWidth + p3.x
-    }
-    
-    // 0O
-    // O
-    // O
-    else
-    {
-      const p1 = {x: center.x, y: center.y - 1} // center
-      const p2 = {x: center.x, y: center.y - 2}
-      const p3 = {x: center.x + 1, y: center.y}
-      
-      this._fields[1] = p1.y * capWidth + p1.x
-      this._fields[2] = p2.y * capWidth + p2.x
-      this._fields[3] = p3.y * capWidth + p3.x
-    }
-  }
   
 
 }

@@ -1,12 +1,12 @@
 import {Figure} from "../models/Figure";
 import {Cup} from "../models/Cup";
 import {Coords} from "../math/Coords";
-import {BaseFigure} from "../BaseFigure"
+import {FourBlocksFigure} from "../FourBlocksFigure"
 
 /**
  * the horse figure like in chess
  */
-export abstract class Horse extends BaseFigure implements Figure
+export abstract class Horse extends FourBlocksFigure implements Figure
 {
   // current position of the figure
   protected _position:number = 0

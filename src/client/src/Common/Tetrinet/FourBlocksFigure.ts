@@ -2,15 +2,15 @@ import {Cup} from "./models/Cup";
 import {Coords} from "./math/Coords";
 
 /**
- * Base figure class part of implementation Figure
+ * Base figure class FOR FOUR BLOCKS part of implementation Figure
  */
-export abstract class BaseFigure
+export abstract class FourBlocksFigure
 {
   /**
    * Fields in coordinates of a cup
    * @protected
    */
-  protected _fields:Array<number> = [];
+  protected _fields:Array<number> = new Array<number>(4);
   
   /**
    * Rotate center of figure
@@ -117,7 +117,6 @@ export abstract class BaseFigure
    */
   moveDown(): boolean
   {
-    
     const capWidth = this._cap.getWidthInCells()
     
     // check can we do this
