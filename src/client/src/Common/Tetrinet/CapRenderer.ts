@@ -22,7 +22,6 @@ export class CapRenderer
   private readonly cupWidth: number = 0;
   private readonly cupHeight: number = 0;
   
-  
   constructor(canvas:HTMLCanvasElement, cup:Cup)
   {
     console.log('CapRenderer.constructor')
@@ -38,6 +37,7 @@ export class CapRenderer
     // webglUtils.resizeCanvasToDisplaySize(this.gl.canvas);
     
     // set viewport
+    // this.gl.viewport(0, 0, 640, 640);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     
     // очищаем canvas
@@ -95,7 +95,8 @@ export class CapRenderer
     // set resolution
     const resolutionUniformLocation = this.gl.getUniformLocation(this.program, "u_resolution");
     // this.gl.uniform2f(resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
-    this.gl.uniform2f(resolutionUniformLocation, 1280, 1024);
+    // this.gl.uniform2f(resolutionUniformLocation, 1280, 1024);
+    this.gl.uniform2f(resolutionUniformLocation, 320, 640);
     
     
     // point to position
@@ -157,13 +158,6 @@ export class CapRenderer
     
     // this.gameLoop();
     
-  }
-  
-  /**
-   * Render loop
-   */
-  gameLoop = ()=> {
-  
   }
   
   /**
@@ -324,7 +318,7 @@ export class CapRenderer
     gl.uniform2fv(this.translationLocation, [0, 0]);
     
     // draw here
-    gl.drawArrays(gl.TRIANGLES, 0, 18);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
   
   /**

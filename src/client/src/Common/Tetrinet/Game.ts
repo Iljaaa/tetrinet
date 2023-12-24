@@ -1,10 +1,26 @@
-import {CupWithFigureImpl} from "./CapWithFigureImpl";
+import {CupEventListener, CupWithFigureImpl} from "./CapWithFigureImpl";
 import {CapRenderer} from "./CapRenderer";
+
+/**
+ * Game states
+ */
+enum GameState {
+  running = 0,
+  over = 100,
+}
+
+/**
+ * Listener of game events
+ */
+export interface GameEventListener
+{
+  onLineCleared: (numberOfLines:number) => void
+}
 
 /**
  * @vaersion 0.0.1
  */
-export class Game
+export class Game implements CupEventListener
 {
   /**
    * Cup object
@@ -18,16 +34,38 @@ export class Game
    */
   private _cupRenderer: CapRenderer | undefined;
   
+  /**
+   * Timer for next down
+   * @private
+   */
+  private _downTimer:number = 0;
+  
+  /**
+   * Current game state
+   * @private
+   */
+  private _state:GameState = GameState.running;
+  
+  /**
+   * @private
+   */
+  private listener: GameEventListener|undefined;
+  
+  /**
+   * In this constructor we create cup
+   */
   constructor()
   {
-    this._cup =  new CupWithFigureImpl();
+    this._cup =  new CupWithFigureImpl(this);
   }
   
   /**
    * Init render by canvas elemet
    */
-  init (canvas:HTMLCanvasElement)
+  init (canvas:HTMLCanvasElement, listener:GameEventListener)
   {
+    this.listener = listener;
+    
     // init cup render
     this._cupRenderer = new CapRenderer(canvas as HTMLCanvasElement, this._cup);
   }
@@ -52,7 +90,6 @@ export class Game
   }
   
   private t:number = 0
-  private aaa:number = 0
   
   /**
    * Update cup
@@ -68,13 +105,25 @@ export class Game
     const deltaTime = timeStamp - this.t
     this.t = timeStamp
     
-    this.aaa += deltaTime
-    
-    // one sec
-    if (this.aaa > 1000) {
-      this.onDown();
-      this.aaa = 0;
+    if (this._state === GameState.running) {
+      //
+      // this.updateRunning();
+      
+      this._downTimer += deltaTime
+      
+      // one sec
+      if (this._downTimer > 1000) {
+        this.onDown();
+        this._downTimer = 0;
+      }
+      
     }
+    
+    else if (this._state === GameState.over) {
+      //
+      // this.updateRunning();
+    }
+    
     
     // request next frame
     window.requestAnimationFrame(this.update)
@@ -92,14 +141,16 @@ export class Game
     }
   }
   
-  onDown(){
+  /**
+   * Down figure
+   */
+  onDown()
+  {
     if (this._cupRenderer)
     {
       // if figure does not have not moved we need to create a new one
       if (!this._cup.moveFigureDown())
       {
-        //
-        
         
         // create a new figure
       }
@@ -111,14 +162,15 @@ export class Game
   /**
    * Drop it almost as down but to the bottom
    */
-  onDrop(){
+  onDrop()
+  {
     if (this._cupRenderer)
     {
       // if figure does not have not moved we need to create a new one
       if (!this._cup.dropFigureDown())
       {
-        // creal drop times
-        this.aaa = 0;
+        // clear next the down step time
+        this._downTimer = 0;
         
         // create a new figure
       }
@@ -147,5 +199,16 @@ export class Game
       // rerender
       this._cupRenderer.renderCupWithFigure(this._cup)
     }
+  }
+  
+  onGameOver(): void {
+    this._state = GameState.over
+    
+    // todo: do somethimg on game over
+    alert("game over")
+  }
+  
+  onLineCleared(countLines: number): void {
+    if (this.listener) this.listener.onLineCleared(countLines);
   }
 }
