@@ -16,7 +16,7 @@ export class BackHorse extends Horse
    * returns an array of points with coordinates after rotation
    * @var number state horse's state from 0 to 3
    */
-  getCoordsOfAllCellsByStateAndCenter (state:number, center:Coords): Array<Coords>
+  getCoordsOfAllCellsByStateAndCenter (state:number, centerX:number, centerY:number): Array<Coords>
   {
     
     // 0o
@@ -25,10 +25,10 @@ export class BackHorse extends Horse
     if (state === 0)
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x +1, y: center.y},
-        {x: center.x +1, y: center.y -1},
-        {x: center.x +1, y: center.y -2}
+        {x: centerX, y: centerY},
+        {x: centerX +1, y: centerY},
+        {x: centerX +1, y: centerY -1},
+        {x: centerX +1, y: centerY -2}
       ];
     }
     
@@ -37,10 +37,10 @@ export class BackHorse extends Horse
     else if (state === 1)
     {
       return [
-        {x: center.x +1, y: center.y},
-        {x: center.x +1, y: center.y - 1},
-        {x: center.x, y: center.y - 1},
-        {x: center.x -1, y: center.y - 1}
+        {x: centerX +1, y: centerY},
+        {x: centerX +1, y: centerY - 1},
+        {x: centerX, y: centerY - 1},
+        {x: centerX -1, y: centerY - 1}
       ];
     }
     
@@ -51,10 +51,10 @@ export class BackHorse extends Horse
     if (state === 2)
     {
       return [
-        {x: center.x, y: center.y +1},
-        {x: center.x, y: center.y},
-        {x: center.x, y: center.y - 1},
-        {x: center.x + 1, y: center.y - 1}
+        {x: centerX, y: centerY +1},
+        {x: centerX, y: centerY},
+        {x: centerX, y: centerY - 1},
+        {x: centerX + 1, y: centerY - 1}
       ];
     }
     // 0oo
@@ -62,10 +62,10 @@ export class BackHorse extends Horse
     else
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x, y: center.y - 1},
-        {x: center.x +1, y: center.y},
-        {x: center.x +2, y: center.y}
+        {x: centerX, y: centerY},
+        {x: centerX, y: centerY - 1},
+        {x: centerX +1, y: centerY},
+        {x: centerX +2, y: centerY}
       ];
     }
     
