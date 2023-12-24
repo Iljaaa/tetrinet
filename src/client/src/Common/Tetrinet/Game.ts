@@ -81,18 +81,21 @@ export class Game implements CupEventListener
   /**
    * Init render by canvas element
    * todo: create interface game and describe this method there
-   * todo: make WebGlGame and move there creating the canvas render
    * todo: make to set listener other method
    */
   init (canvas:HTMLCanvasElement, listener:GameEventListener, sprite:string, onLoadCallback:()=>void)
   {
     this.listener = listener;
     
+    // create gl
+    const gl = canvas.getContext("webgl2");
+    if (!gl) throw new Error("Gl not created");
+    
     // load texture
     this.texture.load(sprite, () => {
       
       // init cup render
-      this._cupRenderer = new CapRenderer(canvas as HTMLCanvasElement, this._cup, this.texture);
+      this._cupRenderer = new CapRenderer(gl, this._cup, this.texture);
       
       // rise callback
       onLoadCallback()

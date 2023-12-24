@@ -8,13 +8,26 @@ const BLOCK_SIZE_PX = 32;
 
 export class CapRenderer
 {
-  private readonly gl: null | WebGL2RenderingContext;
+  private readonly gl: WebGL2RenderingContext;
   private readonly program: WebGLProgram | null = null;
   
-  
+  /**
+   * Pointer to location
+   * @private
+   */
   private readonly translationLocation: WebGLUniformLocation | null = null;
   
+  /**
+   * Pointer to color
+   * @private
+   */
   private readonly colorLocation: WebGLUniformLocation | null = null;
+  
+  /**
+   * Pointer to texils coords
+   * @private
+   */
+  private texCoordLocation: GLint;
   
   /**
    * Cap size in pixels
@@ -28,26 +41,27 @@ export class CapRenderer
    * @private
    */
   private texture: Texture;
+  private textureBuffer: WebGLBuffer | null;
+  private postionBuffer: WebGLBuffer | null;
+  private positionAttributeLocation: GLint;
+  private _aaaaat: WebGLTexture | null;
   
   /**
    * todo: again canvas get here content
    * todo: split on two classes, first will be render cup second
    * todo: move texture to asses class
-   * @param canvas
+   * @param gl
    * @param cup
+   * @param texture
    */
-  constructor(canvas:HTMLCanvasElement, cup:Cup, texture:Texture)
+  constructor(gl:WebGL2RenderingContext, cup:Cup, texture:Texture)
   {
     console.log('CapRenderer.constructor')
     
+    this.gl = gl;
+    
     // save texture
     this.texture = texture;
-    
-    // let canvas = document.querySelector("#canvas") as HTMLCanvasElement;
-    
-    // todo: move making ths context upper to methods, in game initialization
-    this.gl = !(canvas) ? null : canvas.getContext("webgl2");
-    if (!this.gl) return;
     
     // calculate cup size in pixels
     this.cupWidth = cup.getWidthInCells() * BLOCK_SIZE_PX;
@@ -56,91 +70,58 @@ export class CapRenderer
     // webglUtils.resizeCanvasToDisplaySize(this.gl.canvas);
     
     // set viewport
-    // this.gl.viewport(0, 0, 640, 640);
     this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     
     // очищаем canvas
     this.gl.clearColor(1, 1, 0, 1);
     
-    
-    // const vertexSource = <HTMLScriptElement> document.querySelector("#vertex-shader-2d");
-    // const vertexShaderSource:string = (vertexSource) ? vertexSource.text : '';
+    // create shaders
+    // const vertexShader = this.createVertexShaderForColorTheme();
+    const vertexShader = this.createVertexShaderWithTextils();
+    if (!vertexShader) throw new Error("Vertex shader was not created")
+   
     //
-    // const fragmentSourceElement = <HTMLScriptElement> document.querySelector("#fragment-shader-2d")
-    // const fragmentShaderSource:string = (fragmentSourceElement) ? fragmentSourceElement.text : '';
+    // const fragmentShader = this.createFragmentShaderForColorTheme();
+    const fragmentShader = this.createFragmentShaderWithTextils();
+    if (!fragmentShader) throw new Error("Fragment shader was not created")
     
-    // Vertex shader source code.
-    var vertCode =
-      "attribute vec2 a_position;" +
-      "uniform vec2 u_resolution;" +
-      "uniform vec2 u_translation;" +
-      "void main(void) {" +
-      // We are passing in only 2D X,Y coordinates. Then Z is always 0.0 and the divisor is always 1.0
-      " vec2 position = a_position + u_translation;" +
-      " vec2 zeroToOne = position / u_resolution;" +
-      " vec2 zeroToTwo = zeroToOne * 2.0;" +
-      " vec2 clipSpace = zeroToTwo - 1.0;" +
-      " gl_Position = vec4(clipSpace, 0, 1);" + // translate y
-      // " gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);" + // trnslate y
-      "}"
-    
-    
-    const vertexShader = this.createShader(this.gl, this.gl.VERTEX_SHADER, vertCode);
-    if (!vertexShader) return;
-    
-    // Fragment shader source code.
-    var fragCode =
-      "precision mediump float;" +
-      "uniform vec4 u_color;" +
-      "void main(void) {" +
-      // We aren't passing in colors right now so all the triangles are green. G=1.0=full green.
-      //" gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
-      " gl_FragColor = u_color;" +
-      "}"
-    
-    const fragmentShader = this.createShader(this.gl, this.gl.FRAGMENT_SHADER, fragCode);
-    if (!fragmentShader) return;
-    
+    // create program
     this.program = this.createProgram(this.gl, vertexShader, fragmentShader);
-    if (!this.program) return;
+    if (!this.program) throw new Error("Fragment shader was not created")
     
-    // Use our boilerplate utils to compile the shaders and link into a program
-    // var program = webglUtils.createProgramFromScripts(this.gl, ["vertex-shader-2d", "fragment-shader-2d"]);
     
-    // говорим использовать нашу программу (пару шейдеров)
-    this.gl.useProgram(this.program)
-    
+    /**
+     * makes locations
+     */
     
     // set resolution
     const resolutionUniformLocation = this.gl.getUniformLocation(this.program, "u_resolution");
     // this.gl.uniform2f(resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
     // this.gl.uniform2f(resolutionUniformLocation, 1280, 1024);
-    this.gl.uniform2f(resolutionUniformLocation, 320, 640);
     
-    
-    // point to position
-    // const positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
-    // this.gl.enableVertexAttribArray(positionAttributeLocation);
-    
-    
-    // Указываем атрибуту, как получать данные от positionBuffer (ARRAY_BUFFER)
-    // var size = 2;          // 2 компоненты на итерацию
-    // var type = this.gl.FLOAT;   // наши данные - 32-битные числа с плавающей точкой
-    // var normalize = false; // не нормализовать данные
-    // var stride = 0;        // 0 = перемещаться на size * sizeof(type) каждую итерацию для получения следующего положения
-    // var offset = 0;        // начинать с начала буфера
-    //this.gl.vertexAttribPointer(positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0)
-    
+    // pointer to textexure
+    this.texCoordLocation = gl.getAttribLocation(this.program, "a_texCoord");
     
     // pointer to location
     this.translationLocation = this.gl.getUniformLocation(this.program, "u_translation");
     
-    
     // link to color variable
     this.colorLocation = this.gl.getUniformLocation(this.program, "u_color");
     
+    
+    // use our programm with shades
+    this.gl.useProgram(this.program)
+    
+    
+    // it must go after this.gl.useProgram(this.program)
+    this.gl.uniform2f(resolutionUniformLocation, 320, 640);
+    
+    
+    
+    
     // let positionBuffer = gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.gl.createBuffer());
+    this.postionBuffer = this.gl.createBuffer()
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.postionBuffer);
     
     // три двумерных точки, two triangles in square
     let positions = [
@@ -154,12 +135,40 @@ export class CapRenderer
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(positions), this.gl.STATIC_DRAW);
     
     
+    
+    // provide texture coordinates for the rectangle.
+    // var texcoordBuffer = gl.createBuffer();
+    this.textureBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
+    ]), gl.STATIC_DRAW);
+
+    // Create a texture.
+    this._aaaaat = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this._aaaaat);
+
+    // Set the parameters so we can render any size image.
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    
+    // Upload the image into the texture.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.texture.getImage());
+    
+    
+    
+    
+    
     // point to position
-    const positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
-    this.gl.enableVertexAttribArray(positionAttributeLocation);
-    
-    this.gl.vertexAttribPointer(positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0)
-    
+    this.positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
+
     // Создаём буфер для хранения положений
     // var positionBuffer = this.gl.createBuffer();
     // Связываем его с ARRAY_BUFFER (можно сказать, что ARRAY_BUFFER = positionBuffer).
@@ -179,11 +188,102 @@ export class CapRenderer
   
   /**
    *
+   * @private
+   */
+  private createVertexShaderForColorTheme ()
+  {
+    // Vertex shader source code.
+    const vertCode =
+      "attribute vec2 a_position;" +
+      "uniform vec2 u_resolution;" +
+      "uniform vec2 u_translation;" +
+      "void main(void) {" +
+      // We are passing in only 2D X,Y coordinates. Then Z is always 0.0 and the divisor is always 1.0
+      " vec2 position = a_position + u_translation;" +
+      " vec2 zeroToOne = position / u_resolution;" +
+      " vec2 zeroToTwo = zeroToOne * 2.0;" +
+      " vec2 clipSpace = zeroToTwo - 1.0;" +
+      " gl_Position = vec4(clipSpace, 0, 1);" + // translate y
+      // " gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);" + // trnslate y
+      "}"
+    
+    return this.createShader(this.gl, this.gl.VERTEX_SHADER, vertCode);
+    
+  }
+  /**
+   *
+   * @private
+   */
+  private createVertexShaderWithTextils ()
+  {
+    // Vertex shader source code.
+    const vertCode =
+      "attribute vec2 a_position;" +
+      "attribute vec2 a_texCoord;" +
+      "uniform vec2 u_resolution;" +
+      "uniform vec2 u_translation;" +
+      "varying vec2 v_texCoord;" +
+      "void main(void) {" +
+      // We are passing in only 2D X,Y coordinates. Then Z is always 0.0 and the divisor is always 1.0
+      " vec2 position = a_position + u_translation;" +
+      " vec2 zeroToOne = position / u_resolution;" +
+      " vec2 zeroToTwo = zeroToOne * 2.0;" +
+      " vec2 clipSpace = zeroToTwo - 1.0;" +
+      " gl_Position = vec4(clipSpace, 0, 1);" + // translate y
+      " v_texCoord = a_texCoord;" + // translate y
+      // " gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);" + // trnslate y
+      
+      "}"
+    
+    return this.createShader(this.gl, this.gl.VERTEX_SHADER, vertCode);
+    
+  }
+  
+  /**
+   * It creates fragment shader
+   * @private
+   */
+  private createFragmentShaderForColorTheme () {
+    // Fragment shader source code.
+    const fragCode =
+      "precision mediump float;" +
+      "uniform vec4 u_color;" +
+      "void main(void) {" +
+      // We aren't passing in colors right now so all the triangles are green. G=1.0=full green.
+      //" gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
+      " gl_FragColor = u_color;" +
+      "}"
+    
+    return this.createShader(this.gl, this.gl.FRAGMENT_SHADER, fragCode);
+  }
+  
+  /**
+   * It creates fragment shader
+   * @private
+   */
+  private createFragmentShaderWithTextils () {
+    // Fragment shader source code.
+    const fragCode =
+      "precision mediump float;" +
+      // "uniform vec4 u_color;" +
+      "uniform sampler2D u_image;" +
+      "varying vec2 v_texCoord;" +
+      "void main(void) {" +
+      //" gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
+      // " gl_FragColor = u_color;" +
+      " gl_FragColor = texture2D(u_image, v_texCoord);" +
+      "}"
+    
+    return this.createShader(this.gl, this.gl.FRAGMENT_SHADER, fragCode);
+  }
+  
+  /**
+   *
    * @param gl
    * @param type gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
    * @param source
    */
-  createShader = (gl:WebGL2RenderingContext, type:number, source:string):WebGLShader|null =>
+  private createShader = (gl:WebGL2RenderingContext, type:number, source:string):WebGLShader|null =>
   {
     const shader:WebGLShader|null = gl.createShader(type);
     if (!shader) return null;
@@ -278,46 +378,15 @@ export class CapRenderer
     {
       // render figure
       this._renderFigure(this.gl, c, f);
-      
+
       //
       this._renderRotateField(this.gl, f.getPosition());
     }
-    
+
     //
     this._renderDropPoint(this.gl, c.getDropPoint());
     
     
-    // provide texture coordinates for the rectangle.
-    var texcoordBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, texcoordBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([
-      0.0,  0.0,
-      1.0,  0.0,
-      0.0,  1.0,
-      0.0,  1.0,
-      1.0,  0.0,
-      1.0,  1.0,
-    ]), this.gl.STATIC_DRAW);
-    
-    // Create a texture.
-    var texture = this.gl.createTexture();
-    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    
-    // Set the parameters so we can render any size image.
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-    
-    // Upload the image into the texture.
-    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.texture.getImage());
-    
-    
-    // Draw the rectangle.
-    var primitiveType = this.gl.TRIANGLES;
-    var offset = 0;
-    var count = 6;
-    this.gl.drawArrays(primitiveType, offset, count);
     
   }
   
@@ -329,7 +398,7 @@ export class CapRenderer
     // loop this method
     // window.requestAnimationFrame(this.gameLoop)
     
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    // this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     
     // link to color variable
     // const colorUniformLocation = this.gl.getUniformLocation(this.program, "u_color");
@@ -348,10 +417,10 @@ export class CapRenderer
   private _renderBackGround(gl: WebGL2RenderingContext)
   {
     // set color of square
-    gl.uniform4f(this.colorLocation, 1, 0, 0, 1);
+    // gl.uniform4f(this.colorLocation, 1, 0, 0, 1);
     
-    // render background
-    // три двумерных точки, two triangles in square
+    // this.postionBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, this.postionBuffer);
     let positions = [
       0, 0,
       this.cupWidth, 0,
@@ -363,8 +432,58 @@ export class CapRenderer
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     
+    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
+    
+    this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0)
+    
+    // move
+    gl.uniform2fv(this.translationLocation, [0 ,0]);
+    // gl.uniform2fv(this.translationLocation, [0 ,0]);
+    
+    
     // move to start
-    gl.uniform2fv(this.translationLocation, [0, 0]);
+    // gl.uniform2fv(this.translationLocation, [0, 0]);
+    
+    
+    
+    // THIS IS CORRECT ORDER
+    this.textureBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  1.0,
+      0.5,  1.0,
+      0.0,  0.0,
+      0.0,  0.0,
+      0.5,  1.0,
+      0.5,  0.0,
+    ]), gl.STATIC_DRAW);
+    
+    // Create a texture.
+    // var texture = gl.createTexture();
+    // gl.bindTexture(gl.TEXTURE_2D, texture);
+    //
+    // // Set the parameters so we can render any size image.
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    //
+    // // Upload the image into the texture.
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.texture.getImage());
+    
+    
+    
+    
+    // Turn on the texcoord attribute
+    gl.enableVertexAttribArray(this.texCoordLocation);
+    
+    // bind the texcoord buffer.
+    // gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+    
+    // Tell the texcoord attribute how to get data out of texcoordBuffer (ARRAY_BUFFER)
+    gl.vertexAttribPointer(this.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+    
+    
     
     // draw here
     gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -375,7 +494,7 @@ export class CapRenderer
    * @param gl
    * @param cup
    */
-  _renderField (gl: WebGL2RenderingContext, cup:Cup)
+  private _renderField (gl: WebGL2RenderingContext, cup:Cup)
   {
     // render blocks
     let positions2 = [
@@ -390,6 +509,24 @@ export class CapRenderer
     
     // set color of square
     gl.uniform4f(this.colorLocation, 0, 1, 0, 1);
+    
+    this.gl.enableVertexAttribArray(this.positionAttributeLocation);
+    
+    this.gl.vertexAttribPointer(this.positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0)
+    
+    this.textureBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
+    ]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(this.texCoordLocation);
+    gl.vertexAttribPointer(this.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+    
     
     // draw cup bodies
     const fields = cup.getFields()
@@ -408,8 +545,12 @@ export class CapRenderer
         // const coll = i - (row * c.getWidthInCells());
         const left = coll * BLOCK_SIZE_PX;
         
+        
+
+        
         // move
         gl.uniform2fv(this.translationLocation, [left, bottom]);
+        
         
         // draw here
         gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -445,6 +586,19 @@ export class CapRenderer
     // move
     gl.uniform2fv(this.translationLocation, [left, bottom]);
     
+    this.textureBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
+    ]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(this.texCoordLocation);
+    gl.vertexAttribPointer(this.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+    
     // draw here
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
@@ -477,6 +631,20 @@ export class CapRenderer
     // move
     gl.uniform2fv(this.translationLocation, [left, bottom]);
     
+    
+    this.textureBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
+    ]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(this.texCoordLocation);
+    gl.vertexAttribPointer(this.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+    
     // draw here
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
@@ -490,7 +658,20 @@ export class CapRenderer
   private _renderFigure (gl: WebGL2RenderingContext, cup:Cup, f: Figure)
   {
     // set color of square
-    gl.uniform4f(this.colorLocation, 0, 0, 1, 1);
+    // gl.uniform4f(this.colorLocation, 0, 0, 1, 1);
+    
+    this.textureBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
+    ]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(this.texCoordLocation);
+    gl.vertexAttribPointer(this.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
     
     const fields = (f) ? f.getFields() : [];
     const len = fields.length;

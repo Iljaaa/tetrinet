@@ -87,11 +87,14 @@
     // Get A WebGL context
     /** @type {HTMLCanvasElement} */
     var canvas = document.querySelector("#canvas");
-    var gl = canvas.getContext("webgl");
-    if (!gl) {
-      return;
-    }
+    var gl = canvas.getContext("webgl2");
+    if (!gl) return;
 
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+    // set clear color
+    gl.clearColor(0, 0, 0, 0);
 
     // setup GLSL program
     var program = createProgram(gl, "#vertex-shader-2d", "#fragment-shader-2d");
@@ -101,6 +104,13 @@
 
     // lookup uniforms
     var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+
+    // Tell it to use our program (pair of shaders)
+    gl.useProgram(program);
+
+    // set the resolution
+    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+
 
     // Create a buffer to put three 2d clip space points in
     var positionBuffer = gl.createBuffer();
@@ -138,15 +148,8 @@
 
 
 
-    // Tell WebGL how to convert from clip space to pixels
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
     // Clear the canvas
-    gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    // Tell it to use our program (pair of shaders)
-    gl.useProgram(program);
 
     // Turn on the position attribute
 
@@ -178,8 +181,6 @@
     var offset = 0;        // start at the beginning of the buffer
     gl.vertexAttribPointer(texcoordLocation, size, type, normalize, stride, offset);
 
-    // set the resolution
-    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
 
     // Draw the rectangle.
     var primitiveType = gl.TRIANGLES;
