@@ -27,7 +27,7 @@ export class Line extends FourBlocksFigure implements Figure
     
     // this is start fields with center in 33
     // this._fields = [33, 13, 23, 34];
-    const coords = this.getCoordsOfAllCellsByStateAndCenter(this._vertical, this.center)
+    const coords = this.getCoordsOfAllCellsByStateAndCenter(this._vertical, this.center.x, this.center.y)
     
     // move coords to fields
     this._fields = coords.map((c:Coords) => {
@@ -46,15 +46,28 @@ export class Line extends FourBlocksFigure implements Figure
     // update fields
     const capWidth = this._cap.getWidthInCells()
     
-    // we take next position
-    // let nextPosition = this._position+1;
-    // if (nextPosition > 3) nextPosition = 0
+    // this center if we need to move it
+    let centerX = this.center.x
     
-    // the center is presented in coords 0
-    // const center = this._cap.getCoordsByIndex(this._fields[0]);
+    // this is special situation
+    if (this._vertical) {
+      // if center next to right age
+      // we move center for rotate
+      if (this.center.x === 0) {
+        centerX += 1
+      }
+      
+      if (this.center.x === capWidth -1) {
+        centerX -= 2
+      }
+      
+      if (this.center.x === capWidth -2) {
+        centerX -= 1
+      }
+    }
     
     // fields after rotate
-    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(nextPosition, this.center)
+    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(nextPosition, centerX, this.center.y)
     
     // update buy position
     // this.updateByPosition(this._position);
@@ -84,14 +97,14 @@ export class Line extends FourBlocksFigure implements Figure
       return false
     }
     
-    // update feeld coords by points
-    this._fields[0] = coordsAfterRotate[0].y * capWidth + coordsAfterRotate[0].x
-    this._fields[1] = coordsAfterRotate[1].y * capWidth + coordsAfterRotate[1].x
-    this._fields[2] = coordsAfterRotate[2].y * capWidth + coordsAfterRotate[2].x
-    this._fields[3] = coordsAfterRotate[3].y * capWidth + coordsAfterRotate[3].x
+    // update fields
+    this.updateFieldsByCoords(coordsAfterRotate, capWidth)
     
     // save position
     this._vertical = nextPosition
+    
+    // move center if id happens
+    this.center.x = centerX;
     
     return true;
   }
@@ -104,14 +117,28 @@ export class Line extends FourBlocksFigure implements Figure
     // update fields
     const capWidth = this._cap.getWidthInCells()
     
-    // the center is presented in coords 0
-    // const center = this._cap.getCoordsByIndex(this._fields[0]);
+    // this center if we need to move it
+    let centerX = this.center.x
+    
+    // this is special situation
+    if (this._vertical) {
+      // if center next to right age
+      // we move center for rotate
+      if (this.center.x === 0) {
+        centerX += 1
+      }
+      
+      if (this.center.x === capWidth -1) {
+        centerX -= 2
+      }
+      
+      if (this.center.x === capWidth -2) {
+        centerX -= 1
+      }
+    }
     
     // fields after rotate
-    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(previousPosition, this.center)
-    
-    // update buy position
-    // this.updateByPosition(this._position);
+    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(previousPosition, centerX, this.center.y)
     
     // check can we update
     const sinfulnessIndex = coordsAfterRotate.findIndex((c:{x:number, y:number}) =>
@@ -146,6 +173,9 @@ export class Line extends FourBlocksFigure implements Figure
     // save position
     this._vertical = previousPosition
     
+    // move center if id happens
+    this.center.x = centerX;
+    
     return true;
   }
   
@@ -155,7 +185,7 @@ export class Line extends FourBlocksFigure implements Figure
    * returns an array of points with coordinates after rotation
    * @var number state horse's state from 0 to 3
    */
-  getCoordsOfAllCellsByStateAndCenter (isVertical:boolean, center:Coords): Array<Coords>
+  getCoordsOfAllCellsByStateAndCenter (isVertical:boolean, centerX:number, centerY:number): Array<Coords>
   {
     
     // o
@@ -165,10 +195,10 @@ export class Line extends FourBlocksFigure implements Figure
     if (isVertical)
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x, y: center.y +1},
-        {x: center.x, y: center.y -1},
-        {x: center.x, y: center.y -2}
+        {x: centerX, y: centerY},
+        {x: centerX, y: centerY +1},
+        {x: centerX, y: centerY -1},
+        {x: centerX, y: centerY -2}
       ];
     }
     
@@ -176,10 +206,10 @@ export class Line extends FourBlocksFigure implements Figure
     else
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x -1, y: center.y},
-        {x: center.x +1, y: center.y},
-        {x: center.x +2, y: center.y}
+        {x: centerX, y: centerY},
+        {x: centerX -1, y: centerY},
+        {x: centerX +1, y: centerY},
+        {x: centerX +2, y: centerY}
       ];
     }
     
