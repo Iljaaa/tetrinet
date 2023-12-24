@@ -1,6 +1,8 @@
 import React from "react";
 import {Game, GameEventListener} from "./Common/Tetrinet/Game";
 
+import sprite from "./sprite.png"
+
 type State = {
   score: number
 }
@@ -28,7 +30,6 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
      */
     this._canvas = React.createRef();
     
-    
     /**
      * Cap
      */
@@ -36,28 +37,41 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     
   }
   
+  /**
+   * Callback from game when lines was cleared
+   * @param countLines
+   */
   onLineCleared (countLines:number) {
     this.setState({score: this.state.score + ((countLines + countLines - 1) * 10) })
   }
   
   componentDidMount()
   {
+    
+    // intercept keyboards events
+    // todo: move it to game init, when input inited
+    document.addEventListener("keydown", this.onKeyDown);
+    document.addEventListener("keyup", this.onKeyUp);
+    
+    
     /**
      * Init game by canvas object
      */
-    this.game.init(this._canvas.current as HTMLCanvasElement, this);
+    this.game.init(
+      this._canvas.current as HTMLCanvasElement,
+      this,
+      sprite,
+      () => {
+        // start game when texture loaded
+        this.game.start();
+      }
+    );
     
     // let figures = new Array<Figure>();
   
     // create renderer
     // this._cupRenderer = new CapRenderer(this._canvas.current as HTMLCanvasElement, this.);
     
-    // intercept keyboards events
-    document.addEventListener("keydown", this.onKeyDown);
-    document.addEventListener("keyup", this.onKeyUp);
-    
-    // start game
-    this.game.start();
   }
   
   componentWillUnmount()
@@ -73,7 +87,6 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
    */
   onKeyDown = (event:KeyboardEvent) =>
   {
-    // console.log (event.code, 'event')
     
     // transfer events
     if (event.code === "KeyD") {
@@ -131,6 +144,7 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
       
       <canvas id="canvas" width={320} height={640} style={{border: "solid 2px orange"}} ref={this._canvas}/>
       <div>score {this.state.score}</div>
+      <div>{sprite}</div>
     </div>
   }
 }

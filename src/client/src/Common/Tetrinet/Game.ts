@@ -1,6 +1,8 @@
 import {CupEventListener, CupWithFigureImpl} from "./CapWithFigureImpl";
 import {CapRenderer} from "./CapRenderer";
 import {FpsCounter} from "./helpers/FpsCounter";
+import {Texture} from "../framework/Texture";
+import {WebGlTexture} from "./impl/WebGlTexture";
 
 /**
  * Game states
@@ -59,23 +61,45 @@ export class Game implements CupEventListener
   private fpsCounter:FpsCounter;
   
   /**
+   * Main texture
+   * @private
+   */
+  private texture:Texture;
+  
+  /**
    * In this constructor we create cup
    */
   constructor()
   {
     this._cup =  new CupWithFigureImpl(this);
     this.fpsCounter = new FpsCounter();
+    
+    // create texture
+    this.texture = new WebGlTexture();
   }
   
   /**
-   * Init render by canvas elemet
+   * Init render by canvas element
+   * todo: create interface game and describe this method there
+   * todo: make WebGlGame and move there creating the canvas render
+   * todo: make to set listener other method
    */
-  init (canvas:HTMLCanvasElement, listener:GameEventListener)
+  init (canvas:HTMLCanvasElement, listener:GameEventListener, sprite:string, onLoadCallback:()=>void)
   {
     this.listener = listener;
     
-    // init cup render
-    this._cupRenderer = new CapRenderer(canvas as HTMLCanvasElement, this._cup);
+    // load texture
+    this.texture.load(sprite, () => {
+      
+      // init cup render
+      this._cupRenderer = new CapRenderer(canvas as HTMLCanvasElement, this._cup);
+      
+      // rise callback
+      onLoadCallback()
+    });
+    
+    
+    
   }
   
   /**

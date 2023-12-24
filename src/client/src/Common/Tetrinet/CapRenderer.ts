@@ -22,11 +22,17 @@ export class CapRenderer
   private readonly cupWidth: number = 0;
   private readonly cupHeight: number = 0;
   
+  /**
+   * todo: split on two classes, first will be render cup second
+   * @param canvas
+   * @param cup
+   */
   constructor(canvas:HTMLCanvasElement, cup:Cup)
   {
     console.log('CapRenderer.constructor')
     // let canvas = document.querySelector("#canvas") as HTMLCanvasElement;
     
+    // todo: move making ths context upper to methods, in game initialization
     this.gl = !(canvas) ? null : canvas.getContext("webgl2");
     if (!this.gl) return;
     
