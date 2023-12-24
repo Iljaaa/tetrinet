@@ -1,5 +1,6 @@
 import {CupEventListener, CupWithFigureImpl} from "./CapWithFigureImpl";
 import {CapRenderer} from "./CapRenderer";
+import {FpsCounter} from "./helpers/FpsCounter";
 
 /**
  * Game states
@@ -52,11 +53,18 @@ export class Game implements CupEventListener
   private listener: GameEventListener|undefined;
   
   /**
+   *
+   * @private
+   */
+  private fpsCounter:FpsCounter;
+  
+  /**
    * In this constructor we create cup
    */
   constructor()
   {
     this._cup =  new CupWithFigureImpl(this);
+    this.fpsCounter = new FpsCounter();
   }
   
   /**
@@ -71,7 +79,8 @@ export class Game implements CupEventListener
   }
   
   /**
-   * Game starts after init
+   * It starts the game
+   * must be called after init!
    */
   start ()
   {
@@ -102,7 +111,7 @@ export class Game implements CupEventListener
       this.t = timeStamp;
     }
     
-    const deltaTime = timeStamp - this.t
+    const deltaTime:number = timeStamp - this.t
     this.t = timeStamp
     
     if (this._state === GameState.running) {
@@ -123,6 +132,9 @@ export class Game implements CupEventListener
       //
       // this.updateRunning();
     }
+    
+    // click fps counter
+    this.fpsCounter.update(deltaTime)
     
     
     // request next frame
@@ -179,8 +191,7 @@ export class Game implements CupEventListener
     }
   }
   
-  onRotateClockwise ()
-  {
+  onRotateClockwise () {
     if (this._cupRenderer)
     {
       // rotate figure in the cup
@@ -206,8 +217,13 @@ export class Game implements CupEventListener
     
     // todo: do somethimg on game over
     alert("game over")
+    debugger
   }
   
+  /**
+   * Callback when line was cleared in the cup
+   * @param countLines
+   */
   onLineCleared(countLines: number): void {
     if (this.listener) this.listener.onLineCleared(countLines);
   }

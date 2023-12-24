@@ -142,6 +142,13 @@ export class Camel extends FourBlocksFigure implements Figure
       }
     }
     
+    // this is special situation
+    // if center next to right age
+    // we move center for rotate
+    if (this._state === CamelState.right && this.center.x === 0) {
+      centerX += 1
+    }
+    
     // fields after rotate
     const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(previousPosition, centerX, this.center.y)
     
