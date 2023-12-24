@@ -29,10 +29,28 @@ export abstract class FourBlocksFigure
     this.center = new Coords(center.x, center.y)
   }
   
+  /**
+   * It must have
+   * @param coords it must have 4 elements!
+   * @param cupWidthInCols
+   * @protected
+   */
+  protected updateFieldsByCoords(coords:Array<Coords>, cupWidthInCols:number):void
+  {
+    this._fields[0] = coords[0].y * cupWidthInCols + coords[0].x
+    this._fields[1] = coords[1].y * cupWidthInCols + coords[1].x
+    this._fields[2] = coords[2].y * cupWidthInCols + coords[2].x
+    this._fields[3] = coords[3].y * cupWidthInCols + coords[3].x
+  }
+  
   getFields(): Array<number> {
     return this._fields
   }
   
+  /**
+   * Figure position
+   * it used for rotate
+   */
   getPosition(): Coords {
     return this.center;
   }

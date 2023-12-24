@@ -105,11 +105,8 @@ export class Camel extends FourBlocksFigure implements Figure
       return false
     }
     
-    // update feeld coords by points
-    this._fields[0] = coordsAfterRotate[0].y * capWidth + coordsAfterRotate[0].x
-    this._fields[1] = coordsAfterRotate[1].y * capWidth + coordsAfterRotate[1].x
-    this._fields[2] = coordsAfterRotate[2].y * capWidth + coordsAfterRotate[2].x
-    this._fields[3] = coordsAfterRotate[3].y * capWidth + coordsAfterRotate[3].x
+    // update fields by coords
+    this.updateFieldsByCoords(coordsAfterRotate, capWidth)
     
     // save position
     this._state = nextPosition
@@ -173,11 +170,8 @@ export class Camel extends FourBlocksFigure implements Figure
       return false
     }
     
-    // update feeld coords by points
-    this._fields[0] = coordsAfterRotate[0].y * capWidth + coordsAfterRotate[0].x
-    this._fields[1] = coordsAfterRotate[1].y * capWidth + coordsAfterRotate[1].x
-    this._fields[2] = coordsAfterRotate[2].y * capWidth + coordsAfterRotate[2].x
-    this._fields[3] = coordsAfterRotate[3].y * capWidth + coordsAfterRotate[3].x
+    // update fields by coords
+    this.updateFieldsByCoords(coordsAfterRotate, capWidth)
     
     // save position
     this._state = previousPosition

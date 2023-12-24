@@ -220,8 +220,6 @@ export class CupWithFigureImpl extends CapImpl implements CapWithFigure
       if (fullLine) fullLines.push(row)
     }
     
-    console.log(fullLines, 'fullLines')
-    
     if (fullLines.length === 0) {
       return 0;
     }
