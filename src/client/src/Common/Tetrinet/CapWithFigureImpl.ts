@@ -9,6 +9,7 @@ import {ForwardFlash} from "./figures/ForwardFlash";
 import {BackFlash} from "./figures/BackFlash";
 import {Line} from "./figures/Line";
 import {Square} from "./figures/Square";
+import {Camel} from "./figures/Camel";
 
 export type CupEventListener = {
   onLineCleared: (countLines:number) => void,
@@ -81,7 +82,7 @@ export class CupWithFigureImpl extends CapImpl implements CapWithFigure
   start():void
   {
     // generate new figure
-    this.addNewFigure();
+    this.generateAndPutNewFigure();
   }
   
   setFigure(f:Figure) {
@@ -178,7 +179,7 @@ export class CupWithFigureImpl extends CapImpl implements CapWithFigure
     if (countClearedLines > 0) this.listener.onLineCleared(countClearedLines)
     
     // if a new figure not putted it means....
-    if (!this.addNewFigure()) {
+    if (!this.generateAndPutNewFigure()) {
       this.listener.onGameOver()
     }
   }
@@ -263,11 +264,9 @@ export class CupWithFigureImpl extends CapImpl implements CapWithFigure
    * Create random figure and add
    * @private
    */
-  private addNewFigure(): boolean
+  private generateAndPutNewFigure(): boolean
   {
-    // generate new figure
-    console.log(this.getDropPoint(), 'drop point');
-    
+    // select new figure
     const nextFigureIndex:number = Math.floor(Math.random() * 6);
     
     let f:Figure;
@@ -277,10 +276,9 @@ export class CupWithFigureImpl extends CapImpl implements CapWithFigure
       case 2: f = new Line(this, this.getDropPoint()); break;
       case 3: f = new ForwardFlash(this, this.getDropPoint()); break;
       case 4: f = new BackFlash(this, this.getDropPoint()); break;
+      case 5: f = new Camel(this, this.getDropPoint()); break;
       default: f = new Square(this, this.getDropPoint()); break;
     }
-    
-    // if (!f) return false;
     
     //
     const newFigureFields:Array<number> = f.getFields()
@@ -290,9 +288,9 @@ export class CupWithFigureImpl extends CapImpl implements CapWithFigure
       return false;
     }
     
-    
     // set new figure
     this.setFigure(f)
+    
     return true;
   }
   
