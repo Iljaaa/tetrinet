@@ -21,7 +21,6 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
   
   constructor(props: { }, context: any)
   {
-    console.log ('canvas constructor')
     super(props, context);
     
     /**
@@ -43,8 +42,6 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
   
   componentDidMount()
   {
-    console.log ('Canvas.componentDidMount', this._canvas);
-    
     /**
      * Init game by canvas object
      */
@@ -76,7 +73,7 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
    */
   onKeyDown = (event:KeyboardEvent) =>
   {
-    console.log (event.code, 'event')
+    // console.log (event.code, 'event')
     
     // transfer events
     if (event.code === "KeyD") {

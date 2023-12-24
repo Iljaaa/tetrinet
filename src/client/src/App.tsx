@@ -7,6 +7,11 @@ function App() {
   return (
     <div className="App">
       <Canvas />
+      <div>
+        <ul>
+          <li></li>
+        </ul>
+      </div>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>

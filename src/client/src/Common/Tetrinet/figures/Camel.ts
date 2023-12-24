@@ -41,7 +41,6 @@ export class Camel extends FourBlocksFigure implements Figure
   }
   
   
-  
   /**
    * Rotate to right
    */
@@ -189,14 +188,12 @@ export class Camel extends FourBlocksFigure implements Figure
     return true;
   }
   
-  
   /**
    * returns an array of points with coordinates after rotation
    * @var number state horse's state from 0 to 3
    */
   getCoordsOfAllCellsByStateAndCenter (state:CamelState, centerX:number, centerY:number): Array<Coords>
   {
-    console.log(state, 'camel state')
     //  o
     // o0o
     if (state === CamelState.top)
