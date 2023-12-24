@@ -1,0 +1,109 @@
+<h1>simple triangle</h1>
+
+
+<script id="vertex-shader-2d" type="x-shader/x-vertex">
+
+    attribute vec2 coordinates;
+    void main(void) {
+      gl_Position = vec4(coordinates , 0.0, 1.0);
+    }
+
+</script>
+
+
+<script id="fragment-shader-2d" type="x-shader/x-fragment">
+
+    void main() {
+      gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+    }
+
+</script>
+
+<canvas id="canvas" width="500" height="500" style="border: solid 2px red"></canvas>
+
+<script>
+    const canvas = document.querySelector("#canvas");
+    const gl = canvas.getContext("webgl2");
+
+    // Set the viewport size to be the whole canvas.
+    // gl.viewport(0, 0, canvas.width, canvas.height)
+    gl.viewport(0, 0, 500, 500)
+
+    // Set the background color to sky blue.
+    gl.clearColor(.5, .7, 1, 1)
+
+
+    // bind boofer
+    // const positionBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+
+
+    // vertex shader
+    const vertexShaderSource = document.querySelector("#vertex-shader-2d").text;
+    const vShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vShader, vertexShaderSource);      // устанавливаем шейдеру его программный код
+    gl.compileShader(vShader);
+
+    // color shader
+    const fragmentShaderSource = document.querySelector("#fragment-shader-2d").text;
+    const cShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(cShader, fragmentShaderSource);      // устанавливаем шейдеру его программный код
+    gl.compileShader(cShader);
+
+    // var vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    // var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    // create program
+    const program = gl.createProgram()
+    gl.attachShader(program, vShader)
+    gl.attachShader(program, cShader)
+
+    gl.linkProgram(program)
+    const linkSuccess = gl.getProgramParameter(program, gl.LINK_STATUS);
+    console.log(linkSuccess, 'linkSuccess')
+    // gl.useProgram(shaderProgram)
+
+    // create position buffer
+    const vertices = [
+        -0.7, 0.0,
+        0.8, 0.2,
+        0.6, -0.1,
+    ]
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    var positionAttributeLocation = gl.getAttribLocation(program, "coordinates");
+    gl.enableVertexAttribArray(positionAttributeLocation);
+
+    // Указываем атрибуту, как получать данные от positionBuffer (ARRAY_BUFFER)
+    var size = 2;          // 2 компоненты на итерацию
+    var type = gl.FLOAT;   // наши данные - 32-битные числа с плавающей точкой
+    var normalize = false; // не нормализовать данные
+    var stride = 0;        // 0 = перемещаться на size * sizeof(type) каждую итерацию для получения следующего положения
+    var offset = 0;        // начинать с начала буфера
+    gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset)
+
+
+    // use the program
+    gl.useProgram(program)
+
+
+    // start drawing from here
+
+
+    // clear
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
+
+    // i dont know
+    // const coord = gl.getAttribLocation(program, "coordinates")
+    // gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0)
+    // gl.enableVertexAttribArray(coord)
+
+    // Draw all the triangles.
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2)
+
+
+
+</script>
