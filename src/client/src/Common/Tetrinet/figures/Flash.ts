@@ -27,7 +27,7 @@ export abstract class Flash extends FourBlocksFigure implements Figure
     
     // this is start fields with center in 33
     // this._fields = [33, 13, 23, 34];
-    const coords = this.getCoordsOfAllCellsByStateAndCenter(this._vertical, this.center)
+    const coords = this.getCoordsOfAllCellsByStateAndCenter(this._vertical, this.center.x, this.center.y)
     
     // move coords to fields
     this._fields = coords.map((c:Coords) => {
@@ -46,15 +46,21 @@ export abstract class Flash extends FourBlocksFigure implements Figure
     // update fields
     const capWidth = this._cap.getWidthInCells()
     
-    // we take next position
-    // let nextPosition = this._position+1;
-    // if (nextPosition > 3) nextPosition = 0
+    // this center if we need to move it
+    let centerX = this.center.x
     
-    // the center is presented in coords 0
-    // const center = this._cap.getCoordsByIndex(this._fields[0]);
+    // this is special situation
+    if (this._vertical) {
+      // if center close to left age
+      // we move center for rotate
+      if (this.center.x === 0) {
+        centerX += 1
+      }
+    }
     
     // fields after rotate
-    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(nextPosition, this.center)
+    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(nextPosition, centerX, this.center.y)
+    
     
     // update buy position
     // this.updateByPosition(this._position);
@@ -93,6 +99,9 @@ export abstract class Flash extends FourBlocksFigure implements Figure
     // save position
     this._vertical = nextPosition
     
+    // move center if id happens
+    this.center.x = centerX;
+    
     return true;
   }
   
@@ -103,11 +112,20 @@ export abstract class Flash extends FourBlocksFigure implements Figure
     // update fields
     const capWidth = this._cap.getWidthInCells()
     
-    // the center is presented in coords 0
-    // const center = this._cap.getCoordsByIndex(this._fields[0]);
+    // this center if we need to move it
+    let centerX = this.center.x
+    
+    // this is special situation
+    if (this._vertical) {
+      // if center close to left age
+      // we move center for rotate
+      if (this.center.x === 0) {
+        centerX += 1
+      }
+    }
     
     // fields after rotate
-    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(previousPosition, this.center)
+    const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(previousPosition, centerX, this.center.y)
     
     // update buy position
     // this.updateByPosition(this._position);
@@ -145,6 +163,9 @@ export abstract class Flash extends FourBlocksFigure implements Figure
     // save position
     this._vertical = previousPosition
     
+    // move center if id happens
+    this.center.x = centerX;
+    
     return true;
   }
   
@@ -152,7 +173,7 @@ export abstract class Flash extends FourBlocksFigure implements Figure
    * returns an array of points with coordinates after rotation
    * @var number state horse's state from 0 to 3
    */
-  abstract getCoordsOfAllCellsByStateAndCenter (isVertical:boolean, center:Coords): Array<Coords>
+  abstract getCoordsOfAllCellsByStateAndCenter (isVertical:boolean, centerX:number, centerY:number): Array<Coords>
   
 
 }

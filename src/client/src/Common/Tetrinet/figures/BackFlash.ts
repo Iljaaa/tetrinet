@@ -15,19 +15,18 @@ export class BackFlash extends Flash
    * returns an array of points with coordinates after rotation
    * @var number state horse's state from 0 to 3
    */
-  getCoordsOfAllCellsByStateAndCenter (isVertical:boolean, center:Coords): Array<Coords>
+  getCoordsOfAllCellsByStateAndCenter (isVertical:boolean, centerX:number, centerY:number): Array<Coords>
   {
-    
     //  o
     // 0o
     // o
     if (isVertical)
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x +1, y: center.y},
-        {x: center.x +1, y: center.y +1},
-        {x: center.x, y: center.y -1}
+        {x: centerX, y: centerY},
+        {x: centerX +1, y: centerY},
+        {x: centerX +1, y: centerY +1},
+        {x: centerX, y: centerY -1}
       ];
     }
     
@@ -36,10 +35,10 @@ export class BackFlash extends Flash
     else
     {
       return [
-        {x: center.x, y: center.y},
-        {x: center.x-1, y: center.y},
-        {x: center.x, y: center.y - 1},
-        {x: center.x +1, y: center.y - 1}
+        {x: centerX, y: centerY},
+        {x: centerX-1, y: centerY},
+        {x: centerX, y: centerY - 1},
+        {x: centerX +1, y: centerY - 1}
       ];
     }
     
