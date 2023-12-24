@@ -92,7 +92,7 @@ export class Game implements CupEventListener
     this.texture.load(sprite, () => {
       
       // init cup render
-      this._cupRenderer = new CapRenderer(canvas as HTMLCanvasElement, this._cup);
+      this._cupRenderer = new CapRenderer(canvas as HTMLCanvasElement, this._cup, this.texture);
       
       // rise callback
       onLoadCallback()

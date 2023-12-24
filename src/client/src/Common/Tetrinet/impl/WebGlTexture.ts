@@ -39,5 +39,9 @@ export class WebGlTexture implements Texture
     }
   }
   
+  getImage(): HTMLImageElement {
+    return this.image;
+  }
+  
   
 }

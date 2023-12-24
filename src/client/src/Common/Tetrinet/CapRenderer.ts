@@ -2,6 +2,7 @@ import {Cup} from "./models/Cup";
 import {CapWithFigure} from "./models/CupWithFigure";
 import {Coords} from "./math/Coords";
 import {Figure} from "./models/Figure";
+import {Texture} from "../framework/Texture";
 
 const BLOCK_SIZE_PX = 32;
 
@@ -23,13 +24,25 @@ export class CapRenderer
   private readonly cupHeight: number = 0;
   
   /**
+   * Texure
+   * @private
+   */
+  private texture: Texture;
+  
+  /**
+   * todo: again canvas get here content
    * todo: split on two classes, first will be render cup second
+   * todo: move texture to asses class
    * @param canvas
    * @param cup
    */
-  constructor(canvas:HTMLCanvasElement, cup:Cup)
+  constructor(canvas:HTMLCanvasElement, cup:Cup, texture:Texture)
   {
     console.log('CapRenderer.constructor')
+    
+    // save texture
+    this.texture = texture;
+    
     // let canvas = document.querySelector("#canvas") as HTMLCanvasElement;
     
     // todo: move making ths context upper to methods, in game initialization
@@ -154,8 +167,6 @@ export class CapRenderer
     
     // this.setGeometry(this.gl, 0, 0);
     
-
-    
     // set color of square
     // this.gl.uniform4f(this.colorLocation, 1, 0, 0, 1);
     
@@ -275,6 +286,38 @@ export class CapRenderer
     //
     this._renderDropPoint(this.gl, c.getDropPoint());
     
+    
+    // provide texture coordinates for the rectangle.
+    var texcoordBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, texcoordBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
+    ]), this.gl.STATIC_DRAW);
+    
+    // Create a texture.
+    var texture = this.gl.createTexture();
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    
+    // Set the parameters so we can render any size image.
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+    
+    // Upload the image into the texture.
+    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.texture.getImage());
+    
+    
+    // Draw the rectangle.
+    var primitiveType = this.gl.TRIANGLES;
+    var offset = 0;
+    var count = 6;
+    this.gl.drawArrays(primitiveType, offset, count);
     
   }
   
