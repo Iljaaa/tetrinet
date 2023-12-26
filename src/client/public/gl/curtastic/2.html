@@ -1,13 +1,27 @@
-<h1>gl test</h1>
+<h1>WebGL Simple 2D Example</h1>
 
 <p>
-  from: https://curtastic.com/tutorial/webgl-2d/?step=1
+  <a href="https://curtastic.com/tutorial/webgl-2d/?step=2">https://curtastic.com/tutorial/webgl-2d/?step=2</a>
+</p>
+
+<p>
+
 </p>
 
 <canvas width=500 height=500 id=myCanvas></canvas>
 
 <script>
   let gl, canvas
+
+  /**
+   * Array with vertices, it clears every loop
+   * @type {*[]}
+   */
+  let vertices = [];
+
+  function drawTriangle(x1, y1, x2, y2, x3, y3) {
+    vertices.push(x1, y1, x2, y2, x3, y3)
+  }
 
   function gameLoop()
   {
@@ -16,23 +30,36 @@
     // Clear the screen.
     gl.clear(gl.COLOR_BUFFER_BIT)
 
-    // The points of our triangles we want to draw.
-    // x,y positions. 0,0 is the center of the canvas. -1,1 is the top left.
-    var vertices = [
-      -0.5+Math.sin(Date.now()*.001), 0.5,
+    // UPDATE: Calling my function instead of setting the array.
+    // Draw the moving triangle.
+    drawTriangle(
+      -0.5+Math.sin(Date.now()*.01), 0.5,
       -0.5, -0.5,
-      0.5, -0.5,
-      // Another small triangle for fun.
+      0.5, -0.5
+    )
+    // Another triangle for fun.
+    drawTriangle(
       -0.7, 0.0,
       -0.8, -0.2,
-      -0.6, -0.1,
-    ]
+      -0.6, -0.1
+    )
+    // Third triangle for more fun.
+    drawTriangle(
+      0.7, 0.0,
+      0.8, -0.2,
+      0.6, -0.1
+    )
 
     // Tell webGL to draw these triangles this frame.
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
 
     // Draw all the triangles.
     gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2)
+
+    // Clear vertices. We will fill it every frame.
+    // This way you don't need to delete objects from the screen. You just stop drawing them.
+    vertices = []
+
   }
 
   function glSetup() {
@@ -92,5 +119,6 @@
     glSetup()
     gameLoop()
   }
+
 </script>
 

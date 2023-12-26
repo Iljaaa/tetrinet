@@ -1,0 +1,105 @@
+<h1>WebGL Simple 2D Example</h1>
+
+<p>
+  <a href="https://curtastic.com/tutorial/webgl-2d/?step=1">https://curtastic.com/tutorial/webgl-2d/?step=1</a>
+</p>
+
+<p>
+
+</p>
+
+<canvas width=500 height=500 id=myCanvas></canvas>
+
+<script>
+  let gl, canvas
+
+  function gameLoop()
+  {
+    window.requestAnimationFrame(gameLoop)
+
+    // Clear the screen.
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
+    // The points of our triangles we want to draw.
+    // x,y positions. 0,0 is the center of the canvas. -1,1 is the top left.
+    var vertices =
+      [
+
+      // first triangle
+      -0.5+Math.sin(Date.now()*.001), 0.5,
+      -0.5, -0.5,
+      0.5, -0.5,
+
+      // Another small triangle for fun.
+      -0.7, 0.0,
+      -0.8, -0.2,
+      -0.6, -0.1,
+    ]
+
+    // Tell webGL to draw these triangles this frame.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+    // Draw all the triangles.
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2)
+  }
+
+  function glSetup() {
+    canvas = document.getElementById("myCanvas")
+    gl = canvas.getContext("experimental-webgl")
+
+    // Set the viewport size to be the whole canvas.
+    // gl.viewport(0, 0, canvas.width, canvas.height)
+    gl.viewport(0, 0, 500, 500)
+
+    // Set the background color to sky blue.
+    gl.clearColor(.5, .7, 1, 1)
+
+    // Tell webGL that we aren't doing anything special with the vertex buffer, just use a default one.
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+
+    // Vertex shader source code.
+    var vertCode =
+      "attribute vec2 coordinates;" +
+      "void main(void) {" +
+      // We are passing in only 2D X,Y coordinates. Then Z is always 0.0 and the divisor is always 1.0
+      " gl_Position = vec4(coordinates, 0.0, 1.0);" +
+      "}"
+
+    // Create a vertex shader object.
+    var vertShader = gl.createShader(gl.VERTEX_SHADER)
+    gl.shaderSource(vertShader, vertCode)
+    gl.compileShader(vertShader)
+
+    // Fragment shader source code.
+    var fragCode =
+      "void main(void) {" +
+      // We aren't passing in colors right now so all the triangles are green. G=1.0=full green.
+      " gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
+      "}"
+
+    // Create fragment shader object.
+    var fragShader = gl.createShader(gl.FRAGMENT_SHADER)
+    gl.shaderSource(fragShader, fragCode)
+    gl.compileShader(fragShader)
+
+    // Tell webGL to use both my shaders.
+    var shaderProgram = gl.createProgram()
+    gl.attachShader(shaderProgram, vertShader)
+    gl.attachShader(shaderProgram, fragShader)
+    gl.linkProgram(shaderProgram)
+    gl.useProgram(shaderProgram)
+
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "coordinates"
+    var coord = gl.getAttribLocation(shaderProgram, "coordinates")
+    gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0)
+    gl.enableVertexAttribArray(coord)
+  }
+
+  window.onload = function() {
+    glSetup()
+    gameLoop()
+  }
+
+</script>
+
