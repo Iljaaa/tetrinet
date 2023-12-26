@@ -1,7 +1,8 @@
 /**
  * @varsion 0.0.1
  */
-export interface Texture {
+export interface Texture
+{
   
   /**
    * Load file from url and after rise callback
@@ -12,4 +13,5 @@ export interface Texture {
    * Get image for binding
    */
   getImage():HTMLImageElement
+  
 }

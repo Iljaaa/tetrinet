@@ -17,7 +17,6 @@ export class WebGlTexture implements Texture
   private image: HTMLImageElement;
   
   
-  
   constructor()
   {
     this.image = new Image();
@@ -32,7 +31,7 @@ export class WebGlTexture implements Texture
   {
     this.url = url;
     
-    this.image.crossOrigin = "anonymous"
+    this.image.crossOrigin = "anonymous" // this line enables a cross origin request
     this.image.src = this.url; // "https://webglfundamentals.org/webgl/resources/leaves.jpg";  // ДОЛЖНА НАХОДИТЬСЯ НА ТОМ ЖЕ ДОМЕНЕ!!!
     this.image.onload = () => {
       onLoad(url);
