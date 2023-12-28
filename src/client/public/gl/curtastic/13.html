@@ -222,10 +222,12 @@
 
     // Tell webGL to read 2 floats from the vertex array for each vertex
     // and store them in my vec2 shader variable I've named "coordinates"
-    // We need to tell it that each vertex takes 24 bytes now (6 floats)
-    var coord = gl.getAttribLocation(shaderProgram, "coordinates")
-    gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 48, 0)
-    gl.enableVertexAttribArray(coord)
+    // We need to tell it that each vertex takes 48 bytes now (8 floats)
+    var attribute = gl.getAttribLocation(shaderProgram, "coordinates")
+    gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 48, 0)
+    gl.enableVertexAttribArray(attribute)
+    // UPDATE: Need to register our attibutes with the extension now.
+    glExtension.vertexAttribDivisorANGLE(attribute, 1)
 
     // UPDATE: Then read width and height from the vertex array and store them in "drawSize".
     //  since "coordinates" won't be getting set to every corner of the image anymore (just top-left) we'll add drawSize to it instead.
@@ -234,20 +236,21 @@
     gl.enableVertexAttribArray(attribute)
     glExtension.vertexAttribDivisorANGLE(attribute, 1)
 
-    // UPDATE: Tell webGL how to get rgba from our vertices array.
     // Tell webGL to read 4 floats from the vertex array for each vertex
     // and store them in my vec4 shader variable I've named "rgba"
     // Start after 8 bytes. (After the 2 floats for x and y)
     var attribute = gl.getAttribLocation(shaderProgram, "rgba")
     gl.vertexAttribPointer(attribute, 4, gl.FLOAT, false, 48, 16)
+    gl.enableVertexAttribArray(attribute)
     // UPDATE: Need to register our attibutes with the extension now.
     glExtension.vertexAttribDivisorANGLE(attribute, 1)
     // gl.enableVertexAttribArray(attribute)
 
-    // UPDATE: Tell webGL to read 2 floats from the vertex array for each vertex
+    // Tell webGL to read 2 floats from the vertex array for each vertex
     // and store them in my vec2 shader variable I've named "texPos"
     var attribute = gl.getAttribLocation(shaderProgram, "texPos")
     gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 48, 32)
+    gl.enableVertexAttribArray(attribute)
     // UPDATE: Need to register our attibutes with the extension now.
     glExtension.vertexAttribDivisorANGLE(attribute, 1)
     //gl.enableVertexAttribArray(attribute)
