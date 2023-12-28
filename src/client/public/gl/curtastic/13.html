@@ -239,7 +239,7 @@
     // and store them in my vec4 shader variable I've named "rgba"
     // Start after 8 bytes. (After the 2 floats for x and y)
     var attribute = gl.getAttribLocation(shaderProgram, "rgba")
-    gl.vertexAttribPointer(attribute, 4, gl.FLOAT, false, 32, 16)
+    gl.vertexAttribPointer(attribute, 4, gl.FLOAT, false, 48, 16)
     // UPDATE: Need to register our attibutes with the extension now.
     glExtension.vertexAttribDivisorANGLE(attribute, 1)
     // gl.enableVertexAttribArray(attribute)
@@ -247,7 +247,7 @@
     // UPDATE: Tell webGL to read 2 floats from the vertex array for each vertex
     // and store them in my vec2 shader variable I've named "texPos"
     var attribute = gl.getAttribLocation(shaderProgram, "texPos")
-    gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 32, 32)
+    gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 48, 32)
     // UPDATE: Need to register our attibutes with the extension now.
     glExtension.vertexAttribDivisorANGLE(attribute, 1)
     //gl.enableVertexAttribArray(attribute)
