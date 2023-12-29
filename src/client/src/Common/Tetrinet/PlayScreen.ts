@@ -108,23 +108,32 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   update (deltaTime:number):void
   {
     if (this._state === GameState.running) {
-      //
-      // this.updateRunning();
-      
-      this._downTimer += deltaTime
-      
-      // one sec
-      if (this._downTimer > 1000) {
-        this.onDown();
-        this._downTimer = 0;
-      }
-      
+      this._updateRunning(deltaTime);
     }
-    
     else if (this._state === GameState.over) {
-      //
-      // this.updateRunning();
+      // this.updatePaused();
     }
+  }
+  
+  /**
+   * @param deltaTime
+   * @private
+   */
+  private _updateRunning(deltaTime:number)
+  {
+    // tick figure down timer
+    this._downTimer += deltaTime
+    
+    // one sec
+    if (this._downTimer > 1000) {
+      this.onDown();
+      this._downTimer = 0;
+    }
+  }
+  
+  
+  present(): void {
+    //console.log('PlayScreen.present')
   }
   
   onKeyDown(code:string): void
