@@ -48,12 +48,8 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
   
   componentDidMount()
   {
-    
-    // intercept keyboards events
-    // todo: move it to game init, when input inited
-    document.addEventListener("keydown", this.onKeyDown);
-    document.addEventListener("keyup", this.onKeyUp);
-    
+    // bind events
+    this.game.getInput().bind();
     
     /**
      * Init game graphics
@@ -71,64 +67,8 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
   
   componentWillUnmount()
   {
-    // clear keyboard intercept
-    document.removeEventListener("keydown", this.onKeyDown);
-    document.removeEventListener("keyup", this.onKeyUp);
-  }
-  
-  /**
-   * Callback mouse down event
-   * @param event
-   */
-  onKeyDown = (event:KeyboardEvent) =>
-  {
-    
-    // transfer events
-    if (event.code === "KeyD") {
-      this.game.onRight();
-    }
-    
-    if (event.code === "KeyA") {
-      this.game.onLeft();
-    }
-    
-    if (event.code === "KeyS") {
-      this.game.onDown();
-    }
-    
-    if (event.code === "KeyQ") {
-      this.game.onRotateCounterClockwise();
-    }
-    
-    //
-    if (event.code === "KeyE") {
-      this.game.onRotateClockwise();
-    }
-    
-    if (event.code === "Space") {
-      
-      // disable page scroll on space
-      event.preventDefault();
-      
-      // drop figure down
-      this.game.onDrop();
-    }
-    
-  }
-  
-  /**
-   * On document key up
-   * @param event
-   */
-  onKeyUp = (event:KeyboardEvent) =>
-  {
-    const keyName = event.key;
-    
-    // As the user releases the Ctrl key, the key is no longer active,
-    // so event.ctrlKey is false.
-    if (keyName === "Control") {
-      alert("Control key was released");
-    }
+    // unbind events
+    this.game.getInput().unBind();
   }
   
   render () {

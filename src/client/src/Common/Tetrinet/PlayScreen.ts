@@ -5,6 +5,8 @@ import {Texture} from "../framework/Texture";
 import {WebGlTexture} from "../framework/impl/WebGlTexture";
 import {WebGlScreen} from "../framework/impl/WebGlScreen";
 import {GameEventListener, Tetrinet} from "./Tetrinet";
+import {WebInputEventListener} from "../framework/impl/WebInput";
+import {KeyboardEvent} from "react";
 
 /**
  * Game states
@@ -17,7 +19,7 @@ enum GameState {
 /**
  * @vaersion 0.0.1
  */
-export class PlayScreen extends WebGlScreen implements CupEventListener
+export class PlayScreen extends WebGlScreen implements CupEventListener, WebInputEventListener
 {
   /**
    * Cup object
@@ -72,14 +74,18 @@ export class PlayScreen extends WebGlScreen implements CupEventListener
     this.fpsCounter = new FpsCounter();
     
     // create texture
+    // todo: remove it
     this.texture = new WebGlTexture();
+    
+    // bind this to input listener
+    this.game.getInput().setListener(this);
   }
   
   /**
    * Set event listener
    * @param listener
    */
-  public setEventListener (listener:GameEventListener):PlayScreen{
+  public setGameEventListener (listener:GameEventListener):PlayScreen{
     this.listener = listener;
     return this
   }
@@ -91,7 +97,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener
    */
   init (texture:WebGlTexture)
   {
-    console.log ('Playscreen.init');
+    console.log ('PlayScreen.init');
     this._cupRenderer = new CapRenderer(this.game.getGLGraphics().getGl(), this._cup, texture);
   }
   
@@ -112,6 +118,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener
     this._cupRenderer.renderCupWithFigure(this._cup)
     
     // loop this method
+    // todo: move this method upper
     window.requestAnimationFrame(this.update)
   }
   
@@ -157,6 +164,43 @@ export class PlayScreen extends WebGlScreen implements CupEventListener
     // request next frame
     window.requestAnimationFrame(this.update)
   }
+  
+  onKeyDown(code:string): void
+  {
+    // transfer events
+    if (code === "KeyD") {
+      this.onRight();
+    }
+    
+    if (code === "KeyA") {
+      this.onLeft();
+    }
+    
+    if (code === "KeyS") {
+      this.onDown();
+    }
+    
+    if (code === "KeyQ") {
+      this.onRotateCounterClockwise();
+    }
+    
+    //
+    if (code === "KeyE") {
+      this.onRotateClockwise();
+    }
+    
+    if (code === "Space") {
+      
+      // drop figure down
+      this.onDrop();
+    }
+  }
+  
+  onKeyUp(code:string): void {
+  
+  }
+  
+  
   /**
    * Down figure
    */

@@ -51,39 +51,6 @@ export class Tetrinet extends WebGlGame
    */
   setGameEventListener(eventListener: GameEventListener) {
     let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.setEventListener(eventListener)
-  }
-  
-  
-  // transfer event to screen
-  // todo: refactor to input
-  onRight() {
-    let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.onRight();
-  }
-  
-  onLeft(){
-    let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.onLeft();
-  }
-  
-  onDown() {
-    let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.onDown();
-  }
-  
-  onDrop() {
-    let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.onDrop();
-  }
-  
-  onRotateClockwise() {
-    let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.onRotateClockwise();
-  }
-  
-  onRotateCounterClockwise() {
-    let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.onRotateCounterClockwise();
+    s?.setGameEventListener(eventListener)
   }
 }
