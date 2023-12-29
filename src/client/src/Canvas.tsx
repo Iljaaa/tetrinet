@@ -75,7 +75,7 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     return <div>
       {/* @ts-ignore */}
       
-      <canvas id="canvas" width={320} height={640} style={{border: "solid 2px orange"}} ref={this._canvas}/>
+      <canvas id="canvas" width={640} height={640} style={{border: "solid 2px orange"}} ref={this._canvas}/>
       <div>score {this.state.score}</div>
       <div>{sprite}</div>
     </div>
