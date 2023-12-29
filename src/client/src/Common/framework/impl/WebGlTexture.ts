@@ -1,7 +1,7 @@
 import {Texture} from "../Texture";
 
 /**
- *
+ * @version 0.0.1
  */
 export class WebGlTexture implements Texture
 {

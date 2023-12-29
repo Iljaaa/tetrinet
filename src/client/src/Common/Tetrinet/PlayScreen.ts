@@ -1,5 +1,5 @@
 import {CupEventListener, CupWithFigureImpl} from "./CapWithFigureImpl";
-import {CapRenderer} from "./CapRenderer";
+import {CupRenderer} from "./CupRenderer";
 import {FpsCounter} from "./helpers/FpsCounter";
 import {Texture} from "../framework/Texture";
 import {WebGlTexture} from "../framework/impl/WebGlTexture";
@@ -30,7 +30,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Render
    * @private
    */
-  private _cupRenderer: CapRenderer | undefined;
+  private _cupRenderer: CupRenderer | undefined;
   
   /**
    * Timer for next down
@@ -91,13 +91,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   
   /**
    * Init render by canvas element
-   * todo: create interface game and describe this method there
-   * todo: make to set listener other method
    */
-  init (texture:WebGlTexture)
+  init ()
   {
     console.log ('PlayScreen.init');
-    this._cupRenderer = new CapRenderer(this.game.getGLGraphics().getGl(), this._cup, texture);
+    this._cupRenderer = new CupRenderer(this.game.getGLGraphics().getGl(), this._cup);
   }
   
   /**
@@ -127,8 +125,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   update (deltaTime:number):void
   {
-    
-    
     if (this._state === GameState.running) {
       //
       // this.updateRunning();

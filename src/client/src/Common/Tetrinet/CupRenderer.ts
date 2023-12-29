@@ -3,10 +3,11 @@ import {CapWithFigure} from "./models/CupWithFigure";
 import {Coords} from "./math/Coords";
 import {Figure} from "./models/Figure";
 import {Texture} from "../framework/Texture";
+import {Assets} from "./Assets";
 
 const BLOCK_SIZE_PX = 32;
 
-export class CapRenderer
+export class CupRenderer
 {
   private readonly gl: WebGL2RenderingContext;
   private readonly program: WebGLProgram | null = null;
@@ -36,11 +37,7 @@ export class CapRenderer
   private readonly cupWidth: number = 0;
   private readonly cupHeight: number = 0;
   
-  /**
-   * Texure
-   * @private
-   */
-  private texture: Texture;
+  
   private textureBuffer: WebGLBuffer | null;
   private postionBuffer: WebGLBuffer | null;
   private positionAttributeLocation: GLint;
@@ -48,20 +45,16 @@ export class CapRenderer
   
   /**
    * todo: again canvas get here content
-   * todo: split on two classes, first will be render cup second
-   * todo: move texture to asses class
+   * todo: split on two classes, first will be render cup second figure
    * @param gl
    * @param cup
    * @param texture
    */
-  constructor(gl:WebGL2RenderingContext, cup:Cup, texture:Texture)
+  constructor(gl:WebGL2RenderingContext, cup:Cup)
   {
     console.log('CapRenderer.constructor')
     
     this.gl = gl;
-    
-    // save texture
-    this.texture = texture;
     
     // calculate cup size in pixels
     this.cupWidth = cup.getWidthInCells() * BLOCK_SIZE_PX;
@@ -89,6 +82,7 @@ export class CapRenderer
     this.program = this.createProgram(this.gl, vertexShader, fragmentShader);
     if (!this.program) throw new Error("Fragment shader was not created")
     
+    //
     
     /**
      * makes locations
@@ -160,7 +154,7 @@ export class CapRenderer
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     
     // Upload the image into the texture.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.texture.getImage());
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, Assets.sprite.getImage());
     
     
     
