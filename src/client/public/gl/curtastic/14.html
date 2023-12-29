@@ -106,6 +106,29 @@
 
   }
 
+  // UPDATE: moved to function.
+  function glRender() {
+    // Clear the screen.
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
+    // UPDATE: Send to webGL the section of vertices[] that we acually used this frame.
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices.subarray(0,vertexIndex))
+    // Send to webGL the section of vertices[] that we acually used this frame.
+    // gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices.subarray(0,vertexIndex))
+    // var arrayBuffer = new Float32Array(vertices)
+    // gl.bufferData(gl.ARRAY_BUFFER, arrayBuffer, gl.DYNAMIC_DRAW)
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+    // UPDATE: Draw all the images. vertices.length/12 is the amount of images we are drawing. We set 12 slots each drawImage().
+    // 6 is the amount of points per image since they are made of 2 triangles.
+    glExtension.drawElementsInstancedANGLE(gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 0, vertices.length/12)
+
+
+    // UPDATE: Reset vertex index. We will overwrite the slots every frame.
+    // This way you don't need to delete objects from the screen. You just stop drawing them.
+    vertexIndex = 0
+  }
+
   function glSetup() {
     canvas = document.getElementById("myCanvas")
     gl = canvas.getContext("webgl")
@@ -326,29 +349,6 @@
     // Set our shader variable for canvas size. It's a vec2 that holds both width and height.
     gl.uniform2f(gl.getUniformLocation(shaderProgram, "canvasSize"), width, height)
 
-  }
-
-  // UPDATE: moved to function.
-  function glRender() {
-    // Clear the screen.
-    gl.clear(gl.COLOR_BUFFER_BIT)
-
-    // UPDATE: Send to webGL the section of vertices[] that we acually used this frame.
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices.subarray(0,vertexIndex))
-    // Send to webGL the section of vertices[] that we acually used this frame.
-    // gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices.subarray(0,vertexIndex))
-    // var arrayBuffer = new Float32Array(vertices)
-    // gl.bufferData(gl.ARRAY_BUFFER, arrayBuffer, gl.DYNAMIC_DRAW)
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
-
-    // UPDATE: Draw all the images. vertices.length/12 is the amount of images we are drawing. We set 12 slots each drawImage().
-    // 6 is the amount of points per image since they are made of 2 triangles.
-    glExtension.drawElementsInstancedANGLE(gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 0, vertices.length/12)
-
-
-    // UPDATE: Reset vertex index. We will overwrite the slots every frame.
-    // This way you don't need to delete objects from the screen. You just stop drawing them.
-    vertexIndex = 0
   }
 
 </script>

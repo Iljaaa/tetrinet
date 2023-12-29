@@ -105,6 +105,22 @@
 
   }
 
+  // UPDATE: moved to function.
+  function glRender() {
+    // Clear the screen.
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
+    // Tell webGL to draw these triangle this frame.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+    // Draw all the triangles.
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length/8)
+
+    // Clear vertices. We will fill it every frame.
+    // This way you don't need to delete objects from the screen. You just stop drawing them.
+    vertices = []
+  }
+
   function glSetup() {
     canvas = document.getElementById("myCanvas")
     gl = canvas.getContext("webgl2")
@@ -255,22 +271,6 @@
     // Set our shader variable for canvas size. It's a vec2 that holds both width and height.
     gl.uniform2f(gl.getUniformLocation(shaderProgram, "canvasSize"), width, height)
 
-  }
-
-  // UPDATE: moved to function.
-  function glRender() {
-    // Clear the screen.
-    gl.clear(gl.COLOR_BUFFER_BIT)
-
-    // Tell webGL to draw these triangle this frame.
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
-
-    // Draw all the triangles.
-    gl.drawArrays(gl.TRIANGLES, 0, vertices.length/8)
-
-    // Clear vertices. We will fill it every frame.
-    // This way you don't need to delete objects from the screen. You just stop drawing them.
-    vertices = []
   }
 
 </script>
