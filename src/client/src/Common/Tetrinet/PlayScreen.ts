@@ -6,6 +6,8 @@ import {WebGlTexture} from "../framework/impl/WebGlTexture";
 import {WebGlScreen} from "../framework/impl/WebGlScreen";
 import {GameEventListener, Tetrinet} from "./Tetrinet";
 import {WebInputEventListener} from "../framework/impl/WebInput";
+import {Assets} from "./Assets";
+import {WebGlGraphics} from "../framework/impl/WebGlGraphics";
 
 /**
  * Game states
@@ -94,11 +96,156 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cup.start();
     
     // first render
-    this._cupRenderer.renderCupWithFigure(this._cup)
+    // this._cupRenderer.renderCupWithFigure(this._cup)
     
     // loop this method
     // todo: move this method upper
     // window.requestAnimationFrame(this.update)
+    console.log('PlayScreen.start')
+    
+    //
+    const gl:WebGL2RenderingContext = this.game.getGLGraphics().getGl();
+    
+    // Set the viewport size to be the whole canvas.
+    // gl.viewport(0, 0, canvas.width, canvas.height)
+    // gl.viewport(0, 0, 500, 500)
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+    
+    // Set the background color to sky blue.
+    gl.clearColor(.5, .7, 1, 1)
+    
+    // Tell webGL that we aren't doing anything special with the vertex buffer, just use a default one.
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+    
+    // create program
+    const shaderProgram = this._createMixedProgram(gl);
+    if (!shaderProgram) throw new Error("vertShader was not created");
+    
+    // gl.linkProgram(shaderProgram) // this used in create program function
+    
+    // it could be here
+    // gl.useProgram(shaderProgram)
+    
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "coordinates"
+    // We need to tell it that each vertex takes 24 bytes now (6 floats)
+    var coord = gl.getAttribLocation(shaderProgram, "coordinates")
+    gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 32, 0)
+    gl.enableVertexAttribArray(coord)
+    
+    // UPDATE: Tell webGL how to get rgba from our vertices array.
+    // Tell webGL to read 4 floats from the vertex array for each vertex
+    // and store them in my vec4 shader variable I've named "rgba"
+    // Start after 8 bytes. (After the 2 floats for x and y)
+    var attribute = gl.getAttribLocation(shaderProgram, "rgba")
+    gl.vertexAttribPointer(attribute, 4, gl.FLOAT, false, 32, 8)
+    gl.enableVertexAttribArray(attribute)
+    
+    // UPDATE: Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "texPos"
+    var attribute = gl.getAttribLocation(shaderProgram, "texPos")
+    gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
+    gl.enableVertexAttribArray(attribute)
+    
+    // gl.linkProgram(shaderProgram) // this used in create program function
+    gl.useProgram(shaderProgram)
+    
+    // UPDATE: Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    gl.uniform2f(gl.getUniformLocation(shaderProgram, "canvasSize"), gl.canvas.width, gl.canvas.height)
+    
+    // Tell webGL that when we set the opacity, it should be semi transparent above what was already drawn.
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    gl.enable(gl.BLEND)
+    
+    // UPDATE: Create a gl texture from our JS image object.
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture())
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, Assets.sprite.getImage())
+    gl.activeTexture(gl.TEXTURE0)
+    
+    // Tell gl that when draw images scaled up, smooth it.
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    
+    // UPDATE: Save texture dimensions in our shader.
+    gl.uniform2f(gl.getUniformLocation(shaderProgram, "texSize"), 100, 100)
+  }
+  
+  /**
+   * This program include and color and texils
+   */
+  _createMixedProgram (gl:WebGL2RenderingContext):WebGLProgram
+  {
+    // Vertex shader source code.
+    const vertCode =
+      "attribute vec2 coordinates;" +
+      // UPDATE: rgba comes from our vertices array.
+      "attribute vec4 rgba;" +
+      // UPDATE: New shader variable for the position inside our big texture.
+      "attribute vec2 texPos;" +
+      
+      //
+      "varying highp vec4 rgbaForFrag;" +
+      
+      // pas texils coords to fragment buffer
+      "varying highp vec2 texPosForFrag;" +
+      
+      // UPDATE: Our current canvas size.
+      "uniform vec2 canvasSize;" +
+      
+      // UPDATE: Added variable for our texture image dimensions.
+      "uniform vec2 texSize;" +
+      
+      "void main(void) {" +
+      // UPDATE: Divide the position by 500 (our canvas size)
+      " vec2 drawPos;" +// UPDATE: Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
+      " drawPos = coordinates / canvasSize * 2.0;" +
+      // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
+      " gl_Position = vec4(drawPos.x - 1.0, 1.0 - drawPos.y, 0.0, 1.0);" +
+      // Pass the color and transparency to the fragment shader.
+      " rgbaForFrag = vec4(rgba.xyz / 255.0, rgba.w);" +
+      // UPDATE: Pass the texture position to the fragment shader.
+      // " texPosForFrag = texPos;" +
+      // UPDATE: WebGL wants numbers from 0 to 1, but we are passing in pixel positions.
+      " texPosForFrag = texPos / texSize;" +
+      "}"
+    
+    // Create a vertex shader object.
+    // let vertShader = gl.createShader(gl.VERTEX_SHADER)
+    let vertShader = WebGlGraphics.createShader(gl, gl.VERTEX_SHADER, vertCode)
+    if (!vertShader) throw new Error("vertShader was not created");
+    // gl.shaderSource(vertShader, vertCode)
+    // gl.compileShader(vertShader)
+    // console.log(gl.getShaderInfoLog(vertShader))
+    
+    // Fragment shader source code.
+    var fragCode =
+      "varying highp vec4 rgbaForFrag;" +
+      // UPDATE: use built-in sampler2D to get pixel colors from our texture.
+      "varying highp vec2 texPosForFrag;" +
+      "uniform sampler2D sampler;" +
+      "void main(void) {" +
+      " gl_FragColor = texture2D(sampler, texPosForFrag) * rgbaForFrag;" +
+      // We aren't passing in colors right now so all the triangles are green. G=1.0=full green.
+      // " gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
+      // UPDATE: Use the passed in color and alpha.
+      // " gl_FragColor = rgbaForFrag;" +
+      "}"
+    
+    // Create fragment shader object.
+    //var fragShader = gl.createShader(gl.FRAGMENT_SHADER)
+    
+    let fragShader = WebGlGraphics.createShader(gl, gl.FRAGMENT_SHADER, fragCode)
+    if (!fragShader) throw new Error("fragCode was not created");
+    // gl.shaderSource(fragShader, fragCode)
+    // gl.compileShader(fragShader)
+    // console.log(gl.getShaderInfoLog(fragShader))
+    
+    // Tell webGL to use both my shaders.
+    // let shaderProgram = gl.createProgram()
+    const program = WebGlGraphics.createProgram(gl, vertShader, fragShader)
+    if (!program) throw new Error("Program was not created");
+    
+    return program
   }
   
   /**
@@ -131,9 +278,107 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
   }
   
-  
-  present(): void {
+  present(): void
+  {
     //console.log('PlayScreen.present')
+    
+    const gl = this.game.getGLGraphics().getGl();
+    
+    // Clear the screen.
+    gl.clear(gl.COLOR_BUFFER_BIT)
+    
+    console.log('PlayScreen.present')
+    // UPDATE: Draw a wide rectangle.
+    this._drawRectangle(0,370, 200,50, 200,100,10,1)
+    
+    // Tell webGL to draw these triangle this frame.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
+    
+    // Draw all the triangles.
+    gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
+    
+    // Clear vertices. We will fill it every frame.
+    // This way you don't need to delete objects from the screen. You just stop drawing them.
+    this.vertices = []
+    
+    // Draw the moving image.
+    const x = 250+Math.sin(Date.now()*.004)*250
+    const y = 200
+    const blue = 128 + Math.floor(Math.sin(Date.now()*.01) * 127)
+    // UPDATE: Added a var for player frame that alternates from 0 to 1 every 100ms.
+    const frame = (Date.now()/100)&1
+    this._drawImage(
+      x, y,
+      100, 200,
+      0, 255, blue, 1,
+      // UPDATE: pass pixel position in our texture PNG where the player image is.
+      frame*32,32, 32,32
+    )
+    
+    // Tell webGL to draw these triangle this frame.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
+    
+    // Draw all the triangles.
+    gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
+    
+    // Clear vertices. We will fill it every frame.
+    // This way you don't need to delete objects from the screen. You just stop drawing them.
+    this.vertices = []
+    
+  }
+  
+  
+  /**
+   * Array with vertices, it clears every loop
+   * @type {*[]}
+   */
+  vertices:Array<number> = [];
+  
+  
+  /**
+   *
+   * Draws 2 triangles to make a rectangle.
+   *
+   * draw size in px
+   * @param x
+   * @param y
+   * @param width
+   * @param height
+   *
+   * color coordinates
+   * @param r
+   * @param g
+   * @param b
+   * @param a
+   *
+   * textils coordinates
+   * @param texX
+   * @param texY
+   * @param texWidth
+   * @param texHeight
+   */
+  _drawImage(x:number, y:number, width:number, height:number, r:number, g:number, b:number, a:number, texX:number, texY:number, texWidth:number, texHeight:number)
+  {
+    const x2 = x+width
+    const y2 = y+height
+    const texX2 = texX + texWidth
+    const texY2 = texY + texHeight
+    this.vertices.push(
+      x, y, r, g, b, a, texX, texY,
+      x, y2, r, g, b, a, texX, texY2,
+      x2, y2, r, g, b, a, texX2, texY2
+    )
+    this.vertices.push(
+      x, y, r, g, b, a, texX, texY,
+      x2, y, r, g, b, a, texX2, texY,
+      x2, y2, r, g, b, a, texX2, texY2
+    )
+  }
+  
+  // Draw rectangle by drawing the white pixel in our PNG.
+  _drawRectangle(x:number, y:number, width:number, height:number, r:number, g:number, b:number, a:number) {
+    // Now we can just pass where the white pixel is in our PNG. At 1x1.
+    this._drawImage(x, y, width, height, r, g, b, a, 1, 1, 1, 1)
   }
   
   onKeyDown(code:string): void
@@ -234,7 +479,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   onGameOver(): void {
     this._state = GameState.over
     
-    // todo: do somethimg on game over
+    // todo: do something on game over
     alert("game over")
     debugger
   }
