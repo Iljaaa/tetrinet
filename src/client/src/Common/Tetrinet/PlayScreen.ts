@@ -118,8 +118,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
     
     // create program
-    const shaderProgram = this._createMixedProgram(gl);
-    if (!shaderProgram) throw new Error("vertShader was not created");
+    const mixedProgram = this._createMixedProgram(gl);
+    if (!mixedProgram) throw new Error("vertShader was not created");
     
     // gl.linkProgram(shaderProgram) // this used in create program function
     
@@ -129,29 +129,30 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // Tell webGL to read 2 floats from the vertex array for each vertex
     // and store them in my vec2 shader variable I've named "coordinates"
     // We need to tell it that each vertex takes 24 bytes now (6 floats)
-    var coord = gl.getAttribLocation(shaderProgram, "coordinates")
-    gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 32, 0)
-    gl.enableVertexAttribArray(coord)
+    const coordAttributeLocation  = gl.getAttribLocation(mixedProgram, "coordinates")
+    gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 32, 0)
+    gl.enableVertexAttribArray(coordAttributeLocation)
     
-    // UPDATE: Tell webGL how to get rgba from our vertices array.
+    // Tell webGL how to get rgba from our vertices array.
     // Tell webGL to read 4 floats from the vertex array for each vertex
     // and store them in my vec4 shader variable I've named "rgba"
     // Start after 8 bytes. (After the 2 floats for x and y)
-    var attribute = gl.getAttribLocation(shaderProgram, "rgba")
-    gl.vertexAttribPointer(attribute, 4, gl.FLOAT, false, 32, 8)
-    gl.enableVertexAttribArray(attribute)
+    const rgbaAttributeLocation = gl.getAttribLocation(mixedProgram, "rgba")
+    gl.vertexAttribPointer(rgbaAttributeLocation, 4, gl.FLOAT, false, 32, 8)
+    gl.enableVertexAttribArray(rgbaAttributeLocation)
     
-    // UPDATE: Tell webGL to read 2 floats from the vertex array for each vertex
+    // Tell webGL to read 2 floats from the vertex array for each vertex
     // and store them in my vec2 shader variable I've named "texPos"
-    var attribute = gl.getAttribLocation(shaderProgram, "texPos")
-    gl.vertexAttribPointer(attribute, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
-    gl.enableVertexAttribArray(attribute)
+    const textilsAttributeLocation = gl.getAttribLocation(mixedProgram, "textilsPos")
+    gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
+    gl.enableVertexAttribArray(textilsAttributeLocation)
     
     // gl.linkProgram(shaderProgram) // this used in create program function
-    gl.useProgram(shaderProgram)
+    gl.useProgram(mixedProgram)
     
     // UPDATE: Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    gl.uniform2f(gl.getUniformLocation(shaderProgram, "canvasSize"), gl.canvas.width, gl.canvas.height)
+    const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(mixedProgram, "canvasSize");
+    gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
     
     // Tell webGL that when we set the opacity, it should be semi transparent above what was already drawn.
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
@@ -166,8 +167,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
     
-    // UPDATE: Save texture dimensions in our shader.
-    gl.uniform2f(gl.getUniformLocation(shaderProgram, "texSize"), 100, 100)
+    // Save texture dimensions in our shader.
+    const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(mixedProgram, "texSize");
+    gl.uniform2f(textureSizeLocation, 100, 100)
   }
   
   /**
@@ -177,36 +179,37 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   {
     // Vertex shader source code.
     const vertCode =
+      // describe position in vertices array
       "attribute vec2 coordinates;" +
-      // UPDATE: rgba comes from our vertices array.
-      "attribute vec4 rgba;" +
-      // UPDATE: New shader variable for the position inside our big texture.
-      "attribute vec2 texPos;" +
       
-      //
+      // describe color position in vertices array
+      "attribute vec4 rgba;" +
+      
+      // describe texture position in vertices array
+      "attribute vec2 textilsPos;" +
+      
+      // var to pass color into fragment shader
       "varying highp vec4 rgbaForFrag;" +
       
-      // pas texils coords to fragment buffer
+      // var tp pass textils coords to fragment shader
       "varying highp vec2 texPosForFrag;" +
       
-      // UPDATE: Our current canvas size.
+      // canvas size, used to map local coords to pixels
       "uniform vec2 canvasSize;" +
       
-      // UPDATE: Added variable for our texture image dimensions.
+      // texture size
       "uniform vec2 texSize;" +
       
       "void main(void) {" +
-      // UPDATE: Divide the position by 500 (our canvas size)
-      " vec2 drawPos;" +// UPDATE: Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
-      " drawPos = coordinates / canvasSize * 2.0;" +
+      // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
+      " vec2 drawPos = coordinates / canvasSize * 2.0;" +
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
       " gl_Position = vec4(drawPos.x - 1.0, 1.0 - drawPos.y, 0.0, 1.0);" +
       // Pass the color and transparency to the fragment shader.
       " rgbaForFrag = vec4(rgba.xyz / 255.0, rgba.w);" +
-      // UPDATE: Pass the texture position to the fragment shader.
-      // " texPosForFrag = texPos;" +
-      // UPDATE: WebGL wants numbers from 0 to 1, but we are passing in pixel positions.
-      " texPosForFrag = texPos / texSize;" +
+      // Pass the texture position to the fragment shader.
+      // WebGL wants numbers from 0 to 1, but we are passing in pixel positions.
+      " texPosForFrag = textilsPos / texSize;" +
       "}"
     
     // Create a vertex shader object.
@@ -219,16 +222,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // Fragment shader source code.
     var fragCode =
+      // color var from vertex function
       "varying highp vec4 rgbaForFrag;" +
-      // UPDATE: use built-in sampler2D to get pixel colors from our texture.
+      // texture var from vertex function
       "varying highp vec2 texPosForFrag;" +
       "uniform sampler2D sampler;" +
       "void main(void) {" +
       " gl_FragColor = texture2D(sampler, texPosForFrag) * rgbaForFrag;" +
-      // We aren't passing in colors right now so all the triangles are green. G=1.0=full green.
-      // " gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
-      // UPDATE: Use the passed in color and alpha.
-      // " gl_FragColor = rgbaForFrag;" +
       "}"
     
     // Create fragment shader object.

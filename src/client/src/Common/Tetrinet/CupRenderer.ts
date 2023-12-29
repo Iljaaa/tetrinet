@@ -364,22 +364,22 @@ export class CupRenderer
     if (!this.gl || !this.program) return;
     
     // render cup
-    this.renderCup(c);
-    
-    // render a figure if it presented
-    const f = c.getFigure();
-    if (f)
-    {
-      // render figure
-      this._renderFigure(this.gl, c, f);
-
-      //
-      this._renderRotateField(this.gl, f.getPosition());
-    }
-
+    // this.renderCup(c);
     //
-    this._renderDropPoint(this.gl, c.getDropPoint());
-    
+    // // render a figure if it presented
+    // const f = c.getFigure();
+    // if (f)
+    // {
+    //   // render figure
+    //   this._renderFigure(this.gl, c, f);
+    //
+    //   //
+    //   this._renderRotateField(this.gl, f.getPosition());
+    // }
+    //
+    // //
+    // this._renderDropPoint(this.gl, c.getDropPoint());
+    //
     
     
   }

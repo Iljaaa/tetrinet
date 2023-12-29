@@ -12,11 +12,6 @@ export interface GameEventListener
 
 export class Tetrinet extends WebGlGame
 {
-  /**
-   * Game event listner
-   * @private
-   */
-  // private eventLitener: GameEventListener|null = null;
   
   constructor() {
     super();
