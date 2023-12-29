@@ -2,7 +2,9 @@ import {CupEventListener, CupWithFigureImpl} from "./CapWithFigureImpl";
 import {CapRenderer} from "./CapRenderer";
 import {FpsCounter} from "./helpers/FpsCounter";
 import {Texture} from "../framework/Texture";
-import {WebGlTexture} from "./impl/WebGlTexture";
+import {WebGlTexture} from "../framework/impl/WebGlTexture";
+import {WebGlScreen} from "../framework/impl/WebGlScreen";
+import {GameEventListener, Tetrinet} from "./Tetrinet";
 
 /**
  * Game states
@@ -13,17 +15,9 @@ enum GameState {
 }
 
 /**
- * Listener of game events
- */
-export interface GameEventListener
-{
-  onLineCleared: (numberOfLines:number) => void
-}
-
-/**
  * @vaersion 0.0.1
  */
-export class Game implements CupEventListener
+export class PlayScreen extends WebGlScreen implements CupEventListener
 {
   /**
    * Cup object
@@ -69,9 +63,12 @@ export class Game implements CupEventListener
   /**
    * In this constructor we create cup
    */
-  constructor()
+  constructor(game:Tetrinet)
   {
+    super(game)
+    
     this._cup =  new CupWithFigureImpl(this);
+    
     this.fpsCounter = new FpsCounter();
     
     // create texture
@@ -79,30 +76,23 @@ export class Game implements CupEventListener
   }
   
   /**
+   * Set event listener
+   * @param listener
+   */
+  public setEventListener (listener:GameEventListener):PlayScreen{
+    this.listener = listener;
+    return this
+  }
+  
+  /**
    * Init render by canvas element
    * todo: create interface game and describe this method there
    * todo: make to set listener other method
    */
-  init (canvas:HTMLCanvasElement, listener:GameEventListener, sprite:string, onLoadCallback:()=>void)
+  init (texture:WebGlTexture)
   {
-    this.listener = listener;
-    
-    // create gl
-    const gl = canvas.getContext("webgl2");
-    if (!gl) throw new Error("Gl not created");
-    
-    // load texture
-    this.texture.load(sprite, () => {
-      
-      // init cup render
-      this._cupRenderer = new CapRenderer(gl, this._cup, this.texture);
-      
-      // rise callback
-      onLoadCallback()
-    });
-    
-    
-    
+    console.log ('Playscreen.init');
+    this._cupRenderer = new CapRenderer(this.game.getGLGraphics().getGl(), this._cup, texture);
   }
   
   /**
@@ -167,19 +157,6 @@ export class Game implements CupEventListener
     // request next frame
     window.requestAnimationFrame(this.update)
   }
-  
-  onRight() {
-    if (this._cupRenderer && this._cup.moveFigureRight()){
-      this._cupRenderer.renderCupWithFigure(this._cup)
-    }
-  }
-  
-  onLeft(){
-    if (this._cupRenderer && this._cup.moveFigureLeft()){
-      this._cupRenderer.renderCupWithFigure(this._cup)
-    }
-  }
-  
   /**
    * Down figure
    */
@@ -253,5 +230,17 @@ export class Game implements CupEventListener
    */
   onLineCleared(countLines: number): void {
     if (this.listener) this.listener.onLineCleared(countLines);
+  }
+  
+  onRight() {
+    if (this._cupRenderer && this._cup.moveFigureRight()){
+      this._cupRenderer.renderCupWithFigure(this._cup)
+    }
+  }
+  
+  onLeft() {
+    if (this._cupRenderer && this._cup.moveFigureLeft()){
+      this._cupRenderer.renderCupWithFigure(this._cup)
+    }
   }
 }

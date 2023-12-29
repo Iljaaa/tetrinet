@@ -1,4 +1,4 @@
-import {Texture} from "../../framework/Texture";
+import {Texture} from "../Texture";
 
 /**
  *

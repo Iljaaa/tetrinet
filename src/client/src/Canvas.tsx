@@ -1,7 +1,8 @@
 import React from "react";
-import {Game, GameEventListener} from "./Common/Tetrinet/Game";
+import {GameEventListener, Tetrinet} from "./Common/Tetrinet/Tetrinet";
 
 import sprite from "./sprite.png"
+import {Assets} from "./Common/Tetrinet/Assets";
 
 type State = {
   score: number
@@ -15,7 +16,7 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
    */
   private readonly _canvas: React.RefObject<HTMLCanvasElement>;
   
-  private game:Game;
+  private game:Tetrinet;
   
   public state:State = {
     score: 0
@@ -30,10 +31,10 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
      */
     this._canvas = React.createRef();
     
-    /**
-     * Cap
-     */
-    this.game =  new Game();
+    // create game
+    // this.game =  new PlayScreen();
+    this.game = new Tetrinet()
+    this.game.setGameEventListener(this);
     
   }
   
@@ -55,22 +56,16 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     
     
     /**
-     * Init game by canvas object
+     * Init game graphics
      */
-    this.game.init(
-      this._canvas.current as HTMLCanvasElement,
-      this,
-      sprite,
-      () => {
-        // start game when texture loaded
-        this.game.start();
-      }
-    );
+    this.game.initGraphic(this._canvas.current as HTMLCanvasElement)
     
-    // let figures = new Array<Figure>();
-  
-    // create renderer
-    // this._cupRenderer = new CapRenderer(this._canvas.current as HTMLCanvasElement, this.);
+    // start loading assets
+    Assets.load(sprite, () => {
+      // start game
+      this.game.startGame();
+    })
+    
     
   }
   
@@ -109,8 +104,6 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     if (event.code === "KeyE") {
       this.game.onRotateClockwise();
     }
-    
-    
     
     if (event.code === "Space") {
       
