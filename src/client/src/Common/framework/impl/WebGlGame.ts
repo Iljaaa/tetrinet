@@ -2,6 +2,7 @@ import {Game} from "../interfaces/Game"
 import {WebGlGraphics} from "./WebGlGraphics";
 import {GameScreen} from "../interfaces/GameScreen";
 import {WebInput} from "./WebInput";
+import {FpsCounter} from "../../Tetrinet/helpers/FpsCounter";
 
 
 /**
@@ -28,17 +29,27 @@ export abstract class WebGlGame implements Game
   private currentScreen:GameScreen|null = null;
   
   /**
-   * Timer
+   * Delta time calculation
    * @private
    */
   private t:number = 0
   
   /**
+   *
+   * @private
+   */
+  private fpsCounter:FpsCounter;
+  
+  /**
    * @protected
    */
-  protected constructor() {
+  protected constructor()
+  {
     this.graphics = new WebGlGraphics()
     this.input = new WebInput();
+    
+    // init fps counter
+    this.fpsCounter = new FpsCounter();
   }
   
   /**
@@ -67,6 +78,9 @@ export abstract class WebGlGame implements Game
     
     // present screen
     this.getCurrentScreen()?.present()
+    
+    // click fps counter
+    this.fpsCounter.update(deltaTime)
     
     // request next frame
     window.requestAnimationFrame(this.update)

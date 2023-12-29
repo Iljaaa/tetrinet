@@ -50,18 +50,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private listener: GameEventListener|undefined;
   
   /**
-   *
-   * @private
-   */
-  private fpsCounter:FpsCounter;
-  
-  /**
-   * Main texture
-   * @private
-   */
-  private texture:Texture;
-  
-  /**
    * In this constructor we create cup
    */
   constructor(game:Tetrinet)
@@ -69,12 +57,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     super(game)
     
     this._cup =  new CupWithFigureImpl(this);
-    
-    this.fpsCounter = new FpsCounter();
-    
-    // create texture
-    // todo: remove it
-    this.texture = new WebGlTexture();
     
     // bind this to input listener
     this.game.getInput().setListener(this);
@@ -143,11 +125,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       //
       // this.updateRunning();
     }
-    
-    // click fps counter
-    this.fpsCounter.update(deltaTime)
-    
-    
   }
   
   onKeyDown(code:string): void
