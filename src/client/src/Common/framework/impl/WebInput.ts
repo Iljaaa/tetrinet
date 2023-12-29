@@ -41,7 +41,11 @@ export class WebInput
   onKeyDown = (event:KeyboardEvent) =>
   {
     // disable page scroll on space
-    event.preventDefault();
+    // todo: use here array of keys that uses in controll
+    if (event.code === "Space") {
+      event.preventDefault();
+    }
+    
     
     if (this.listener){
       this.listener.onKeyDown(event.code)

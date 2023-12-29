@@ -14,4 +14,8 @@ export interface Texture
    */
   getImage():HTMLImageElement
   
+  /**
+   * Bind image to gl
+   */
+  bind(gl:WebGL2RenderingContext):void
 }

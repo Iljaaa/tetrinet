@@ -7,6 +7,10 @@ export class WebGlGraphics implements Graphics
 {
   private _gl: WebGL2RenderingContext|null = null;
   
+  /**
+   * Web gl setter
+   * @param gl
+   */
   public setGl(gl:WebGL2RenderingContext){
     this._gl = gl;
   }
@@ -46,7 +50,7 @@ export class WebGlGraphics implements Graphics
    * @param vertexShader
    * @param fragmentShader
    */
-  static createProgram = (gl:WebGL2RenderingContext, vertexShader:WebGLShader, fragmentShader:WebGLShader): WebGLProgram|null =>
+  public static createProgram = (gl:WebGL2RenderingContext, vertexShader:WebGLShader, fragmentShader:WebGLShader): WebGLProgram|null =>
   {
     const program = gl.createProgram();
     if (!program) return null;
