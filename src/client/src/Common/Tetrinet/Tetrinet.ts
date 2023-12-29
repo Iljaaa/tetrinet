@@ -34,7 +34,6 @@ export class Tetrinet extends WebGlGame
    */
   startGame()
   {
-    
     this.setScreen((new PlayScreen(this)));
     
     // this is initialization at render, i will back here later
@@ -42,8 +41,13 @@ export class Tetrinet extends WebGlGame
     s?.init(Assets.sprite)
     
     // start game
+    // todo: remove it
     s?.start()
+    
+    // start start request
+    window.requestAnimationFrame(this.update)
   }
+  
   
   /**
    * Set event listener to screen

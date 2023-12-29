@@ -6,7 +6,6 @@ import {WebGlTexture} from "../framework/impl/WebGlTexture";
 import {WebGlScreen} from "../framework/impl/WebGlScreen";
 import {GameEventListener, Tetrinet} from "./Tetrinet";
 import {WebInputEventListener} from "../framework/impl/WebInput";
-import {KeyboardEvent} from "react";
 
 /**
  * Game states
@@ -119,24 +118,16 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // loop this method
     // todo: move this method upper
-    window.requestAnimationFrame(this.update)
+    // window.requestAnimationFrame(this.update)
   }
-  
-  private t:number = 0
   
   /**
    * Update cup
-   * @param timeStamp
+   * @param deltaTime
    */
-  update = (timeStamp:number) =>
+  update (deltaTime:number):void
   {
     
-    if (this.t === undefined) {
-      this.t = timeStamp;
-    }
-    
-    const deltaTime:number = timeStamp - this.t
-    this.t = timeStamp
     
     if (this._state === GameState.running) {
       //
@@ -161,8 +152,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this.fpsCounter.update(deltaTime)
     
     
-    // request next frame
-    window.requestAnimationFrame(this.update)
   }
   
   onKeyDown(code:string): void

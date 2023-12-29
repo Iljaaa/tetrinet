@@ -2,8 +2,6 @@ import {Game} from "../interfaces/Game"
 import {WebGlGraphics} from "./WebGlGraphics";
 import {GameScreen} from "../interfaces/GameScreen";
 import {WebInput} from "./WebInput";
-import {screen} from "@testing-library/react";
-import {Input} from "../interfaces/Input";
 
 
 /**
@@ -30,6 +28,12 @@ export abstract class WebGlGame implements Game
   private currentScreen:GameScreen|null = null;
   
   /**
+   * Timer
+   * @private
+   */
+  private t:number = 0
+  
+  /**
    * @protected
    */
   protected constructor() {
@@ -47,6 +51,25 @@ export abstract class WebGlGame implements Game
     if (!gl) throw new Error("Gl not created");
     
     this.graphics.setGl(gl);
+  }
+  
+  /**
+   * Update function
+   * @param timeStamp
+   */
+  protected update = (timeStamp:number):void =>
+  {
+    const deltaTime:number = timeStamp - this.t
+    this.t = timeStamp
+    
+    // update screen
+    this.getCurrentScreen()?.update(deltaTime)
+    
+    // present screen
+    this.getCurrentScreen()?.present()
+    
+    // request next frame
+    window.requestAnimationFrame(this.update)
   }
   
   getGLGraphics(): WebGlGraphics {

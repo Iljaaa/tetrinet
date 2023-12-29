@@ -11,4 +11,10 @@ export abstract class WebGlScreen implements GameScreen
   protected constructor(game:WebGlGame) {
     this.game = game;
   }
+  
+  present(): void {
+  }
+  
+  update(deltaTime: number): void {
+  }
 }
