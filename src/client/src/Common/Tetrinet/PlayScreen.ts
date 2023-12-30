@@ -1,11 +1,13 @@
 import {CupEventListener, CupWithFigureImpl} from "./models/CupWithFigureImpl";
-import {CupRenderer} from "./CupRenderer";
 import {WebGlScreen} from "../framework/impl/WebGlScreen";
 import {GameEventListener, Tetrinet} from "./Tetrinet";
 import {WebInputEventListener} from "../framework/impl/WebInput";
 import {Assets} from "./Assets";
 import {Vertices} from "../framework/Vertices";
 import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
+
+// import {CupRenderer} from "./CupRenderer";
+import {CupRenderer2} from "./CupRenderer2";
 
 /**
  * Game states
@@ -30,7 +32,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Render
    * @private
    */
-  private _cupRenderer: CupRenderer | null = null;
+  private _cupRenderer: CupRenderer2 | null = null;
   
   /**
    * Timer for next down
@@ -60,6 +62,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private colorProgram: WebGLProgram | undefined;
+  private textureProgram: WebGLProgram | undefined;
   private mixedProgram: WebGLProgram | undefined;
   
   /**
@@ -72,9 +75,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // create cup object
     this._cup =  new CupWithFigureImpl(this);
     
+    this._cupRenderer  = new CupRenderer2(game.getGLGraphics())
+    
+    // todo: we need to create programs here
+    
     //
+    
+    // test red square
     this.redSquare = new Vertices(true, false);
-    this.redSquare.setVertices(this._createColorVerticesArray(0, 0, 100, 100, 255,0,0,1))
+    this.redSquare.setVertices(Vertices.createColorVerticesArray(0, 0, 100, 100, 255,0,0,1))
     
     // bind this to input listener
     this.game.getInput().setListener(this);
@@ -176,8 +185,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // this._glProgram = this._createMixedProgram(gl);
     // this._glProgram = WebGlProgramManager.getMixedProgram(gl);
     this.mixedProgram = WebGlProgramManager._createMixedProgram(gl);
-    
-    //
     // gl.useProgram(this._glMixedProgram)
     
     // Set shader variable for canvas size. It's a vec2 that holds both width and height.
@@ -190,8 +197,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     
     this.colorProgram = WebGlProgramManager._createColorProgram(gl)
-    
-    //
     // gl.useProgram(this._glColorProgram)
     
     // Set shader variable for canvas size. It's a vec2 that holds both width and height.
@@ -199,8 +204,19 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     gl.uniform2f(canvasSizeLocation2, gl.canvas.width, gl.canvas.height)
     
     
-    //
-    WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.colorProgram);
+    this.textureProgram = WebGlProgramManager._createTextureProgram(gl)
+    
+    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    const canvasSizeLocation3:WebGLUniformLocation|null = gl.getUniformLocation(this.textureProgram, "canvasSize");
+    gl.uniform2f(canvasSizeLocation3, gl.canvas.width, gl.canvas.height)
+    
+    // Save texture dimensions in our shader.
+    const textureSizeLocation2:WebGLUniformLocation|null = gl.getUniformLocation(this.textureProgram, "texSize");
+    gl.uniform2f(textureSizeLocation2, 100, 100)
+    
+    
+    // back to program
+    // WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.colorProgram);
   }
   
   
@@ -243,11 +259,18 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // Clear the screen.
     gl.clear(gl.COLOR_BUFFER_BIT)
     
+    
+    if (this.textureProgram) {
+      WebGlProgramManager._useAndTellGlAboutTextureProgram(gl, this.textureProgram)
+    }
+    
+    // reder cup
+    this._cupRenderer?.renderCupWithFigure(this._cup);
+    
+    
     if (this.mixedProgram) {
       WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.mixedProgram)
     }
-    
-    
     
     
     // if (this.mixedProgram) {
@@ -375,8 +398,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     //   x2, y2, r, g, b, a, texX2, texY2
     // )
     
-    // this.vertices.push(this._createImageVerticesArray(x, y, width, height, r, g, b, a, texX, texY, texWidth, texHeight))
-    this.vertices.push(...this._createImageVerticesArray(x, y, width, height, r, g, b, a, texX, texY, texWidth, texHeight))
+    this.vertices.push(...Vertices.createMixedVerticesArray(x, y, width, height, r, g, b, a, texX, texY, texWidth, texHeight))
   }
   
   // Draw rectangle by drawing the white pixel in our PNG.
@@ -385,44 +407,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._drawImage(x, y, width, height, r, g, b, a, 1, 1, 1, 1)
   }
   
-  _createImageVerticesArray (x:number, y:number, width:number, height:number, r:number, g:number, b:number, a:number, texX:number, texY:number, texWidth:number, texHeight:number):number[]{
-    const x2 = x+width
-    const y2 = y+height
-    const texX2 = texX + texWidth
-    const texY2 = texY + texHeight
-    return [
-      x, y, r, g, b, a, texX, texY,
-      x, y2, r, g, b, a, texX, texY2,
-      x2, y2, r, g, b, a, texX2, texY2,
-      
-      x, y, r, g, b, a, texX, texY,
-      x2, y, r, g, b, a, texX2, texY,
-      x2, y2, r, g, b, a, texX2, texY2
-    ];
-    
-  }
-  
-  _createColorVerticesArray (x:number, y:number, width:number, height:number, r:number, g:number, b:number, a:number){
-    const x2 = x+width
-    const y2 = y+height
-    // return [
-    //   x, y, r, g, b, a, 0, 0,
-    //   x, y2, r, g, b, a, 0, 0,
-    //   x2, y2, r, g, b, a, 0, 0,
-    //   x, y, r, g, b, a, 0, 0,
-    //   x2, y, r, g, b, a, 0, 0,
-    //   x2, y2, r, g, b, a, 0, 0,
-    // ]
-    return [
-      x, y, r, g, b, a,
-      x, y2, r, g, b, a,
-      x2, y2, r, g, b, a,
-      x, y, r, g, b, a,
-      x2, y, r, g, b, a,
-      x2, y2, r, g, b, a,
-    ]
-    
-  }
+
   
   onKeyDown(code:string): void
   {

@@ -1,4 +1,3 @@
-import {WebGlGraphics} from "./WebGlGraphics";
 
 /**
  * This is all about WebGlPrograms
@@ -152,6 +151,90 @@ export class WebGlProgramManager
     gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
     gl.enableVertexAttribArray(textilsAttributeLocation)
   }
+  
+  /**
+   * This program include and color and texils
+   */
+  public static _createTextureProgram (gl:WebGL2RenderingContext):WebGLProgram
+  {
+    // Vertex shader source code.
+    const vertCode =
+      // describe position in vertices array
+      "attribute vec2 coordinates;" +
+      
+      // describe texture position in vertices array
+      "attribute vec2 textilsPos;" +
+      
+      // var tp pass textils coords to fragment shader
+      "varying highp vec2 texPosForFrag;" +
+      
+      // canvas size, used to map local coords to pixels
+      "uniform vec2 canvasSize;" +
+      
+      // texture size
+      "uniform vec2 texSize;" +
+      
+      "void main(void) {" +
+      // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
+      " vec2 drawPos = coordinates / canvasSize * 2.0;" +
+      // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
+      " gl_Position = vec4(drawPos.x - 1.0, 1.0 - drawPos.y, 0.0, 1.0);" +
+      // Pass the texture position to the fragment shader.
+      // WebGL wants numbers from 0 to 1, but we are passing in pixel positions.
+      " texPosForFrag = textilsPos / texSize;" +
+      "}"
+    
+    // Create a vertex shader object.
+    let vertShader = WebGlProgramManager.createShader(gl, gl.VERTEX_SHADER, vertCode)
+    if (!vertShader) throw new Error("vertShader was not created");
+    
+    // Fragment shader source code.
+    var fragCode =
+      // texture var from vertex function
+      "varying highp vec2 texPosForFrag;" +
+      "uniform sampler2D sampler;" +
+      "void main(void) {" +
+      " gl_FragColor = texture2D(sampler, texPosForFrag);" +
+      "}"
+    
+    // Create fragment shader object.
+    //var fragShader = gl.createShader(gl.FRAGMENT_SHADER)
+    
+    let fragShader = WebGlProgramManager.createShader(gl, gl.FRAGMENT_SHADER, fragCode)
+    if (!fragShader) throw new Error("fragCode was not created");
+    
+    // Tell webGL to use both my shaders.
+    // let shaderProgram = gl.createProgram()
+    const program = WebGlProgramManager.createProgram(gl, vertShader, fragShader)
+    if (!program) throw new Error("Program was not created");
+    
+    //
+    WebGlProgramManager._useAndTellGlAboutTextureProgram(gl, program)
+    
+    return program
+  }
+  
+  /**
+   *
+   */
+  public static _useAndTellGlAboutTextureProgram (gl:WebGL2RenderingContext, program:WebGLProgram )
+  {
+    gl.useProgram(program)
+    
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "coordinates"
+    // We need to tell it that each vertex takes 24 bytes now (6 floats)
+    const coordAttributeLocation  = gl.getAttribLocation(program, "coordinates")
+    gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 16, 0)
+    gl.enableVertexAttribArray(coordAttributeLocation)
+    
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "texPos"
+    const textilsAttributeLocation = gl.getAttribLocation(program, "textilsPos")
+    gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 16, 8)
+    gl.enableVertexAttribArray(textilsAttributeLocation)
+  }
+  
   
   /**
    * This program include and color and texils
