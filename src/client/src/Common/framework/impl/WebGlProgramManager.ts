@@ -1,174 +1,33 @@
-import {Game} from "../interfaces/Game"
 import {WebGlGraphics} from "./WebGlGraphics";
-import {GameScreen} from "../interfaces/GameScreen";
-import {WebInput} from "./WebInput";
-import {FpsCounter} from "../../Tetrinet/helpers/FpsCounter";
-import {screen} from "@testing-library/react";
-import {WebGlProgramManager} from "./WebGlProgramManager";
-
 
 /**
- * @version 0.1.0
+ * This is all about WebGlPrograms
  */
-export abstract class WebGlGame implements Game
+export class WebGlProgramManager
 {
-  /**
-   * Graphic object
-   * @private
-   */
-  private readonly graphics: WebGlGraphics;
   
   /**
-   * Input object
+   * Mixed program instance
    * @private
    */
-  private readonly input: WebInput;
-  
-  /**
-   * Instance of current screen
-   * @private
-   */
-  private currentScreen:GameScreen|null = null;
-  
-  /**
-   * Delta time calculation
-   * @private
-   */
-  private t:number = 0
+  private static mixedProgram: WebGLProgram|null = null;
   
   /**
    *
-   * @private
    */
-  private fpsCounter:FpsCounter;
-  
-  /**
-   * This is a program with color and textils
-   * @private
-   */
-  private _glMixedProgram: WebGLProgram|null = null;
-  private _glColorProgram: WebGLProgram|null = null;
-  
-  /**
-   * @protected
-   */
-  protected constructor()
+  public static getMixedProgram(gl:WebGL2RenderingContext)
   {
-    this.graphics = new WebGlGraphics()
-    this.input = new WebInput();
+    if (WebGlProgramManager.mixedProgram) return WebGlProgramManager.mixedProgram
     
-    // init fps counter
-    this.fpsCounter = new FpsCounter();
-  }
-  
-  /**
-   * graphics are initialized after the DOM is created
-   */
-  initGraphic (canvas:HTMLCanvasElement)
-  {
-    console.log ('WebGlGame.initGraphics');
-    
-    // create gl
-    const gl:WebGL2RenderingContext|null = canvas.getContext("webgl2");
-    if (!gl) throw new Error("Gl not created");
-    
-    //
-    this.graphics.setGl(gl);
-    
-    // here we create a program
-    // Set the viewport size to be the whole canvas.
-    // gl.viewport(0, 0, 500, 500)
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-    
-    // Set the background color to sky blue.
-    gl.clearColor(.5, .7, 1, 1)
-    
-    // Tell webGL that we aren't doing anything special with the vertex buffer, just use a default one.
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-    
-    // WebGlGraphics.createProgram()
-    // this._glProgram = this._createMixedProgram(gl);
-    // this._glProgram = WebGlProgramManager.getMixedProgram(gl);
-    this._glMixedProgram = WebGlProgramManager._createMixedProgram(gl);
-    
-    //
-    // gl.useProgram(this._glMixedProgram)
-    
-    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this._glMixedProgram, "canvasSize");
-    gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
-
-    // Save texture dimensions in our shader.
-    const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this._glMixedProgram, "texSize");
-    gl.uniform2f(textureSizeLocation, 100, 100)
-    
-    
-    this._glColorProgram = WebGlProgramManager._createColorProgram(gl)
-    
-    //
-    // gl.useProgram(this._glColorProgram)
-    
-    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    const canvasSizeLocation2:WebGLUniformLocation|null = gl.getUniformLocation(this._glMixedProgram, "canvasSize");
-    gl.uniform2f(canvasSizeLocation2, gl.canvas.width, gl.canvas.height)
-    
-    
-    //
-    WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this._glMixedProgram);
-    
-    // Tell webGL that when we set the opacity, it should be semi transparent above what was already drawn.
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-    gl.enable(gl.BLEND)
-    
-  }
-  
-  /**
-   * Update function
-   * @param timeStamp
-   */
-  protected update = (timeStamp:number):void =>
-  {
-    const deltaTime:number = timeStamp - this.t
-    this.t = timeStamp
-    
-    // update screen
-    this.getCurrentScreen()?.update(deltaTime)
-    
-    // present screen
-    this.getCurrentScreen()?.present()
-    
-    // click fps counter
-    this.fpsCounter.update(deltaTime)
-    
-    // request next frame
-    window.requestAnimationFrame(this.update)
-  }
-  
-  getGLGraphics(): WebGlGraphics {
-    return this.graphics;
-  }
-  
-  getGlProgram(): WebGLProgram {
-    if (!this._glMixedProgram) throw new Error("GL program not initialised")
-    return this._glMixedProgram;
-  }
-  
-  setScreen(screen:GameScreen): void {
-    this.currentScreen = screen;
-  }
-  
-  getCurrentScreen(): GameScreen|null {
-    return this.currentScreen;
-  }
-  
-  getInput(): WebInput {
-    return this.input;
+    debugger
+    WebGlProgramManager.mixedProgram = WebGlProgramManager._createMixedProgram(gl);
+    return WebGlProgramManager.mixedProgram;
   }
   
   /**
    * This program include and color and texils
    */
-  _createMixedProgram (gl:WebGL2RenderingContext):WebGLProgram
+  public static _createMixedProgram (gl:WebGL2RenderingContext):WebGLProgram
   {
     // Vertex shader source code.
     const vertCode =
@@ -207,7 +66,7 @@ export abstract class WebGlGame implements Game
     
     // Create a vertex shader object.
     // let vertShader = gl.createShader(gl.VERTEX_SHADER)
-    let vertShader = WebGlGraphics.createShader(gl, gl.VERTEX_SHADER, vertCode)
+    let vertShader = WebGlProgramManager.createShader(gl, gl.VERTEX_SHADER, vertCode)
     if (!vertShader) throw new Error("vertShader was not created");
     // gl.shaderSource(vertShader, vertCode)
     // gl.compileShader(vertShader)
@@ -227,7 +86,7 @@ export abstract class WebGlGame implements Game
     // Create fragment shader object.
     //var fragShader = gl.createShader(gl.FRAGMENT_SHADER)
     
-    let fragShader = WebGlGraphics.createShader(gl, gl.FRAGMENT_SHADER, fragCode)
+    let fragShader = WebGlProgramManager.createShader(gl, gl.FRAGMENT_SHADER, fragCode)
     if (!fragShader) throw new Error("fragCode was not created");
     // gl.shaderSource(fragShader, fragCode)
     // gl.compileShader(fragShader)
@@ -235,8 +94,42 @@ export abstract class WebGlGame implements Game
     
     // Tell webGL to use both my shaders.
     // let shaderProgram = gl.createProgram()
-    const program = WebGlGraphics.createProgram(gl, vertShader, fragShader)
+    const program = WebGlProgramManager.createProgram(gl, vertShader, fragShader)
     if (!program) throw new Error("Program was not created");
+    
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "coordinates"
+    // We need to tell it that each vertex takes 24 bytes now (6 floats)
+    // const coordAttributeLocation  = gl.getAttribLocation(program, "coordinates")
+    // gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 32, 0)
+    // gl.enableVertexAttribArray(coordAttributeLocation)
+    
+    // Tell webGL how to get rgba from our vertices array.
+    // Tell webGL to read 4 floats from the vertex array for each vertex
+    // and store them in my vec4 shader variable I've named "rgba"
+    // Start after 8 bytes. (After the 2 floats for x and y)
+    // const rgbaAttributeLocation = gl.getAttribLocation(program, "rgba")
+    // gl.vertexAttribPointer(rgbaAttributeLocation, 4, gl.FLOAT, false, 32, 8)
+    // gl.enableVertexAttribArray(rgbaAttributeLocation)
+    
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "texPos"
+    // const textilsAttributeLocation = gl.getAttribLocation(program, "textilsPos")
+    // gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
+    // gl.enableVertexAttribArray(textilsAttributeLocation)
+    
+    //
+    WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, program)
+    
+    return program
+  }
+  
+  /**
+   *
+   */
+  public static _useAndTellGlAboutMixedProgram (gl:WebGL2RenderingContext, program:WebGLProgram )
+  {
+    gl.useProgram(program)
     
     // Tell webGL to read 2 floats from the vertex array for each vertex
     // and store them in my vec2 shader variable I've named "coordinates"
@@ -258,15 +151,12 @@ export abstract class WebGlGame implements Game
     const textilsAttributeLocation = gl.getAttribLocation(program, "textilsPos")
     gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
     gl.enableVertexAttribArray(textilsAttributeLocation)
-    
-    return program
   }
-  
   
   /**
    * This program include and color and texils
    */
-  _createColorProgram (gl:WebGL2RenderingContext):WebGLProgram
+  public static _createColorProgram (gl:WebGL2RenderingContext):WebGLProgram
   {
     // Vertex shader source code.
     const vertCode =
@@ -292,7 +182,7 @@ export abstract class WebGlGame implements Game
       "}"
     
     // Create a vertex shader object.
-    let vertShader = WebGlGraphics.createShader(gl, gl.VERTEX_SHADER, vertCode)
+    let vertShader = WebGlProgramManager.createShader(gl, gl.VERTEX_SHADER, vertCode)
     if (!vertShader) throw new Error("vertShader was not created");
     
     // Fragment shader source code.
@@ -304,13 +194,37 @@ export abstract class WebGlGame implements Game
       "}"
     
     // Create fragment shader object.
-    let fragShader = WebGlGraphics.createShader(gl, gl.FRAGMENT_SHADER, fragCode)
+    let fragShader = WebGlProgramManager.createShader(gl, gl.FRAGMENT_SHADER, fragCode)
     if (!fragShader) throw new Error("fragCode was not created");
     
     // Tell webGL to use both my shaders.
     // let shaderProgram = gl.createProgram()
-    const program = WebGlGraphics.createProgram(gl, vertShader, fragShader)
+    const program = WebGlProgramManager.createProgram(gl, vertShader, fragShader)
     if (!program) throw new Error("Program was not created");
+    
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "coordinates"
+    // We need to tell it that each vertex takes 24 bytes now (6 floats)
+    // const coordAttributeLocation  = gl.getAttribLocation(program, "coordinates")
+    // gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 24, 0)
+    // gl.enableVertexAttribArray(coordAttributeLocation)
+    
+    // Tell webGL how to get rgba from our vertices array.
+    // Tell webGL to read 4 floats from the vertex array for each vertex
+    // and store them in my vec4 shader variable I've named "rgba"
+    // Start after 8 bytes. (After the 2 floats for x and y)
+    // const rgbaAttributeLocation = gl.getAttribLocation(program, "rgba")
+    // gl.vertexAttribPointer(rgbaAttributeLocation, 4, gl.FLOAT, false, 24, 8)
+    // gl.enableVertexAttribArray(rgbaAttributeLocation)
+    
+    WebGlProgramManager._useAndTellGlAboutColorProgram(gl, program)
+    
+    return program
+  }
+  
+  public static _useAndTellGlAboutColorProgram (gl:WebGL2RenderingContext, program:WebGLProgram)
+  {
+    gl.useProgram(program)
     
     // Tell webGL to read 2 floats from the vertex array for each vertex
     // and store them in my vec2 shader variable I've named "coordinates"
@@ -326,7 +240,58 @@ export abstract class WebGlGame implements Game
     const rgbaAttributeLocation = gl.getAttribLocation(program, "rgba")
     gl.vertexAttribPointer(rgbaAttributeLocation, 4, gl.FLOAT, false, 24, 8)
     gl.enableVertexAttribArray(rgbaAttributeLocation)
-    
-    return program
   }
+  
+  
+  /**
+   * Create shader
+   * @param gl
+   * @param type gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
+   * @param source
+   */
+  public static createShader (gl:WebGL2RenderingContext, type:number, source:string):WebGLShader|null
+  {
+    const shader:WebGLShader|null = gl.createShader(type);
+    if (!shader) return null;
+    
+    // создание шейдера
+    gl.shaderSource(shader, source);      // устанавливаем шейдеру его программный код
+    gl.compileShader(shader);             // компилируем шейдер
+    const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    if (success) {                        // если компиляция прошла успешно - возвращаем шейдер
+      return shader;
+    }
+    
+    console.error(gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
+  }
+  
+  /**
+   *
+   * @param gl
+   * @param vertexShader
+   * @param fragmentShader
+   */
+  public static createProgram = (gl:WebGL2RenderingContext, vertexShader:WebGLShader, fragmentShader:WebGLShader): WebGLProgram|null =>
+  {
+    const program = gl.createProgram();
+    if (!program) return null;
+    
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    
+    // when i comment this row it stop working at all
+    gl.linkProgram(program);
+    
+    const success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (success) {
+      return program;
+    }
+    
+    console.error(gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+    return null;
+  }
+  
 }
