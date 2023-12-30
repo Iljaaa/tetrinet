@@ -78,6 +78,11 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
       <canvas id="canvas" width={640} height={640} style={{border: "solid 2px orange"}} ref={this._canvas}/>
       <div>score {this.state.score}</div>
       <div>{sprite}</div>
+      <div style={{display: "flex", justifyContent: "center"}}>
+        <div style={{backgroundColor: "red", width: "40px", height: "40px"}}></div>
+        <div style={{backgroundColor: "green", width: "40px", height: "40px"}}></div>
+        <div style={{backgroundColor: "blue", width: "40px", height: "40px"}}></div>
+      </div>
     </div>
   }
 }

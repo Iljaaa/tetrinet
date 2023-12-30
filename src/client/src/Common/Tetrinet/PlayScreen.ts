@@ -9,6 +9,7 @@ import {WebInputEventListener} from "../framework/impl/WebInput";
 import {Assets} from "./Assets";
 import {WebGlGraphics} from "../framework/impl/WebGlGraphics";
 import {Vertices} from "../framework/Vertices";
+import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
 
 /**
  * Game states
@@ -77,7 +78,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     //
     this.redSquare = new Vertices(true, false);
-    this.redSquare.setVertices(this._createColorVerticesArray(0, 0, 100, 100, 1,1,0,1))
+    this.redSquare.setVertices(this._createColorVerticesArray(0, 0, 100, 100, 255,0,0,1))
     
     // bind this to input listener
     this.game.getInput().setListener(this);
@@ -174,6 +175,36 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     //
     // gl.activeTexture(gl.TEXTURE0)
+    
+    // WebGlGraphics.createProgram()
+    // this._glProgram = this._createMixedProgram(gl);
+    // this._glProgram = WebGlProgramManager.getMixedProgram(gl);
+    this.mixedProgram = WebGlProgramManager._createMixedProgram(gl);
+    
+    //
+    // gl.useProgram(this._glMixedProgram)
+    
+    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "canvasSize");
+    gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
+    
+    // Save texture dimensions in our shader.
+    const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "texSize");
+    gl.uniform2f(textureSizeLocation, 100, 100)
+    
+    
+    this.colorProgram = WebGlProgramManager._createColorProgram(gl)
+    
+    //
+    // gl.useProgram(this._glColorProgram)
+    
+    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    const canvasSizeLocation2:WebGLUniformLocation|null = gl.getUniformLocation(this.colorProgram, "canvasSize");
+    gl.uniform2f(canvasSizeLocation2, gl.canvas.width, gl.canvas.height)
+    
+    
+    //
+    WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.colorProgram);
   }
   
   
@@ -218,6 +249,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // Clear the screen.
     gl.clear(gl.COLOR_BUFFER_BIT)
+    
+    if (this.mixedProgram) {
+      WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.mixedProgram)
+    }
+    
     
     // if (this.mixedProgram) {
     //
@@ -282,22 +318,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // Tell webGL to read 2 floats from the vertex array for each vertex
     // and store them in my vec2 shader variable I've named "coordinates"
     // We need to tell it that each vertex takes 24 bytes now (6 floats)
-    if (this.colorProgram) {
-      gl.useProgram(this.colorProgram)
-      
-      const coordAttributeLocation  = gl.getAttribLocation(this.colorProgram, "coordinates")
-      gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 24, 0)
-      gl.enableVertexAttribArray(coordAttributeLocation)
-      
-      // Tell webGL how to get rgba from our vertices array.
-      // Tell webGL to read 4 floats from the vertex array for each vertex
-      // and store them in my vec4 shader variable I've named "rgba"
-      // Start after 8 bytes. (After the 2 floats for x and y)
-      const rgbaAttributeLocation = gl.getAttribLocation(this.colorProgram, "rgba")
-      gl.vertexAttribPointer(rgbaAttributeLocation, 4, gl.FLOAT, false, 24, 8)
-      gl.enableVertexAttribArray(rgbaAttributeLocation)
-      
-      gl.useProgram(this.colorProgram)
+    if (this.colorProgram)
+    {
+      WebGlProgramManager._useAndTellGlAboutColorProgram(gl, this.colorProgram)
       
       // Tell webGL to draw these triangle this frame.
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.redSquare.vertices), gl.STATIC_DRAW)
