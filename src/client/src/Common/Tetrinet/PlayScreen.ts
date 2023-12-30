@@ -1,13 +1,9 @@
-import {CupEventListener, CupWithFigureImpl} from "./CapWithFigureImpl";
+import {CupEventListener, CupWithFigureImpl} from "./models/CupWithFigureImpl";
 import {CupRenderer} from "./CupRenderer";
-import {FpsCounter} from "./helpers/FpsCounter";
-import {Texture} from "../framework/Texture";
-import {WebGlTexture} from "../framework/impl/WebGlTexture";
 import {WebGlScreen} from "../framework/impl/WebGlScreen";
 import {GameEventListener, Tetrinet} from "./Tetrinet";
 import {WebInputEventListener} from "../framework/impl/WebInput";
 import {Assets} from "./Assets";
-import {WebGlGraphics} from "../framework/impl/WebGlGraphics";
 import {Vertices} from "../framework/Vertices";
 import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
 
@@ -208,9 +204,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
   
   
-  
-  
-  
   /**
    * Update cup
    * @param deltaTime
@@ -253,6 +246,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this.mixedProgram) {
       WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.mixedProgram)
     }
+    
+    
     
     
     // if (this.mixedProgram) {

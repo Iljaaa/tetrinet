@@ -1,7 +1,7 @@
 import {Figure} from "../models/Figure";
 import {Cup} from "../models/Cup";
 import {Coords} from "../math/Coords";
-import {FourBlocksFigure} from "../FourBlocksFigure"
+import {FourBlocksFigure} from "./FourBlocksFigure"
 
 enum CamelState {
   top = 0,

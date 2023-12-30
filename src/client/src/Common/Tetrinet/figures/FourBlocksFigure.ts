@@ -1,5 +1,5 @@
-import {Cup} from "./models/Cup";
-import {Coords} from "./math/Coords";
+import {Cup} from "../models/Cup";
+import {Coords} from "../math/Coords";
 
 /**
  * Base figure class FOR FOUR BLOCKS part of implementation Figure

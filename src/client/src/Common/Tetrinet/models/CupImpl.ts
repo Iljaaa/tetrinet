@@ -1,8 +1,8 @@
-import {Coords} from "./math/Coords";
-import {Cup} from "./models/Cup";
+import {Coords} from "../math/Coords";
+import {Cup} from "./Cup";
 
 
-export class CapImpl implements Cup
+export class CupImpl implements Cup
 {
   /**
    * Cup width in cells

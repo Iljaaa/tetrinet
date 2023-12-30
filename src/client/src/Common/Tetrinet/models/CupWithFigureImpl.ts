@@ -1,15 +1,15 @@
-import {Figure} from "./models/Figure";
-import {CapWithFigure} from "./models/CupWithFigure";
+import {Figure} from "./Figure";
+import {CapWithFigure} from "./CupWithFigure";
 
-import {CapImpl} from "./CapImpl";
-import {Coords} from "./math/Coords";
-import {BackHorse} from "./figures/BackHorse";
-import {ForwardHorse} from "./figures/ForwardHorse";
-import {ForwardFlash} from "./figures/ForwardFlash";
-import {BackFlash} from "./figures/BackFlash";
-import {Line} from "./figures/Line";
-import {Square} from "./figures/Square";
-import {Camel} from "./figures/Camel";
+import {CupImpl} from "./CupImpl";
+import {Coords} from "../math/Coords";
+import {BackHorse} from "../figures/BackHorse";
+import {ForwardHorse} from "../figures/ForwardHorse";
+import {ForwardFlash} from "../figures/ForwardFlash";
+import {BackFlash} from "../figures/BackFlash";
+import {Line} from "../figures/Line";
+import {Square} from "../figures/Square";
+import {Camel} from "../figures/Camel";
 
 export type CupEventListener = {
   onLineCleared: (countLines:number) => void,
@@ -42,7 +42,7 @@ export type CupEventListener = {
 //
 // }
 
-export class CupWithFigureImpl extends CapImpl implements CapWithFigure
+export class CupWithFigureImpl extends CupImpl implements CapWithFigure
 {
   /**
    * Current figure
