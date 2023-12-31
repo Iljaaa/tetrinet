@@ -75,7 +75,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // create cup object
     this._cup =  new CupWithFigureImpl(this);
     
-    this._cupRenderer  = new CupRenderer2(game.getGLGraphics())
+    this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
     
     // todo: we need to create programs here
     
@@ -123,9 +123,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // first render
     // this._cupRenderer.renderCupWithFigure(this._cup)
     
-    // loop this method
-    // todo: move this method upper
-    // window.requestAnimationFrame(this.update)
     console.log('PlayScreen.start')
     
     //
@@ -193,7 +190,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // Save texture dimensions in our shader.
     const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "texSize");
-    gl.uniform2f(textureSizeLocation, 100, 100)
+    gl.uniform2f(textureSizeLocation, 640, 640)
     
     
     this.colorProgram = WebGlProgramManager._createColorProgram(gl)
@@ -212,7 +209,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // Save texture dimensions in our shader.
     const textureSizeLocation2:WebGLUniformLocation|null = gl.getUniformLocation(this.textureProgram, "texSize");
-    gl.uniform2f(textureSizeLocation2, 100, 100)
+    gl.uniform2f(textureSizeLocation2, 640, 640)
     
     
     // back to program
@@ -267,10 +264,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // reder cup
     this._cupRenderer?.renderCupWithFigure(this._cup);
     
-    
-    if (this.mixedProgram) {
-      WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.mixedProgram)
-    }
+    // if (this.mixedProgram) {
+    //   WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.mixedProgram)
+    // }
     
     
     // if (this.mixedProgram) {
@@ -298,55 +294,55 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // }
     //
     // Draw a wide rectangle.
-    this._drawRectangle(0,370, 200,50, 200,100,10,1)
-    
-    // Tell webGL to draw these triangle this frame.
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
-    
-    // Draw all the triangles.
-    gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
-    
-    // Clear vertices. We will fill it every frame.
-    // This way you don't need to delete objects from the screen. You just stop drawing them.
-    this.vertices = []
-    
-    // Draw the moving image.
-    const x = 250+Math.sin(Date.now()*.004)*250
-    const y = 200
-    const blue = 128 + Math.floor(Math.sin(Date.now()*.01) * 127)
-    const frame = (Date.now()/100)&1
-    this._drawImage(
-      x, y, 100, 200,
-      0, 255, blue, 1,
-      frame*32,32, 32,32
-    )
-    
-    // Tell webGL to draw these triangle this frame.
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
-    
-    // Draw all the triangles.
-    gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
-    
-    // Clear vertices. We will fill it every frame.
-    // This way you don't need to delete objects from the screen. You just stop drawing them.
+    // this._drawRectangle(0,370, 200,50, 200,100,10,1)
+    //
+    // // Tell webGL to draw these triangle this frame.
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
+    //
+    // // Draw all the triangles.
+    // gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
+    //
+    // // Clear vertices. We will fill it every frame.
+    // // This way you don't need to delete objects from the screen. You just stop drawing them.
     // this.vertices = []
     
-    this.vertices = []
-    
-    // Tell webGL to read 2 floats from the vertex array for each vertex
-    // and store them in my vec2 shader variable I've named "coordinates"
-    // We need to tell it that each vertex takes 24 bytes now (6 floats)
-    if (this.colorProgram)
-    {
-      WebGlProgramManager._useAndTellGlAboutColorProgram(gl, this.colorProgram)
-      
-      // Tell webGL to draw these triangle this frame.
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.redSquare.vertices), gl.STATIC_DRAW)
-      
-      // Draw all the triangles.
-      // gl.drawArrays(gl.TRIANGLES, 0, this.redSquare.vertices.length/6)
-      gl.drawArrays(gl.TRIANGLES, 0, this.redSquare.getVerticesCount())
-    }
+    // Draw the moving image.
+    // const x = 250+Math.sin(Date.now()*.004)*250
+    // const y = 200
+    // const blue = 128 + Math.floor(Math.sin(Date.now()*.01) * 127)
+    // const frame = (Date.now()/100)&1
+    // this._drawImage(
+    //   x, y, 100, 200,
+    //   0, 255, blue, 1,
+    //   frame*32,32, 32,32
+    // )
+    //
+    // // Tell webGL to draw these triangle this frame.
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
+    //
+    // // Draw all the triangles.
+    // gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
+    //
+    // // Clear vertices. We will fill it every frame.
+    // // This way you don't need to delete objects from the screen. You just stop drawing them.
+    // // this.vertices = []
+    //
+    // this.vertices = []
+    //
+    // // Tell webGL to read 2 floats from the vertex array for each vertex
+    // // and store them in my vec2 shader variable I've named "coordinates"
+    // // We need to tell it that each vertex takes 24 bytes now (6 floats)
+    // if (this.colorProgram)
+    // {
+    //   WebGlProgramManager._useAndTellGlAboutColorProgram(gl, this.colorProgram)
+    //
+    //   // Tell webGL to draw these triangle this frame.
+    //   // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.redSquare.vertices), gl.STATIC_DRAW)
+    //
+    //   // Draw all the triangles.
+    //   // gl.drawArrays(gl.TRIANGLES, 0, this.redSquare.vertices.length/6)
+    //   // gl.drawArrays(gl.TRIANGLES, 0, this.redSquare.getVerticesCount())
+    // }
     
     
   }

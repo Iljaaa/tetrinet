@@ -32,7 +32,7 @@ export class Vertices
     let countNumbersInRow = 2; // position
     if (this.hasColor) countNumbersInRow += 4;
     if (this.hasTexils) countNumbersInRow += 2
-    return countNumbersInRow;
+    return this.vertices.length / countNumbersInRow;
   }
   
   

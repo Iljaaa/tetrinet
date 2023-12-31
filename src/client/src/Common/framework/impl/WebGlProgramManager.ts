@@ -55,7 +55,7 @@ export class WebGlProgramManager
       // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
       " vec2 drawPos = coordinates / canvasSize * 2.0;" +
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
-      " gl_Position = vec4(drawPos.x - 1.0, 1.0 - drawPos.y, 0.0, 1.0);" +
+      " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
       // Pass the color and transparency to the fragment shader.
       " rgbaForFrag = vec4(rgba.xyz / 255.0, rgba.w);" +
       // Pass the texture position to the fragment shader.
@@ -178,7 +178,7 @@ export class WebGlProgramManager
       // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
       " vec2 drawPos = coordinates / canvasSize * 2.0;" +
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
-      " gl_Position = vec4(drawPos.x - 1.0, 1.0 - drawPos.y, 0.0, 1.0);" +
+      " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
       // Pass the texture position to the fragment shader.
       // WebGL wants numbers from 0 to 1, but we are passing in pixel positions.
       " texPosForFrag = textilsPos / texSize;" +
@@ -259,7 +259,7 @@ export class WebGlProgramManager
       // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
       " vec2 drawPos = coordinates / canvasSize * 2.0;" +
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
-      " gl_Position = vec4(drawPos.x - 1.0, 1.0 - drawPos.y, 0.0, 1.0);" +
+      " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
       // Pass the color and transparency to the fragment shader.
       " rgbaForFrag = vec4(rgba.xyz / 255.0, rgba.w);" +
       "}"

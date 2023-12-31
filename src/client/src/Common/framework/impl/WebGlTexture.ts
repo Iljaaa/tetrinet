@@ -50,7 +50,7 @@ export class WebGlTexture implements Texture
   bind(gl:WebGL2RenderingContext): void
   {
     const textureId = gl.createTexture()
-    console.log (textureId, 'textureId');
+    // console.log (textureId, 'textureId');
     gl.bindTexture(gl.TEXTURE_2D, textureId)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image)
     
@@ -58,7 +58,7 @@ export class WebGlTexture implements Texture
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
     
-    //
+    // now it not do anything, but when we will be use different textures
     gl.activeTexture(gl.TEXTURE0)
     
   }

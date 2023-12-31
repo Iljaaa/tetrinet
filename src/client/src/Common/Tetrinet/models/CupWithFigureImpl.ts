@@ -265,7 +265,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
   private generateAndPutNewFigure(): boolean
   {
     // select new figure
-    const nextFigureIndex:number = Math.floor(Math.random() * 6);
+    const nextFigureIndex:number = Math.floor(Math.random() * 7);
     
     let f:Figure;
     switch (nextFigureIndex) {

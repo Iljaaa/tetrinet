@@ -34,7 +34,6 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     // create game
     // this.game =  new PlayScreen();
     this.game = new Tetrinet()
-    this.game.setGameEventListener(this);
     
   }
   
@@ -60,6 +59,9 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     Assets.load(sprite, () => {
       // start game
       this.game.startGame();
+      
+      // bind event listener after screen creation
+      this.game.setGameEventListener(this);
     })
     
     
@@ -75,7 +77,7 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     return <div>
       {/* @ts-ignore */}
       
-      <canvas id="canvas" width={640} height={640} style={{border: "solid 2px orange"}} ref={this._canvas}/>
+      <canvas id="canvas" width={800} height={800} style={{border: "solid 2px orange"}} ref={this._canvas}/>
       <div>score {this.state.score}</div>
       <div>{sprite}</div>
       <div style={{display: "flex", justifyContent: "center"}}>
