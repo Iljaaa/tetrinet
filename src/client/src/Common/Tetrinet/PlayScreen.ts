@@ -8,6 +8,15 @@ import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
 
 // import {CupRenderer} from "./CupRenderer";
 import {CupRenderer2} from "./CupRenderer2";
+import {Figure} from "./models/Figure";
+import {ForwardHorse} from "./figures/ForwardHorse";
+import {BackHorse} from "./figures/BackHorse";
+import {Line} from "./figures/Line";
+import {ForwardFlash} from "./figures/ForwardFlash";
+import {BackFlash} from "./figures/BackFlash";
+import {Camel} from "./figures/Camel";
+import {Square} from "./figures/Square";
+import {Coords} from "./math/Coords";
 
 /**
  * Game states
@@ -32,7 +41,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Render
    * @private
    */
-  private _cupRenderer: CupRenderer2 | null = null;
+  private readonly _cupRenderer: CupRenderer2 | null = null;
+  
+  /**
+   *
+   * @private
+   */
+  private _nextFigure:Figure;
   
   /**
    * Timer for next down
@@ -75,7 +90,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // create cup object
     this._cup =  new CupWithFigureImpl(this);
     
+    // generate next figure
+    this._nextFigure = this.generateNewFigure();
+    
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
+    
+    // in background we use only texture
+    this._block = new Vertices(false, true);
+    this._block.setVertices(Vertices.createTextureVerticesArray(
+      200, 200, 32, 32,
+      0, 0, 200, 200
+    ))
     
     // todo: we need to create programs here
     
@@ -116,6 +141,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // if (!this._cupRenderer){
     //   throw new Error('Cup render not initialised')
     // }
+    
+    // generate new figure
+    const f = this.generateNewFigure();
+    
+    this._cup.setFigure(f);
     
     // init first figure in cup
     this._cup.start();
@@ -191,8 +221,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // Save texture dimensions in our shader.
     // const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "texSize");
     // gl.uniform2f(textureSizeLocation, 640, 640)
-    WebGlProgramManager.setUpIntoMixedProgramImageSize(gl,Assets.sprite.getImage().width, Assets.sprite.getImage().height);
-    
+    WebGlProgramManager.setUpIntoMixedProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
+
+    // create color program
     this.colorProgram = WebGlProgramManager.getColorProgram(gl)
     // gl.useProgram(this._glColorProgram)
     
@@ -259,10 +290,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // use texure program
     WebGlProgramManager.sUseTextureProgram(gl);
     
-    // reder cup
+    // render cup
     this._cupRenderer?.renderCupWithFigure(this._cup);
     
     // render next figure
+    this.renderNextFigure(gl);
+    
     
     // if (this.mixedProgram) {
     //   WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.mixedProgram)
@@ -346,9 +379,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     
   }
-
   
-
   
   onKeyDown(code:string): void
   {
@@ -385,6 +416,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   
   }
   
+  onRight() {
+    if (this._cupRenderer && this._cup.moveFigureRight()){
+      this._cupRenderer.renderCupWithFigure(this._cup)
+    }
+  }
+  
+  onLeft() {
+    if (this._cupRenderer && this._cup.moveFigureLeft()){
+      this._cupRenderer.renderCupWithFigure(this._cup)
+    }
+  }
   
   /**
    * Down figure
@@ -445,14 +487,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
   }
   
-  onGameOver(): void {
-    this._state = GameState.over
-    
-    // todo: do something on game over
-    alert("game over")
-    debugger
-  }
-  
   /**
    * Callback when line was cleared in the cup
    * @param countLines
@@ -461,15 +495,94 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this.listener) this.listener.onLineCleared(countLines);
   }
   
-  onRight() {
-    if (this._cupRenderer && this._cup.moveFigureRight()){
-      this._cupRenderer.renderCupWithFigure(this._cup)
+  /**
+   * Here we need to generate figure
+   */
+  onFigureMovedToCup()
+  {
+    console.log ('onFigureMovedToCup');
+    
+    // generate new figure
+    const newFigure:Figure = this.generateNewFigure();
+    
+    // move figure to drop position
+    this._nextFigure.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y);
+    
+    // check intersections with cup
+    if (!this._cup.canPlace(this._nextFigure.getFields())) {
+      
+      this._state = GameState.over
+      alert ('true game over');
+      return;
     }
+    
+    //
+    this._cup.setFigure(this._nextFigure);
+    
+    // generate next figure
+    this._nextFigure = this.generateNewFigure();
   }
   
-  onLeft() {
-    if (this._cupRenderer && this._cup.moveFigureLeft()){
-      this._cupRenderer.renderCupWithFigure(this._cup)
+  /**
+   * Generate new random figure
+   * @private
+   */
+  private generateNewFigure():Figure
+  {
+    // select new figure
+    const nextFigureIndex:number = Math.floor(Math.random() * 7);
+    
+    let f:Figure;
+    switch (nextFigureIndex) {
+      case 0: f = new ForwardHorse(this._cup); break;
+      case 1: f = new BackHorse(this._cup); break;
+      case 2: f = new Line(this._cup); break;
+      case 3: f = new ForwardFlash(this._cup); break;
+      case 4: f = new BackFlash(this._cup); break;
+      case 5: f = new Camel(this._cup); break;
+      default: f = new Square(this._cup); break;
+    }
+    
+    return f;
+  }
+  
+  /**
+   * Temp field for draw fields
+   * @private
+   */
+  private _block: Vertices;
+  
+  /**
+   * Draw next figure
+   * @param gl
+   * @private
+   */
+  private renderNextFigure(gl: WebGL2RenderingContext)
+  {
+    const fields = this._nextFigure.getFields();
+    const len = fields.length;
+    for (let r = 0; r < len; r++)
+    {
+      const cellIndex = fields[r]
+      
+      const c:Coords = this._cup.getCoordsByIndex(cellIndex);
+      
+      const bottom = (c.y * 32) + 320;
+      const left = (c.x * 32) + 320;
+      if (left < 320) {
+        debugger
+      }
+      
+      this._block.setVertices(Vertices.createTextureVerticesArray(
+        left, bottom, 32, 32,
+        352, 0, 32, 32
+      ))
+      
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+      
+      // draw here
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      
     }
   }
 }

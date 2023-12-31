@@ -21,6 +21,11 @@ export class CupRenderer2
    */
   private background: Vertices;
   private background2: Vertices;
+  
+  /**
+   * Temp field for draw fields
+   * @private
+   */
   private block: Vertices;
   
   

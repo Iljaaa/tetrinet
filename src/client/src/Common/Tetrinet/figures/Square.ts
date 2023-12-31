@@ -11,15 +11,25 @@ export class Square extends FourBlocksFigure implements Figure
   
   /**
    * @param cap
-   * @param center
    */
-  constructor(cap:Cup, center:Coords)
+  constructor(cap:Cup)
   {
-    super(cap, center);
+    super(cap);
     
+    this.setPosition(1, 1)
+  }
+  
+  /**
+   * Set position
+   * @param x
+   * @param y
+   */
+  setPosition(x:number, y:number)
+  {
+    this.center.x = x
+    this.center.y = y
     
-    // this is start fields with center in 33
-    // this._fields = [33, 13, 23, 34];
+    //
     const coords = this.getCoordsOfAllCellsByStateAndCenter(this.center)
     
     // move coords to fields

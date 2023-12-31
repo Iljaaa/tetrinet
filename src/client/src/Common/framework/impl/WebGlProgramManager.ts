@@ -197,7 +197,7 @@ export class WebGlProgramManager
   /**
    *
    */
-  private static _useMixedProgram (gl:WebGL2RenderingContext, program:WebGLProgram )
+  private static _useMixedProgram (gl:WebGL2RenderingContext, program:WebGLProgram ):void
   {
     gl.useProgram(program)
     

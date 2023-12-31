@@ -19,6 +19,13 @@ export interface Figure
   getPosition: () => Coords
   
   /**
+   * Move figure to position
+   * @param x
+   * @param y
+   */
+  setPosition: (x:number, y:number) => void
+  
+  /**
    * Move figure down
    * return true if move was success
    */

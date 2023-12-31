@@ -13,7 +13,7 @@ import {Camel} from "../figures/Camel";
 
 export type CupEventListener = {
   onLineCleared: (countLines:number) => void,
-  onGameOver: () => void
+  onFigureMovedToCup: () => void,
 }
 
 // export class FigureClass implements Figure
@@ -82,7 +82,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
   start():void
   {
     // generate new figure
-    this.generateAndPutNewFigure();
+    // this.generateAndPutNewFigure();
   }
   
   setFigure(f:Figure) {
@@ -94,10 +94,10 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     return this._figure;
   }
   
+  
   getDropPoint(): Coords {
     return this.dropPoint;
   }
-  
   
   moveFigureLeft(): boolean {
     if (!this._figure) return false;
@@ -119,7 +119,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     
     // move figure
     // const moveResult = this.tryToMoveFigureDown(this._figure)
-    const moveResult = this._figure.moveDown();
+    const moveResult:boolean = this._figure.moveDown();
     
     // if move down is failed we should check may be it is the end of the game
     // or palace a new figure
@@ -159,6 +159,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
   /**
    * First move figure to cup fields array
    * second check and clear full lines
+   * third ww rise callback in listener about figure moving
    * third generates new figure and try to insert it into cup
    * and if it fails it means game over
    * @private
@@ -178,10 +179,13 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     // rise callback method
     if (countClearedLines > 0) this.listener.onLineCleared(countClearedLines)
     
+    // rise callback event
+    this.listener.onFigureMovedToCup()
+    
     // if a new figure not putted it means....
-    if (!this.generateAndPutNewFigure()) {
-      this.listener.onGameOver()
-    }
+    // if (!this.generateAndPutNewFigure()) {
+    //   this.listener.onGameOver()
+    // }
   }
   
   rotateClockwise():boolean {
@@ -262,34 +266,23 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
    * Create random figure and add
    * @private
    */
-  private generateAndPutNewFigure(): boolean
-  {
-    // select new figure
-    const nextFigureIndex:number = Math.floor(Math.random() * 7);
-    
-    let f:Figure;
-    switch (nextFigureIndex) {
-      case 0: f = new ForwardHorse(this, this.getDropPoint()); break;
-      case 1: f = new BackHorse(this, this.getDropPoint()); break;
-      case 2: f = new Line(this, this.getDropPoint()); break;
-      case 3: f = new ForwardFlash(this, this.getDropPoint()); break;
-      case 4: f = new BackFlash(this, this.getDropPoint()); break;
-      case 5: f = new Camel(this, this.getDropPoint()); break;
-      default: f = new Square(this, this.getDropPoint()); break;
-    }
-    
-    //
-    const newFigureFields:Array<number> = f.getFields()
-    
-    // check intersections with cup
-    if (!this.canPlace(newFigureFields)) {
-      return false;
-    }
-    
-    // set new figure
-    this.setFigure(f)
-    
-    return true;
-  }
-  
+  // private generateAndPutNewFigure(): boolean
+  // {
+  //
+  //
+  //
+  //   //
+  //   const newFigureFields:Array<number> = f.getFields()
+  //
+  //   // check intersections with cup
+  //   if (!this.canPlace(newFigureFields)) {
+  //     return false;
+  //   }
+  //
+  //   // set new figure
+  //   this.setFigure(f)
+  //
+  //   return true;
+  // }
+  //
 }

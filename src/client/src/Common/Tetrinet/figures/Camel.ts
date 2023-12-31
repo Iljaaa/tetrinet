@@ -22,14 +22,37 @@ export class Camel extends FourBlocksFigure implements Figure
    * @param cap
    * @param center
    */
-  constructor(cap:Cup, center:Coords)
+  constructor(cap:Cup)
   {
-    super(cap, center);
+    super(cap);
     
     // random position
     const enumValues = Object.keys(CamelState).map(n => Number.parseInt(n))
     const randomIndex = Math.floor(Math.random() * 4) // 4 it is a magic, you know is count of states
     this._state = enumValues[randomIndex] as CamelState
+    
+    
+    // move to position 9
+    this.setPosition(1, 1)
+    //
+    // const coords = this.getCoordsOfAllCellsByStateAndCenter(this._state, this.center.x, this.center.y)
+    //
+    // // move coords to fields
+    // this._fields = coords.map((c:Coords) => {
+    //   return this._cap.getCellIndexByCoords(c)
+    // })
+  }
+  
+  
+  /**
+   * Set position
+   * @param x
+   * @param y
+   */
+  setPosition(x:number, y:number)
+  {
+    this.center.x = x
+    this.center.y = y
     
     //
     const coords = this.getCoordsOfAllCellsByStateAndCenter(this._state, this.center.x, this.center.y)

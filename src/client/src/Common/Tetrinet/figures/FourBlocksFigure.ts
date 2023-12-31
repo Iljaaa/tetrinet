@@ -13,10 +13,10 @@ export abstract class FourBlocksFigure
   protected _fields:Array<number> = new Array<number>(4);
   
   /**
-   * Rotate center of figure
+   * Rotate center of figure in cup coordinates
    * @protected
    */
-  protected center: Coords;
+  protected center: Coords = new Coords(0, 0)
   
   /**
    * Cup object
@@ -24,10 +24,12 @@ export abstract class FourBlocksFigure
    */
   protected _cap:Cup;
   
-  protected constructor(cap:Cup, center:Coords) {
+  protected constructor(cap:Cup) {
     this._cap = cap;
-    this.center = new Coords(center.x, center.y)
+    //this.center = new Coords(this.center.x, center.y)
   }
+  
+  
   
   /**
    * It must have
