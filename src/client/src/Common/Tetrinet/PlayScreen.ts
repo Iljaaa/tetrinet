@@ -180,36 +180,30 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // WebGlGraphics.createProgram()
     // this._glProgram = this._createMixedProgram(gl);
-    // this._glProgram = WebGlProgramManager.getMixedProgram(gl);
-    this.mixedProgram = WebGlProgramManager._createMixedProgram(gl);
+    this.mixedProgram = WebGlProgramManager.getMixedProgram(gl);
+    // this.mixedProgram = WebGlProgramManager._createMixedProgram(gl);
     // gl.useProgram(this._glMixedProgram)
     
     // Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "canvasSize");
-    gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
+    // const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "canvasSize");
+    // gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
     
     // Save texture dimensions in our shader.
-    const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "texSize");
-    gl.uniform2f(textureSizeLocation, 640, 640)
+    // const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "texSize");
+    // gl.uniform2f(textureSizeLocation, 640, 640)
+    WebGlProgramManager.setUpIntoMixedProgramImageSize(gl,Assets.sprite.getImage().width, Assets.sprite.getImage().height);
     
-    
-    this.colorProgram = WebGlProgramManager._createColorProgram(gl)
+    this.colorProgram = WebGlProgramManager.getColorProgram(gl)
     // gl.useProgram(this._glColorProgram)
     
-    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    const canvasSizeLocation2:WebGLUniformLocation|null = gl.getUniformLocation(this.colorProgram, "canvasSize");
-    gl.uniform2f(canvasSizeLocation2, gl.canvas.width, gl.canvas.height)
+    //
+    this.textureProgram = WebGlProgramManager.getTextureProgram(gl)
+    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl,Assets.sprite.getImage().width, Assets.sprite.getImage().height);
     
-    
-    this.textureProgram = WebGlProgramManager._createTextureProgram(gl)
-    
-    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    const canvasSizeLocation3:WebGLUniformLocation|null = gl.getUniformLocation(this.textureProgram, "canvasSize");
-    gl.uniform2f(canvasSizeLocation3, gl.canvas.width, gl.canvas.height)
     
     // Save texture dimensions in our shader.
-    const textureSizeLocation2:WebGLUniformLocation|null = gl.getUniformLocation(this.textureProgram, "texSize");
-    gl.uniform2f(textureSizeLocation2, 640, 640)
+    // const textureSizeLocation2:WebGLUniformLocation|null = gl.getUniformLocation(this.textureProgram, "texSize");
+    // gl.uniform2f(textureSizeLocation2, 640, 640)
     
     
     // back to program
@@ -256,13 +250,19 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // Clear the screen.
     gl.clear(gl.COLOR_BUFFER_BIT)
     
-    
+    // use texture program
     if (this.textureProgram) {
-      WebGlProgramManager._useAndTellGlAboutTextureProgram(gl, this.textureProgram)
+      // WebGlProgramManager._startUseTextureProgram(gl, this.textureProgram)
+      
     }
+    
+    // use texure program
+    WebGlProgramManager.sUseTextureProgram(gl);
     
     // reder cup
     this._cupRenderer?.renderCupWithFigure(this._cup);
+    
+    // render next figure
     
     // if (this.mixedProgram) {
     //   WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.mixedProgram)
@@ -346,62 +346,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     
   }
-  
-  /**
-   * Array with vertices, it clears every loop
-   * @type {*[]}
-   */
-  vertices:Array<number> = [];
-  
-  /**
-   *
-   * Draws 2 triangles to make a rectangle.
-   *
-   * draw size in px
-   * @param x
-   * @param y
-   * @param width
-   * @param height
-   *
-   * color coordinates
-   * @param r
-   * @param g
-   * @param b
-   * @param a
-   *
-   * textils coordinates
-   * @param texX
-   * @param texY
-   * @param texWidth
-   * @param texHeight
-   */
-  _drawImage(x:number, y:number, width:number, height:number, r:number, g:number, b:number, a:number, texX:number, texY:number, texWidth:number, texHeight:number)
-  {
-    // const x2 = x+width
-    // const y2 = y+height
-    // const texX2 = texX + texWidth
-    // const texY2 = texY + texHeight
-    // // first triangle
-    // this.vertices.push(
-    //   x, y, r, g, b, a, texX, texY,
-    //   x, y2, r, g, b, a, texX, texY2,
-    //   x2, y2, r, g, b, a, texX2, texY2
-    // )
-    // // second triangle
-    // this.vertices.push(
-    //   x, y, r, g, b, a, texX, texY,
-    //   x2, y, r, g, b, a, texX2, texY,
-    //   x2, y2, r, g, b, a, texX2, texY2
-    // )
-    
-    this.vertices.push(...Vertices.createMixedVerticesArray(x, y, width, height, r, g, b, a, texX, texY, texWidth, texHeight))
-  }
-  
-  // Draw rectangle by drawing the white pixel in our PNG.
-  _drawRectangle(x:number, y:number, width:number, height:number, r:number, g:number, b:number, a:number) {
-    // Now we can just pass where the white pixel is in our PNG. At 1x1.
-    this._drawImage(x, y, width, height, r, g, b, a, 1, 1, 1, 1)
-  }
+
   
 
   

@@ -12,21 +12,95 @@ export class WebGlProgramManager
   private static mixedProgram: WebGLProgram|null = null;
   
   /**
-   *
+   * Texture program
+   * @private
    */
-  public static getMixedProgram(gl:WebGL2RenderingContext)
+  private static textureProgram: WebGLProgram|null = null;
+  
+  /**
+   * Color program
+   * @private
+   */
+  private static colorProgram: WebGLProgram|null = null;
+  
+  /**
+   * Create and get the mixed program
+   */
+  public static getMixedProgram(gl:WebGL2RenderingContext): WebGLProgram
   {
     if (WebGlProgramManager.mixedProgram) return WebGlProgramManager.mixedProgram
     
-    debugger
+    // create new
     WebGlProgramManager.mixedProgram = WebGlProgramManager._createMixedProgram(gl);
+    
+    // use program
+    WebGlProgramManager._useMixedProgram(gl, WebGlProgramManager.mixedProgram)
+    
     return WebGlProgramManager.mixedProgram;
+  }
+  
+  /**
+   *
+   */
+  public static getTextureProgram (gl:WebGL2RenderingContext): WebGLProgram
+  {
+    if (WebGlProgramManager.textureProgram) return WebGlProgramManager.textureProgram
+    
+    WebGlProgramManager.textureProgram = WebGlProgramManager._createTextureProgram(gl);
+    
+    // use program
+    WebGlProgramManager._startUseTextureProgram(gl, WebGlProgramManager.textureProgram)
+    
+    return WebGlProgramManager.textureProgram;
+  }
+  
+  /**
+   *
+   */
+  public static getColorProgram (gl:WebGL2RenderingContext): WebGLProgram
+  {
+    if (WebGlProgramManager.colorProgram) return WebGlProgramManager.colorProgram
+    
+    WebGlProgramManager.colorProgram = WebGlProgramManager._createColorProgram(gl);
+    
+    // use program
+    WebGlProgramManager._useColorProgram(gl, WebGlProgramManager.colorProgram)
+    
+    return WebGlProgramManager.colorProgram;
+  }
+  
+  /**
+   * Enable texture program
+   * @param gl
+   */
+  public static sUseTextureProgram(gl:WebGL2RenderingContext):void {
+    WebGlProgramManager._startUseTextureProgram(gl, WebGlProgramManager.getTextureProgram(gl));
+  }
+  
+  /**
+   * Write into texture program image size
+   */
+  public static setUpIntoMixedProgramImageSize (gl:WebGL2RenderingContext, width:number, height:number):void
+  {
+    if (!WebGlProgramManager.mixedProgram) return;
+    const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(WebGlProgramManager.mixedProgram, "texSize");
+    gl.uniform2f(textureSizeLocation, width, height)
+  }
+  
+  /**
+   * Write into texture program image size
+   */
+  public static setUpIntoTextureProgramImageSize (gl:WebGL2RenderingContext, width:number, height:number):void
+  {
+    if (!WebGlProgramManager.textureProgram) return;
+    const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(WebGlProgramManager.textureProgram, "texSize");
+    gl.uniform2f(textureSizeLocation, width, height)
   }
   
   /**
    * This program include and color and texils
    */
-  public static _createMixedProgram (gl:WebGL2RenderingContext):WebGLProgram
+  private static _createMixedProgram (gl:WebGL2RenderingContext):WebGLProgram
   {
     // Vertex shader source code.
     const vertCode =
@@ -117,16 +191,13 @@ export class WebGlProgramManager
     // gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
     // gl.enableVertexAttribArray(textilsAttributeLocation)
     
-    //
-    WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, program)
-    
     return program
   }
   
   /**
    *
    */
-  public static _useAndTellGlAboutMixedProgram (gl:WebGL2RenderingContext, program:WebGLProgram )
+  private static _useMixedProgram (gl:WebGL2RenderingContext, program:WebGLProgram )
   {
     gl.useProgram(program)
     
@@ -150,12 +221,16 @@ export class WebGlProgramManager
     const textilsAttributeLocation = gl.getAttribLocation(program, "textilsPos")
     gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
     gl.enableVertexAttribArray(textilsAttributeLocation)
+    
+    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(program, "canvasSize");
+    gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
   }
   
   /**
    * This program include and color and texils
    */
-  public static _createTextureProgram (gl:WebGL2RenderingContext):WebGLProgram
+  private static _createTextureProgram (gl:WebGL2RenderingContext):WebGLProgram
   {
     // Vertex shader source code.
     const vertCode =
@@ -208,16 +283,13 @@ export class WebGlProgramManager
     const program = WebGlProgramManager.createProgram(gl, vertShader, fragShader)
     if (!program) throw new Error("Program was not created");
     
-    //
-    WebGlProgramManager._useAndTellGlAboutTextureProgram(gl, program)
-    
     return program
   }
   
   /**
    *
    */
-  public static _useAndTellGlAboutTextureProgram (gl:WebGL2RenderingContext, program:WebGLProgram )
+  private static _startUseTextureProgram (gl:WebGL2RenderingContext, program:WebGLProgram )
   {
     gl.useProgram(program)
     
@@ -233,13 +305,17 @@ export class WebGlProgramManager
     const textilsAttributeLocation = gl.getAttribLocation(program, "textilsPos")
     gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 16, 8)
     gl.enableVertexAttribArray(textilsAttributeLocation)
+    
+    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(program, "canvasSize");
+    gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
   }
   
   
   /**
-   * This program include and color and texils
+   * This program include only color coordinates
    */
-  public static _createColorProgram (gl:WebGL2RenderingContext):WebGLProgram
+  private static _createColorProgram (gl:WebGL2RenderingContext):WebGLProgram
   {
     // Vertex shader source code.
     const vertCode =
@@ -300,12 +376,15 @@ export class WebGlProgramManager
     // gl.vertexAttribPointer(rgbaAttributeLocation, 4, gl.FLOAT, false, 24, 8)
     // gl.enableVertexAttribArray(rgbaAttributeLocation)
     
-    WebGlProgramManager._useAndTellGlAboutColorProgram(gl, program)
-    
     return program
   }
   
-  public static _useAndTellGlAboutColorProgram (gl:WebGL2RenderingContext, program:WebGLProgram)
+  /**
+   *
+   * @param gl
+   * @param program
+   */
+  private static _useColorProgram (gl:WebGL2RenderingContext, program:WebGLProgram)
   {
     gl.useProgram(program)
     
@@ -323,6 +402,10 @@ export class WebGlProgramManager
     const rgbaAttributeLocation = gl.getAttribLocation(program, "rgba")
     gl.vertexAttribPointer(rgbaAttributeLocation, 4, gl.FLOAT, false, 24, 8)
     gl.enableVertexAttribArray(rgbaAttributeLocation)
+    
+    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(program, "canvasSize");
+    gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
   }
   
   
@@ -332,7 +415,7 @@ export class WebGlProgramManager
    * @param type gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
    * @param source
    */
-  public static createShader (gl:WebGL2RenderingContext, type:number, source:string):WebGLShader|null
+  private static createShader (gl:WebGL2RenderingContext, type:number, source:string):WebGLShader|null
   {
     const shader:WebGLShader|null = gl.createShader(type);
     if (!shader) return null;
@@ -356,7 +439,7 @@ export class WebGlProgramManager
    * @param vertexShader
    * @param fragmentShader
    */
-  public static createProgram = (gl:WebGL2RenderingContext, vertexShader:WebGLShader, fragmentShader:WebGLShader): WebGLProgram|null =>
+  private static createProgram = (gl:WebGL2RenderingContext, vertexShader:WebGLShader, fragmentShader:WebGLShader): WebGLProgram|null =>
   {
     const program = gl.createProgram();
     if (!program) return null;
