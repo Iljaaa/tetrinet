@@ -1,0 +1,175 @@
+<h1>Color Speed Up</h1>
+
+<p>
+  <a href="https://curtastic.com/tutorial/webgl-2d/?step=4">https://curtastic.com/tutorial/webgl-2d/?step=4</a>
+</p>
+
+<ul>
+  <li>Let's move the color math to the webGL shader.</li>
+  <li>Doing simple math in JS will cause lag when drawing tens of thousands of triangles.</li>
+  <li>We can make the GPU do the color division instead of our CPU.</li>
+  <li>This is to show that you can do the same logic on CPU or GPU and you should always try to put it on the GPU.</li>
+</ul>
+
+<canvas width=500 height=500 id=myCanvas></canvas>
+
+<script>
+  let gl, canvas
+
+  /**
+   * Array with vertices, it clears every loop
+   * @type {*[]}
+   */
+  let vertices = [];
+
+  /**
+   * @param x1 point 1
+   * @param y1
+   *
+   * @param x2 point 2
+   * @param y2
+   *
+   * @param x3 point 3
+   * @param y3
+   *
+   * @param r color for all triangle
+   * @param g
+   * @param b
+   * @param a
+   */
+  function drawTriangle(x1, y1, x2, y2, x3, y3, r, g, b, a) {
+    vertices.push(
+      x1, y1, r, g, b, a,
+      x2, y2, r, g, b, a,
+      x3, y3, r, g, b, a
+    )
+  }
+
+  function gameLoop()
+  {
+    window.requestAnimationFrame(gameLoop)
+
+    // Clear the screen.
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
+    // Draw the moving triangle.
+    drawTriangle(
+      -0.5+Math.sin(Date.now()*.004), 0.5,
+      -0.5, -0.5,
+      0.5, -0.5,
+      // UPDATE: Animate the blue color.
+      0, 255, 128 + Math.floor(Math.sin(Date.now()*.01) * 127), 1
+    )
+
+    // White triangle semi transparent.
+    drawTriangle(
+      -0.7, 0.0,
+      -0.8, -0.2,
+      -0.6, -0.1,
+      // UPDATE: Set color and alpha.
+      255, 255, 255, .4
+    )
+
+    // Third triangle gold.
+    drawTriangle(
+      0.7, 0.0,
+      0.8, -0.2,
+      0.6, -0.1,
+      // UPDATE: Set color and alpha.
+      255, 210, 11, 1
+    )
+
+    // Tell webGL to draw these triangles this frame.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+    // Draw all the triangles.
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2)
+
+    // Clear vertices. We will fill it every frame.
+    // This way you don't need to delete objects from the screen. You just stop drawing them.
+    vertices = []
+
+  }
+
+  function glSetup() {
+    canvas = document.getElementById("myCanvas")
+    gl = canvas.getContext("webgl2")
+
+    // Set the viewport size to be the whole canvas.
+    // gl.viewport(0, 0, canvas.width, canvas.height)
+    gl.viewport(0, 0, 500, 500)
+
+    // Set the background color to sky blue.
+    gl.clearColor(.5, .7, 1, 1)
+
+    // Tell webGL that we aren't doing anything special with the vertex buffer, just use a default one.
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+
+    // Vertex shader source code.
+    var vertCode =
+      "attribute vec2 coordinates;" +
+      // UPDATE: rgba comes from our vertices array.
+      "attribute vec4 rgba;" +
+      "varying highp vec4 rgbaForFrag;" +
+      "void main(void) {" +
+      // We are passing in only 2D X,Y coordinates. Then Z is always 0.0 and the divisor is always 1.0
+      " gl_Position = vec4(coordinates, 0.0, 1.0);" +
+      // Pass the color and transparency to the fragment shader.
+      // UPDATE: Divide rgb by 255 because webGL wants colors between 0 and 1.
+      " rgbaForFrag = vec4(rgba.xyz / 255.0, rgba.w);" +
+      "}"
+
+    // Create a vertex shader object.
+    var vertShader = gl.createShader(gl.VERTEX_SHADER)
+    gl.shaderSource(vertShader, vertCode)
+    gl.compileShader(vertShader)
+
+    // Fragment shader source code.
+    var fragCode =
+      "varying highp vec4 rgbaForFrag;" +
+      "void main(void) {" +
+      // We aren't passing in colors right now so all the triangles are green. G=1.0=full green.
+      // " gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);" +
+      // UPDATE: Use the passed in color and alpha.
+      " gl_FragColor = rgbaForFrag;" +
+      "}"
+
+    // Create fragment shader object.
+    var fragShader = gl.createShader(gl.FRAGMENT_SHADER)
+    gl.shaderSource(fragShader, fragCode)
+    gl.compileShader(fragShader)
+
+    // Tell webGL to use both my shaders.
+    var shaderProgram = gl.createProgram()
+    gl.attachShader(shaderProgram, vertShader)
+    gl.attachShader(shaderProgram, fragShader)
+    gl.linkProgram(shaderProgram)
+    gl.useProgram(shaderProgram)
+
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "coordinates"
+    // We need to tell it that each vertex takes 24 bytes now (6 floats)
+    var coord = gl.getAttribLocation(shaderProgram, "coordinates")
+    gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 24, 0)
+    gl.enableVertexAttribArray(coord)
+
+    // UPDATE: Tell webGL how to get rgba from our vertices array.
+    // Tell webGL to read 4 floats from the vertex array for each vertex
+    // and store them in my vec4 shader variable I've named "rgba"
+    // Start after 8 bytes. (After the 2 floats for x and y)
+    var attribute = gl.getAttribLocation(shaderProgram, "rgba")
+    gl.vertexAttribPointer(attribute, 4, gl.FLOAT, false, 24, 8)
+    gl.enableVertexAttribArray(attribute)
+
+    // Tell webGL that when we set the opacity, it should be semi transparent above what was already drawn.
+    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    // gl.enable(gl.BLEND)
+  }
+
+  window.onload = function() {
+    glSetup()
+    gameLoop()
+  }
+
+</script>
+

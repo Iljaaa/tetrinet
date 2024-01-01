@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<h1>Обработка изображений в WebGL</h1>
+
+<p>
+  https://webglfundamentals.org/webgl/lessons/ru/webgl-image-processing.html
+</p>
+
+<script id="vertex-shader-2d" type="x-shader/x-vertex">
+
+  // атрибут, который будет получать данные из буфера
+  attribute vec2 a_position;
+
+  //
+  uniform vec2 u_resolution;
+
+  // texils coords
+  attribute vec2 a_texCoord;
+
+  // move coods to image
+  varying vec2 v_texCoord;
+
+  // все шейдеры имеют функцию main
+  void main() {
+
+
+    // convert the rectangle from pixels to 0.0 to 1.0
+    vec2 zeroToOne = a_position / u_resolution;
+
+    // convert from 0->1 to 0->2
+    vec2 zeroToTwo = zeroToOne * 2.0;
+
+    // convert from 0->2 to -1->+1 (clipspace)
+    vec2 clipSpace = zeroToTwo - 1.0;
+
+    // gl_Position - специальная переменная вершинного шейдера,
+    // которая отвечает за установку положения
+    // gl_Position = a_position;
+
+    gl_Position = vec4(clipSpace, 0, 1);
+
+    // set texils
+    v_texCoord = a_texCoord;
+  }
+
+</script>
+
+
+<script id="fragment-shader-2d" type="x-shader/x-fragment">
+  precision mediump float;
+
+   // наша текстура
+   uniform sampler2D u_image;
+
+   // texCoords, переданные из вершинного шейдера
+   varying vec2 v_texCoord;
+
+   void main() {
+      // получение цвета из текстуры
+      gl_FragColor = texture2D(u_image, v_texCoord);
+   }
+</script>
+
+<canvas id="canvas" width="500" height="500" style="border: solid 2px gold"></canvas>
+
+<script>
+
+  function main() {
+    console.log('main')
+    let image = new Image();
+    image.crossOrigin = "anonymous"
+    image.src = "https://webglfundamentals.org/webgl/resources/leaves.jpg";  // ДОЛЖНА НАХОДИТЬСЯ НА ТОМ ЖЕ ДОМЕНЕ!!!
+    image.onload = function() {
+      console.log(image, 'image loaded')
+      render(image);
+    }
+  }
+
+  function render(image) {
+
+    // Get A WebGL context
+    /** @type {HTMLCanvasElement} */
+    var canvas = document.querySelector("#canvas");
+    var gl = canvas.getContext("webgl2");
+    if (!gl) return;
+
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+    // set clear color
+    gl.clearColor(0, 0, 0, 0);
+
+    // setup GLSL program
+    var program = createProgram(gl, "#vertex-shader-2d", "#fragment-shader-2d");
+
+    // ссылка на атрибут, куда пойдут координаты текстуры
+    var texcoordLocation = gl.getAttribLocation(program, "a_texCoord");
+
+    // lookup uniforms
+    var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+
+    // Tell it to use our program (pair of shaders)
+    gl.useProgram(program);
+
+    // set the resolution
+    gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+
+
+    // Create a buffer to put three 2d clip space points in
+    var positionBuffer = gl.createBuffer();
+
+    // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+    // Set a rectangle the same size as the image.
+    setRectangle(gl, 0, 0, image.width, image.height);
+
+    // provide texture coordinates for the rectangle.
+    var texcoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      0.0,  0.0,
+      1.0,  0.0,
+      0.0,  1.0,
+      0.0,  1.0,
+      1.0,  0.0,
+      1.0,  1.0,
+    ]), gl.STATIC_DRAW);
+
+    // Create a texture.
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // Set the parameters so we can render any size image.
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+    // Upload the image into the texture.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+
+
+    // Clear the canvas
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Turn on the position attribute
+
+    var positionLocation = gl.getAttribLocation(program, "a_position");
+    gl.enableVertexAttribArray(positionLocation);
+
+    // Bind the position buffer.
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+    // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+    var size = 2;          // 2 components per iteration
+    var type = gl.FLOAT;   // the data is 32bit floats
+    var normalize = false; // don't normalize the data
+    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+    var offset = 0;        // start at the beginning of the buffer
+    gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset);
+
+    // Turn on the texcoord attribute
+    gl.enableVertexAttribArray(texcoordLocation);
+
+    // bind the texcoord buffer.
+    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+
+    // Tell the texcoord attribute how to get data out of texcoordBuffer (ARRAY_BUFFER)
+    var size = 2;          // 2 components per iteration
+    var type = gl.FLOAT;   // the data is 32bit floats
+    var normalize = false; // don't normalize the data
+    var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+    var offset = 0;        // start at the beginning of the buffer
+    gl.vertexAttribPointer(texcoordLocation, size, type, normalize, stride, offset);
+
+
+    // Draw the rectangle.
+    var primitiveType = gl.TRIANGLES;
+    var offset = 0;
+    var count = 6;
+    gl.drawArrays(primitiveType, offset, count);
+
+  }
+
+
+  function createShader2(gl, type, source) {
+    var shader = gl.createShader(type);   // создание шейдера
+    gl.shaderSource(shader, source);      // устанавливаем шейдеру его программный код
+    gl.compileShader(shader);             // компилируем шейдер
+    var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    if (success) {                        // если компиляция прошла успешно - возвращаем шейдер
+      return shader;
+    }
+
+    console.log(gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+  }
+
+  function createProgram(gl, vertexShaderId, fragmentShaderId)
+  {
+
+    console.log ('create program')
+    var vertexShaderSource = document.querySelector(vertexShaderId).text;
+    var fragmentShaderSource = document.querySelector(fragmentShaderId).text;
+
+    var program = gl.createProgram();
+    let c1 = createShader2(gl, gl.VERTEX_SHADER, vertexShaderSource)
+    console.log (c1, 'c1')
+    gl.attachShader(program, c1);
+    gl.attachShader(program, createShader2(gl, gl.FRAGMENT_SHADER, fragmentShaderSource));
+    gl.linkProgram(program);
+    var success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (success) {
+      return program;
+    }
+
+    console.log(gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+  }
+
+
+  function setRectangle(gl, x, y, width, height) {
+    var x1 = x;
+    var x2 = x + width;
+    var y1 = y;
+    var y2 = y + height;
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      x1, y1,
+      x2, y1,
+      x1, y2,
+      x1, y2,
+      x2, y1,
+      x2, y2,
+    ]), gl.STATIC_DRAW);
+  }
+
+  // start
+  main();
+
+</script>
+</body>
+</html>
