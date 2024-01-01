@@ -43,5 +43,34 @@ export class BackFlash extends Flash
     }
     
   }
+  
+  
+  /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>>
+  {
+    //  o
+    // 0o
+    // o
+    if (this._vertical)
+    {
+      return [
+        [false, true],
+        [true, true],
+        [true, false],
+      ];
+    }
+    
+    // o0
+    //  oo
+    else
+    {
+      return [
+        [true, true, false],
+        [false, true, true],
+      ];
+    }
+  }
 
 }

@@ -43,5 +43,34 @@ export class ForwardFlash extends Flash
     }
     
   }
+  
+  
+  /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>> {
+    // o
+    // 0o
+    //  0
+    if (this._vertical)
+    {
+      return [
+        [true, false],
+        [true, true],
+        [false, true],
+      ];
+    }
+    
+    //  0o
+    // oo
+    else
+    {
+      
+      return [
+        [false, true, true],
+        [true, true, false],
+      ];
+    }
+  }
 
 }

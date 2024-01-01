@@ -14,6 +14,11 @@ export interface Figure
   getFields: () => Array<number>
   
   /**
+   *
+   */
+  getPreviewFields: () => Array<Array<boolean>>
+  
+  /**
    * Rotate center of figure
    */
   getPosition: () => Coords

@@ -20,7 +20,6 @@ export class Camel extends FourBlocksFigure implements Figure
   
   /**
    * @param cap
-   * @param center
    */
   constructor(cap:Cup)
   {
@@ -43,6 +42,56 @@ export class Camel extends FourBlocksFigure implements Figure
     // })
   }
   
+  /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>>
+  {
+    //  o
+    // o0o
+    if (this._state === CamelState.top)
+    {
+      return [
+        [false, true, false],
+        [true, true, true],
+      ];
+    }
+    
+    // o
+    // 0o
+    // o
+    else if (this._state === CamelState.right)
+    {
+      return [
+        [true, false],
+        [true, true],
+        [true, false],
+      ];
+    }
+    
+    
+    // o0o
+    //  o
+    if (this._state === CamelState.bottom)
+    {
+      return [
+        [true, true, true],
+        [false, true, false],
+      ];
+    }
+    
+    //  o
+    // o0
+    //  o
+    else
+    {
+      return [
+        [false, true],
+        [true, true],
+        [false, true],
+      ];
+    }
+  }
   
   /**
    * Set position

@@ -45,6 +45,14 @@ export abstract class Horse extends FourBlocksFigure implements Figure
     })
   }
   
+  
+  /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>> {
+    return [[]];
+  }
+  
   // moveLeft(): boolean
   // {
   //   const capWidth = this._cap.getWidthInCells()

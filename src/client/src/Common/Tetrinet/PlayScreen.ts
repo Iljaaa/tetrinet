@@ -50,6 +50,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private _nextFigure:Figure;
   
   /**
+   * Position of left bottom point of next figure
+   * @private
+   */
+  private nextFigurePosition:Coords = new Coords(320, 512);
+  
+  /**
    * Timer for next down
    * @private
    */
@@ -500,10 +506,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onFigureMovedToCup()
   {
-    console.log ('onFigureMovedToCup');
-    
-    // generate new figure
-    const newFigure:Figure = this.generateNewFigure();
+    console.log ('PlayScreen.onFigureMovedToCup');
     
     // move figure to drop position
     this._nextFigure.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y);
@@ -559,30 +562,88 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private renderNextFigure(gl: WebGL2RenderingContext)
   {
-    const fields = this._nextFigure.getFields();
-    const len = fields.length;
-    for (let r = 0; r < len; r++)
-    {
-      const cellIndex = fields[r]
-      
-      const c:Coords = this._cup.getCoordsByIndex(cellIndex);
-      
-      const bottom = (c.y * 32) + 320;
-      const left = (c.x * 32) + 320;
-      if (left < 320) {
-        debugger
-      }
-      
-      this._block.setVertices(Vertices.createTextureVerticesArray(
-        left, bottom, 32, 32,
-        352, 0, 32, 32
-      ))
-      
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-      
-      // draw here
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-      
-    }
+    const fields:Array<Array<boolean>> = this._nextFigure.getPreviewFields();
+    
+    const BLOCK_SIZE = 32;
+    
+    // calculate number rows
+    const rows = fields.length
+    
+    // calculate number cols
+    const cols = fields[0].length
+    
+    
+    // calculate left margin
+    const leftMargin = ((4 - cols) / 2) * BLOCK_SIZE;
+    
+    // calculate left margin
+    const bottomMargin = ((4 - rows) / 2) * BLOCK_SIZE;
+    
+    // for (let r = 0; r < rows; r++) {
+    fields.reverse().forEach((row:Array<boolean>, rowIndex:number) => {
+      row.forEach((col:boolean, colIndex:number) => {
+        if (col)
+        {
+          const left = (colIndex * BLOCK_SIZE) + this.nextFigurePosition.x + leftMargin;
+          const bottom = (rowIndex * BLOCK_SIZE) + this.nextFigurePosition.y + bottomMargin;
+          
+          this._block.setVertices(Vertices.createTextureVerticesArray(
+            left, bottom, BLOCK_SIZE, BLOCK_SIZE,
+            352, 0, BLOCK_SIZE, BLOCK_SIZE
+          ))
+          
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+          
+          // draw here
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+        
+      })
+    });
+    
+    // for (let c = 0; c < cols; c++)
+    // {
+    //
+    //   const bottom = (r * BLOCK_SIZE) + 320;
+    //   const left = (c * BLOCK_SIZE) + 320;
+    //
+    //   this._block.setVertices(Vertices.createTextureVerticesArray(
+    //     left, bottom, 32, 32,
+    //     352, 0, 32, 32
+    //   ))
+    //
+    //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    //
+    //   // draw here
+    //   gl.drawArrays(gl.TRIANGLES, 0, 6);
+    // }
+    
   }
+    
+    
+    // const len = fields.length;
+    // for (let r = 0; r < len; r++)
+    // {
+    //   const cellIndex = fields[r]
+    //
+    //   const c:Coords = this._cup.getCoordsByIndex(cellIndex);
+    //
+    //   const bottom = (c.y * 32) + 320;
+    //   const left = (c.x * 32) + 320;
+    //   // if (left < 320) {
+    //   //   debugger
+    //   // }
+    //
+    //   this._block.setVertices(Vertices.createTextureVerticesArray(
+    //     left, bottom, 32, 32,
+    //     352, 0, 32, 32
+    //   ))
+    //
+    //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    //
+    //   // draw here
+    //   gl.drawArrays(gl.TRIANGLES, 0, 6);
+    //
+    // }
+  
 }

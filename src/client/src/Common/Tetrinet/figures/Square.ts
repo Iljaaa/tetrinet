@@ -39,6 +39,16 @@ export class Square extends FourBlocksFigure implements Figure
   }
   
   /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>> {
+    return [
+      [true, true],
+      [true, true]
+    ];
+  }
+  
+  /**
    * Rotate to right
    */
   rotateClockwise():boolean

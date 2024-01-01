@@ -70,5 +70,55 @@ export class BackHorse extends Horse
     }
     
   }
+  
+  /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>>
+  {
+    // 0o
+    //  O
+    //  O
+    if (this._position === 0)
+    {
+      return [
+        [true, true],
+        [false, true],
+        [false, true],
+      ];
+    }
+    
+    //  0o
+    // ooo
+    else if (this._position === 1)
+    {
+      return [
+        [false, false, true],
+        [true, true, true],
+      ];
+    }
+    
+    
+    // o
+    // 0
+    // oo
+    if (this._position === 2)
+    {
+      return [
+        [true, false],
+        [true, false],
+        [true, true],
+      ];
+    }
+    // 0oo
+    // o
+    else
+    {
+      return [
+        [true, true, true],
+        [true, false, false],
+      ];
+    }
+  }
 
 }

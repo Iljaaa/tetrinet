@@ -190,6 +190,20 @@ export class Line extends FourBlocksFigure implements Figure
     return true;
   }
   
+  /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>> {
+    return (this._vertical) ? [
+      [true],
+      [true],
+      [true],
+      [true],
+    ] : [
+      [true, true, true, true]
+    ];
+  }
+  
   
   
   /**

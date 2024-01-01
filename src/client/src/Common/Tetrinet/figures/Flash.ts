@@ -47,6 +47,13 @@ export abstract class Flash extends FourBlocksFigure implements Figure
   }
   
   /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>> {
+    return [[]];
+  }
+  
+  /**
    * Rotate to right
    */
   rotateClockwise():boolean

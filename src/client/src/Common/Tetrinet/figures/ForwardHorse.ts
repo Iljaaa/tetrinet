@@ -71,6 +71,54 @@ export class ForwardHorse extends Horse
     
   }
   
-  
+  /**
+   *
+   */
+  getPreviewFields(): Array<Array<boolean>>
+  {
+    // 0O
+    // O
+    // O
+    if (this._position === 0)
+    {
+      return [
+       [true, true],
+       [true, false],
+       [true, false],
+      ];
+    }
+    
+    // o0o
+    //   o
+    else if (this._position === 1)
+    {
+      return [
+        [true, true, true],
+        [false, false, true],
+      ];
+    }
+    
+    
+    //  o
+    // 0o this is not in center figure
+    // oo
+    if (this._position === 2)
+    {
+      return [
+        [false, true],
+        [false, true],
+        [true, true],
+      ];
+    }
+    // 0
+    // ooo
+    else
+    {
+      return [
+        [true, false, false],
+        [true, true, true],
+      ];
+    }
+  }
 
 }
