@@ -3,6 +3,7 @@ import {GameEventListener, Tetrinet} from "./Common/Tetrinet/Tetrinet";
 
 import sprite from "./sprite.png"
 import {Assets} from "./Common/Tetrinet/Assets";
+import {Socket} from "./Common/Socket/Socket";
 
 type State = {
   score: number
@@ -64,6 +65,15 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
       this.game.setGameEventListener(this);
     })
     
+   
+    const s = new Socket()
+    s.open();
+    
+    
+    
+    
+    // socket.onopen = connectionOpen;
+    // socket.onmessage = messageReceived;
     
   }
   

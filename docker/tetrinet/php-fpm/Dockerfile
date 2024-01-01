@@ -5,6 +5,9 @@ RUN apt-get update
 # php-mysql
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
+# sockets
+RUN docker-php-ext-install sockets
+
 # memcache
 #RUN apt-get install -y libmemcached-dev zlib1g-dev \
 #    && pecl install memcached-3.1.5 \

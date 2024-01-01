@@ -11,6 +11,8 @@ services:
     environment:
       XDEBUG_CONFIG: "remote_host=172.25.0.1 client_host=172.25.0.1 remote_enable=1"
       PHP_IDE_CONFIG: "serverName=Docker"
+    ports:
+      - 889:889
     links:
       # - redis
       - db
@@ -23,6 +25,7 @@ services:
       - ./../../:/var/www/public/
     ports:
       - 8080:80
+      # - 889:889
     depends_on:
       - php-fpm
 
