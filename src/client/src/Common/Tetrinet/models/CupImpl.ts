@@ -19,10 +19,16 @@ export class CupImpl implements Cup
   protected heightInCells = 20;
   
   /**
-   * Array of field
+   * Array of field where if it is true then there block
    * @private
    */
   protected fields:Array<boolean> = [];
+  
+  /**
+   * Array of color
+   * @protected
+   */
+  public colors:Array<number> = [];
   
   constructor()
   {

@@ -50,6 +50,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private _nextFigure:Figure;
   
   /**
+   * Color of next figure
+   * @private
+   */
+  private _nextFigureColor: number = 0;
+  
+  /**
    * Position of left bottom point of next figure
    * @private
    */
@@ -99,6 +105,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // generate next figure
     this._nextFigure = this.generateNewFigure();
     
+    // next figure random color
+    this._nextFigureColor = this.generateRandomColor();
+    
+    // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
     
     // in background we use only texture
@@ -151,7 +161,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // generate new figure
     const f = this.generateNewFigure();
     
-    this._cup.setFigure(f);
+    // next figure random color
+    this._nextFigureColor = this.generateRandomColor();
+    
+    this._cup.setFigure(f, this._nextFigureColor);
     
     // init first figure in cup
     this._cup.start();
@@ -520,10 +533,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
     
     //
-    this._cup.setFigure(this._nextFigure);
+    this._cup.setFigure(this._nextFigure, this._nextFigureColor);
     
     // generate next figure
     this._nextFigure = this.generateNewFigure();
+    
+    // next figure random color
+    this._nextFigureColor = this.generateRandomColor();
   }
   
   /**
@@ -547,6 +563,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
     
     return f;
+  }
+  
+  /**
+   *
+   * @private
+   */
+  private generateRandomColor():number {
+    return Math.floor(Math.random() * 3);
   }
   
   /**
@@ -590,9 +614,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
           const left = (colIndex * BLOCK_SIZE) + leftMargin;
           const bottom = (rowIndex * BLOCK_SIZE)  + bottomMargin;
           
+          const spriteLeft = 320 + this._nextFigureColor * BLOCK_SIZE;
+          
           this._block.setVertices(Vertices.createTextureVerticesArray(
             left, bottom, BLOCK_SIZE, BLOCK_SIZE,
-            352, 0, BLOCK_SIZE, BLOCK_SIZE
+            spriteLeft, 0, BLOCK_SIZE, BLOCK_SIZE
           ))
           
           gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)

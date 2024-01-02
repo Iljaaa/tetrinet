@@ -78,7 +78,7 @@ export class CupRenderer2
     
     // render figure
     const f = cup.getFigure()
-    if (f) this.renderFigure(gl, cup, f)
+    if (f) this.renderFigure(gl, cup, f, cup.getFigureColor())
     
     // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.background2.vertices), gl.STATIC_DRAW)
     
@@ -120,10 +120,14 @@ export class CupRenderer2
         // const coll = i - (row * c.getWidthInCells());
         const left = coll * BLOCK_SIZE_PX;
         
+        let f = 320;
+        if (cup.colors[coll] !== undefined) {
+          f += cup.colors[coll] * BLOCK_SIZE_PX
+        }
         
         this.block.setVertices(Vertices.createTextureVerticesArray(
           left, bottom, BLOCK_SIZE_PX, BLOCK_SIZE_PX,
-          320, 0, 32, 32
+          f, 32, 32, 32
         ))
         
         
@@ -135,7 +139,10 @@ export class CupRenderer2
     }
   }
   
-  private renderFigure (gl: WebGL2RenderingContext, cup:Cup, f: Figure)
+  /**
+   * @private
+   */
+  private renderFigure (gl: WebGL2RenderingContext, cup:Cup, f: Figure, color:number)
   {
     const fields = f.getFields();
     const len = fields.length;
@@ -148,9 +155,11 @@ export class CupRenderer2
       const bottom = c.y * BLOCK_SIZE_PX;
       const left = c.x * BLOCK_SIZE_PX;
       
+      const textureLeft = 320 + color * BLOCK_SIZE_PX;
+      
       this.block.setVertices(Vertices.createTextureVerticesArray(
         left, bottom, BLOCK_SIZE_PX, BLOCK_SIZE_PX,
-        320, 0, 32, 32
+        textureLeft, 0, 32, 32
       ))
       
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.block.vertices), gl.STATIC_DRAW)

@@ -13,13 +13,19 @@ export interface CapWithFigure extends Cup
   /**
    * Set new drop figure
    * @param f
+   * @param color color of figure
    */
-  setFigure(f:Figure): void
+  setFigure(f:Figure, color:number): void
   
   /**
    * Get figure
    */
   getFigure(): Figure|null;
+  
+  /**
+   * Color of figure
+   */
+  getFigureColor() : number
   
   /**
    * Get position where we should drop new figure

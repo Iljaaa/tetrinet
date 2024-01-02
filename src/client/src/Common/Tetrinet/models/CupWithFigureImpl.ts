@@ -3,13 +3,6 @@ import {CapWithFigure} from "./CupWithFigure";
 
 import {CupImpl} from "./CupImpl";
 import {Coords} from "../math/Coords";
-import {BackHorse} from "../figures/BackHorse";
-import {ForwardHorse} from "../figures/ForwardHorse";
-import {ForwardFlash} from "../figures/ForwardFlash";
-import {BackFlash} from "../figures/BackFlash";
-import {Line} from "../figures/Line";
-import {Square} from "../figures/Square";
-import {Camel} from "../figures/Camel";
 
 export type CupEventListener = {
   onLineCleared: (countLines:number) => void,
@@ -51,6 +44,12 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
   private _figure:Figure|null = null
   
   /**
+   * Color of figure
+   * @private
+   */
+  private _figureColor:number = 0
+  
+  /**
    * Event listener
    * @private
    */
@@ -85,15 +84,18 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     // this.generateAndPutNewFigure();
   }
   
-  setFigure(f:Figure) {
-    // this._figure = new FigureClass(figure);
+  setFigure(f:Figure, color:number) {
     this._figure = f;
+    this._figureColor = color
   }
   
   getFigure(): Figure|null {
     return this._figure;
   }
   
+  getFigureColor(): number {
+    return this._figureColor
+  }
   
   getDropPoint(): Coords {
     return this.dropPoint;
@@ -170,7 +172,11 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     
     // move figure to the cup
     this._figure.getFields().forEach((f:number) => {
+      // move figure
       this.fields[f] = true;
+      
+      // move color
+      this.colors[f] = this._figureColor;
     })
     
     // clear full lines
