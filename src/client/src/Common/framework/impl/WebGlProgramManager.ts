@@ -98,6 +98,15 @@ export class WebGlProgramManager
   }
   
   /**
+   * White into texture program base translation
+   */
+  public static setUpIntoTextureProgramTranslation (gl:WebGL2RenderingContext, x:number, y:number): void{
+    if (!WebGlProgramManager.textureProgram) return;
+    const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(WebGlProgramManager.textureProgram, "translation");
+    gl.uniform2f(textureSizeLocation, x, y)
+  }
+  
+  /**
    * This program include and color and texils
    */
   private static _createMixedProgram (gl:WebGL2RenderingContext):WebGLProgram
@@ -125,9 +134,14 @@ export class WebGlProgramManager
       // texture size
       "uniform vec2 texSize;" +
       
+      // translation
+      "uniform vec2 translation;" +
+      
       "void main(void) {" +
+      // create and move position
+      " vec2 drawPos = coordinates + translation;" +
       // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
-      " vec2 drawPos = coordinates / canvasSize * 2.0;" +
+      " drawPos = drawPos / canvasSize * 2.0;" +
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
       " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
       // Pass the color and transparency to the fragment shader.
@@ -249,9 +263,14 @@ export class WebGlProgramManager
       // texture size
       "uniform vec2 texSize;" +
       
+      // translation
+      "uniform vec2 translation;" +
+      
       "void main(void) {" +
+      // create and move position
+      " vec2 drawPos = coordinates + translation;" +
       // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
-      " vec2 drawPos = coordinates / canvasSize * 2.0;" +
+      " drawPos = drawPos / canvasSize * 2.0;" +
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
       " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
       // Pass the texture position to the fragment shader.
@@ -331,9 +350,14 @@ export class WebGlProgramManager
       // canvas size, used to map local coords to pixels
       "uniform vec2 canvasSize;" +
       
+      // translation
+      "uniform vec2 translation;" +
+      
       "void main(void) {" +
+      // create and move position
+      " vec2 drawPos = coordinates + translation;" +
       // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
-      " vec2 drawPos = coordinates / canvasSize * 2.0;" +
+      " drawPos = coordinates / canvasSize * 2.0;" +
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
       " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
       // Pass the color and transparency to the fragment shader.

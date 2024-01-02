@@ -84,17 +84,34 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
   }
   
   render () {
-    return <div>
-      {/* @ts-ignore */}
-      
-      <canvas id="canvas" width={800} height={800} style={{border: "solid 2px orange"}} ref={this._canvas}/>
-      <div>score {this.state.score}</div>
-      <div>{sprite}</div>
-      <div style={{display: "flex", justifyContent: "center"}}>
-        <div style={{backgroundColor: "red", width: "40px", height: "40px"}}></div>
-        <div style={{backgroundColor: "green", width: "40px", height: "40px"}}></div>
-        <div style={{backgroundColor: "blue", width: "40px", height: "40px"}}></div>
+    return <div style={{padding: "2rem"}}>
+      <div style={{display: "flex"}}>
+        <div>
+          <canvas id="canvas" width={500} height={704} style={{border: "solid 2px orange"}} ref={this._canvas}/>
+        </div>
+        <div style={{textAlign: "left", paddingLeft: "2rem"}}>
+          
+          <div style={{margin: "0 0 1rem 0"}}>score <b>{this.state.score}</b></div>
+          <Help />
+          <div style={{display: "flex", justifyContent: "flex-start", marginTop: "1rem"}}>
+            <div style={{backgroundColor: "red", width: "40px", height: "40px"}}></div>
+            <div style={{backgroundColor: "green", width: "40px", height: "40px"}}></div>
+            <div style={{backgroundColor: "blue", width: "40px", height: "40px"}}></div>
+          </div>
+        </div>
       </div>
     </div>
   }
+}
+
+
+const Help = () => {
+  return <div>
+    left - A<br/>
+    right - D<br/>
+    rotate clockwise - E<br/>
+    rotate counterclockwise - Q<br/>
+    down - S<br/>
+    drop - Space
+  </div>
 }

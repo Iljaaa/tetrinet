@@ -53,7 +53,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Position of left bottom point of next figure
    * @private
    */
-  private nextFigurePosition:Coords = new Coords(320, 512);
+  private nextFigurePosition:Coords = new Coords(352, 512);
   
   /**
    * Timer for next down
@@ -562,6 +562,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private renderNextFigure(gl: WebGL2RenderingContext)
   {
+    
+    // move cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)
+    
     const fields:Array<Array<boolean>> = this._nextFigure.getPreviewFields();
     
     const BLOCK_SIZE = 32;
@@ -571,7 +575,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // calculate number cols
     const cols = fields[0].length
-    
     
     // calculate left margin
     const leftMargin = ((4 - cols) / 2) * BLOCK_SIZE;
@@ -584,8 +587,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       row.forEach((col:boolean, colIndex:number) => {
         if (col)
         {
-          const left = (colIndex * BLOCK_SIZE) + this.nextFigurePosition.x + leftMargin;
-          const bottom = (rowIndex * BLOCK_SIZE) + this.nextFigurePosition.y + bottomMargin;
+          const left = (colIndex * BLOCK_SIZE) + leftMargin;
+          const bottom = (rowIndex * BLOCK_SIZE)  + bottomMargin;
           
           this._block.setVertices(Vertices.createTextureVerticesArray(
             left, bottom, BLOCK_SIZE, BLOCK_SIZE,

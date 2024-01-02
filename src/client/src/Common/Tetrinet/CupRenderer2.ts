@@ -5,6 +5,7 @@ import {CupImpl} from "./models/CupImpl";
 import {Coords} from "./math/Coords";
 import {Cup} from "./models/Cup";
 import {Figure} from "./models/Figure";
+import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
 
 const BLOCK_SIZE_PX = 32;
 
@@ -87,12 +88,20 @@ export class CupRenderer2
     
   }
   
-  private renderBackground (gl:WebGL2RenderingContext){
+  private renderBackground (gl:WebGL2RenderingContext)
+  {
+    // move cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32)
+    
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.background.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, this.background.getVerticesCount())
   }
   
-  private renderCup (gl:WebGL2RenderingContext, cup:CupWithFigureImpl){
+  private renderCup (gl:WebGL2RenderingContext, cup:CupWithFigureImpl)
+  {
+    
+    // move cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32)
     
     // draw cup bodies
     const fields = cup.getFields()
