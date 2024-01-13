@@ -109,7 +109,7 @@ export class CupRenderer2
     
     for (let i = 0; i < len; i++)
     {
-      if (fields[i])
+      if (fields[i] > -1)
       {
         
         // bottom
@@ -120,10 +120,7 @@ export class CupRenderer2
         // const coll = i - (row * c.getWidthInCells());
         const left = coll * BLOCK_SIZE_PX;
         
-        let f = 320;
-        if (cup.colors[coll] !== undefined) {
-          f += cup.colors[coll] * BLOCK_SIZE_PX
-        }
+        let f = 320 + fields[i] * BLOCK_SIZE_PX;
         
         this.block.setVertices(Vertices.createTextureVerticesArray(
           left, bottom, BLOCK_SIZE_PX, BLOCK_SIZE_PX,

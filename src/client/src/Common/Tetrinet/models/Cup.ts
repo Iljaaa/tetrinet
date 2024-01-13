@@ -5,7 +5,7 @@ export interface Cup
   /**
    * All fields array
    */
-  getFields: () => Array<boolean>
+  getFields: () => Array<number>
   
   /**
    * Check can we place this array of indexes into cup
@@ -16,7 +16,7 @@ export interface Cup
   /**
    * Get field value
    */
-  getFieldValueByIndex(index:number):boolean
+  getFieldValueByIndex(index:number):number
   
   /**
    * Convert cell index into coords

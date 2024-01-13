@@ -47,7 +47,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    *
    * @private
    */
-  private _nextFigure:Figure;
+  private _nextFigure:Figure|null = null;
   
   /**
    * Color of next figure
@@ -103,7 +103,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cup =  new CupWithFigureImpl(this);
     
     // generate next figure
-    this._nextFigure = this.generateNewFigure();
+    // this._nextFigure = this.generateNewFigure();
     
     // next figure random color
     this._nextFigureColor = this.generateRandomColor();
@@ -158,11 +158,16 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     //   throw new Error('Cup render not initialised')
     // }
     
-    // generate new figure
-    const f = this.generateNewFigure();
+    
+    // next figure random color
+    this._nextFigure = this.generateNewFigure();
     
     // next figure random color
     this._nextFigureColor = this.generateRandomColor();
+    
+    // generate new figure
+    const f = this.generateNewFigure();
+    f.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y)
     
     this._cup.setFigure(f, this._nextFigureColor);
     
@@ -520,6 +525,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   onFigureMovedToCup()
   {
     console.log ('PlayScreen.onFigureMovedToCup');
+    if (!this._nextFigure) return;
     
     // move figure to drop position
     this._nextFigure.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y);
@@ -586,6 +592,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private renderNextFigure(gl: WebGL2RenderingContext)
   {
+    if (!this._nextFigure) return;
     
     // move cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)

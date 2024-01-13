@@ -164,7 +164,7 @@ export class Camel extends FourBlocksFigure implements Figure
       const createIndexByCoords = this._cap.getCellIndexByCoords(c)
       
       // check in fields
-      if (this._cap.getFieldValueByIndex(createIndexByCoords)) {
+      if (this._cap.getFieldValueByIndex(createIndexByCoords) > -1) {
         return true
       }
       
@@ -237,7 +237,7 @@ export class Camel extends FourBlocksFigure implements Figure
       const createIndexByCoords = this._cap.getCellIndexByCoords(c)
       
       // check is field is busy in cup
-      if (this._cap.getFieldValueByIndex(createIndexByCoords)) {
+      if (this._cap.getFieldValueByIndex(createIndexByCoords) > -1) {
         return true
       }
       

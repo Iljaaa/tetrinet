@@ -22,46 +22,40 @@ export class CupImpl implements Cup
    * Array of field where if it is true then there block
    * @private
    */
-  protected fields:Array<boolean> = [];
-  
-  /**
-   * Array of color
-   * @protected
-   */
-  public colors:Array<number> = [];
+  protected fields:Array<number> = [];
   
   constructor()
   {
     // console.log ('CapClass.constructor');
     
     // make fields array
-    this.fields = new Array<boolean>(this.widthInCells * this.heightInCells).fill(false)
+    this.fields = new Array<number>(this.widthInCells * this.heightInCells).fill(-1)
     
     // temp cup state
-    this.fields[0] = true;
-    this.fields[1] = true;
-    this.fields[2] = true;
-    this.fields[5] = true;
-    this.fields[4] = true;
-    this.fields[6] = true;
-    this.fields[7] = true;
-    this.fields[8] = true;
-    this.fields[9] = true;
+    this.fields[0] = 1;
+    this.fields[1] = 1;
+    this.fields[2] = 1;
+    this.fields[5] = 1;
+    this.fields[4] = 1;
+    this.fields[6] = 1;
+    this.fields[7] = 1;
+    this.fields[8] = 1;
+    this.fields[9] = 1;
     
-    this.fields[10] = true;
-    this.fields[11] = true;
-    this.fields[12] = true;
-    this.fields[15] = true;
-    this.fields[14] = true;
-    this.fields[16] = true;
-    this.fields[17] = true;
-    this.fields[18] = true;
-    this.fields[19] = true;
+    this.fields[10] = 1;
+    this.fields[11] = 1;
+    this.fields[12] = 1;
+    this.fields[15] = 1;
+    this.fields[14] = 1;
+    this.fields[16] = 1;
+    this.fields[17] = 1;
+    this.fields[18] = 1;
+    this.fields[19] = 1;
     // this.fields[12] = true;
     // this.fields[22] = true;
   }
   
-  getFields = ():Array<boolean> => {
+  getFields = ():Array<number> => {
     return this.fields;
   }
   
@@ -72,13 +66,13 @@ export class CupImpl implements Cup
   canPlace (newFields:Array<number>): boolean
   {
     const i:number = newFields.findIndex((cellIndex:number) => {
-      return this.fields[cellIndex]
+      return this.fields[cellIndex] > -1
     });
     
     return i === -1;
   }
   
-  getFieldValueByIndex(index: number): boolean {
+  getFieldValueByIndex(index: number): number {
     return this.fields[index]
   }
   

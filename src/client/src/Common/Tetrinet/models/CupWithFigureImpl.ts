@@ -173,10 +173,10 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     // move figure to the cup
     this._figure.getFields().forEach((f:number) => {
       // move figure
-      this.fields[f] = true;
+      this.fields[f] = this._figureColor;
       
       // move color
-      this.colors[f] = this._figureColor;
+      // this.colors[f] = this._figureColor;
     })
     
     // clear full lines
@@ -220,7 +220,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
       let fullLine:boolean = true;
       for (let i = startIndex; i < endIndex; i++)
       {
-        if (!this.fields[i]) {
+        if (this.fields[i] === -1) {
           fullLine = false
           break
         }
@@ -238,7 +238,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     fullLines.forEach((fullLineIndex:number) => {
       for (let i = 0; i < this.widthInCells; i++) {
         let index = this.getCellIndexByCoords({x: i, y: fullLineIndex})
-        this.fields[index] = false
+        this.fields[index] = -1
       }
     })
     
@@ -256,9 +256,9 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
           const indexOfBlockAbove = currentBlockIndex + this.widthInCells;
           
           // if there is a block we move them to this libe
-          if (this.fields[indexOfBlockAbove]){
-            this.fields[currentBlockIndex] = true;
-            this.fields[indexOfBlockAbove] = false;
+          if (this.fields[indexOfBlockAbove] > -1){
+            this.fields[currentBlockIndex] = this.fields[indexOfBlockAbove];
+            this.fields[indexOfBlockAbove] = -1;
           }
         }
       }
