@@ -95,5 +95,14 @@ export class CupImpl implements Cup
     }
   }
   
+  /**
+   *
+   * @param fIndex
+   * @param bonusIndex
+   */
+  addBonusFiled(fIndex: number, bonusIndex: number): void {
+    this.fields[fIndex] = bonusIndex
+  }
+  
   
 }

@@ -3,7 +3,7 @@ export class Socket {
   open(){
     try {
       // const socket = new WebSocket('/s.php')
-      const socket = new WebSocket('127.0.0.1:889')
+      const socket = new WebSocket('ws://127.0.0.1:10000')
       console.log(socket, 'socked')
       
       socket.onopen = this.onOpen;

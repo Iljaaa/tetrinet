@@ -39,4 +39,10 @@ export interface Cup
   getHeightInCells: () => number
   
   
+  /**
+   * @param filedIndex
+   * @param bonusIndex
+   */
+  addBonusFiled: (filedIndex:number, bonusIndex:number) => void;
+  
 }

@@ -517,6 +517,39 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onLineCleared(countLines: number): void {
     if (this.listener) this.listener.onLineCleared(countLines);
+    
+    // add special block
+    this.addSpecialBlock()
+  }
+  
+  /**
+   * Place a special block in cup
+   */
+  addSpecialBlock ()
+  {
+    // collect available places
+    const allFields = this._cup.getFields();
+    
+    // filter not free
+    let notFreeFieldsIds:Array<number> = [];
+    
+    allFields.forEach((value:number, cellId:number) => {
+      if (value !== -1) notFreeFieldsIds.push(cellId)
+    });
+    
+    console.log(notFreeFieldsIds, 'notFreeFieldsIds')
+    
+    //
+    if (notFreeFieldsIds.length === 0) return
+    
+    // todo: take random
+    const randomFieldId = notFreeFieldsIds[0];
+    
+    // random block
+    const b = 333
+    
+    // place it
+    this._cup.addBonusFiled(randomFieldId, b)
   }
   
   /**

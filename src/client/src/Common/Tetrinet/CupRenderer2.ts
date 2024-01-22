@@ -117,21 +117,36 @@ export class CupRenderer2
         const bottom = row * BLOCK_SIZE_PX;
         
         const coll = i % cup.getWidthInCells();
-        // const coll = i - (row * c.getWidthInCells());
         const left = coll * BLOCK_SIZE_PX;
         
-        let f = 320 + fields[i] * BLOCK_SIZE_PX;
+        const fieldValue = fields[i]
+        
+        // take field color
+        let f:number = 320 + (fieldValue * BLOCK_SIZE_PX);
         
         this.block.setVertices(Vertices.createTextureVerticesArray(
           left, bottom, BLOCK_SIZE_PX, BLOCK_SIZE_PX,
           f, 32, 32, 32
         ))
         
-        
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.block.vertices), gl.STATIC_DRAW)
         
         // draw here
         gl.drawArrays(gl.TRIANGLES, 0, 6);
+        
+        //
+        if (fieldValue > 5) {
+          // bonus
+          this.block.setVertices(Vertices.createTextureVerticesArray(
+            left, bottom, BLOCK_SIZE_PX, BLOCK_SIZE_PX,
+            320, 32 * 4, 32, 32
+          ))
+          
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.block.vertices), gl.STATIC_DRAW)
+          
+          // draw here
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
       }
     }
   }
