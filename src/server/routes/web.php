@@ -1,5 +1,7 @@
 <?php
 
+use App\Sockets\FirstTestSocket;
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,11 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [\App\Http\Controllers\Controller::class, 'welcome']);
 
 // socket test
 Route::get('/test', function () {
     return view('test');
 });
+
+WebSocketsRouter::webSocket('/websocket', FirstTestSocket::class);

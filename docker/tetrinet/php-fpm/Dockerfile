@@ -52,6 +52,13 @@ ADD ./php.ini /usr/local/etc/php/php.ini
 #RUN docker-php-ext-install mbstring
 
 # PCNTL
-# RUN docker-php-ext-install pcntl
+RUN docker-php-ext-install pcntl
+
+# this is for ps and lsof
+RUN apt-get update && apt-get install -y procps
+RUN apt-get update && apt-get install -y lsof
+
+# RUN docker-php-ext-configure pcntl --enable-pcntl \
+#   && docker-php-ext-install pcntl;
 
 WORKDIR /var/www

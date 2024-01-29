@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,5 +27,23 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    /**
+     * @return void
+     */
+    public function registerShutdownFunction()
+    {
+        $error = error_get_last();
+
+        // Проверяем, была ли ошибка и нужно ли выполнить какие-либо действия
+        if ($error && $error['type'] === E_ERROR) {
+
+            // ВЫПОЛНЯЕМ ВАШУ ФУНКЦИЮ ЗДЕСЬ
+
+        }
+
+
+        Log::channel('socket')->info('this is '.__METHOD__);
     }
 }

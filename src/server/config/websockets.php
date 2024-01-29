@@ -8,7 +8,7 @@ return [
      * Set a custom dashboard configuration
      */
     'dashboard' => [
-        'port' => env('LARAVEL_WEBSOCKETS_PORT', 889),
+        'port' => env('LARAVEL_WEBSOCKETS_PORT', 10000),
     ],
 
     /*
@@ -23,13 +23,18 @@ return [
      */
     'apps' => [
         [
-            'id' => env('PUSHER_APP_ID'),
-            'name' => env('APP_NAME'),
-            'key' => env('PUSHER_APP_KEY'),
-            'secret' => env('PUSHER_APP_SECRET'),
-            'path' => env('PUSHER_APP_PATH'),
+            // 'id' => env('PUSHER_APP_ID'),
+            'id' => "app_id",
+            // 'name' => env('APP_NAME'),
+            'name' => "app_name",
+            // 'key' => env('PUSHER_APP_KEY'),
+            'key' => "app_key",
+            // 'secret' => env('PUSHER_APP_SECRET'),
+            'secret' => "app_secret",
+            // 'path' => env('PUSHER_APP_PATH'),
+            'path' => "app_path",
             'capacity' => null,
-            'enable_client_messages' => false,
+            'enable_client_messages' => true,
             'enable_statistics' => true,
         ],
     ],
