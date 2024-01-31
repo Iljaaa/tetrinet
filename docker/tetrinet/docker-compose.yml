@@ -14,7 +14,7 @@ services:
     ports:
       - 10000:10000
     links:
-      # - redis
+      - redis
       - db
 
   nginx:
@@ -29,9 +29,17 @@ services:
     depends_on:
       - php-fpm
 
-#  redis:
-#    image: redis
-#    command: ["sh", "-c", "exec redis-server"]
+  redis:
+    container_name: tetrinet_redis
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --requirepass 123
+    environment:
+        REDIS_PASSWORD: 123
+    build:
+      context: ./redis
+    # command: ["sh", "-c", "exec redis-server"]
 
   db:
     container_name: tetrinet_mysql

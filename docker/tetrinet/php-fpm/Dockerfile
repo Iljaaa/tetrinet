@@ -14,6 +14,8 @@ RUN docker-php-ext-install sockets
 #    && docker-php-ext-enable memcached
 
 # redis
+RUN pecl install redis && docker-php-ext-enable redis
+# RUN apt-get install -y redis-cli
 #RUN apt-get install -y redis \
 #    && /etc/init.d/redis-server start
 
@@ -58,7 +60,5 @@ RUN docker-php-ext-install pcntl
 RUN apt-get update && apt-get install -y procps
 RUN apt-get update && apt-get install -y lsof
 
-# RUN docker-php-ext-configure pcntl --enable-pcntl \
-#   && docker-php-ext-install pcntl;
 
 WORKDIR /var/www
