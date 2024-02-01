@@ -1,6 +1,6 @@
 import {CupEventListener, CupWithFigureImpl} from "./models/CupWithFigureImpl";
 import {WebGlScreen} from "../framework/impl/WebGlScreen";
-import {GameEventListener, Tetrinet} from "./Tetrinet";
+import {PlayScreenEventListener, Tetrinet} from "./Tetrinet";
 import {WebInputEventListener} from "../framework/impl/WebInput";
 import {Assets} from "./Assets";
 import {Vertices} from "../framework/Vertices";
@@ -78,7 +78,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * @private
    */
-  private listener: GameEventListener|undefined;
+  private listener: PlayScreenEventListener|undefined;
   
   /**
    * Red squere for experiment with vertices
@@ -136,7 +136,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Set event listener
    * @param listener
    */
-  public setGameEventListener (listener:GameEventListener):PlayScreen{
+  public setGameEventListener (listener:PlayScreenEventListener):PlayScreen{
     this.listener = listener;
     return this
   }
@@ -626,21 +626,28 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._nextFigure.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y);
     
     // check intersections with cup
-    if (!this._cup.canPlace(this._nextFigure.getFields())) {
+    if (!this._cup.canPlace(this._nextFigure.getFields()))
+    {
       
+      // and if we can not post figure is all over
       this._state = GameState.over
       console.log ('game over');
-      return;
+    }
+    else
+    {
+      
+      // move next figure to drop point
+      this._cup.setFigure(this._nextFigure, this._nextFigureColor);
+      
+      // generate next figure
+      this._nextFigure = this.generateNewFigure();
+      
+      // next figure random color
+      this._nextFigureColor = this.generateRandomColor();
     }
     
-    //
-    this._cup.setFigure(this._nextFigure, this._nextFigureColor);
-    
-    // generate next figure
-    this._nextFigure = this.generateNewFigure();
-    
-    // next figure random color
-    this._nextFigureColor = this.generateRandomColor();
+    // call update callback
+    this.listener?.onCupUpdated();
   }
   
   /**

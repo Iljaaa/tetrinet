@@ -4,8 +4,20 @@ import {CapWithFigure} from "./CupWithFigure";
 import {CupImpl} from "./CupImpl";
 import {Coords} from "../math/Coords";
 
-export type CupEventListener = {
+/**
+ *
+ */
+export type CupEventListener =
+{
+  /**
+   * When lines cleared
+   * @param countLines
+   */
   onLineCleared: (countLines:number) => void,
+  
+  /**
+   * When figure moved to cup
+   */
   onFigureMovedToCup: () => void,
 }
 

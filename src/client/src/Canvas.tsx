@@ -1,5 +1,5 @@
 import React from "react";
-import {GameEventListener, Tetrinet} from "./Common/Tetrinet/Tetrinet";
+import {PlayScreenEventListener, Tetrinet} from "./Common/Tetrinet/Tetrinet";
 
 import sprite from "./sprite.png"
 import {Assets} from "./Common/Tetrinet/Assets";
@@ -9,7 +9,7 @@ type State = {
   score: number
 }
 
-export class Canvas extends React.PureComponent<{}, State> implements GameEventListener
+export class Canvas extends React.PureComponent<{}, State> implements PlayScreenEventListener
 {
   /**
    * Ref to canvas
@@ -47,6 +47,15 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
   }
   
   /**
+   * This is callback method when something happen in cup
+   */
+  onCupUpdated(): void {
+    console.log('onCupUpdated');
+  }
+  
+  
+  
+  /**
    *
    */
   componentDidMount()
@@ -66,9 +75,6 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
       // start game
       // this.game.startGame();
       
-      // bind event listener after screen creation
-      this.game.setGameEventListener(this);
-      
       console.log ('Assets loaded, game redy to start');
     })
     
@@ -86,10 +92,12 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     this.game.getInput().unBind();
   }
   
-  onStartClicked = () => {
+  onStartClicked = () =>
+  {
     console.log ('onStartClicked');
     
-    this.game.startGame();
+    // start new game
+    this.game.startGame(this);
   }
   
   onRestartClicked = () => {

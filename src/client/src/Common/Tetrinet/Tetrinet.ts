@@ -4,9 +4,18 @@ import {PlayScreen} from "./PlayScreen";
 /**
  * Listener of game events
  */
-export interface GameEventListener
+export interface PlayScreenEventListener
 {
+  /**
+   * When line is cleared
+   * @param numberOfLines
+   */
   onLineCleared: (numberOfLines:number) => void
+  
+  /**
+   * Summary event rised when cup data changed
+   */
+  onCupUpdated: () => void
 }
 
 export class Tetrinet extends WebGlGame
@@ -27,7 +36,7 @@ export class Tetrinet extends WebGlGame
   /**
    * Start game
    */
-  startGame()
+  startGame(eventListener: PlayScreenEventListener)
   {
     // we get current screen
     // and if it is not a play screen create new one
@@ -40,6 +49,10 @@ export class Tetrinet extends WebGlGame
       // init screen
       currentScreen.init()
       
+      // bind event listener
+      currentScreen.setGameEventListener(eventListener)
+      
+      // write as current
       this.setScreen(currentScreen);
     }
     
@@ -63,8 +76,8 @@ export class Tetrinet extends WebGlGame
    * Set event listener to screen
    * @param eventListener
    */
-  setGameEventListener(eventListener: GameEventListener) {
-    let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.setGameEventListener(eventListener)
-  }
+  // setGameEventListener(eventListener: PlayScreenEventListener) {
+  //   let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
+  //   s?.setGameEventListener(eventListener)
+  // }
 }
