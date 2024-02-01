@@ -46,9 +46,14 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     this.setState({score: this.state.score + ((countLines + countLines - 1) * 10) })
   }
   
+  /**
+   *
+   */
   componentDidMount()
   {
-    // bind events
+    /**
+     * bind controller events
+     */
     this.game.getInput().bind();
     
     /**
@@ -59,28 +64,46 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
     // start loading assets
     Assets.load(sprite, () => {
       // start game
-      this.game.startGame();
+      // this.game.startGame();
       
       // bind event listener after screen creation
       this.game.setGameEventListener(this);
+      
+      console.log ('Assets loaded, game redy to start');
     })
     
-   
-    const s = new Socket()
-    s.open();
     
-    
-    
+    // const s = new Socket()
+    // s.open();
     
     // socket.onopen = connectionOpen;
     // socket.onmessage = messageReceived;
-    
   }
   
   componentWillUnmount()
   {
     // unbind events
     this.game.getInput().unBind();
+  }
+  
+  onStartClicked = () => {
+    console.log ('onStartClicked');
+    
+    this.game.startGame();
+  }
+  
+  onRestartClicked = () => {
+    console.log ('onRestartClicked');
+  }
+  
+  onPauseClicked = () => {
+    console.log ('onPauseClicked');
+    
+    this.game.pauseGame();
+  }
+  
+  onStopClicked = () => {
+    console.log ('onStopClicked');
   }
   
   render () {
@@ -98,6 +121,27 @@ export class Canvas extends React.PureComponent<{}, State> implements GameEventL
             <div style={{backgroundColor: "green", width: "40px", height: "40px"}}></div>
             <div style={{backgroundColor: "blue", width: "40px", height: "40px"}}></div>
           </div>
+          
+          <div style={{marginTop: "1rem"}}>
+            <div>
+              <button onClick={this.onStartClicked}>Start</button>
+            </div>
+            <div style={{marginTop: ".25rem"}}>
+              <button onClick={this.onRestartClicked}>Restart</button>
+            </div>
+            <div style={{marginTop: ".25rem"}}>
+              <button onClick={this.onPauseClicked}>Pause</button>
+            </div>
+            <div style={{marginTop: ".25rem"}}>
+              <button onClick={this.onStopClicked}>Stop</button>
+            </div>
+          </div>
+          
+          <h2>todo:</h2>
+          <ul>
+            <li>Draw paused alert</li>
+          </ul>
+        
         </div>
       </div>
     </div>

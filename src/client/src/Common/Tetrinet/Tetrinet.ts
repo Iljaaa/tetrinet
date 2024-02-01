@@ -1,6 +1,5 @@
 import {WebGlGame} from "../framework/impl/WebGlGame";
 import {PlayScreen} from "./PlayScreen";
-import {Assets} from "./Assets";
 
 /**
  * Listener of game events
@@ -18,6 +17,7 @@ export class Tetrinet extends WebGlGame
   }
   
   /**
+   * Throw init graphycs
    * @param canvas
    */
   public initGraphic(canvas:HTMLCanvasElement) {
@@ -29,19 +29,33 @@ export class Tetrinet extends WebGlGame
    */
   startGame()
   {
-    // create play screen and set if
-    this.setScreen((new PlayScreen(this)));
-    
-    // this is initialization at render, i will back here later
-    let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-    s?.init()
+    // we get current screen
+    // and if it is not a play screen create new one
+    let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
+    console.log (currentScreen, 'currentScreen')
+    if (currentScreen === null)
+    {
+      currentScreen = new PlayScreen(this);
+      
+      // init screen
+      currentScreen.init()
+      
+      this.setScreen(currentScreen);
+    }
     
     // start game
-    // todo: remove it
-    s?.start()
+    currentScreen.start()
     
     // start start request
     window.requestAnimationFrame(this.update)
+  }
+  
+  /**
+   * Pause game
+   */
+  pauseGame() {
+    const currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
+    currentScreen.pause()
   }
   
   

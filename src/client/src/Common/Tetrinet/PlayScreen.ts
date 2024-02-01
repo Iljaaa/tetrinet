@@ -22,7 +22,9 @@ import {Coords} from "./math/Coords";
  * Game states
  */
 enum GameState {
-  running = 0,
+  ready= 0,
+  running = 40,
+  paused = 50,
   over = 100,
 }
 
@@ -71,7 +73,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Current game state
    * @private
    */
-  private _state:GameState = GameState.running;
+  private _state:GameState = GameState.ready;
   
   /**
    * @private
@@ -146,38 +148,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   {
     console.log ('PlayScreen.init');
     // this._cupRenderer = new CupRenderer(this.game.getGLGraphics().getGl(), this._cup);
-  }
-  
-  /**
-   * It starts the game
-   * must be called after init!
-   */
-  start ()
-  {
-    // if (!this._cupRenderer){
-    //   throw new Error('Cup render not initialised')
-    // }
     
-    
-    // next figure random color
-    this._nextFigure = this.generateNewFigure();
-    
-    // next figure random color
-    this._nextFigureColor = this.generateRandomColor();
-    
-    // generate new figure
-    const f = this.generateNewFigure();
-    f.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y)
-    
-    this._cup.setFigure(f, this._nextFigureColor);
-    
-    // init first figure in cup
-    this._cup.start();
-    
-    // first render
-    // this._cupRenderer.renderCupWithFigure(this._cup)
-    
-    console.log('PlayScreen.start')
     
     //
     const gl:WebGL2RenderingContext = this.game.getGLGraphics().getGl();
@@ -246,7 +217,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "texSize");
     // gl.uniform2f(textureSizeLocation, 640, 640)
     WebGlProgramManager.setUpIntoMixedProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
-
+    
     // create color program
     this.colorProgram = WebGlProgramManager.getColorProgram(gl)
     // gl.useProgram(this._glColorProgram)
@@ -265,6 +236,44 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.colorProgram);
   }
   
+  /**
+   * It starts the game
+   * must be called after init!
+   */
+  start ()
+  {
+    // if (!this._cupRenderer){
+    //   throw new Error('Cup render not initialised')
+    // }
+    
+    
+    // next figure random color
+    this._nextFigure = this.generateNewFigure();
+    
+    // next figure random color
+    this._nextFigureColor = this.generateRandomColor();
+    
+    // generate new figure
+    const f = this.generateNewFigure();
+    f.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y)
+    
+    this._cup.setFigure(f, this._nextFigureColor);
+    
+    // init first figure in cup
+    this._cup.start();
+    
+    // first render
+    // this._cupRenderer.renderCupWithFigure(this._cup)
+    console.log('PlayScreen.start')
+    
+    // finnaly set run status
+    this._state = GameState.running
+    
+  }
+  
+  pause () {
+    this._state = GameState.paused
+  }
   
   /**
    * Update cup
@@ -404,6 +413,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
   }
   
+  //
+  // key events
+  //
   
   onKeyDown(code:string): void
   {
@@ -440,14 +452,37 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   
   }
   
-  onRight() {
-    if (this._cupRenderer && this._cup.moveFigureRight()){
+  onRight()
+  {
+    // disable control if game not running
+    if (this._state !== GameState.running) return
+  
+    // move figure right
+    if (this._cup.moveFigureRight()){
+    
+    }
+    
+    // rerender cup
+    // maybe it must be inside cause upper
+    if (this._cupRenderer){
       this._cupRenderer.renderCupWithFigure(this._cup)
     }
+    
   }
   
-  onLeft() {
-    if (this._cupRenderer && this._cup.moveFigureLeft()){
+  onLeft()
+  {
+    // disable control if game not running
+    if (this._state !== GameState.running) return
+    
+    // move figure
+    if (this._cup.moveFigureLeft()) {
+    
+    }
+    
+    // rerender cup
+    // maybe it must be inside cause upper
+    if (this._cupRenderer){
       this._cupRenderer.renderCupWithFigure(this._cup)
     }
   }
@@ -457,15 +492,18 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onDown()
   {
-    if (this._cupRenderer)
-    {
-      // if figure does not have not moved we need to create a new one
-      if (!this._cup.moveFigureDown())
-      {
-        
-        // create a new figure
-      }
-      
+    // disable control if game not running
+    if (this._state !== GameState.running) return
+    
+    // rerender cup
+    // maybe it must be inside cause upper
+    if (!this._cup.moveFigureDown()) {
+    
+    }
+    
+    // rerender cup
+    // maybe it must be inside cause upper
+    if (this._cupRenderer){
       this._cupRenderer.renderCupWithFigure(this._cup)
     }
   }
@@ -475,38 +513,59 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onDrop()
   {
-    if (this._cupRenderer)
+    // disable control if game not running
+    if (this._state !== GameState.running) return
+    
+    // if figure does not have not moved we need to create a new one
+    if (!this._cup.dropFigureDown())
     {
-      // if figure does not have not moved we need to create a new one
-      if (!this._cup.dropFigureDown())
-      {
-        // clear next the down step time
-        this._downTimer = 0;
-        
-        // create a new figure
-      }
       
+      // clear next the down step time
+      this._downTimer = 0;
+    }
+    
+    // rerender cup
+    // maybe it must be inside cause upper
+    if (this._cupRenderer){
       this._cupRenderer.renderCupWithFigure(this._cup)
     }
   }
   
-  onRotateClockwise () {
-    if (this._cupRenderer)
-    {
-      // rotate figure in the cup
-      this._cup.rotateClockwise();
-      
+  /**
+   */
+  onRotateClockwise ()
+  {
+    // disable control if game not running
+    if (this._state !== GameState.running) return
+    
+    // rotate figure in the cup
+    if (this._cup.rotateClockwise()){
+    
+    }
+    
+    // rerender cup
+    // maybe it must be inside cause upper
+    if (this._cupRenderer){
       this._cupRenderer.renderCupWithFigure(this._cup)
     }
   }
   
-  onRotateCounterClockwise () {
-    if (this._cupRenderer)
-    {
-      // rotate figure in the cup
-      this._cup.rotateCounterClockwise();
-      
-      // rerender
+  /**
+   *
+   */
+  onRotateCounterClockwise ()
+  {
+    // disable control if game not running
+    if (this._state !== GameState.running) return
+    
+    // rotate figure in the cup
+    if (this._cup.rotateCounterClockwise()){
+    
+    }
+    
+    // rerender cup
+    // maybe it must be inside cause upper
+    if (this._cupRenderer){
       this._cupRenderer.renderCupWithFigure(this._cup)
     }
   }
@@ -515,7 +574,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Callback when line was cleared in the cup
    * @param countLines
    */
-  onLineCleared(countLines: number): void {
+  onLineCleared(countLines: number): void
+  {
+    // call event
     if (this.listener) this.listener.onLineCleared(countLines);
     
     // add special block
@@ -553,7 +614,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
   
   /**
-   * Here we need to generate figure
+   * Prevaous figure moved to cup
+   * so this is important event
    */
   onFigureMovedToCup()
   {
@@ -567,7 +629,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (!this._cup.canPlace(this._nextFigure.getFields())) {
       
       this._state = GameState.over
-      alert ('true game over');
+      console.log ('game over');
       return;
     }
     
