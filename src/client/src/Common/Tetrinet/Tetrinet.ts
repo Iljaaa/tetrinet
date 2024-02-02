@@ -1,17 +1,19 @@
 import {WebGlGame} from "../framework/impl/WebGlGame";
-import {PlayScreen, PlayScreenEventListener} from "./PlayScreen";
 
-
+// screens
+import {PlayScreen, PlayScreenEventListener} from "./screens/PlayScreen";
+import {WatchScreen} from "./screens/WatchScreen";
 
 export class Tetrinet extends WebGlGame
 {
   
+  // if it comments al stop working
   constructor() {
     super();
   }
   
   /**
-   * Throw init graphycs
+   * Through init graphycs method
    * @param canvas
    */
   public initGraphic(canvas:HTMLCanvasElement) {
@@ -21,8 +23,9 @@ export class Tetrinet extends WebGlGame
   /**
    * Show game
    */
-  showGame()
+  watchGame()
   {
+    console.log ('start watch');
     let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
   }
   
@@ -51,7 +54,7 @@ export class Tetrinet extends WebGlGame
     // start game
     currentScreen.start()
     
-    // start start request
+    // start request
     window.requestAnimationFrame(this.update)
   }
   

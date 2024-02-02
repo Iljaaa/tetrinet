@@ -4,7 +4,7 @@ import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 import sprite from "./sprite.png"
 import {Assets} from "./Common/Tetrinet/Assets";
 import {Socket} from "./Common/Socket/Socket";
-import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/PlayScreen";
+import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupState} from "./Common/Tetrinet/models/CupState";
 
 type State = {

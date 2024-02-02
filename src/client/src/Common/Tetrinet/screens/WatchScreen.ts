@@ -1,23 +1,24 @@
-import {CupEventListener, CupWithFigureImpl} from "./models/CupWithFigureImpl";
-import {WebGlScreen} from "../framework/impl/WebGlScreen";
-import {Tetrinet} from "./Tetrinet";
-import {WebInputEventListener} from "../framework/impl/WebInput";
-import {Assets} from "./Assets";
-import {Vertices} from "../framework/Vertices";
-import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
+import {CupEventListener, CupWithFigureImpl} from "../models/CupWithFigureImpl";
+import {WebGlScreen} from "../../framework/impl/WebGlScreen";
+import {Tetrinet} from "../Tetrinet";
+import {WebInputEventListener} from "../../framework/impl/WebInput";
+import {Assets} from "../Assets";
+import {Vertices} from "../../framework/Vertices";
+import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 
 // import {CupRenderer} from "./CupRenderer";
-import {CupRenderer2} from "./CupRenderer2";
-import {Figure} from "./models/Figure";
-import {ForwardHorse} from "./figures/ForwardHorse";
-import {BackHorse} from "./figures/BackHorse";
-import {Line} from "./figures/Line";
-import {ForwardFlash} from "./figures/ForwardFlash";
-import {BackFlash} from "./figures/BackFlash";
-import {Camel} from "./figures/Camel";
-import {Square} from "./figures/Square";
-import {Coords} from "./math/Coords";
-import {CupState} from "./models/CupState";
+import {CupRenderer2} from "../CupRenderer2";
+import {Figure} from "../models/Figure";
+
+import {ForwardHorse} from "../figures/ForwardHorse";
+import {BackHorse} from "../figures/BackHorse";
+import {Line} from "../figures/Line";
+import {ForwardFlash} from "../figures/ForwardFlash";
+import {BackFlash} from "../figures/BackFlash";
+import {Camel} from "../figures/Camel";
+import {Square} from "../figures/Square";
+import {Coords} from "../math/Coords";
+import {CupState} from "../models/CupState";
 
 /**
  * Game states
@@ -50,7 +51,7 @@ export interface PlayScreenEventListener
 /**
  * @vaersion 0.0.1
  */
-export class PlayScreen extends WebGlScreen implements CupEventListener, WebInputEventListener
+export class WatchScreen extends WebGlScreen implements CupEventListener, WebInputEventListener
 {
   /**
    * Cup object
@@ -99,12 +100,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private listener: PlayScreenEventListener|undefined;
   
-  /**
-   * Red squere for experiment with vertices
-   * @private
-   */
-  private redSquare:Vertices;
-  
+
   /**
    * this for test two programs
    * @private
@@ -143,9 +139,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     //
     
-    // test red square
-    this.redSquare = new Vertices(true, false);
-    this.redSquare.setVertices(Vertices.createColorVerticesArray(0, 0, 100, 100, 255,0,0,1))
     
     // bind this to input listener
     this.game.getInput().setListener(this);
@@ -155,7 +148,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Set event listener
    * @param listener
    */
-  public setGameEventListener (listener:PlayScreenEventListener):PlayScreen{
+  public setGameEventListener (listener:PlayScreenEventListener):WatchScreen{
     this.listener = listener;
     return this
   }
@@ -427,12 +420,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // {
     //   WebGlProgramManager._useAndTellGlAboutColorProgram(gl, this.colorProgram)
     //
-    //   // Tell webGL to draw these triangle this frame.
-    //   // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.redSquare.vertices), gl.STATIC_DRAW)
-    //
-    //   // Draw all the triangles.
-    //   // gl.drawArrays(gl.TRIANGLES, 0, this.redSquare.vertices.length/6)
-    //   // gl.drawArrays(gl.TRIANGLES, 0, this.redSquare.getVerticesCount())
     // }
     
     
