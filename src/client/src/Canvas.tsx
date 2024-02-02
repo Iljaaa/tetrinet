@@ -1,12 +1,14 @@
 import React from "react";
-import {PlayScreenEventListener, Tetrinet} from "./Common/Tetrinet/Tetrinet";
+import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 
 import sprite from "./sprite.png"
 import {Assets} from "./Common/Tetrinet/Assets";
 import {Socket} from "./Common/Socket/Socket";
+import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/PlayScreen";
 
 type State = {
-  score: number
+  score: number,
+  currentGameState?:GameState
 }
 
 export class Canvas extends React.PureComponent<{}, State> implements PlayScreenEventListener
@@ -17,10 +19,14 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   private readonly _canvas: React.RefObject<HTMLCanvasElement>;
   
+  /**
+   * Game object
+   * @private
+   */
   private game:Tetrinet;
   
   public state:State = {
-    score: 0
+    score: 0,
   }
   
   constructor(props: { }, context: any)
@@ -49,11 +55,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is callback method when something happen in cup
    */
-  onCupUpdated(): void {
-    console.log('onCupUpdated');
+  onCupUpdated(state:GameState): void {
+    console.log('onCupUpdated', state);
+    this.setState({currentGameState: state})
   }
-  
-  
   
   /**
    *
@@ -62,6 +67,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   {
     /**
      * bind controller events
+     * i'm not sure that initialization must be here
      */
     this.game.getInput().bind();
     
@@ -75,9 +81,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // start game
       // this.game.startGame();
       
-      console.log ('Assets loaded, game redy to start');
+      console.log ('Assets loaded, game ready to start');
     })
-    
     
     // const s = new Socket()
     // s.open();
@@ -100,18 +105,11 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.game.startGame(this);
   }
   
-  onRestartClicked = () => {
-    console.log ('onRestartClicked');
-  }
-  
-  onPauseClicked = () => {
+  onPauseClicked = () =>
+  {
     console.log ('onPauseClicked');
     
     this.game.pauseGame();
-  }
-  
-  onStopClicked = () => {
-    console.log ('onStopClicked');
   }
   
   render () {
@@ -122,32 +120,34 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
         </div>
         <div style={{textAlign: "left", paddingLeft: "2rem"}}>
           
-          <div style={{margin: "0 0 1rem 0"}}>score <b>{this.state.score}</b></div>
-          <Help />
-          <div style={{display: "flex", justifyContent: "flex-start", marginTop: "1rem"}}>
-            <div style={{backgroundColor: "red", width: "40px", height: "40px"}}></div>
-            <div style={{backgroundColor: "green", width: "40px", height: "40px"}}></div>
-            <div style={{backgroundColor: "blue", width: "40px", height: "40px"}}></div>
-          </div>
+          <div>score <b>{this.state.score}</b></div>
+          <div style={{margin: ".25rem 0 0 0"}}>state <b>{this.state.currentGameState}</b></div>
           
           <div style={{marginTop: "1rem"}}>
             <div>
               <button onClick={this.onStartClicked}>Start</button>
             </div>
             <div style={{marginTop: ".25rem"}}>
-              <button onClick={this.onRestartClicked}>Restart</button>
-            </div>
-            <div style={{marginTop: ".25rem"}}>
               <button onClick={this.onPauseClicked}>Pause</button>
             </div>
-            <div style={{marginTop: ".25rem"}}>
-              <button onClick={this.onStopClicked}>Stop</button>
-            </div>
+          </div>
+          
+          <div style={{margin: "1rem 0 0 0"}}>
+            <Help />
+          </div>
+          
+          <div style={{display: "flex", justifyContent: "flex-start", marginTop: "1rem"}}>
+            <div style={{backgroundColor: "red", width: "40px", height: "40px"}}></div>
+            <div style={{backgroundColor: "green", width: "40px", height: "40px"}}></div>
+            <div style={{backgroundColor: "blue", width: "40px", height: "40px"}}></div>
           </div>
           
           <h2>todo:</h2>
           <ul>
             <li>Draw paused alert</li>
+            <li>Start with two buttons play and watch</li>
+            <li>Add continue button</li>
+            <li>Block buttons by state</li>
           </ul>
         
         </div>

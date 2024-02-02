@@ -1,6 +1,6 @@
 import {CupEventListener, CupWithFigureImpl} from "./models/CupWithFigureImpl";
 import {WebGlScreen} from "../framework/impl/WebGlScreen";
-import {PlayScreenEventListener, Tetrinet} from "./Tetrinet";
+import {Tetrinet} from "./Tetrinet";
 import {WebInputEventListener} from "../framework/impl/WebInput";
 import {Assets} from "./Assets";
 import {Vertices} from "../framework/Vertices";
@@ -21,11 +21,29 @@ import {Coords} from "./math/Coords";
 /**
  * Game states
  */
-enum GameState {
+export enum GameState {
   ready= 0,
   running = 40,
   paused = 50,
   over = 100,
+}
+
+/**
+ * Listener of game events
+ */
+export interface PlayScreenEventListener
+{
+  /**
+   * When line is cleared
+   * @param numberOfLines
+   */
+  onLineCleared: (numberOfLines:number) => void
+  
+  /**
+   * Summary event rised when cup data changed
+   */
+  onCupUpdated: (state:GameState) => void
+  
 }
 
 /**
@@ -269,10 +287,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // finnaly set run status
     this._state = GameState.running
     
+    // call callback
+    this.listener?.onCupUpdated(this._state)
+    
   }
   
-  pause () {
+  pause ()
+  {
     this._state = GameState.paused
+    
+    // call callback
+    this.listener?.onCupUpdated(this._state)
   }
   
   /**
@@ -307,7 +332,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   
   present(): void
   {
-    //console.log('PlayScreen.present')
     
     const gl = this.game.getGLGraphics().getGl();
     
@@ -619,7 +643,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onFigureMovedToCup()
   {
-    console.log ('PlayScreen.onFigureMovedToCup');
     if (!this._nextFigure) return;
     
     // move figure to drop position
@@ -647,7 +670,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
     
     // call update callback
-    this.listener?.onCupUpdated();
+    this.listener?.onCupUpdated(this._state);
   }
   
   /**

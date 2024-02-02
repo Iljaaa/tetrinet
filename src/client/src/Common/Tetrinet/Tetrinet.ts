@@ -1,22 +1,7 @@
 import {WebGlGame} from "../framework/impl/WebGlGame";
-import {PlayScreen} from "./PlayScreen";
+import {PlayScreen, PlayScreenEventListener} from "./PlayScreen";
 
-/**
- * Listener of game events
- */
-export interface PlayScreenEventListener
-{
-  /**
-   * When line is cleared
-   * @param numberOfLines
-   */
-  onLineCleared: (numberOfLines:number) => void
-  
-  /**
-   * Summary event rised when cup data changed
-   */
-  onCupUpdated: () => void
-}
+
 
 export class Tetrinet extends WebGlGame
 {
