@@ -68,10 +68,11 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info("count", [$msg->count()]);
         Log::channel('socket')->info("contents", [$msg->getContents()]);
 
-        dd($msg->getPayload());
+        // dd($msg->getPayload());
+        $data = json_decode($msg->getPayload(), true);
 
         // if we receive state, we save it
-        $data = json_decode($msg->getContents());
+        // $data = json_decode($msg->getContents());
         Log::channel('socket')->info("data", $data);
 
         //

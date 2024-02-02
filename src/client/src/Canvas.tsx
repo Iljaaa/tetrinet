@@ -26,6 +26,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   private game:Tetrinet;
   
+  /**
+   * Socket connection
+   * @private
+   */
+  private socket:Socket | undefined;
+  
   public state:State = {
     score: 0,
   }
@@ -56,9 +62,17 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is callback method when something happen in cup
    */
-  onCupUpdated(state:GameState, cupState:CupState): void {
+  onCupUpdated(state:GameState, cupState:CupState): void
+  {
     console.log('onCupUpdated', state, cupState);
     this.setState({currentGameState: state})
+    
+    // todo: make send data
+    
+    // send data to socket
+    if (this.socket) {
+      this.socket.sendData(cupState)
+    }
   }
   
   /**
@@ -101,8 +115,17 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onStartClicked = () =>
   {
     console.log ('onStartClicked');
-    // start new game
-    this.game.playGame(this);
+    
+    // open socket connection
+    this.socket = new Socket();
+    this.socket.open(() => {
+      
+      // when socket open we start game
+      this.game.playGame(this);
+      
+      
+    });
+    
   }
   
   onPauseClicked = () =>
@@ -154,6 +177,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             <li>Start with two buttons play and watch</li>
             <li>Add continue button</li>
             <li>Block buttons by state</li>
+            <li>Show loader until socket connecting</li>
           </ul>
         
         </div>
