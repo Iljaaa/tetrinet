@@ -5,6 +5,7 @@ import sprite from "./sprite.png"
 import {Assets} from "./Common/Tetrinet/Assets";
 import {Socket} from "./Common/Socket/Socket";
 import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/PlayScreen";
+import {CupState} from "./Common/Tetrinet/models/CupState";
 
 type State = {
   score: number,
@@ -55,8 +56,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is callback method when something happen in cup
    */
-  onCupUpdated(state:GameState): void {
-    console.log('onCupUpdated', state);
+  onCupUpdated(state:GameState, cupState:CupState): void {
+    console.log('onCupUpdated', state, cupState);
     this.setState({currentGameState: state})
   }
   
@@ -100,16 +101,18 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onStartClicked = () =>
   {
     console.log ('onStartClicked');
-    
     // start new game
-    this.game.startGame(this);
+    this.game.playGame(this);
   }
   
   onPauseClicked = () =>
   {
     console.log ('onPauseClicked');
-    
     this.game.pauseGame();
+  }
+  
+  onWatchClicked = () => {
+    console.log ('onWatchClicked');
   }
   
   render () {
@@ -129,6 +132,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             </div>
             <div style={{marginTop: ".25rem"}}>
               <button onClick={this.onPauseClicked}>Pause</button>
+            </div>
+            <div style={{marginTop: ".25rem"}}>
+              <button onClick={this.onWatchClicked}>Watch</button>
             </div>
           </div>
           

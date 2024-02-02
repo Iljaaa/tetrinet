@@ -1,11 +1,18 @@
 import {Coords} from "../math/Coords";
+import {CupState} from "./CupState";
 
 export interface Cup
 {
   /**
+   * @deprecated use get state
    * All fields array
    */
   getFields: () => Array<number>
+  
+  /**
+   * Cup state, this is array of fields
+   */
+  getState: () => CupState
   
   /**
    * Check can we place this array of indexes into cup

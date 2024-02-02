@@ -17,6 +17,7 @@ import {BackFlash} from "./figures/BackFlash";
 import {Camel} from "./figures/Camel";
 import {Square} from "./figures/Square";
 import {Coords} from "./math/Coords";
+import {CupState} from "./models/CupState";
 
 /**
  * Game states
@@ -42,7 +43,7 @@ export interface PlayScreenEventListener
   /**
    * Summary event rised when cup data changed
    */
-  onCupUpdated: (state:GameState) => void
+  onCupUpdated: (state:GameState, cupState:CupState) => void
   
 }
 
@@ -288,7 +289,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._state = GameState.running
     
     // call callback
-    this.listener?.onCupUpdated(this._state)
+    this.listener?.onCupUpdated(this._state, this._cup.getState())
     
   }
   
@@ -297,7 +298,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._state = GameState.paused
     
     // call callback
-    this.listener?.onCupUpdated(this._state)
+    this.listener?.onCupUpdated(this._state, this._cup.getState())
   }
   
   /**
@@ -670,7 +671,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
     
     // call update callback
-    this.listener?.onCupUpdated(this._state);
+    this.listener?.onCupUpdated(this._state, this._cup.getState());
   }
   
   /**

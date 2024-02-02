@@ -1,5 +1,6 @@
 import {Coords} from "../math/Coords";
 import {Cup} from "./Cup";
+import {CupState} from "./CupState";
 
 
 export class CupImpl implements Cup
@@ -19,10 +20,18 @@ export class CupImpl implements Cup
   protected heightInCells = 20;
   
   /**
+   * @deprecated
+   * todo: refactor to this,_state
    * Array of field where if it is true then there block
    * @private
    */
   protected fields:Array<number> = [];
+  
+  /**
+   */
+  protected _state:CupState = {
+    fields: []
+  }
   
   constructor()
   {
@@ -57,6 +66,10 @@ export class CupImpl implements Cup
   
   getFields = ():Array<number> => {
     return this.fields;
+  }
+  
+  getState = ():CupState => {
+    return this._state;
   }
   
   /**

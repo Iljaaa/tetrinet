@@ -19,14 +19,21 @@ export class Tetrinet extends WebGlGame
   }
   
   /**
-   * Start game
+   * Show game
    */
-  startGame(eventListener: PlayScreenEventListener)
+  showGame()
+  {
+    let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
+  }
+  
+  /**
+   * Play game
+   */
+  playGame(eventListener: PlayScreenEventListener)
   {
     // we get current screen
     // and if it is not a play screen create new one
     let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
-    console.log (currentScreen, 'currentScreen')
     if (currentScreen === null)
     {
       currentScreen = new PlayScreen(this);
