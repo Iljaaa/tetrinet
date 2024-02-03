@@ -26,7 +26,11 @@ export class Tetrinet extends WebGlGame
   watchGame()
   {
     console.log ('start watch');
-    let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
+    // let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
+    this.setScreen(new WatchScreen(this))
+    
+    // start request
+    window.requestAnimationFrame(this.update)
   }
   
   /**
@@ -36,23 +40,19 @@ export class Tetrinet extends WebGlGame
   {
     // we get current screen
     // and if it is not a play screen create new one
-    let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
-    if (currentScreen === null)
-    {
-      currentScreen = new PlayScreen(this);
-      
-      // init screen
-      currentScreen.init()
-      
-      // bind event listener
-      currentScreen.setGameEventListener(eventListener)
-      
-      // write as current
-      this.setScreen(currentScreen);
-    }
+    let currentScreen:PlayScreen = new PlayScreen(this);
+    
+    // init screen
+    // currentScreen.init()
+    
+    // bind event listener
+    currentScreen.setGameEventListener(eventListener)
     
     // start game
-    currentScreen.start()
+    currentScreen.startNewGame()
+    
+    // write as current
+    this.setScreen(currentScreen);
     
     // start request
     window.requestAnimationFrame(this.update)

@@ -149,6 +149,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   
   onWatchClicked = () => {
     console.log ('onWatchClicked');
+    this.game.watchGame();
   }
   
   render () {

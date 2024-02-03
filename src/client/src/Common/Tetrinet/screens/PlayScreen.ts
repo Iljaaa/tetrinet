@@ -2,7 +2,6 @@ import {CupEventListener, CupWithFigureImpl} from "../models/CupWithFigureImpl";
 import {WebGlScreen} from "../../framework/impl/WebGlScreen";
 import {Tetrinet} from "../Tetrinet";
 import {WebInputEventListener} from "../../framework/impl/WebInput";
-import {Assets} from "../Assets";
 import {Vertices} from "../../framework/Vertices";
 import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 
@@ -157,19 +156,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * Init render by canvas element
    */
-  init ()
-  {
-    console.log ('PlayScreen.init');
+  // init ()
+  // {
+  //   console.log ('PlayScreen.init');
     // this._cupRenderer = new CupRenderer(this.game.getGLGraphics().getGl(), this._cup);
-    
-    
-  }
+  // }
   
   /**
    * It starts the game
    * must be called after init!
    */
-  start ()
+  startNewGame ()
   {
     // if (!this._cupRenderer){
     //   throw new Error('Cup render not initialised')
@@ -182,14 +179,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // next figure random color
     this._nextFigureColor = this.generateRandomColor();
     
-    // generate new figure
+    // generate new figure in cup
     const f = this.generateNewFigure();
     f.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y)
-    
     this._cup.setFigure(f, this._nextFigureColor);
-    
-    // init first figure in cup
-    this._cup.start();
     
     // first render
     // this._cupRenderer.renderCupWithFigure(this._cup)
@@ -243,7 +236,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   
   present(): void
   {
+    console.log('PlayScreen.present')
     
+    //
     const gl = this.game.getGLGraphics().getGl();
     
     // Clear the screen.
@@ -251,11 +246,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // use texture program
     // if (this.textureProgram) {
-      // WebGlProgramManager._startUseTextureProgram(gl, this.textureProgram)
-      
+    //  WebGlProgramManager._startUseTextureProgram(gl, this.textureProgram)
     //}
     
-    // use texure program
+    // use texture program
     WebGlProgramManager.sUseTextureProgram(gl);
     
     // render cup

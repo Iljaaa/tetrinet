@@ -65,12 +65,9 @@ export class CupRenderer2
   public renderCupWithFigure(cup:CupWithFigureImpl):void
   {
     let gl:WebGL2RenderingContext = this.graphic.getGl();
-   
-    // render background
-    this.renderBackground(gl)
     
     // render cup state
-    this.renderCup(gl, cup)
+    this.renderCup(cup)
     
     // render drop point
     
@@ -88,17 +85,17 @@ export class CupRenderer2
     
   }
   
-  private renderBackground (gl:WebGL2RenderingContext)
+  /**
+   * Render cup object
+   * @param cup
+   */
+  public renderCup (cup:Cup)
   {
-    // move cup
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32)
+    //
+    let gl:WebGL2RenderingContext = this.graphic.getGl();
     
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.background.vertices), gl.STATIC_DRAW)
-    gl.drawArrays(gl.TRIANGLES, 0, this.background.getVerticesCount())
-  }
-  
-  private renderCup (gl:WebGL2RenderingContext, cup:CupWithFigureImpl)
-  {
+    // render background
+    this.renderBackground(gl)
     
     // move cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32)
@@ -182,4 +179,18 @@ export class CupRenderer2
     }
   }
   
+  /**
+   * Render background
+   * @param gl
+   * @private
+   */
+  private renderBackground (gl:WebGL2RenderingContext)
+  {
+    // move cup
+    // todo: move position on constants
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32)
+    
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.background.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, this.background.getVerticesCount())
+  }
 }
