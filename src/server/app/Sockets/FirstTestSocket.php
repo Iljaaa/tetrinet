@@ -4,6 +4,7 @@ namespace App\Sockets;
 
 use Illuminate\Support\Facades\Log;
 // use Ratchet\App;
+use Illuminate\Support\Facades\Redis;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
@@ -70,15 +71,40 @@ class FirstTestSocket implements MessageComponentInterface
     public function onMessage(ConnectionInterface $connection, MessageInterface $msg)
     {
         Log::channel('socket')->info(__METHOD__);
-        Log::channel('socket')->info("count", [$msg->count()]);
-        Log::channel('socket')->info("contents", [$msg->getContents()]);
+        // Log::channel('socket')->info("count", [$msg->count()]);
+        // Log::channel('socket')->info("contents", [$msg->getContents()]);
 
         // dd($msg->getPayload());
         $data = json_decode($msg->getPayload(), true);
+        Log::channel('socket')->info("data", $data);
+
+        //
+        if (isset($data['type']))
+        {
+            // save data
+            if ($data['type'] == 'play' && !empty($data['cup']))
+            {
+                Log::channel('socket')->info("save", $data['cup']);
+                // store cup into redis
+                Redis::set('cup', json_encode($data['cup']));
+
+
+                //
+                $connection->send(json_encode(['response' => 'Thanx save']));
+            }
+
+            if ($data['type'] == 'watch'){
+                $data = json_decode(Redis::get('cup'), true);
+                Log::channel('socket')->info("watch", $data ?? []);
+
+                $connection->send(json_encode([
+                    'cup' => $data
+                ]));
+            }
+        }
 
         // if we receive state, we save it
         // $data = json_decode($msg->getContents());
-        Log::channel('socket')->info("data", $data);
 
         //
 
@@ -86,6 +112,6 @@ class FirstTestSocket implements MessageComponentInterface
 
         // send message
         // send random method
-        $connection->send(json_encode($this->tempCup));
+        // $connection->send(json_encode($this->tempCup));
     }
 }

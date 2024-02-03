@@ -68,11 +68,17 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log('onCupUpdated', state, cupState);
     this.setState({currentGameState: state})
     
-    // todo: make send data
-    
     // send data to socket
-    if (this.socket) {
-      this.socket.sendData(cupState)
+    if (this.socket)
+    {
+      // todo: make here special object
+      const sendData = {
+        type: "play",
+        state: state,
+        cup: cupState
+      }
+      
+      this.socket.sendData(sendData)
     }
   }
   

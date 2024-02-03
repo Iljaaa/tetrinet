@@ -185,7 +185,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     // move figure to the cup
     this._figure.getFields().forEach((f:number) => {
       // move figure
-      this.fields[f] = this._figureColor;
+      this._state.fields[f] = this._figureColor;
       
       // move color
       // this.colors[f] = this._figureColor;
@@ -232,7 +232,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
       let fullLine:boolean = true;
       for (let i = startIndex; i < endIndex; i++)
       {
-        if (this.fields[i] === -1) {
+        if (this._state.fields[i] === -1) {
           fullLine = false
           break
         }
@@ -250,7 +250,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     fullLines.forEach((fullLineIndex:number) => {
       for (let i = 0; i < this.widthInCells; i++) {
         let index = this.getCellIndexByCoords({x: i, y: fullLineIndex})
-        this.fields[index] = -1
+        this._state.fields[index] = -1
       }
     })
     
@@ -268,9 +268,9 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
           const indexOfBlockAbove = currentBlockIndex + this.widthInCells;
           
           // if there is a block we move them to this libe
-          if (this.fields[indexOfBlockAbove] > -1){
-            this.fields[currentBlockIndex] = this.fields[indexOfBlockAbove];
-            this.fields[indexOfBlockAbove] = -1;
+          if (this._state.fields[indexOfBlockAbove] > -1){
+            this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
+            this._state.fields[indexOfBlockAbove] = -1;
           }
         }
       }
@@ -279,28 +279,4 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     return fullLines.length;
   }
   
-  
-  /**
-   * Create random figure and add
-   * @private
-   */
-  // private generateAndPutNewFigure(): boolean
-  // {
-  //
-  //
-  //
-  //   //
-  //   const newFigureFields:Array<number> = f.getFields()
-  //
-  //   // check intersections with cup
-  //   if (!this.canPlace(newFigureFields)) {
-  //     return false;
-  //   }
-  //
-  //   // set new figure
-  //   this.setFigure(f)
-  //
-  //   return true;
-  // }
-  //
 }

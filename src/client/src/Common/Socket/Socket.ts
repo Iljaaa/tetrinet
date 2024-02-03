@@ -53,7 +53,7 @@ export class Socket
    */
   static requestData()
   {
-    const stringData = JSON.stringify({type: "watch screen wants new data"})
+    const stringData = JSON.stringify({type: "watch"})
     this.socket?.send(stringData)
   }
   

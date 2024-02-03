@@ -1,6 +1,5 @@
 import {WebGlScreen} from "../../framework/impl/WebGlScreen";
 import {Tetrinet} from "../Tetrinet";
-import {Vertices} from "../../framework/Vertices";
 import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 import {CupRenderer2} from "../CupRenderer2";
 
@@ -96,9 +95,12 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
   /**
    * This is method from socket event listener
    */
-  onMessageReceive(data:object): void {
-    console.log('WatchScreen.onMessageReceive', data)
-    this._cup.setFields(data as Array<number>)
+  onMessageReceive(data:{cup:{fields:Array<number>}}): void {
+    console.log('WatchScreen.onMessageReceive', data, data.cup, data.cup?.fields)
+    if (data && data.cup && data.cup.fields) {
+      this._cup.setFields(data.cup.fields)
+    }
+    
   }
   
 }

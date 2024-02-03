@@ -25,12 +25,13 @@ export class CupImpl implements Cup
    * Array of field where if it is true then there block
    * @private
    */
-  protected fields:Array<number> = [];
+  // protected fields:Array<number> = [];
   
   /**
    */
   protected _state:CupState = {
-    fields: []
+    fields: [],
+    // bonusFields
   }
   
   constructor()
@@ -38,38 +39,38 @@ export class CupImpl implements Cup
     // console.log ('CapClass.constructor');
     
     // make fields array
-    this.fields = new Array<number>(this.widthInCells * this.heightInCells).fill(-1)
+    this._state.fields = new Array<number>(this.widthInCells * this.heightInCells).fill(-1)
     
     // temp cup state
-    this.fields[0] = 1;
-    this.fields[1] = 1;
-    this.fields[2] = 1;
-    this.fields[5] = 1;
-    this.fields[4] = 1;
-    this.fields[6] = 1;
-    this.fields[7] = 1;
-    this.fields[8] = 1;
-    this.fields[9] = 1;
+    this._state.fields[0] = 1;
+    this._state.fields[1] = 1;
+    this._state.fields[2] = 1;
+    this._state.fields[5] = 1;
+    this._state.fields[4] = 1;
+    this._state.fields[6] = 1;
+    this._state.fields[7] = 1;
+    this._state.fields[8] = 1;
+    this._state.fields[9] = 1;
     
-    this.fields[10] = 1;
-    this.fields[11] = 1;
-    this.fields[12] = 1;
-    this.fields[15] = 1;
-    this.fields[14] = 1;
-    this.fields[16] = 1;
-    this.fields[17] = 1;
-    this.fields[18] = 1;
-    this.fields[19] = 1;
+    this._state.fields[10] = 1;
+    this._state.fields[11] = 1;
+    this._state.fields[12] = 1;
+    this._state.fields[15] = 1;
+    this._state.fields[14] = 1;
+    this._state.fields[16] = 1;
+    this._state.fields[17] = 1;
+    this._state.fields[18] = 1;
+    this._state.fields[19] = 1;
     // this.fields[12] = true;
     // this.fields[22] = true;
   }
   
   getFields = ():Array<number> => {
-    return this.fields;
+    return this._state.fields;
   }
   
   setFields(fields: Array<number>): void {
-    this.fields = fields;
+    this._state.fields = fields;
   }
   
   getState = ():CupState => {
@@ -83,14 +84,14 @@ export class CupImpl implements Cup
   canPlace (newFields:Array<number>): boolean
   {
     const i:number = newFields.findIndex((cellIndex:number) => {
-      return this.fields[cellIndex] > -1
+      return this._state.fields[cellIndex] > -1
     });
     
     return i === -1;
   }
   
   getFieldValueByIndex(index: number): number {
-    return this.fields[index]
+    return this._state.fields[index]
   }
   
   getHeightInCells(): number {
@@ -118,7 +119,7 @@ export class CupImpl implements Cup
    * @param bonusIndex
    */
   addBonusFiled(fIndex: number, bonusIndex: number): void {
-    this.fields[fIndex] = bonusIndex
+    this._state.fields[fIndex] = bonusIndex
   }
   
   

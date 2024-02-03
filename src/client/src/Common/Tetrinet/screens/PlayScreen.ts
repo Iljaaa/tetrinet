@@ -193,7 +193,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // call callback
     this.listener?.onCupUpdated(this._state, this._cup.getState())
-    
   }
   
   pause ()
@@ -245,11 +244,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     gl.clear(gl.COLOR_BUFFER_BIT)
     
     // use texture program
-    // if (this.textureProgram) {
-    //  WebGlProgramManager._startUseTextureProgram(gl, this.textureProgram)
-    //}
-    
-    // use texture program
     WebGlProgramManager.sUseTextureProgram(gl);
     
     // render cup
@@ -257,89 +251,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // render next figure
     this.renderNextFigure(gl);
-    
-    
-    // if (this.mixedProgram) {
-    //   WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.mixedProgram)
-    // }
-    
-    
-    // if (this.mixedProgram) {
-    //
-    //   gl.useProgram(this.mixedProgram)
-    //
-    //   const coordAttributeLocation = gl.getAttribLocation(this.mixedProgram, "coordinates")
-    //   gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 32, 0)
-    //   gl.enableVertexAttribArray(coordAttributeLocation)
-    //
-    //   // Tell webGL how to get rgba from our vertices array.
-    //   // Tell webGL to read 4 floats from the vertex array for each vertex
-    //   // and store them in my vec4 shader variable I've named "rgba"
-    //   // Start after 8 bytes. (After the 2 floats for x and y)
-    //   const rgbaAttributeLocation = gl.getAttribLocation(this.mixedProgram, "rgba")
-    //   gl.vertexAttribPointer(rgbaAttributeLocation, 4, gl.FLOAT, false, 32, 8)
-    //   gl.enableVertexAttribArray(rgbaAttributeLocation)
-    //
-    //
-    //   // Tell webGL to read 2 floats from the vertex array for each vertex
-    //   // and store them in my vec2 shader variable I've named "texPos"
-    //   const textilsAttributeLocation = gl.getAttribLocation(this.mixedProgram, "textilsPos")
-    //   gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 32, 24) // 4 bytes * 2:coords + 4 bytes * 4:color
-    //   gl.enableVertexAttribArray(textilsAttributeLocation)
-    // }
-    //
-    // Draw a wide rectangle.
-    // this._drawRectangle(0,370, 200,50, 200,100,10,1)
-    //
-    // // Tell webGL to draw these triangle this frame.
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
-    //
-    // // Draw all the triangles.
-    // gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
-    //
-    // // Clear vertices. We will fill it every frame.
-    // // This way you don't need to delete objects from the screen. You just stop drawing them.
-    // this.vertices = []
-    
-    // Draw the moving image.
-    // const x = 250+Math.sin(Date.now()*.004)*250
-    // const y = 200
-    // const blue = 128 + Math.floor(Math.sin(Date.now()*.01) * 127)
-    // const frame = (Date.now()/100)&1
-    // this._drawImage(
-    //   x, y, 100, 200,
-    //   0, 255, blue, 1,
-    //   frame*32,32, 32,32
-    // )
-    //
-    // // Tell webGL to draw these triangle this frame.
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
-    //
-    // // Draw all the triangles.
-    // gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
-    //
-    // // Clear vertices. We will fill it every frame.
-    // // This way you don't need to delete objects from the screen. You just stop drawing them.
-    // // this.vertices = []
-    //
-    // this.vertices = []
-    //
-    // // Tell webGL to read 2 floats from the vertex array for each vertex
-    // // and store them in my vec2 shader variable I've named "coordinates"
-    // // We need to tell it that each vertex takes 24 bytes now (6 floats)
-    // if (this.colorProgram)
-    // {
-    //   WebGlProgramManager._useAndTellGlAboutColorProgram(gl, this.colorProgram)
-    //
-    //   // Tell webGL to draw these triangle this frame.
-    //   // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.redSquare.vertices), gl.STATIC_DRAW)
-    //
-    //   // Draw all the triangles.
-    //   // gl.drawArrays(gl.TRIANGLES, 0, this.redSquare.vertices.length/6)
-    //   // gl.drawArrays(gl.TRIANGLES, 0, this.redSquare.getVerticesCount())
-    // }
-    
-    
   }
   
   //
