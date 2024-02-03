@@ -106,13 +106,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private redSquare:Vertices;
   
-  /**
-   * this for test two programs
-   * @private
-   */
-  private colorProgram: WebGLProgram | undefined;
-  private textureProgram: WebGLProgram | undefined;
-  private mixedProgram: WebGLProgram | undefined;
   
   /**
    * In this constructor we create cup
@@ -170,90 +163,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // this._cupRenderer = new CupRenderer(this.game.getGLGraphics().getGl(), this._cup);
     
     
-    //
-    const gl:WebGL2RenderingContext = this.game.getGLGraphics().getGl();
-    
-    // Set the viewport size to be the whole canvas.
-    // gl.viewport(0, 0, canvas.width, canvas.height)
-    // gl.viewport(0, 0, 500, 500)
-    // gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-    //
-    // // Set the background color to sky blue.
-    // gl.clearColor(.5, .7, 1, 1)
-    //
-    // // Tell webGL that we aren't doing anything special with the vertex buffer, just use a default one.
-    // gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
-    
-    // create program
-    // this.mixedProgram = this._createMixedProgram(gl);
-    // if (!this.mixedProgram) throw new Error("vertShader was not created");
-    //
-    // // const mixedProgram = this._createMixedProgram(gl);
-    // this.colorProgram = this._createColorProgram(gl);
-    // if (!this.colorProgram) throw new Error("vertShader was not created");
-    //
-    // gl.linkProgram(shaderProgram) // this used in create program function
-    
-    // it could be here
-    // gl.useProgram(shaderProgram)
-    
-    // // gl.linkProgram(shaderProgram) // this used in create program function
-    // gl.useProgram(this.mixedProgram)
-    //
-    // // UPDATE: Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    // const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "canvasSize");
-    // gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
-    //
-    // // Save texture dimensions in our shader.
-    // const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "texSize");
-    // gl.uniform2f(textureSizeLocation, 100, 100)
-    
-    // Create a gl texture from our JS image object.
-    // we can use it before use program
-    // gl.bindTexture(gl.TEXTURE_2D, gl.createTexture())
-    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, Assets.sprite.getImage())
-    
-    // Tell gl that when draw images scaled up, smooth it.
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-    
-    // bind texture
-    Assets.sprite.bind(gl)
-    
-    //
-    // gl.activeTexture(gl.TEXTURE0)
-    
-    // WebGlGraphics.createProgram()
-    // this._glProgram = this._createMixedProgram(gl);
-    this.mixedProgram = WebGlProgramManager.getMixedProgram(gl);
-    // this.mixedProgram = WebGlProgramManager._createMixedProgram(gl);
-    // gl.useProgram(this._glMixedProgram)
-    
-    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    // const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "canvasSize");
-    // gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
-    
-    // Save texture dimensions in our shader.
-    // const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(this.mixedProgram, "texSize");
-    // gl.uniform2f(textureSizeLocation, 640, 640)
-    WebGlProgramManager.setUpIntoMixedProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
-    
-    // create color program
-    this.colorProgram = WebGlProgramManager.getColorProgram(gl)
-    // gl.useProgram(this._glColorProgram)
-    
-    //
-    this.textureProgram = WebGlProgramManager.getTextureProgram(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl,Assets.sprite.getImage().width, Assets.sprite.getImage().height);
-    
-    
-    // Save texture dimensions in our shader.
-    // const textureSizeLocation2:WebGLUniformLocation|null = gl.getUniformLocation(this.textureProgram, "texSize");
-    // gl.uniform2f(textureSizeLocation2, 640, 640)
-    
-    
-    // back to program
-    // WebGlProgramManager._useAndTellGlAboutMixedProgram(gl, this.colorProgram);
   }
   
   /**
@@ -341,10 +250,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     gl.clear(gl.COLOR_BUFFER_BIT)
     
     // use texture program
-    if (this.textureProgram) {
+    // if (this.textureProgram) {
       // WebGlProgramManager._startUseTextureProgram(gl, this.textureProgram)
       
-    }
+    //}
     
     // use texure program
     WebGlProgramManager.sUseTextureProgram(gl);

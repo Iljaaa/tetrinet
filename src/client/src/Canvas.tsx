@@ -6,6 +6,7 @@ import {Assets} from "./Common/Tetrinet/Assets";
 import {Socket} from "./Common/Socket/Socket";
 import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupState} from "./Common/Tetrinet/models/CupState";
+import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
 
 type State = {
   score: number,
@@ -97,6 +98,18 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // this.game.startGame();
       
       console.log ('Assets loaded, game ready to start');
+      
+      //
+      const gl:WebGL2RenderingContext|null = this.game.getGLGraphics().getGl();
+      
+      // bind this texture
+      Assets.sprite.bind(gl)
+      
+      // bind texture in mixed program
+      WebGlProgramManager.setUpIntoMixedProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
+      
+      // bind texture in graphic program
+      WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
     })
     
     // const s = new Socket()
