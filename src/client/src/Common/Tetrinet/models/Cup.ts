@@ -10,6 +10,11 @@ export interface Cup
   getFields: () => Array<number>
   
   /**
+   * Set fields data
+   */
+  setFields: (fields:Array<number>) => void
+  
+  /**
    * Cup state, this is array of fields
    */
   getState: () => CupState
@@ -44,7 +49,6 @@ export interface Cup
    * cup height
    */
   getHeightInCells: () => number
-  
   
   /**
    * @param filedIndex

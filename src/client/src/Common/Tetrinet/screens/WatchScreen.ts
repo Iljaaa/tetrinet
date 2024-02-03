@@ -5,13 +5,22 @@ import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 import {CupRenderer2} from "../CupRenderer2";
 
 import {CupImpl} from "../models/CupImpl";
+import {Socket} from "../../Socket/Socket";
+import {SocketEventListener} from "../../Socket/SocketEventListener";
+
+/**
+ * How often we request data
+ * todo: it should bee replaced by messages from server
+ */
+const REQUEST_DATA_DELTA = 1000;
 
 
 /**
  * @vaersion 0.0.1
  */
-export class WatchScreen extends WebGlScreen
+export class WatchScreen extends WebGlScreen implements SocketEventListener
 {
+  
   /**
    * Cup object
    * @private
@@ -23,6 +32,12 @@ export class WatchScreen extends WebGlScreen
    * @private
    */
   private readonly _cupRenderer: CupRenderer2 | null = null;
+  
+  /**
+   * Timer for update cup data
+   * @private
+   */
+  private requestDataTimer:number = 0;
   
   /**
    * In this constructor we create cup
@@ -38,12 +53,8 @@ export class WatchScreen extends WebGlScreen
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
     
-    // in background we use only texture
-    this._block = new Vertices(false, true);
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-      200, 200, 32, 32,
-      0, 0, 200, 200
-    ))
+    // bind to socket events
+    Socket.setListener(this);
     
   }
   
@@ -53,13 +64,17 @@ export class WatchScreen extends WebGlScreen
    */
   update (deltaTime:number):void
   {
-  
+    this.requestDataTimer -= deltaTime
+    if (this.requestDataTimer <= 0){
+      Socket.requestData()
+      this.requestDataTimer = REQUEST_DATA_DELTA
+    }
+    
   }
   
   
   present(): void
   {
-    console.log('WatchScreen.present')
     const gl = this.game.getGLGraphics().getGl();
     
     // Clear the screen.
@@ -78,11 +93,12 @@ export class WatchScreen extends WebGlScreen
     
   }
   
-  
   /**
-   * Temp field for draw fields
-   * @private
+   * This is method from socket event listener
    */
-  private _block: Vertices;
+  onMessageReceive(data:object): void {
+    console.log('WatchScreen.onMessageReceive', data)
+    this._cup.setFields(data as Array<number>)
+  }
   
 }

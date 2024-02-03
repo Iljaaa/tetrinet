@@ -135,8 +135,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       
       // when socket open we start game
       this.game.playGame(this);
-      
-      
     });
     
   }
@@ -149,7 +147,14 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   
   onWatchClicked = () => {
     console.log ('onWatchClicked');
-    this.game.watchGame();
+    // open socket connection
+    this.socket = new Socket();
+    this.socket.open(() => {
+      
+      // when socket open we start game
+      this.game.watchGame();
+    });
+    
   }
   
   render () {

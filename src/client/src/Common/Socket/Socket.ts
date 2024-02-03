@@ -1,12 +1,26 @@
+import {SocketEventListener} from "./SocketEventListener";
+
+/**
+ * todo: make singleton
+ */
 export class Socket
 {
-  private socket: WebSocket | undefined;
-  
   /**
    *
    * @private
    */
+  private static socket: WebSocket | undefined;
+  
+  /**
+   * Callback when socket is open
+   * @private
+   */
   private onOpenCallback: (() => void) | undefined;
+  
+  /**
+   * This is message event listener
+   */
+  private static eventListener:SocketEventListener|undefined
   
   constructor() {
     console.log ('socket constructor');
@@ -21,17 +35,33 @@ export class Socket
     this.onOpenCallback = onOpenCallback
     
     try {
-      this.socket = new WebSocket('ws://127.0.0.1:10000/websocket')
-      console.log(this.socket, 'socked')
+      Socket.socket = new WebSocket('ws://127.0.0.1:10000/websocket')
+      console.log(Socket.socket, 'socked')
       
-      this.socket.onopen = this.onOpen;
-      this.socket.onmessage = this.onMessage;
-      this.socket.onerror = this.onError;
-      this.socket.onclose = this.onClose;
+      Socket.socket.onopen = this.onOpen;
+      Socket.socket.onmessage = this.onMessage;
+      Socket.socket.onerror = this.onError;
+      Socket.socket.onclose = this.onClose;
     }
     catch (e) {
       console.log(e, 'e')
     }
+  }
+  
+  /**
+   * Request data from server
+   */
+  static requestData()
+  {
+    const stringData = JSON.stringify({type: "watch screen wants new data"})
+    this.socket?.send(stringData)
+  }
+  
+  /**
+   * Set event listener
+   */
+  static setListener (listener:SocketEventListener){
+    Socket.eventListener = listener;
   }
   
   protected onOpen = () => {
@@ -43,11 +73,20 @@ export class Socket
     }
   }
   
-  protected onMessage (this: WebSocket, ev: MessageEvent<any>): any {
-    console.log (ev, 'Socket.onMessage');
+  /**
+   * When message received from socket
+   * @param event
+   * @protected
+   */
+  protected onMessage (this: WebSocket, event: MessageEvent<any>): any
+  {
+    // parse data
+    let data = event.data
+    data = JSON.parse(data)
     
-    //
-    
+    if (Socket.eventListener) {
+      Socket.eventListener.onMessageReceive(data)
+    }
   }
   
   protected onError (this:WebSocket, ev:Event):any {
@@ -58,14 +97,19 @@ export class Socket
     console.log ('Socket.onClose');
   }
   
-  public sendData = (data:object) => {
+  /**
+   * Send some data to socket
+   * todo: refactor to singletone
+   * @param data
+   */
+  public sendData = (data:object) =>
+  {
     console.log (data, 'Socket.sendData');
-    if (!this.socket) return;
+    if (!Socket.socket) return;
     
     const stringData = JSON.stringify(data)
-    this.socket.send(stringData);
+    Socket.socket.send(stringData);
   }
-  
 }
 
 // let host = 'ws://127.0.0.1:10000/websocket';

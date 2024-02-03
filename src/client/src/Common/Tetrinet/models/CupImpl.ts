@@ -68,6 +68,10 @@ export class CupImpl implements Cup
     return this.fields;
   }
   
+  setFields(fields: Array<number>): void {
+    this.fields = fields;
+  }
+  
   getState = ():CupState => {
     return this._state;
   }
