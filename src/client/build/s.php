@@ -1,59 +1,81 @@
 <?php
-// Создание сокета для прослушивания подключений
-$server = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-socket_bind($server, '0', 889);
-socket_set_option($server, SOL_SOCKET, SO_REUSEADDR, 1);//разрешаем использовать один порт для нескольких соединений
-socket_listen($server);
+function go(){
+    $starttime = round(microtime(true),2);
+    echo "GO() ... <br />\r\n";
+
+    echo "socket_create ...";
+    // $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
+    if($socket < 0){
+        echo "Error: ".socket_strerror(socket_last_error())."<br />\r\n";
+        exit();
+    } else {
+        echo "OK <br />\r\n";
+    }
 
 
+    echo "socket_bind ...";
+    $bind = socket_bind($socket, 0);//привязываем его к указанным ip и порту
+    if($bind < 0){
+        echo "Error: ".socket_strerror(socket_last_error())."<br />\r\n";
+        exit();
+    }else{
+        echo "OK <br />\r\n";
+    }
 
-while(true)
-{ //Бесконечный цикл ожидания подключений
-    // Ожидание подключения клиента
-    $client = socket_accept($server);
-    echo "Client connected\n";
+    socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);//разрешаем использовать один порт для нескольких соединений
 
-    // Чтение данных от клиента
-    $input = socket_read($client, 2048);
-    echo "Received message: " . $input . "\n";
+    echo "Listening socket... ";
+    $listen = socket_listen($socket, 5);//слушаем сокет
 
-    sleep(1);
+    if($listen < 0){
+        echo "Error: ".socket_strerror(socket_last_error())."<br />\r\n";
+        exit();
+    }else{
+        echo "OK <br />\r\n";
+    }
 
-    // headers
-    preg_match("/Sec-WebSocket-Key: (.*)/", $input, $matches);
-    var_dump($matches);
+    while(true){ //Бесконечный цикл ожидания подключений
+        echo "Waiting... ";
+        $accept = socket_accept($socket); //Зависаем пока не получим ответа
+        var_dump($accept);
+        if($accept === false){
+            echo "Error: ".socket_strerror(socket_last_error())."<br />\r\n";
+            usleep(100);
+        } else {
+            echo "OK <br />\r\n";
+            echo "Client \"".$accept."\" has connected<br />\r\n";
+        }
 
-    $uuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"; // This is a constant
-    $result = sha1($matches[1] . $uuid, true); // true to output raw
-    $result = base64_encode($result);
+        $msg = "Hello, Client!";
+        echo "Send to client \"".$msg."\"... ";
+        socket_write($accept, $msg);
+        echo "OK <br />\r\n";
 
-    echo $matches[1]. "\n";
+        if( ( round(microtime(true),2) - $starttime) > 100) {
+            echo "time = ".(round(microtime(true),2) - $starttime);
+            echo "return <br />\r\n";
+            return $socket;
+        }
 
-        $header = "HTTP/1.1\r\n" .
-            // "Host: 127.0.0.1:889\r\n".
-        // "Origin: 127.0.0.1:8080\r\n".
-        "Upgrade: websocket\r\n" .
-        "Connection: Upgrade\r\n" .
-        "Sec-WebSocket-Key: ".$result."\r\n" .
-        "\r\n";
-    echo $header;
-    socket_write($client, $header, strlen($header));
 
-    echo $result. "\n";
-    sleep(5);
+    }
 
-    // Отправка данных клиенту
-    $output = "Hello, client!";
-    socket_write($client, $output, strlen($output));
-
-    sleep(2);
 
 }
 
+error_reporting(E_ALL); //Выводим все ошибки и предупреждения
+set_time_limit(0);		//Время выполнения скрипта не ограничено
+ob_implicit_flush();	//Включаем вывод без буферизации
 
+$socket = go();			//Функция с бесконечным циклом, возвращает $socket по запросу выполненному по прошествии 100 секнуд.
 
-echo "we end here";
+echo "go() ended<br />\r\n";
 
-// Закрытие соединения
-socket_close($client);
-socket_close($server);
+if (isset($socket)){
+    echo "Closing connection... ";
+    @socket_shutdown($socket);
+    socket_close($socket);
+    echo "OK <br />\r\n";
+}
