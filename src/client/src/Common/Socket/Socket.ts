@@ -22,20 +22,19 @@ export class Socket
    */
   private static eventListener:SocketEventListener|undefined
   
-  constructor() {
-    console.log ('socket constructor');
-  }
   
   /**
    * Open connection
    */
   open(onOpenCallback:()=>void)
   {
+    console.info ('socket connecting to: ' + window.tetrinetConfig.socketUrl);
+    
     // save callback
     this.onOpenCallback = onOpenCallback
     
     try {
-      Socket.socket = new WebSocket('ws://127.0.0.1:10000/websocket')
+      Socket.socket = new WebSocket(window.tetrinetConfig.socketUrl)
       console.log(Socket.socket, 'socked')
       
       Socket.socket.onopen = this.onOpen;
@@ -89,8 +88,10 @@ export class Socket
     }
   }
   
-  protected onError (this:WebSocket, ev:Event):any {
-    console.log (ev, 'Socket.onError');
+  protected onError (this:WebSocket, error:Event):any {
+    console.log ('Socket.onError', error);
+    alert('Socket error, restart application');
+    // if (error.type === "error")
   }
   
   protected onClose = () => {

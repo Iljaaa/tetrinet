@@ -24,7 +24,12 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Tetrinet</title>
+    <script>
+      window.tetrinetConfig = {
+        socketUrl: 'ws://127.0.0.1:10000/websocket'
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
