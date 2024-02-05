@@ -24,7 +24,7 @@
 @section('content')
 <script>
     window.tetrinetConfig = {
-        socketUrl: "ws://127.0.0.1:10000/websocket"
+        socketUrl: "ws://143.110.160.139:10000/websocket"
     }
 </script>
 <div id="root"></div>
