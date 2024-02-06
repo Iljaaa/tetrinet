@@ -6,6 +6,7 @@ import {CupRenderer2} from "../CupRenderer2";
 import {CupImpl} from "../models/CupImpl";
 import {Socket} from "../../Socket/Socket";
 import {SocketEventListener} from "../../Socket/SocketEventListener";
+import {SocketSingletone} from "../../Socket/SocketSingletone";
 
 /**
  * How often we request data
@@ -53,7 +54,7 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
     
     // bind to socket events
-    Socket.setListener(this);
+    SocketSingletone.getInstance()?.setListener(this);
     
   }
   
@@ -65,7 +66,7 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
   {
     this.requestDataTimer -= deltaTime
     if (this.requestDataTimer <= 0){
-      Socket.requestData()
+      SocketSingletone.getInstance()?.requestData()
       this.requestDataTimer = REQUEST_DATA_DELTA
     }
     

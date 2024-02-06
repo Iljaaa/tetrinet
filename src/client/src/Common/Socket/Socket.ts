@@ -1,4 +1,6 @@
 import {SocketEventListener} from "./SocketEventListener";
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
 
 /**
  * todo: make singleton
@@ -9,7 +11,7 @@ export class Socket
    *
    * @private
    */
-  private static socket: WebSocket | undefined;
+  private socket: WebSocket | undefined;
   
   /**
    * Callback when socket is open
@@ -20,38 +22,35 @@ export class Socket
   /**
    * This is message event listener
    */
-  private static eventListener:SocketEventListener|undefined
+  private eventListener:SocketEventListener|undefined
   
   
-  /**
-   * Open connection
-   */
-  open(onOpenCallback:()=>void)
+  constructor(onOpenCallback: (() => void) | undefined)
   {
-    console.info ('socket connecting to: ' + window.tetrinetConfig.socketUrl);
     
     // save callback
     this.onOpenCallback = onOpenCallback
     
     try {
-      Socket.socket = new WebSocket(window.tetrinetConfig.socketUrl)
-      console.log(Socket.socket, 'socked')
+      this.socket = new WebSocket(window.tetrinetConfig.socketUrl)
+      console.log(this.socket, 'socked')
       
-      Socket.socket.onopen = this.onOpen;
-      Socket.socket.onmessage = this.onMessage;
-      Socket.socket.onerror = this.onError;
-      Socket.socket.onclose = this.onClose;
+      this.socket.onopen = this.onOpen;
+      this.socket.onmessage = this.onMessage;
+      this.socket.onerror = this.onError;
+      this.socket.onclose = this.onClose;
     }
     catch (e) {
       console.log(e, 'e')
     }
   }
   
+
+  
   /**
    * Request data from server
    */
-  static requestData()
-  {
+  requestData () {
     const stringData = JSON.stringify({type: "watch"})
     this.socket?.send(stringData)
   }
@@ -59,10 +58,13 @@ export class Socket
   /**
    * Set event listener
    */
-  static setListener (listener:SocketEventListener){
-    Socket.eventListener = listener;
+  setListener (listener:SocketEventListener){
+    this.eventListener = listener;
   }
   
+  /**
+   * On socket open
+   */
   protected onOpen = () => {
     console.log ('Socket.onOpen');
     
@@ -77,17 +79,23 @@ export class Socket
    * @param event
    * @protected
    */
-  protected onMessage (this: WebSocket, event: MessageEvent<any>): any
+  protected onMessage = (event: MessageEvent<any>): any =>
   {
     // parse data
     let data = event.data
     data = JSON.parse(data)
     
-    if (Socket.eventListener) {
-      Socket.eventListener.onMessageReceive(data)
+    if (this.eventListener) {
+      this.eventListener.onMessageReceive(data)
     }
   }
   
+  /**
+   * Todo: add to callback
+   * @param error
+   * @protected
+   */
+  // protected onError (this:WebSocket, error:Event):any {
   protected onError (this:WebSocket, error:Event):any {
     console.log ('Socket.onError', error);
     alert('Socket error, restart application');
@@ -106,12 +114,16 @@ export class Socket
   public sendData = (data:object) =>
   {
     console.log (data, 'Socket.sendData');
-    if (!Socket.socket) return;
+    if (!this.socket) return;
     
     const stringData = JSON.stringify(data)
-    Socket.socket.send(stringData);
+    this.socket.send(stringData);
   }
 }
+
+
+
+
 
 // let host = 'ws://127.0.0.1:10000/websocket';
 

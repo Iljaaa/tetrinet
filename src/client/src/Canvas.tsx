@@ -7,6 +7,7 @@ import {Socket} from "./Common/Socket/Socket";
 import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupState} from "./Common/Tetrinet/models/CupState";
 import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
+import {SocketSingletone} from "./Common/Socket/SocketSingletone";
 
 type State = {
   score: number,
@@ -31,7 +32,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * Socket connection
    * @private
    */
-  private socket:Socket | undefined;
+  // private socket:Socket | undefined;
+  
   
   public state:State = {
     score: 0,
@@ -50,6 +52,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // this.game =  new PlayScreen();
     this.game = new Tetrinet()
     
+    // generate user id
   }
   
   /**
@@ -69,17 +72,14 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.setState({currentGameState: state})
     
     // send data to socket
-    if (this.socket)
-    {
-      // todo: make here special object
-      const sendData = {
-        type: "play",
-        state: state,
-        cup: cupState
-      }
-      
-      this.socket.sendData(sendData)
+    // todo: make here special object
+    const sendData = {
+      type: "play",
+      state: state,
+      cup: cupState
     }
+    
+    SocketSingletone.getInstance()?.sendData(sendData)
   }
   
   /**
@@ -102,8 +102,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     Assets.load(sprite, () => {
       // start game
       // this.game.startGame();
-      
-      console.log ('Assets loaded, game ready to start');
+      console.log ('Assets loaded, upfate graphycs');
       
       //
       const gl:WebGL2RenderingContext|null = this.game.getGLGraphics().getGl();
@@ -136,12 +135,13 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log ('onStartClicked');
     
     // open socket connection
-    this.socket = new Socket();
-    this.socket.open(() => {
+    // this.socket = new Socket();
+    SocketSingletone.init(() => {
       
       // when socket open we start game
       this.game.playGame(this);
-    });
+    })
+    
     
   }
   
@@ -153,13 +153,14 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   
   onWatchClicked = () => {
     console.log ('onWatchClicked');
+    
     // open socket connection
-    this.socket = new Socket();
-    this.socket.open(() => {
+    // this.socket = new Socket();
+    SocketSingletone.init(() => {
       
       // when socket open we start game
       this.game.watchGame();
-    });
+    })
     
   }
   
@@ -176,7 +177,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
           
           <div style={{marginTop: "1rem"}}>
             <div>
-              <button onClick={this.onStartClicked}>Start</button>
+              <button onClick={this.onStartClicked}>Start party</button>
             </div>
             <div style={{marginTop: ".25rem"}}>
               <button onClick={this.onPauseClicked}>Pause</button>
