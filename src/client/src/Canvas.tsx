@@ -203,6 +203,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             <li>Add continue button</li>
             <li>Block buttons by state</li>
             <li>Show loader until socket connecting</li>
+            
+            <li>Resend messages to all connected clients</li>
+            <li>Temporary remove bonus field plus</li>
           </ul>
         
         </div>
