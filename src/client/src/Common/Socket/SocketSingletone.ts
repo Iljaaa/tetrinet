@@ -14,7 +14,7 @@ export class SocketSingletone
   /**
    * Init socket connection
    */
-  public static init(onOpenCallback:()=>void)
+  public static openConnection(onOpenCallback:()=>void)
   {
     if (!SocketSingletone.socketInstance)
     {

@@ -5,6 +5,7 @@ namespace App\Sockets;
 use Illuminate\Support\Facades\Log;
 // use Ratchet\App;
 use Illuminate\Support\Facades\Redis;
+use Random\RandomException;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
@@ -41,8 +42,9 @@ class FirstTestSocket implements MessageComponentInterface
         $connection->app = $app;
 
         // send connection id to client
-        $data = ['type' => 'welcome', 'id' => $connection->socketId];
-        $connection->send(json_encode($data));
+        // we do not send anything when connection is open
+        // $data = ['type' => 'welcome', 'id' => $connection->socketId];
+        // $connection->send(json_encode($data));
     }
 
     /**
@@ -69,6 +71,7 @@ class FirstTestSocket implements MessageComponentInterface
      * @param ConnectionInterface $connection
      * @param MessageInterface $msg
      * @return void
+     * @throws RandomException
      */
     public function onMessage(ConnectionInterface $connection, MessageInterface $msg)
     {
@@ -83,16 +86,12 @@ class FirstTestSocket implements MessageComponentInterface
         //
         if (isset($data['type']))
         {
-            /**
-             * Start party
-             */
-            if ($data['type'] == static::TYPE_START_PARTY)
-            {
-                // generate party id
-
+            // start new party
+            if ($data['type'] == 'start_party') {
+                $this->processStartParty($connection, $data);
             }
 
-            // save data
+            // deprecated mathod
             if ($data['type'] == 'play' && !empty($data['cup']))
             {
                 Log::channel('socket')->info("save", $data['cup']);
@@ -126,5 +125,31 @@ class FirstTestSocket implements MessageComponentInterface
         // send message
         // send random method
         // $connection->send(json_encode($this->tempCup));
+    }
+
+    /**
+     * @param ConnectionInterface $connection
+     * @param array $data
+     * @return void
+     * @throws RandomException
+     */
+    private function processStartParty (ConnectionInterface $connection, array $data)
+    {
+        Log::channel('socket')->info(__METHOD__, $data);
+
+        // store cup into redis
+        // Redis::set('cup', json_encode($data['cup']));
+
+        // create host id
+        $hostId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
+
+        $party = [
+            'host' => $hostId
+        ];
+
+        Redis::set('party', json_encode($party));
+
+        //
+        $connection->send(json_encode(['response' => 'New party created']));
     }
 }

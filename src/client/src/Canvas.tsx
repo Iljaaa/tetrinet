@@ -130,19 +130,21 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.game.getInput().unBind();
   }
   
-  onStartClicked = () =>
+  /**
+   *
+   */
+  onPlayClicked = () =>
   {
-    console.log ('onStartClicked');
+    console.log ('onPlayClicked');
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.init(() => {
+    SocketSingletone.openConnection(() =>
+    {
       
       // when socket open we start game
       this.game.playGame(this);
     })
-    
-    
   }
   
   onPauseClicked = () =>
@@ -151,12 +153,39 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.game.pauseGame();
   }
   
+  /**
+   * Here we start party
+   */
+  onStartClicked = () =>
+  {
+    console.log ('onStartClicked');
+    
+    // open socket connection
+    // this.socket = new Socket();
+    SocketSingletone.openConnection(() =>
+    {
+      // send start party
+      // todo: make special object
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
+        type: "start_party"
+      }, (data) =>
+      {
+        console.log ('startDataReceived', data);
+        
+        // when socket open we start game
+        this.game.playGame(this);
+      })
+      
+    })
+  }
+  
+  
   onWatchClicked = () => {
     console.log ('onWatchClicked');
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.init(() => {
+    SocketSingletone.openConnection(() => {
       
       // when socket open we start game
       this.game.watchGame();
@@ -176,6 +205,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
           <div style={{margin: ".25rem 0 0 0"}}>state <b>{this.state.currentGameState}</b></div>
           
           <div style={{marginTop: "1rem"}}>
+            <div>
+              <button onClick={this.onPlayClicked}>Play (old method)</button>
+            </div>
             <div>
               <button onClick={this.onStartClicked}>Start party</button>
             </div>

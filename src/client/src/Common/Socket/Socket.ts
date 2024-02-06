@@ -11,13 +11,21 @@ export class Socket
    *
    * @private
    */
-  private socket: WebSocket | undefined;
+  private readonly socket: WebSocket | undefined;
   
   /**
    * Callback when socket is open
    * @private
    */
-  private onOpenCallback: (() => void) | undefined;
+  private readonly onOpenCallback: (() => void) | undefined;
+  
+  /**
+   * This is speciaal call back with
+   * setted in send data method
+   * and called in get message
+   * @private
+   */
+  private afterSendDataCallback: ((data: object) => void | undefined) | undefined
   
   /**
    * This is message event listener
@@ -85,6 +93,12 @@ export class Socket
     let data = event.data
     data = JSON.parse(data)
     
+    // call special callback
+    if (this.afterSendDataCallback) {
+      this.afterSendDataCallback(data)
+    }
+    
+    // call event listener
     if (this.eventListener) {
       this.eventListener.onMessageReceive(data)
     }
@@ -108,13 +122,32 @@ export class Socket
   
   /**
    * Send some data to socket
-   * todo: refactor to singletone
    * @param data
    */
   public sendData = (data:object) =>
   {
     console.log (data, 'Socket.sendData');
     if (!this.socket) return;
+    
+    // save callback
+    this.afterSendDataCallback = undefined
+    
+    const stringData = JSON.stringify(data)
+    this.socket.send(stringData);
+  }
+  
+  /**
+   * Send some data to socket
+   * @param data
+   * @param callback
+   */
+  public sendDataAndWaitAnswer = (data:object, callback:(data:object)=>void) =>
+  {
+    console.log (data, 'Socket.sendDataAndWaitAnswer');
+    if (!this.socket) return;
+    
+    // save callback
+    this.afterSendDataCallback = callback
     
     const stringData = JSON.stringify(data)
     this.socket.send(stringData);
