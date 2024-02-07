@@ -172,6 +172,36 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       {
         console.log ('startDataReceived', data);
         
+        // todo: save index in part
+        
+        // when socket open we start game
+        this.game.playGame(this);
+      })
+      
+    })
+  }
+  
+  /**
+   * Here we join to party
+   */
+  onJoinClicked = () =>
+  {
+    console.log ('onJoinClicked');
+    
+    // open socket connection
+    // this.socket = new Socket();
+    SocketSingletone.openConnection(() =>
+    {
+      // send start party
+      // todo: make special object
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
+        type: "join"
+      }, (data) =>
+      {
+        console.log ('joinDataReceived', data);
+        
+        // todo: save index in part
+        
         // when socket open we start game
         this.game.playGame(this);
       })
@@ -212,7 +242,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     return <div style={{padding: "2rem"}}>
       <div style={{display: "flex"}}>
         <div>
-          <canvas id="canvas" width={500} height={704} style={{border: "solid 2px orange"}} ref={this._canvas}/>
+          <canvas id="canvas" width={800} height={704} style={{border: "solid 2px orange"}} ref={this._canvas}/>
         </div>
         <div style={{textAlign: "left", paddingLeft: "2rem"}}>
           
@@ -223,19 +253,24 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             <div>
               <button onClick={this.onPlayClicked}>Play</button>
             </div>
+            <div style={{marginTop: ".25rem"}}>
+              <button onClick={this.onPauseClicked}>Pause</button>
+            </div>
+            <hr/>
             <div>
               <button onClick={this.onStartClicked}>Start party</button>
             </div>
             <div style={{marginTop: ".25rem"}}>
-              <button onClick={this.onPauseClicked}>Pause</button>
+              <button onClick={this.onJoinClicked}>Join party</button>
             </div>
+            <hr />
             <div style={{marginTop: ".25rem"}}>
               <button onClick={this.onWatchClicked}>Watch</button>
             </div>
           </div>
           
           <div style={{margin: "1rem 0 0 0"}}>
-            <Help />
+            <Help/>
           </div>
           
           <div style={{display: "flex", justifyContent: "flex-start", marginTop: "1rem"}}>
@@ -247,13 +282,13 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
           <h2>todo:</h2>
           <ul>
             <li>Draw paused alert</li>
-            <li>Start with two buttons play and watch</li>
             <li>Add continue button</li>
             <li>Block buttons by state</li>
             <li>Show loader until socket connecting</li>
             
             <li>Resend messages to all connected clients</li>
             <li>Temporary remove bonus field plus</li>
+            <li>Just play tetris</li>
           </ul>
           
           

@@ -97,6 +97,11 @@ class FirstTestSocket implements MessageComponentInterface
                 $this->processStartParty($connection, $data);
             }
 
+            if ($data['type'] == 'join') {
+                Log::channel('socket')->info("type:start");
+                $this->processJoinToParty($connection, $data);
+            }
+
             // deprecated mathod
             if ($data['type'] == 'play' && !empty($data['cup']))
             {
@@ -110,8 +115,10 @@ class FirstTestSocket implements MessageComponentInterface
                 // todo here we need to clear cup
                 Redis::set('cup', json_encode($data['cup']));
 
-                //
-                $connection->send(json_encode(['response' => 'Thanx save']));
+                // todo: generate and return id in the party
+                $connection->send(json_encode([
+                    'response' => 'Thanx save'
+                ]));
             }
 
             // save player cup
@@ -119,6 +126,9 @@ class FirstTestSocket implements MessageComponentInterface
             {
                 Log::channel('socket')->info("type:set");
                 Log::channel('socket')->info("party", ['len' => count($this->party)]);
+
+                // todo: find index in party
+                // Log::channel('socket')->info("party", ['len' => count($this->party)]);
 
                 // store cup into redis
                 // todo here we need to clear cup
@@ -163,22 +173,25 @@ class FirstTestSocket implements MessageComponentInterface
     }
 
     /**
+     * Create new party and ad it self to this
      * @param ConnectionInterface $connection
      * @param array $data
      * @return void
-     * @throws RandomException
+     * @throws \Random\RandomException
      */
     private function processStartParty (ConnectionInterface $connection, array $data)
     {
         Log::channel('socket')->info(__METHOD__);
 
-        // add connection to the party
-        $this->party[] = $connection;
+        // clean up party
+        $this->party = [$connection];
 
         // store cup into redis
         // Redis::set('cup', json_encode($data['cup']));
 
         // create party id
+
+        // todo: generate and return id in the party
 
         // create host id
         $hostId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
@@ -189,7 +202,35 @@ class FirstTestSocket implements MessageComponentInterface
 
         Redis::set('party', json_encode($party));
 
-        //
-        $connection->send(json_encode(['response' => 'New party created']));
+
+        $connection->send(json_encode([
+            'indexInParty' => 0,
+            'response' => 'New party created'
+        ]));
+    }
+
+    /**
+     * Join to party
+     * @param ConnectionInterface $connection
+     * @param array $data
+     * @return void
+     * @throws \Random\RandomException
+     */
+    private function processJoinToParty (ConnectionInterface $connection, array $data)
+    {
+        Log::channel('socket')->info(__METHOD__);
+
+        // join connection in party
+        $this->party[] = $connection;
+
+        // get index
+        $index = array_search($connection, $this->party);
+
+        // find
+
+        $connection->send(json_encode([
+            'indexInParty' => $index,
+            'response' => 'New party created'
+        ]));
     }
 }

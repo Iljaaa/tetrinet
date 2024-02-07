@@ -37,7 +37,7 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
    * Timer for update cup data
    * @private
    */
-  private requestDataTimer:number = 0;
+  // private requestDataTimer:number = 0;
   
   /**
    * In this constructor we create cup
@@ -64,11 +64,11 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
    */
   update (deltaTime:number):void
   {
-    this.requestDataTimer -= deltaTime
-    if (this.requestDataTimer <= 0){
-      // SocketSingletone.getInstance()?.requestData()
-      // this.requestDataTimer = REQUEST_DATA_DELTA
-    }
+    // this.requestDataTimer -= deltaTime
+    // if (this.requestDataTimer <= 0){
+    //   // SocketSingletone.getInstance()?.requestData()
+    //   // this.requestDataTimer = REQUEST_DATA_DELTA
+    // }
     
   }
   

@@ -247,7 +247,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     WebGlProgramManager.sUseTextureProgram(gl);
     
     // render cup
+    this._cupRenderer?.setBlockSize(32);
+    this._cupRenderer?.setPosition(32, 32)
     this._cupRenderer?.renderCupWithFigure(this._cup);
+    
+    // render small cup
+    this._cupRenderer?.setBlockSize(16);
+    this._cupRenderer?.setPosition(400, 32);
+    this._cupRenderer?.renderCup(this._cup);
     
     // render next figure
     this.renderNextFigure(gl);
