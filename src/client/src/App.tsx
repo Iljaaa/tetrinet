@@ -8,7 +8,8 @@ function App() {
       <Canvas />
       <div>
         <ul>
-          <li></li>
+          <li>start: Add connetion to temporary state</li>
+          <li>when all will be ready we start the game</li>
         </ul>
       </div>
     </div>

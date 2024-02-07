@@ -96,6 +96,8 @@ export class Socket
     // call special callback
     if (this.afterSendDataCallback) {
       this.afterSendDataCallback(data)
+      // clean up callback
+      this.afterSendDataCallback = undefined;
     }
     
     // call event listener

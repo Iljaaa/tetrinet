@@ -66,8 +66,8 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
   {
     this.requestDataTimer -= deltaTime
     if (this.requestDataTimer <= 0){
-      SocketSingletone.getInstance()?.requestData()
-      this.requestDataTimer = REQUEST_DATA_DELTA
+      // SocketSingletone.getInstance()?.requestData()
+      // this.requestDataTimer = REQUEST_DATA_DELTA
     }
     
   }
@@ -90,16 +90,18 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
     
     // render cup
     this._cupRenderer?.renderCup(this._cup);
-    
   }
   
   /**
    * This is method from socket event listener
    */
-  onMessageReceive(data:{cup:{fields:Array<number>}}): void {
-    console.log('WatchScreen.onMessageReceive', data, data.cup, data.cup?.fields)
-    if (data && data.cup && data.cup.fields) {
-      this._cup.setFields(data.cup.fields)
+  onMessageReceive(data:any): void {
+    console.log('WatchScreen.onMessageReceive')
+    console.log('data', data)
+    console.log('data.cup', data.cup)
+    // console.log('data.cup.cup', data.cup.cup)
+    if (data && data.cup && data.cup && data.cup.cup && data.cup.cup.fields) {
+      this._cup.setFields(data.cup.cup.fields)
     }
     
   }

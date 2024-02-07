@@ -74,7 +74,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // send data to socket
     // todo: make here special object
     const sendData = {
-      type: "play",
+      type: "set",
       state: state,
       cup: cupState
     }
@@ -167,7 +167,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // send start party
       // todo: make special object
       SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
-        type: "start_party"
+        type: "start"
       }, (data) =>
       {
         console.log ('startDataReceived', data);
@@ -185,7 +185,22 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.openConnection(() => {
+    SocketSingletone.openConnection(() =>
+    {
+      // send start party
+      // todo: make special object
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
+        type: "watch"
+      }, (data) =>
+      {
+        console.log ('startDataReceived', data);
+        
+        
+        
+        // when socket open we start game
+        this.game.watchGame();
+      })
+      
       
       // when socket open we start game
       this.game.watchGame();
@@ -206,7 +221,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
           
           <div style={{marginTop: "1rem"}}>
             <div>
-              <button onClick={this.onPlayClicked}>Play (old method)</button>
+              <button onClick={this.onPlayClicked}>Play</button>
             </div>
             <div>
               <button onClick={this.onStartClicked}>Start party</button>
@@ -240,6 +255,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             <li>Resend messages to all connected clients</li>
             <li>Temporary remove bonus field plus</li>
           </ul>
+          
+          
         
         </div>
       </div>
