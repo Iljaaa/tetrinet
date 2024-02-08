@@ -14,10 +14,15 @@ class Cup
     public array $cup = [];
 
     /**
-     * @param array $setData data received from set method
+     * todo: we should init by party size
      */
-    public function __construct (array $setData)
+    public function __construct ()
     {
-        $this->cup = $setData;
+
+    }
+
+    public function setCupByPartyIndex(int $partyIndex, array $cup)
+    {
+        $this->cup[$partyIndex] = $cup;
     }
 }
