@@ -3,18 +3,38 @@ import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 
 import sprite from "./sprite.png"
 import {Assets} from "./Common/Tetrinet/Assets";
-import {Socket} from "./Common/Socket/Socket";
 import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupState} from "./Common/Tetrinet/models/CupState";
 import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
 import {SocketSingletone} from "./Common/Socket/SocketSingletone";
+import {SocketEventListener} from "./Common/Socket/SocketEventListener";
+import {MessageData} from "./entities/MessageData";
+import {UpdateData} from "./entities/UpdateData";
 
-type State = {
+type State =
+{
+  /**
+   * Currenct schoe
+   */
   score: number,
+  
+  /**
+   * Cup state
+   */
   currentGameState?:GameState
+  
+  /**
+   * Party id
+   */
+  partyId: string,
+  
+  /**
+   * Index inside party
+   */
+  partyIndex?: number
 }
 
-export class Canvas extends React.PureComponent<{}, State> implements PlayScreenEventListener
+export class Canvas extends React.PureComponent<{}, State> implements PlayScreenEventListener, SocketEventListener
 {
   /**
    * Ref to canvas
@@ -36,7 +56,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   
   
   public state:State = {
-    score: 0,
+    partyId: "",
+    score: 0
   }
   
   constructor(props: { }, context: any)
@@ -71,15 +92,23 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log('onCupUpdated', state, cupState);
     this.setState({currentGameState: state})
     
-    // send data to socket
-    // todo: make here special object
-    const sendData = {
+    const data:UpdateData = {
       type: "set",
+      partyId: this.state.partyId,
+      partyIndex: this.state.partyIndex as number,
       state: state,
       cup: cupState
     }
     
-    SocketSingletone.getInstance()?.sendData(sendData)
+    // send data to socket
+    // todo: make here special object
+    // const sendData = {
+    //   type: "set",
+    //   state: state,
+    //   cup: cupState
+    // }
+    
+    SocketSingletone.getInstance()?.sendData(data)
   }
   
   /**
@@ -99,7 +128,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.game.initGraphic(this._canvas.current as HTMLCanvasElement)
     
     // start loading assets
-    Assets.load(sprite, () => {
+    Assets.load(sprite, () =>
+    {
       // start game
       // this.game.startGame();
       console.log ('Assets loaded, upfate graphycs');
@@ -168,14 +198,20 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // todo: make special object
       SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
         type: "start"
-      }, (data) =>
+      }, (data:any) =>
       {
         console.log ('startDataReceived', data);
         
-        // todo: save index in part
+        this.setState({
+          partyId: data.partyId,
+          partyIndex: data.yourIndex
+        });
         
         // when socket open we start game
-        this.game.playGame(this);
+        // this.game.playGame(this);
+        
+        // set listener when game starts
+        SocketSingletone.getInstance()?.setListener(this);
       })
       
     })
@@ -196,21 +232,27 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // todo: make special object
       SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
         type: "join"
-      }, (data) =>
+      }, (data:any) =>
       {
         console.log ('joinDataReceived', data);
         
-        // todo: save index in part
+        this.setState({
+          partyId: data.partyId,
+          partyIndex: data.yourIndex
+        });
         
         // when socket open we start game
-        this.game.playGame(this);
+        // this.game.playGame(this);
+        // set listener when game starts
+        
+        SocketSingletone.getInstance()?.setListener(this);
       })
       
     })
   }
   
-  
-  onWatchClicked = () => {
+  onWatchClicked = () =>
+  {
     console.log ('onWatchClicked');
     
     // open socket connection
@@ -238,6 +280,22 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
   }
   
+  /**
+   * This is callback method from socket
+   * it is here because we need to get event that party starts
+   * @param data
+   */
+  onMessageReceive(data: MessageData): void {
+    console.log (data, 'Canvas.onMessageReceive');
+    
+    // start play
+    if (data.type === "letsPlay") {
+      this.game.playGame(this);
+    }
+    
+  }
+  
+  
   render () {
     return <div style={{padding: "2rem"}}>
       <div style={{display: "flex"}}>
@@ -248,6 +306,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
           
           <div>score <b>{this.state.score}</b></div>
           <div style={{margin: ".25rem 0 0 0"}}>state <b>{this.state.currentGameState}</b></div>
+          <div style={{margin: ".25rem 0 0 0"}}>party id: <b>{this.state.partyId}</b></div>
+          <div style={{margin: ".25rem 0 0 0"}}>party index: <b>{this.state.partyIndex}</b></div>
           
           <div style={{marginTop: "1rem"}}>
             <div>

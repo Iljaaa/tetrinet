@@ -21,6 +21,14 @@ export class Tetrinet extends WebGlGame
   }
   
   /**
+   * Waiting opponents
+   * after this game starts
+   */
+  prepareToGame (){
+  
+  }
+  
+  /**
    * Show game
    */
   watchGame()

@@ -2,6 +2,8 @@
 
 namespace App\Sockets;
 
+use App\Common\Cup;
+use App\Common\Party;
 use Illuminate\Support\Facades\Log;
 // use Ratchet\App;
 use Illuminate\Support\Facades\Redis;
@@ -21,9 +23,9 @@ class FirstTestSocket implements MessageComponentInterface
 
     /**
      * This is play party
-     * @var ConnectionInterface[]
+     * @var Party|null
      */
-    private array $party = [];
+    private Party|null $party = null;
 
     /**
      * @param ConnectionInterface $connection
@@ -122,20 +124,27 @@ class FirstTestSocket implements MessageComponentInterface
             }
 
             // save player cup
-            if ($data['type'] == 'set' && !empty($data['cup']))
+            if ($data['type'] == 'set')
             {
-                Log::channel('socket')->info("type:set");
-                Log::channel('socket')->info("party", ['len' => count($this->party)]);
+                Log::channel('socket')->info("type:set", $data);
 
-                // todo: find index in party
+                $players = $this->party->getPlayers();
+                Log::channel('socket')->info("party", ['len' => count($players)]);
+
+                // player index in party
+                $partyIndex = (int) $data['partyIndex'];
+
+                // todo: update cup state in party
+                $cup = new Cup($data['cup']);
+
                 // Log::channel('socket')->info("party", ['len' => count($this->party)]);
 
                 // store cup into redis
                 // todo here we need to clear cup
-                Redis::set('cup', json_encode($data['cup']));
+                // Redis::set('cup', json_encode($data['cup']));
 
                 // send data to all conecetions
-                foreach ($this->party as $con) {
+                foreach ($players as $con) {
                     $con->send(json_encode([
                         'cup' => $data
                     ]));
@@ -184,28 +193,18 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info(__METHOD__);
 
         // clean up party
-        $this->party = [$connection];
+        // $this->party = [$connection];
 
         // store cup into redis
         // Redis::set('cup', json_encode($data['cup']));
 
         // create party id
+        $this->party = new Party($connection);
 
-        // todo: generate and return id in the party
-
-        // create host id
-        $hostId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
-
-        $party = [
-            'host' => $hostId
-        ];
-
-        Redis::set('party', json_encode($party));
-
-
+        //
         $connection->send(json_encode([
-            'indexInParty' => 0,
-            'response' => 'New party created'
+            'partyId' => $this->party->partId,
+            'yourIndex' => 0,
         ]));
     }
 
@@ -221,16 +220,21 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info(__METHOD__);
 
         // join connection in party
-        $this->party[] = $connection;
-
-        // get index
-        $index = array_search($connection, $this->party);
-
-        // find
+        $playerIndex = $this->party->addPlayer($connection);
 
         $connection->send(json_encode([
-            'indexInParty' => $index,
-            'response' => 'New party created'
+            'partyId' => $this->party->partId,
+            'yourIndex' => $playerIndex,
         ]));
+
+        // if we have full party send signal to players
+        if ($this->party->isPartFull()) {
+            foreach ($this->party->getPlayers() as $connection) {
+                $data = [
+                    'type' => 'letsPlay'
+                ];
+                $connection->send(json_encode($data));
+            }
+        }
     }
 }

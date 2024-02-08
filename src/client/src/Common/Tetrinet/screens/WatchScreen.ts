@@ -4,7 +4,6 @@ import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 import {CupRenderer2} from "../CupRenderer2";
 
 import {CupImpl} from "../models/CupImpl";
-import {Socket} from "../../Socket/Socket";
 import {SocketEventListener} from "../../Socket/SocketEventListener";
 import {SocketSingletone} from "../../Socket/SocketSingletone";
 
