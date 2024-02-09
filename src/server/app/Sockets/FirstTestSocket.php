@@ -255,7 +255,8 @@ class FirstTestSocket implements MessageComponentInterface
         // send data to all connections
         foreach ($players as $con) {
             $con->send(json_encode([
-                'cup' => $this->cup->cup
+                'type' => 'afterSet',
+                'cups' => $this->cup->cup
             ]));
         }
     }

@@ -18,6 +18,7 @@ import {Camel} from "../figures/Camel";
 import {Square} from "../figures/Square";
 import {Coords} from "../math/Coords";
 import {CupState} from "../models/CupState";
+import {CupImpl} from "../models/CupImpl";
 
 /**
  * Game states
@@ -57,6 +58,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private readonly _cup: CupWithFigureImpl;
+
+  /**
+   *
+   * @private
+   */
+  private readonly _opponentCup: CupImpl
   
   /**
    * Render
@@ -103,7 +110,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Red squere for experiment with vertices
    * @private
    */
-  private redSquare:Vertices;
+  // private redSquare:Vertices;
   
   
   /**
@@ -115,6 +122,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // create cup object
     this._cup =  new CupWithFigureImpl(this);
+
+    // your oponent cup
+    this._opponentCup = new CupImpl();
     
     // generate next figure
     // this._nextFigure = this.generateNewFigure();
@@ -131,14 +141,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       200, 200, 32, 32,
       0, 0, 200, 200
     ))
-    
-    // todo: we need to create programs here
-    
-    //
-    
+
     // test red square
-    this.redSquare = new Vertices(true, false);
-    this.redSquare.setVertices(Vertices.createColorVerticesArray(0, 0, 100, 100, 255,0,0,1))
+    // this.redSquare = new Vertices(true, false);
+    // this.redSquare.setVertices(Vertices.createColorVerticesArray(0, 0, 100, 100, 255,0,0,1))
     
     // bind this to input listener
     this.game.getInput().setListener(this);
@@ -202,6 +208,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // call callback
     this.listener?.onCupUpdated(this._state, this._cup.getState())
   }
+
+  /**
+   * Set oponent cup
+   * @param o
+   */
+  setOpponentCup (o:CupState) {
+    this._opponentCup.setFields(o.fields)
+  }
   
   /**
    * Update cup
@@ -254,7 +268,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // render small cup
     this._cupRenderer?.setBlockSize(16);
     this._cupRenderer?.setPosition(400, 32);
-    this._cupRenderer?.renderCup(this._cup);
+    this._cupRenderer?.renderCup(this._opponentCup);
     
     // render next figure
     this.renderNextFigure(gl);
@@ -603,31 +617,5 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // }
     
   }
-    
-    
-    // const len = fields.length;
-    // for (let r = 0; r < len; r++)
-    // {
-    //   const cellIndex = fields[r]
-    //
-    //   const c:Coords = this._cup.getCoordsByIndex(cellIndex);
-    //
-    //   const bottom = (c.y * 32) + 320;
-    //   const left = (c.x * 32) + 320;
-    //   // if (left < 320) {
-    //   //   debugger
-    //   // }
-    //
-    //   this._block.setVertices(Vertices.createTextureVerticesArray(
-    //     left, bottom, 32, 32,
-    //     352, 0, 32, 32
-    //   ))
-    //
-    //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    //
-    //   // draw here
-    //   gl.drawArrays(gl.TRIANGLES, 0, 6);
-    //
-    // }
   
 }

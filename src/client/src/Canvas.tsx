@@ -3,7 +3,7 @@ import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 
 import sprite from "./sprite.png"
 import {Assets} from "./Common/Tetrinet/Assets";
-import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
+import {GameState, PlayScreen, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupState} from "./Common/Tetrinet/models/CupState";
 import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
 import {SocketSingletone} from "./Common/Socket/SocketSingletone";
@@ -83,33 +83,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onLineCleared (countLines:number) {
     this.setState({score: this.state.score + ((countLines + countLines - 1) * 10) })
   }
-  
-  /**
-   * This is callback method when something happen in cup
-   */
-  onCupUpdated(state:GameState, cupState:CupState): void
-  {
-    console.log('onCupUpdated', state, cupState);
-    this.setState({currentGameState: state})
-    
-    const data:UpdateData = {
-      type: "set",
-      partyId: this.state.partyId,
-      partyIndex: this.state.partyIndex as number,
-      state: state,
-      cup: cupState
-    }
-    
-    // send data to socket
-    // todo: make here special object
-    // const sendData = {
-    //   type: "set",
-    //   state: state,
-    //   cup: cupState
-    // }
-    
-    SocketSingletone.getInstance()?.sendData(data)
-  }
+
   
   /**
    *
@@ -132,7 +106,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     {
       // start game
       // this.game.startGame();
-      console.log ('Assets loaded, upfate graphycs');
+      console.log ('Assets loaded, updates graphics');
       
       //
       const gl:WebGL2RenderingContext|null = this.game.getGLGraphics().getGl();
@@ -279,6 +253,33 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     })
     
   }
+
+  /**
+   * This is callback method when something happen in cup
+   */
+  onCupUpdated(state:GameState, cupState:CupState): void
+  {
+    console.log('onCupUpdated', state, cupState);
+    this.setState({currentGameState: state})
+
+    const data:UpdateData = {
+      type: "set",
+      partyId: this.state.partyId,
+      partyIndex: this.state.partyIndex as number,
+      state: state,
+      cup: cupState
+    }
+
+    // send data to socket
+    // todo: make here special object
+    // const sendData = {
+    //   type: "set",
+    //   state: state,
+    //   cup: cupState
+    // }
+
+    SocketSingletone.getInstance()?.sendData(data)
+  }
   
   /**
    * This is callback method from socket
@@ -292,7 +293,20 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     if (data.type === "letsPlay") {
       this.game.playGame(this);
     }
-    
+
+    // update cups state from server data
+    if (data.type === "afterSet") {
+      // cups without our cup
+      console.log (this.state.partyIndex, data.cups, 'after set');
+
+      // find opponent cups
+      let o:CupState|undefined = data.cups.find((c:CupState, index:number) => {
+        return index !== this.state.partyIndex
+      })
+
+      if (o) this.game.setOpponentCup(o);
+    }
+
   }
   
   
