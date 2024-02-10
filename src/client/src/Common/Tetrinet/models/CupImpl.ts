@@ -41,6 +41,7 @@ export class CupImpl implements Cup
   {
     this._state.fields = new Array<number>(this.widthInCells * this.heightInCells).fill(-1)
 
+    // this is from top
     // temp cup state
     this._state.fields[0] = 1;
     this._state.fields[1] = 1;
@@ -61,8 +62,6 @@ export class CupImpl implements Cup
     this._state.fields[17] = 1;
     this._state.fields[18] = 1;
     this._state.fields[19] = 1;
-    // this.fields[12] = true;
-    // this.fields[22] = true;
   }
   
   getFields = ():Array<number> => {

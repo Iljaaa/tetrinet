@@ -1,21 +1,22 @@
 import React from "react";
-import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 
-import sprite from "./sprite.png"
+import {MessageData, StartData, UpdateData} from "./entities";
+
+import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 import {Assets} from "./Common/Tetrinet/Assets";
 import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupState} from "./Common/Tetrinet/models/CupState";
 import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
 import {SocketSingletone} from "./Common/Socket/SocketSingletone";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
-import {MessageData} from "./entities/MessageData";
-import {UpdateData} from "./entities/UpdateData";
-import {StartData} from "./entities/StartData";
+
+import sprite from "./sprite.png"
+import {AfterSetMessageDown, MessageTypes} from "./entities/MessageData";
 
 type State =
 {
   /**
-   * Currenct schoe
+   * Current score
    */
   score: number,
   
@@ -55,7 +56,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   // private socket:Socket | undefined;
   
-  
   public state:State = {
     partyId: "",
     score: 0
@@ -85,7 +85,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.setState({score: this.state.score + ((countLines + countLines - 1) * 10) })
   }
 
-  
   /**
    *
    */
@@ -153,11 +152,23 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       this.game.playGame();
     })
   }
-  
+
+  /**
+   * todo: check current game state
+   */
   onPauseClicked = () =>
   {
     console.log ('onPauseClicked');
     this.game.pauseGame();
+  }
+
+  /**
+   * Todo: check current game state
+   */
+  onResumeClicked = () =>
+  {
+    console.log ('onResumeClicked');
+    this.game.resumeGame();
   }
   
   /**
@@ -295,25 +306,42 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log (data, 'Canvas.onMessageReceive');
     
     // party is created, it is time to play
-    if (data.type === "letsPlay") {
+    if (data.type === MessageTypes.letsPlay) {
       this.game.playGame();
       return
     }
 
     // update cups state from server data
-    if (data.type === "afterSet")
-    {
-      // cups without our cup
-      console.log (this.state.partyIndex, data.cups, 'after set', typeof data.cups, Object.keys(data.cups));
-
-      // find opponent key
-      const opponentKey = Object.keys(data.cups).find((key:string) => {
-        return parseInt(key) !== this.state.partyIndex
-      })
-
-      if (opponentKey) this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
+    if (data.type === MessageTypes.afterSet) {
+       this.processAfterSet(data as AfterSetMessageDown)
     }
 
+  }
+
+  /**
+   * todo: move this method to play screen
+   * @param data
+   */
+  processAfterSet (data:AfterSetMessageDown)
+  {
+    // cups without our cup
+    console.log ('after set', this.state.partyIndex, data.cups, typeof data.cups, Object.keys(data.cups));
+
+    if (this.state.currentGameState === GameState.running && data.state === GameState.paused) {
+      this.game.pauseGame();
+    }
+
+    if (this.state.currentGameState === GameState.paused && data.state === GameState.running) {
+      this.game.pauseGame();
+    }
+
+    // find opponent key
+    const opponentKey = Object.keys(data.cups).find((key:string) => {
+      return parseInt(key) !== this.state.partyIndex
+    })
+
+    // todo:  update other cups
+    if (opponentKey) this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
   }
   
   
@@ -336,6 +364,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             </div>
             <div style={{marginTop: ".25rem"}}>
               <button onClick={this.onPauseClicked}>Pause</button>
+              <button onClick={this.onResumeClicked}>Resume</button>
             </div>
             <hr/>
             <div>

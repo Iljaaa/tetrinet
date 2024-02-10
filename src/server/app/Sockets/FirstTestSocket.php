@@ -244,6 +244,9 @@ class FirstTestSocket implements MessageComponentInterface
         $partyIndex = (int) $data['partyIndex'];
         Log::channel('socket')->info("part", ['partyIndex' => $partyIndex]);
 
+        //
+        $state = (int) $data['state']; // play, pause, ets
+
         // todo: update cup state in party
         // $cup = new Cup($data['cup']);
         $this->cup->setCupByPartyIndex($partyIndex, $data['cup']);
@@ -258,6 +261,7 @@ class FirstTestSocket implements MessageComponentInterface
         foreach ($players as $con) {
             $con->send(json_encode([
                 'type' => 'afterSet',
+                'state' => $state,
                 'cups' => $this->cup->cup
             ]));
         }

@@ -1,5 +1,10 @@
-import {Cup} from "../Common/Tetrinet/models/Cup";
 import {CupState} from "../Common/Tetrinet/models/CupState";
+import {GameState} from "../Common/Tetrinet/screens/PlayScreen";
+
+export enum MessageTypes {
+  letsPlay = 'letsPlay',
+  afterSet = 'afterSet'
+}
 
 /**
  * Data format received from server,
@@ -7,7 +12,13 @@ import {CupState} from "../Common/Tetrinet/models/CupState";
 export type MessageData =
 {
   // type of request
-  type:string,
+  type: MessageTypes,
+}
+
+export interface AfterSetMessageDown extends MessageData
+{
+  // game state
+  state: GameState,
 
   // cups state
   cups: Array<CupState>

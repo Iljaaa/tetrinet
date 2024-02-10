@@ -271,26 +271,43 @@ export class WebGlProgramManager
       " vec2 drawPos = coordinates + translation;" +
       // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
       " drawPos = drawPos / canvasSize * 2.0;" +
+
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
       " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
-      // Pass the texture position to the fragment shader.
+
+      // this made all upside down
+      // " gl_Position = vec4(drawPos.x - 1.0, -1.0 * (drawPos.y - 1.0), 0.0, 1.0);" +
+
+        // Pass the texture position to the fragment shader.
       // WebGL wants numbers from 0 to 1, but we are passing in pixel positions.
       " texPosForFrag = textilsPos / texSize;" +
+      // " texPosForFrag = vec2(textilsPos.x / texSize.x, (1.0 - textilsPos.y) / texSize.y);" +
+
       "}"
     
     // Create a vertex shader object.
     let vertShader = WebGlProgramManager.createShader(gl, gl.VERTEX_SHADER, vertCode)
     if (!vertShader) throw new Error("vertShader was not created");
     
+    // shader rotated by top
+    //const fragCode =
+    //   // texture var from vertex function
+    //   "precision highp float;" +
+    //   "varying highp vec2 texPosForFrag;" +
+    //   "uniform sampler2D sampler;" +
+    //   "void main(void) {" +
+    //   " vec2 texCoord = vec2(texPosForFrag.x, 1.0 - texPosForFrag.y);" +
+    //   " gl_FragColor = texture2D(sampler, texCoord);" +
+    //   "}"
+
     // Fragment shader source code.
-    var fragCode =
-      // texture var from vertex function
+    const fragCode =
       "varying highp vec2 texPosForFrag;" +
       "uniform sampler2D sampler;" +
       "void main(void) {" +
       " gl_FragColor = texture2D(sampler, texPosForFrag);" +
       "}"
-    
+
     // Create fragment shader object.
     //var fragShader = gl.createShader(gl.FRAGMENT_SHADER)
     

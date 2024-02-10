@@ -80,6 +80,10 @@ export class Tetrinet extends WebGlGame
     currentScreen.pause()
   }
 
+  resumeGame(){
+    (this.getCurrentScreen() as PlayScreen)?.resume();
+  }
+
 
   /**
    * Show game
