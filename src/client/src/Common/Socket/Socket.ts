@@ -1,6 +1,4 @@
 import {SocketEventListener} from "./SocketEventListener";
-import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
 
 /**
  * todo: make singleton

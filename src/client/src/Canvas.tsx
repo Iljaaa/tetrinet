@@ -3,7 +3,7 @@ import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 
 import sprite from "./sprite.png"
 import {Assets} from "./Common/Tetrinet/Assets";
-import {GameState, PlayScreen, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
+import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupState} from "./Common/Tetrinet/models/CupState";
 import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
 import {SocketSingletone} from "./Common/Socket/SocketSingletone";

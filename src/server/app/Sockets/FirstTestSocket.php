@@ -90,7 +90,6 @@ class FirstTestSocket implements MessageComponentInterface
      * @param ConnectionInterface $connection
      * @param MessageInterface $msg
      * @return void
-     * @throws RandomException
      */
     public function onMessage(ConnectionInterface $connection, MessageInterface $msg)
     {
