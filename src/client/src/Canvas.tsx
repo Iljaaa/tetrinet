@@ -289,7 +289,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onMessageReceive(data: MessageData): void {
     console.log (data, 'Canvas.onMessageReceive');
     
-    // start play
+    // party is created, it is time to play
     if (data.type === "letsPlay") {
       this.game.playGame(this);
     }
@@ -297,14 +297,21 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // update cups state from server data
     if (data.type === "afterSet") {
       // cups without our cup
-      console.log (this.state.partyIndex, data.cups, 'after set');
+      console.log (this.state.partyIndex, data.cups, 'after set', typeof data.cups, Object.keys(data.cups));
+
+      // find opponent key
+      const opponentKey = Object.keys(data.cups).find((key:string) => {
+        return parseInt(key) !== this.state.partyIndex
+      })
+      console.log (opponentKey, 'opponentKey');
 
       // find opponent cups
-      let o:CupState|undefined = data.cups.find((c:CupState, index:number) => {
-        return index !== this.state.partyIndex
-      })
+      // let o:CupState|undefined = data.cups.find((c:CupState, index:number) => {
+      //   return index !== this.state.partyIndex
+      // })
+      // if (o) this.game.setOpponentCup(o);
 
-      if (o) this.game.setOpponentCup(o);
+      if (opponentKey) this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
     }
 
   }
