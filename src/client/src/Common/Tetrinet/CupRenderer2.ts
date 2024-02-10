@@ -29,6 +29,7 @@ export class CupRenderer2
   
   /**
    * Cup position
+   * todo: remove position from this object
    */
   private position = {
     x: 32,

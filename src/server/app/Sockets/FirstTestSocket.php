@@ -18,8 +18,8 @@ class FirstTestSocket implements MessageComponentInterface
      */
     // private $tempCup = [-1,-1,-1,-1,1,1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
 
-    const TYPE_START_PARTY = 'start_party';
-    const TYPE_JOIN_PART = 'join_party';
+    const MESSAGE_START = 'start_party';
+    const MESSAGE_JOIN = 'join_party';
 
     /**
      * This is play party
@@ -27,9 +27,9 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private Party|null $party = null;
 
-
     /**
      * Cup object for sinchronize
+     * todo: move is to the party
      * @var Cup
      */
     private Cup $cup;
@@ -40,17 +40,17 @@ class FirstTestSocket implements MessageComponentInterface
     }
 
     /**
-     * @param ConnectionInterface $connection
+     * @param ConnectionInterface $conn
      * @return void
      * @throws \Random\RandomException
      */
-    public function onOpen(ConnectionInterface $connection)
+    public function onOpen(ConnectionInterface $conn)
     {
         Log::channel('socket')->info(__METHOD__);
 
         // generate socket is
         $socketId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
-        $connection->socketId = $socketId;
+        $conn->socketId = $socketId;
 
         //
         Log::channel('socket')->info(sprintf('Connection open with %s', $socketId));
@@ -58,7 +58,7 @@ class FirstTestSocket implements MessageComponentInterface
         // what this code do?
         // $connection->app = App::findById('YOUR_APP_ID');
         $app = \BeyondCode\LaravelWebSockets\Apps\App::findById("app_id");
-        $connection->app = $app;
+        $conn->app = $app;
 
         // send connection id to client
         // we do not send anything when connection is open
@@ -237,6 +237,9 @@ class FirstTestSocket implements MessageComponentInterface
     {
         $players = $this->party->getPlayers();
         Log::channel('socket')->info("party", ['len' => count($players)]);
+
+        // todo: check party id ans if we do not have such party we drop connection
+        // todo: check players and we do not have this connection id in party drop this conection
 
         // player index in party
         $partyIndex = (int) $data['partyIndex'];

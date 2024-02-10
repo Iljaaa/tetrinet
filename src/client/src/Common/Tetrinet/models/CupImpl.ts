@@ -18,14 +18,7 @@ export class CupImpl implements Cup
    * @private
    */
   protected heightInCells = 20;
-  
-  /**
-   * @deprecated
-   * todo: refactor to this,_state
-   * Array of field where if it is true then there block
-   * @private
-   */
-  // protected fields:Array<number> = [];
+
   
   /**
    */
@@ -36,11 +29,18 @@ export class CupImpl implements Cup
   
   constructor()
   {
+    // init field with start value
     // console.log ('CapClass.constructor');
-    
-    // make fields array
+    this.cleanFields();
+  }
+
+  /**
+   * Clean up field
+   */
+  cleanFields ()
+  {
     this._state.fields = new Array<number>(this.widthInCells * this.heightInCells).fill(-1)
-    
+
     // temp cup state
     this._state.fields[0] = 1;
     this._state.fields[1] = 1;
@@ -51,7 +51,7 @@ export class CupImpl implements Cup
     this._state.fields[7] = 1;
     this._state.fields[8] = 1;
     this._state.fields[9] = 1;
-    
+
     this._state.fields[10] = 1;
     this._state.fields[11] = 1;
     this._state.fields[12] = 1;

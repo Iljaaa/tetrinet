@@ -60,7 +60,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private readonly _cup: CupWithFigureImpl;
 
   /**
-   *
+   * this is opponent cup
+   * for temp test
    * @private
    */
   private readonly _opponentCup: CupImpl
@@ -105,6 +106,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private listener: PlayScreenEventListener|undefined;
+
+  /**
+   * Temp field for draw fields
+   * @private
+   */
+  private _block: Vertices;
   
   /**
    * Red squere for experiment with vertices
@@ -167,7 +174,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   //   console.log ('PlayScreen.init');
     // this._cupRenderer = new CupRenderer(this.game.getGLGraphics().getGl(), this._cup);
   // }
-  
+
+  cleanUpCup ()
+  {
+    console.log('PlayScreen.cleanUpCup')
+    this._cup.cleanFields();
+  }
+
   /**
    * It starts the game
    * must be called after init!
@@ -177,7 +190,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // if (!this._cupRenderer){
     //   throw new Error('Cup render not initialised')
     // }
-    
     
     // next figure random color
     this._nextFigure = this.generateNewFigure();
@@ -197,7 +209,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // finnaly set run status
     this._state = GameState.running
     
-    // call callback
+    // call first callback
+    // i am not sure that it need to be here
     this.listener?.onCupUpdated(this._state, this._cup.getState())
   }
   
@@ -271,7 +284,111 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cupRenderer?.renderCup(this._opponentCup);
     
     // render next figure
-    this.renderNextFigure(gl);
+    this.presentNextFigure(gl);
+
+    // present interface
+    if (this._state === GameState.ready){
+      this.presentReady(gl);
+    }
+  }
+
+  /**
+   * Ready state present
+   * @param gl
+   * @private
+   */
+  private presentReady (gl: WebGL2RenderingContext)
+  {
+    console.log('PlayScreen.presentReady')
+
+    // move position to left
+    // todo: move to user cup position
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 0, 0)
+
+    // calc left position
+    // this._cup.getWidthInCells()
+
+    this._block.setVertices(Vertices.createTextureVerticesArray(
+        110, 450, 160, 64,
+        320, 256, 192, 64
+    ))
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+
+    // draw here
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
+
+
+  /**
+   * Draw next figure
+   * @param gl
+   * @private
+   */
+  private presentNextFigure(gl: WebGL2RenderingContext)
+  {
+    if (!this._nextFigure) return;
+
+    // move cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)
+
+    const fields:Array<Array<boolean>> = this._nextFigure.getPreviewFields();
+
+    const BLOCK_SIZE = 32;
+
+    // calculate number rows
+    const rows = fields.length
+
+    // calculate number cols
+    const cols = fields[0].length
+
+    // calculate left margin
+    const leftMargin = ((4 - cols) / 2) * BLOCK_SIZE;
+
+    // calculate left margin
+    const bottomMargin = ((4 - rows) / 2) * BLOCK_SIZE;
+
+    // for (let r = 0; r < rows; r++) {
+    fields.reverse().forEach((row:Array<boolean>, rowIndex:number) => {
+      row.forEach((col:boolean, colIndex:number) => {
+        if (col)
+        {
+          const left = (colIndex * BLOCK_SIZE) + leftMargin;
+          const bottom = (rowIndex * BLOCK_SIZE)  + bottomMargin;
+
+          const spriteLeft = 320 + this._nextFigureColor * BLOCK_SIZE;
+
+          this._block.setVertices(Vertices.createTextureVerticesArray(
+              left, bottom, BLOCK_SIZE, BLOCK_SIZE,
+              spriteLeft, 0, BLOCK_SIZE, BLOCK_SIZE
+          ))
+
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+
+          // draw here
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+
+      })
+    });
+
+    // for (let c = 0; c < cols; c++)
+    // {
+    //
+    //   const bottom = (r * BLOCK_SIZE) + 320;
+    //   const left = (c * BLOCK_SIZE) + 320;
+    //
+    //   this._block.setVertices(Vertices.createTextureVerticesArray(
+    //     left, bottom, 32, 32,
+    //     352, 0, 32, 32
+    //   ))
+    //
+    //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    //
+    //   // draw here
+    //   gl.drawArrays(gl.TRIANGLES, 0, 6);
+    // }
+
   }
   
   //
@@ -540,82 +657,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private generateRandomColor():number {
     return Math.floor(Math.random() * 3);
   }
-  
-  /**
-   * Temp field for draw fields
-   * @private
-   */
-  private _block: Vertices;
-  
-  /**
-   * Draw next figure
-   * @param gl
-   * @private
-   */
-  private renderNextFigure(gl: WebGL2RenderingContext)
-  {
-    if (!this._nextFigure) return;
-    
-    // move cup
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)
-    
-    const fields:Array<Array<boolean>> = this._nextFigure.getPreviewFields();
-    
-    const BLOCK_SIZE = 32;
-    
-    // calculate number rows
-    const rows = fields.length
-    
-    // calculate number cols
-    const cols = fields[0].length
-    
-    // calculate left margin
-    const leftMargin = ((4 - cols) / 2) * BLOCK_SIZE;
-    
-    // calculate left margin
-    const bottomMargin = ((4 - rows) / 2) * BLOCK_SIZE;
-    
-    // for (let r = 0; r < rows; r++) {
-    fields.reverse().forEach((row:Array<boolean>, rowIndex:number) => {
-      row.forEach((col:boolean, colIndex:number) => {
-        if (col)
-        {
-          const left = (colIndex * BLOCK_SIZE) + leftMargin;
-          const bottom = (rowIndex * BLOCK_SIZE)  + bottomMargin;
-          
-          const spriteLeft = 320 + this._nextFigureColor * BLOCK_SIZE;
-          
-          this._block.setVertices(Vertices.createTextureVerticesArray(
-            left, bottom, BLOCK_SIZE, BLOCK_SIZE,
-            spriteLeft, 0, BLOCK_SIZE, BLOCK_SIZE
-          ))
-          
-          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-          
-          // draw here
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        }
-        
-      })
-    });
-    
-    // for (let c = 0; c < cols; c++)
-    // {
-    //
-    //   const bottom = (r * BLOCK_SIZE) + 320;
-    //   const left = (c * BLOCK_SIZE) + 320;
-    //
-    //   this._block.setVertices(Vertices.createTextureVerticesArray(
-    //     left, bottom, 32, 32,
-    //     352, 0, 32, 32
-    //   ))
-    //
-    //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    //
-    //   // draw here
-    //   gl.drawArrays(gl.TRIANGLES, 0, 6);
-    // }
-    
-  }
+
+
   
 }

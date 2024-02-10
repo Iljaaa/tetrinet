@@ -25,46 +25,51 @@ export class Tetrinet extends WebGlGame
    * Waiting opponents
    * after this game starts
    */
-  prepareToGame (){
-  
-  }
-  
-  /**
-   * Show game
-   */
-  watchGame()
+  prepareToGame (eventListener: PlayScreenEventListener)
   {
-    console.log ('start watch');
-    // let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
-    this.setScreen(new WatchScreen(this))
-    
+    // get current screen
+    let scr = this.getCurrentScreen() as PlayScreen;
+
+
+    if (!scr)
+    {
+      // we get current screen
+      // and if it is not a play screen create new one
+      scr = new PlayScreen(this);
+
+      // bind event listener
+      scr.setGameEventListener(eventListener)
+
+      // write as current
+      this.setScreen(scr);
+    }
+
+    // clear sup from previous game
+    scr.cleanUpCup();
+
     // start request
     window.requestAnimationFrame(this.update)
   }
   
   /**
    * Play game
+   * the game starts automaticly when we receive the message from socket
    */
-  playGame(eventListener: PlayScreenEventListener)
+  playGame()
   {
     // we get current screen
     // and if it is not a play screen create new one
-    let currentScreen:PlayScreen = new PlayScreen(this);
-    
+    // let currentScreen:PlayScreen = new PlayScreen(this);
+
     // init screen
     // currentScreen.init()
     
     // bind event listener
-    currentScreen.setGameEventListener(eventListener)
+    // currentScreen.setGameEventListener(eventListener)
     
     // start game
-    currentScreen.startNewGame()
-    
-    // write as current
-    this.setScreen(currentScreen);
-    
-    // start request
-    window.requestAnimationFrame(this.update)
+    const s = this.getCurrentScreen() as PlayScreen
+    s.startNewGame()
   }
   
   /**
@@ -73,6 +78,20 @@ export class Tetrinet extends WebGlGame
   pauseGame() {
     const currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
     currentScreen.pause()
+  }
+
+
+  /**
+   * Show game
+   */
+  watchGame()
+  {
+    console.log ('start watch');
+    // let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
+    this.setScreen(new WatchScreen(this))
+
+    // start request
+    window.requestAnimationFrame(this.update)
   }
 
   /**

@@ -10,6 +10,7 @@ import {SocketSingletone} from "./Common/Socket/SocketSingletone";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 import {MessageData} from "./entities/MessageData";
 import {UpdateData} from "./entities/UpdateData";
+import {StartData} from "./entities/StartData";
 
 type State =
 {
@@ -145,9 +146,11 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // this.socket = new Socket();
     SocketSingletone.openConnection(() =>
     {
+      // prepare
+      this.game.prepareToGame(this)
       
       // when socket open we start game
-      this.game.playGame(this);
+      this.game.playGame();
     })
   }
   
@@ -166,13 +169,13 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.openConnection(() =>
+    SocketSingletone.reOpenConnection(() =>
     {
       // send start party
       // todo: make special object
       SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
         type: "start"
-      }, (data:any) =>
+      }, (data:StartData) =>
       {
         console.log ('startDataReceived', data);
         
@@ -180,9 +183,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
           partyId: data.partyId,
           partyIndex: data.yourIndex
         });
-        
-        // when socket open we start game
-        // this.game.playGame(this);
+
+        // prepare cup
+        this.game.prepareToGame(this);
         
         // set listener when game starts
         SocketSingletone.getInstance()?.setListener(this);
@@ -200,13 +203,13 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.openConnection(() =>
+    SocketSingletone.reOpenConnection(() =>
     {
       // send start party
       // todo: make special object
       SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
         type: "join"
-      }, (data:any) =>
+      }, (data:StartData) =>
       {
         console.log ('joinDataReceived', data);
         
@@ -216,9 +219,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
         });
         
         // when socket open we start game
-        // this.game.playGame(this);
+        this.game.prepareToGame(this);
+
         // set listener when game starts
-        
         SocketSingletone.getInstance()?.setListener(this);
       })
       
@@ -284,18 +287,22 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is callback method from socket
    * it is here because we need to get event that party starts
+   * todo: move events listener to play screen
    * @param data
    */
-  onMessageReceive(data: MessageData): void {
+  onMessageReceive(data: MessageData): void
+  {
     console.log (data, 'Canvas.onMessageReceive');
     
     // party is created, it is time to play
     if (data.type === "letsPlay") {
-      this.game.playGame(this);
+      this.game.playGame();
+      return
     }
 
     // update cups state from server data
-    if (data.type === "afterSet") {
+    if (data.type === "afterSet")
+    {
       // cups without our cup
       console.log (this.state.partyIndex, data.cups, 'after set', typeof data.cups, Object.keys(data.cups));
 
@@ -303,13 +310,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       const opponentKey = Object.keys(data.cups).find((key:string) => {
         return parseInt(key) !== this.state.partyIndex
       })
-      console.log (opponentKey, 'opponentKey');
-
-      // find opponent cups
-      // let o:CupState|undefined = data.cups.find((c:CupState, index:number) => {
-      //   return index !== this.state.partyIndex
-      // })
-      // if (o) this.game.setOpponentCup(o);
 
       if (opponentKey) this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
     }

@@ -12,6 +12,21 @@ export class SocketSingletone
   private static socketInstance?:Socket
   
   /**
+   * This is almost open but we always create new socket
+   */
+  public static reOpenConnection(onOpenCallback:()=>void)
+  {
+    // close old connection
+    if (SocketSingletone.socketInstance) {
+      SocketSingletone.socketInstance.close();
+    }
+
+    // create new instance
+    SocketSingletone.socketInstance = new Socket(onOpenCallback);
+
+  }
+
+  /**
    * Init socket connection
    */
   public static openConnection(onOpenCallback:()=>void)

@@ -41,7 +41,7 @@ export class Socket
     
     try {
       this.socket = new WebSocket(window.tetrinetConfig.socketUrl)
-      console.log(this.socket, 'socked')
+      // console.log(this.socket, 'socked')
       
       this.socket.onopen = this.onOpen;
       this.socket.onmessage = this.onMessage;
@@ -52,16 +52,14 @@ export class Socket
       console.log(e, 'e')
     }
   }
-  
 
-  
   /**
    * Request data from server
    */
-  requestData () {
-    const stringData = JSON.stringify({type: "watch"})
-    this.socket?.send(stringData)
-  }
+  // requestData () {
+  //   const stringData = JSON.stringify({type: "watch"})
+  //   this.socket?.send(stringData)
+  // }
   
   /**
    * Set event listener
@@ -73,7 +71,8 @@ export class Socket
   /**
    * On socket open
    */
-  protected onOpen = () => {
+  protected onOpen = () =>
+  {
     console.log ('Socket.onOpen');
     
     // rise callback
@@ -94,7 +93,8 @@ export class Socket
     data = JSON.parse(data)
     
     // call special callback
-    if (this.afterSendDataCallback) {
+    if (this.afterSendDataCallback)
+    {
       this.afterSendDataCallback(data)
       // clean up callback
       this.afterSendDataCallback = undefined;
@@ -143,9 +143,8 @@ export class Socket
    * @param data
    * @param callback
    */
-  public sendDataAndWaitAnswer = (data:object, callback:(data:object)=>void) =>
+  public sendDataAndWaitAnswer = (data:object, callback:(data:any)=>void) =>
   {
-    console.log (data, 'Socket.sendDataAndWaitAnswer');
     if (!this.socket) return;
     
     // save callback
@@ -153,6 +152,13 @@ export class Socket
     
     const stringData = JSON.stringify(data)
     this.socket.send(stringData);
+  }
+
+  /**
+   * Close connection
+   */
+  public close ():void {
+    if (this.socket) this.socket.close(1000);
   }
 }
 
