@@ -130,7 +130,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // create cup object
     this._cup =  new CupWithFigureImpl(this);
 
-    // your oponent cup
+    // your opponent cup
     this._opponentCup = new CupImpl();
     
     // generate next figure
@@ -270,8 +270,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   
   present(): void
   {
-    console.log('PlayScreen.present')
-
     //
     const gl = this.game.getGLGraphics().getGl();
     

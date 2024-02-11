@@ -67,31 +67,31 @@ class FirstTestSocket implements MessageComponentInterface
     }
 
     /**
-     * @param ConnectionInterface $connection
+     * @param ConnectionInterface $conn
      * @return void
      */
-    public function onClose(ConnectionInterface $connection)
+    public function onClose(ConnectionInterface $conn): void
     {
         Log::channel('socket')->info(__METHOD__);
     }
 
     /**
-     * @param ConnectionInterface $connection
+     * @param ConnectionInterface $conn
      * @param \Exception $e
      * @return void
      */
-    public function onError(ConnectionInterface $connection, \Exception $e)
+    public function onError(ConnectionInterface $conn, \Exception $e): void
     {
         Log::channel('socket')->info(__METHOD__);
         Log::channel('socket')->info($e->getMessage());
     }
 
     /**
-     * @param ConnectionInterface $connection
+     * @param ConnectionInterface $conn
      * @param MessageInterface $msg
      * @return void
      */
-    public function onMessage(ConnectionInterface $connection, MessageInterface $msg)
+    public function onMessage(ConnectionInterface $conn, MessageInterface $msg):void
     {
         Log::channel('socket')->info(__METHOD__);
         // Log::channel('socket')->info("count", [$msg->count()]);
@@ -107,19 +107,19 @@ class FirstTestSocket implements MessageComponentInterface
             // start new party
             if ($data['type'] == 'start') {
                 Log::channel('socket')->info("type:start");
-                $this->processStartParty($connection, $data);
+                $this->processStartParty($conn, $data);
             }
 
             if ($data['type'] == 'join') {
                 Log::channel('socket')->info("type:start");
-                $this->processJoinToParty($connection, $data);
+                $this->processJoinToParty($conn, $data);
             }
 
             // save player cup
             if ($data['type'] == 'set')
             {
                 Log::channel('socket')->info("type:set", $data);
-                $this->processSet($connection, $data);
+                $this->processSet($conn, $data);
             }
 
             // deprecated mathod
@@ -129,14 +129,14 @@ class FirstTestSocket implements MessageComponentInterface
                 // Log::channel('socket')->info("save", $data['cup']);
 
                 // add connection to the party
-                $this->party[] = $connection;
+                $this->party[] = $conn;
 
                 // store cup into redis
                 // todo here we need to clear cup
                 Redis::set('cup', json_encode($data['cup']));
 
                 // todo: generate and return id in the party
-                $connection->send(json_encode([
+                $conn->send(json_encode([
                     'response' => 'Thanx save'
                 ]));
             }
@@ -147,12 +147,12 @@ class FirstTestSocket implements MessageComponentInterface
                 Log::channel('socket')->info("type:watch");
 
                 // add connection to the party
-                $this->party[] = $connection;
+                $this->party[] = $conn;
 
                 $data = json_decode(Redis::get('cup'), true);
                 Log::channel('socket')->info("watch", $data ?? []);
 
-                $connection->send(json_encode([
+                $conn->send(json_encode([
                     'cup' => $data
                 ]));
             }
@@ -171,13 +171,13 @@ class FirstTestSocket implements MessageComponentInterface
     }
 
     /**
-     * Create new party and ad it self to this
+     * Create new party and add itself to this
      * @param ConnectionInterface $connection
      * @param array $data
      * @return void
      * @throws \Random\RandomException
      */
-    private function processStartParty (ConnectionInterface $connection, array $data)
+    private function processStartParty (ConnectionInterface $connection, array $data):void
     {
         Log::channel('socket')->info(__METHOD__);
 
@@ -261,6 +261,7 @@ class FirstTestSocket implements MessageComponentInterface
         foreach ($players as $con) {
             $con->send(json_encode([
                 'type' => 'afterSet',
+                'responsible' => $partyIndex,
                 'state' => $state,
                 'cups' => $this->cup->cup
             ]));

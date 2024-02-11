@@ -327,12 +327,14 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // cups without our cup
     console.log ('after set', this.state.partyIndex, data.cups, typeof data.cups, Object.keys(data.cups));
 
+    // is we run and comes pause
     if (this.state.currentGameState === GameState.running && data.state === GameState.paused) {
       this.game.pauseGame();
     }
 
+    // from paused state to run
     if (this.state.currentGameState === GameState.paused && data.state === GameState.running) {
-      this.game.pauseGame();
+      this.game.resumeGame();
     }
 
     // find opponent key
