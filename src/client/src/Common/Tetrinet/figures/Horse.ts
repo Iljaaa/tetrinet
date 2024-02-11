@@ -192,7 +192,8 @@ export abstract class Horse extends FourBlocksFigure implements Figure
     {
       // check min max
       if (c.x < 0) return true
-      if (c.y < 0) return true
+      // if (c.y < 0) return true
+      if (c.y >= this._cap.getHeightInCells()) return true
       if (c.x >= capWidth) return true
       // if (c.y > this.) check in it higher than top
       
@@ -264,7 +265,8 @@ export abstract class Horse extends FourBlocksFigure implements Figure
     {
       // check min max
       if (c.x < 0) return true
-      if (c.y < 0) return true
+      // if (c.y < 0) return true
+      if (c.y >= this._cap.getHeightInCells()) return true
       if (c.x >= capWidth) return true
       // if (c.y > this.) check in it higher than top
       

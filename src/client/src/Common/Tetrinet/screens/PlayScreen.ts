@@ -732,9 +732,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private generateNewFigure():Figure
   {
+    return new Square(this._cup);
+
     // select new figure
     const nextFigureIndex:number = Math.floor(Math.random() * 7);
-    
+
     let f:Figure;
     switch (nextFigureIndex) {
       case 0: f = new ForwardHorse(this._cup); break;
