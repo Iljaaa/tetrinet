@@ -294,11 +294,13 @@ class FirstTestSocket implements MessageComponentInterface
 
         $source = (int) $data['source'];
         $target = (int) $data['target'];
+        $linesCount = (int) $data['linesCount'];
 
         Log::channel('socket')->info("command data", [
             'partyIndex' => $partyIndex,
             'source' => $source,
-            'target' => $target
+            'target' => $target,
+            'linesCount' => $linesCount,
         ]);
 
         // this is temporary code
@@ -316,7 +318,8 @@ class FirstTestSocket implements MessageComponentInterface
             $opponentConnection->send(json_encode([
                 'type' => static::MESSAGE_ADD_LINE,
                 'source' => $source,
-                'target' => $target
+                'target' => $target,
+                'linesCount' => $linesCount,
             ]));
         }
 

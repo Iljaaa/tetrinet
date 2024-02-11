@@ -254,8 +254,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * We add empty row on bottom
    */
-  addRow(sendState: boolean = true) {
-    this._cup.addRandomRowBellow();
+  addRows(countLines:number, sendState: boolean = true)
+  {
+    // add lines
+    this._cup.addRandomRowBellow(countLines);
 
     // rise update state callback
     if (sendState && this.listener) {

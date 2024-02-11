@@ -11,7 +11,7 @@ import {SocketSingletone} from "./Common/Socket/SocketSingletone";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 
 import sprite from "./sprite.png"
-import {AfterSetMessageDown, MessageTypes} from "./entities/MessageData";
+import {AddLineMessageData, AfterSetMessageDown, MessageTypes} from "./entities/MessageData";
 
 type State =
 {
@@ -83,17 +83,29 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // set score
     this.setState({score: this.state.score + ((countLines + countLines - 1) * 10) })
 
-    // send command
-    const data = {
-      type: MessageTypes.addLine,
-      partyId: this.state.partyId,
-      partyIndex: this.state.partyIndex as number,
+    // send request to add lines to opponent
+    this.sendAddLineToOpponent(countLines);
+  }
 
-      source: this.state.partyIndex, // now this is same that partyIndex
-      target: null, // target should be selected player, but now we have only two players
+  /**
+   * Here we send request to opponent to add few rows
+   */
+  sendAddLineToOpponent (countClearedLines:number) {
+    //
+    if (countClearedLines > 1)
+    {
+      // send command
+      const data = {
+        type: MessageTypes.addLine,
+        partyId: this.state.partyId,
+        partyIndex: this.state.partyIndex as number,
+        linesCount: countClearedLines - 1,
+        source: this.state.partyIndex, // now this is same that partyIndex
+        target: null, // target should be selected player, but now we have only two players
     }
 
-    SocketSingletone.getInstance()?.sendData(data)
+      SocketSingletone.getInstance()?.sendData(data)
+    }
   }
 
   /**
@@ -330,7 +342,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
     // we receive add line command
     if (data.type === MessageTypes.addLine) {
-      this.processAddLine(data as AfterSetMessageDown)
+      this.processAddLine(data as AddLineMessageData)
     }
 
   }
@@ -368,8 +380,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * We receive add line command
    * @param data
    */
-  processAddLine(data:AfterSetMessageDown) {
-    this.game.addRowToCup();
+  processAddLine(data:AddLineMessageData) {
+    this.game.addRowsToCup(data.linesCount);
   }
   
   

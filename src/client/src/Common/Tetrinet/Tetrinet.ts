@@ -87,8 +87,11 @@ export class Tetrinet extends WebGlGame
     (this.getCurrentScreen() as PlayScreen)?.resume(sendState);
   }
 
-  addRowToCup() {
-    (this.getCurrentScreen() as PlayScreen)?.addRow();
+  /**
+   * @param countLineToAdd
+   */
+  addRowsToCup(countLineToAdd:number) {
+    (this.getCurrentScreen() as PlayScreen)?.addRows(countLineToAdd);
   }
 
 

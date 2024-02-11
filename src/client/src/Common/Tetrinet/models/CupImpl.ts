@@ -128,8 +128,40 @@ export class CupImpl implements Cup
 
   /**
    * This method add row bellow
+   * @param countLines Number of lines to add
    */
-  addRandomRowBellow(): void
+  addRandomRowBellow(countLines:number): void
+  {
+    for (let i = 0; i < countLines; i++) {
+      this.addOneLine ()
+    }
+  }
+
+  /**
+   * Add one line
+   * @private
+   */
+  private addOneLine ()
+  {
+    //
+    this.moveCupUp();
+
+    // add row
+    const randomClearField = Math.floor(Math.random() * this.widthInCells);
+    const firstBlockIndex = this.getCellIndexByCoords({x: 0, y: this.heightInCells - 1})
+    // add line to bottom
+    for (let col = 0; col < this.widthInCells; col++) {
+      if (col != randomClearField) {
+        const i = firstBlockIndex + col
+        this._state.fields[i] = GenerateRandomColor()
+      }
+    }
+  }
+
+  /**
+   * Move all lines up
+   */
+  private moveCupUp ()
   {
     // move cup up
     for (let row = 0; row < this.heightInCells; row++)
@@ -149,17 +181,6 @@ export class CupImpl implements Cup
           this._state.fields[indexOfBlockAbove] = this._state.fields[currentBlockIndex]; // -1 it's mean that fiend if empty that we move them down
           this._state.fields[currentBlockIndex] = -1;
         }
-      }
-    }
-
-    // add row
-    const randomClearField = Math.floor(Math.random() * this.widthInCells);
-    const firstBlockIndex = this.getCellIndexByCoords({x: 0, y: this.heightInCells - 1})
-    // add line to bottom
-    for (let col = 0; col < this.widthInCells; col++) {
-      if (col != randomClearField) {
-        const i = firstBlockIndex + col
-        this._state.fields[i] = GenerateRandomColor()
       }
     }
   }

@@ -16,6 +16,9 @@ export type MessageData =
   type: MessageTypes,
 }
 
+/**
+ * Data for 'set' message request
+ */
 export interface AfterSetMessageDown extends MessageData
 {
   // game state
@@ -23,4 +26,28 @@ export interface AfterSetMessageDown extends MessageData
 
   // cups state
   cups: Array<CupState>
+}
+
+/**
+ * Add line data
+ */
+export interface AddLineMessageData extends MessageData
+{
+  // game state
+  state: GameState,
+
+  /**
+   * Index of cup who send it
+   */
+  source: number,
+
+  /**
+   * Index of cup who is the target
+   */
+  target: number,
+
+  /**
+   * Count lines to add
+   */
+  linesCount: number
 }
