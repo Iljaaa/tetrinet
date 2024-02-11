@@ -56,7 +56,7 @@ export abstract class Flash extends FourBlocksFigure implements Figure
   /**
    * Rotate to right
    */
-  rotateClockwise():boolean
+  rotateCounterClockwise():boolean
   {
     // change state position
     let nextPosition = !this._vertical
@@ -126,8 +126,8 @@ export abstract class Flash extends FourBlocksFigure implements Figure
     
     return true;
   }
-  
-  rotateCounterClockwise(): boolean
+
+  rotateClockwise(): boolean
   {
     let previousPosition = !this._vertical
     

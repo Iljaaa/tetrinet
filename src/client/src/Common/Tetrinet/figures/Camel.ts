@@ -116,7 +116,7 @@ export class Camel extends FourBlocksFigure implements Figure
   /**
    * Rotate to right
    */
-  rotateClockwise():boolean
+  rotateCounterClockwise():boolean
   {
     // change state position
     let nextPosition;
@@ -191,8 +191,8 @@ export class Camel extends FourBlocksFigure implements Figure
     
     return true;
   }
-  
-  rotateCounterClockwise(): boolean
+
+  rotateClockwise(): boolean
   {
     // previous rotate state
     let previousPosition;

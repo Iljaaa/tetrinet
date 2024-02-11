@@ -157,7 +157,7 @@ export abstract class Horse extends FourBlocksFigure implements Figure
   /**
    * Rotate to right
    */
-  rotateClockwise():boolean
+  rotateCounterClockwise():boolean
   {
     // change state position
     // todo: refactor to enum
@@ -227,8 +227,8 @@ export abstract class Horse extends FourBlocksFigure implements Figure
     
     return true;
   }
-  
-  rotateCounterClockwise(): boolean
+
+  rotateClockwise(): boolean
   {
     // todo: refactor to enum
     let previousPosition = this._position - 1
