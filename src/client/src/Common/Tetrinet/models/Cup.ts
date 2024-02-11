@@ -50,10 +50,11 @@ export interface Cup
    */
   getHeightInCells: () => number
 
+
   /**
-   * Move cup up
+   * Add random row below in cup
    */
-  moveCupUp: () => void
+  addRandomRowBellow: () => void
 
   /**
    * @param filedIndex

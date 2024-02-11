@@ -126,7 +126,10 @@ export class CupImpl implements Cup
     this._state.fields[fIndex] = bonusIndex
   }
 
-  moveCupUp(): void
+  /**
+   * This method add row bellow
+   */
+  addRandomRowBellow(): void
   {
     // move cup up
     for (let row = 0; row < this.heightInCells; row++)

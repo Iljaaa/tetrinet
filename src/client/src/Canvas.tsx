@@ -51,11 +51,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   private game:Tetrinet;
 
   /**
-   * Flag that we add row to opponent
-   * @private
+   * State
    */
-  private addRowToOpponent:boolean = false
-  
   public state:State = {
     partyId: "",
     score: 0
@@ -86,8 +83,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // set score
     this.setState({score: this.state.score + ((countLines + countLines - 1) * 10) })
 
-    // save add row command
-    this.addRowToOpponent = true;
     // send command
     const data = {
       type: MessageTypes.addLine,
@@ -329,7 +324,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
     // update cups state from server data
     if (data.type === MessageTypes.afterSet) {
-       this.processAfterSet(data as AfterSetMessageDown)
+      this.processAfterSet(data as AfterSetMessageDown)
+      return;
     }
 
     // we receive add line command
@@ -372,8 +368,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * We receive add line command
    * @param data
    */
-  processAddLine(data:AfterSetMessageDown)
-  {
+  processAddLine(data:AfterSetMessageDown) {
     this.game.addRowToCup();
   }
   

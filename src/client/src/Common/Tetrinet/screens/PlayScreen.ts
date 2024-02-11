@@ -219,7 +219,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Pause running game
    * @param sendState
    */
-  pause (sendState: boolean)
+  pause (sendState: boolean = true)
   {
     if (this._state !== GameState.running) return;
 
@@ -235,7 +235,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Resume paused game
    * @param sendState send our state after updating status
    */
-  resume (sendState: boolean)
+  resume (sendState: boolean = true)
   {
     // is game not on the pause
     if (this._state !== GameState.paused) {
@@ -254,8 +254,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * We add empty row on bottom
    */
-  addRow() {
-    this._cup.moveCupUp();
+  addRow(sendState: boolean = true) {
+    this._cup.addRandomRowBellow();
+
+    // rise update state callback
+    if (sendState && this.listener) {
+      this.listener.onCupUpdated(this._state, this._cup.getState())
+    }
   }
 
   /**

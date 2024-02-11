@@ -14,7 +14,7 @@ export class Tetrinet extends WebGlGame
   }
   
   /**
-   * Through init graphycs method
+   * Through init graphics method
    * @param canvas
    */
   public initGraphic(canvas:HTMLCanvasElement) {
@@ -52,7 +52,7 @@ export class Tetrinet extends WebGlGame
   
   /**
    * Play game
-   * the game starts automaticly when we receive the message from socket
+   * the game starts automatically when we receive the message from socket
    */
   playGame()
   {
