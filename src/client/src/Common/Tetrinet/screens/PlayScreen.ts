@@ -43,7 +43,7 @@ export interface PlayScreenEventListener
   onLineCleared: (numberOfLines:number) => void
   
   /**
-   * Summary event rised when cup data changed
+   * Summary event risen when cup data changed
    */
   onCupUpdated: (state:GameState, cupState:CupState) => void
   
@@ -113,9 +113,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private _block: Vertices;
-  
+
   /**
-   * Red squere for experiment with vertices
+   * Red square for experiment with vertices
    * @private
    */
   // private redSquare:Vertices;
@@ -143,7 +143,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
     
-    // in background we use only texture
+    // in the background we use only texture
     this._block = new Vertices(false, true);
     this._block.setVertices(Vertices.createTextureVerticesArray(
       200, 200, 32, 32,
@@ -207,11 +207,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // this._cupRenderer.renderCupWithFigure(this._cup)
     console.log('PlayScreen.start')
     
-    // finnaly set run status
+    // finally set run status
     this._state = GameState.running
     
     // call first callback
-    // i am not sure that it need to be here
+    // I'm not sure that it need to be here
     this.listener?.onCupUpdated(this._state, this._cup.getState())
   }
 
@@ -259,7 +259,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
 
   /**
-   * Set oponent cup
+   * Set opponent cup
    * @param o
    */
   setOpponentCup (o:CupState) {
@@ -685,7 +685,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
   
   /**
-   * Prevaous figure moved to cup
+   * Previous figure moved to cup
    * so this is important event
    */
   onFigureMovedToCup()
