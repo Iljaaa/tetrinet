@@ -190,12 +190,15 @@ export abstract class Horse extends FourBlocksFigure implements Figure
     // check can we update
     const sinfulnessIndex:number = coordsAfterRotate.findIndex((c:Coords) =>
     {
-      // check min max
-      if (c.x < 0) return true
+      // check min max position
+      // if (c.x < 0) return true
       // if (c.y < 0) return true
-      if (c.y >= this._cap.getHeightInCells()) return true
-      if (c.x >= capWidth) return true
+      // if (c.y >= this._cap.getHeightInCells()) return true
+      // if (c.x >= capWidth) return true
       // if (c.y > this.) check in it higher than top
+      if (this.isBlockOutsideCup(c.x, c.y)){
+        return true;
+      }
       
       // cell index in field coords
       const createIndexByCoords = this._cap.getCellIndexByCoords(c)
@@ -263,12 +266,15 @@ export abstract class Horse extends FourBlocksFigure implements Figure
     // check can we update
     const sinfulnessIndex = coordsAfterRotate.findIndex((c:{x:number, y:number}) =>
     {
-      // check min max
-      if (c.x < 0) return true
+      // check min max position
+      // if (c.x < 0) return true
       // if (c.y < 0) return true
-      if (c.y >= this._cap.getHeightInCells()) return true
-      if (c.x >= capWidth) return true
+      // if (c.y >= this._cap.getHeightInCells()) return true
+      // if (c.x >= capWidth) return true
       // if (c.y > this.) check in it higher than top
+      if (this.isBlockOutsideCup(c.x, c.y)){
+        return true;
+      }
       
       // cell index in field coords
       const createIndexByCoords = this._cap.getCellIndexByCoords(c)

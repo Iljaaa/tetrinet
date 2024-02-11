@@ -166,4 +166,25 @@ export abstract class FourBlocksFigure
     
     return true;
   }
+
+  /**
+   * checks that the block is outside the glass
+   * @param x
+   * @param y
+   * @protected
+   */
+  protected isBlockOutsideCup (x:number, y:number)
+  {
+    // left edge
+    if (x < 0) return true
+
+    // right edge
+    if (x >= this._cap.getWidthInCells()) return true
+
+    // bottom
+    // if (c.y < 0) return true
+    if (y >= this._cap.getHeightInCells()) return true
+
+    return false;
+  }
 }
