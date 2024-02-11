@@ -80,9 +80,11 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     this.listener = listener;
     
     // calculate drop point
+    // todo: set move position on z = 1
     this.dropPoint = new Coords(
       Math.floor(this.widthInCells / 2) - 1,
-      this.heightInCells - 1
+      // this.heightInCells - 1
+        5
     )
   }
   
@@ -256,21 +258,23 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     
     // move blocks to cleared lines
     // from top to bottom
-    fullLines.reverse().forEach((fullLineIndex:number) =>
+    // fullLines.reverse().forEach((fullLineIndex:number) =>
+    fullLines.forEach((fullLineIndex:number) =>
     {
-      for (let row = fullLineIndex; row < this.heightInCells; row++)
+      for (let row = fullLineIndex; row > 0; row--)
+      // for (let row = fullLineIndex; row < this.heightInCells; row++)
       {
         for (let col = 0; col < this.widthInCells; col++)
         {
           const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
           
           // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
-          const indexOfBlockAbove = currentBlockIndex + this.widthInCells;
+          const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
           
           // if there is a block we move them to this libe
           if (this._state.fields[indexOfBlockAbove] > -1){
             this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
-            this._state.fields[indexOfBlockAbove] = -1;
+            this._state.fields[indexOfBlockAbove] = -1; // -1 it's mean that fiend if empty that we move them down
           }
         }
       }

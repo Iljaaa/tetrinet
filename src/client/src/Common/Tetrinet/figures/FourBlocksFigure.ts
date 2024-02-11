@@ -53,9 +53,9 @@ export abstract class FourBlocksFigure
    * Figure position
    * it used for rotate
    */
-  getPosition(): Coords {
-    return this.center;
-  }
+  // getPosition(): Coords {
+  //   return this.center;
+  // }
   
   /**
    * Move figure left
@@ -140,16 +140,18 @@ export abstract class FourBlocksFigure
     const capWidth = this._cap.getWidthInCells()
     
     // check can we do this
+
     // and we can when if index not on last position
     let hasBlockInZeroLine:number = this._fields.findIndex((index:number) => {
       // is we have a block with coords in first line
-      return index < capWidth
+      return this._cap.getCoordsByIndex(index).y >= this._cap.getHeightInCells() - 1
+      // return index < capWidth
     })
     
     if (hasBlockInZeroLine !== -1) return false;
     
     // calculate new position on fields
-    let newFields:Array<number> = this._fields.map((f) => f - capWidth);
+    let newFields:Array<number> = this._fields.map((f) => f + capWidth);
     
     // check intersections with cup
     if (!this._cap.canPlace(newFields)) {
@@ -157,7 +159,7 @@ export abstract class FourBlocksFigure
     }
     
     // move center down
-    this.center.y -= 1;
+    this.center.y += 1;
     
     // write new fields
     this._fields = newFields

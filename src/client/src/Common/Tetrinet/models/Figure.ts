@@ -21,7 +21,7 @@ export interface Figure
   /**
    * Rotate center of figure
    */
-  getPosition: () => Coords
+  // getPosition: () => Coords
   
   /**
    * Move figure to position

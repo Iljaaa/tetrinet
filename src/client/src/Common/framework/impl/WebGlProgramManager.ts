@@ -273,10 +273,10 @@ export class WebGlProgramManager
       " drawPos = drawPos / canvasSize * 2.0;" +
 
       // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
-      " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
+      // " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
 
       // this made all upside down
-      // " gl_Position = vec4(drawPos.x - 1.0, -1.0 * (drawPos.y - 1.0), 0.0, 1.0);" +
+      " gl_Position = vec4(drawPos.x - 1.0, -1.0 * (drawPos.y - 1.0), 0.0, 1.0);" +
 
         // Pass the texture position to the fragment shader.
       // WebGL wants numbers from 0 to 1, but we are passing in pixel positions.

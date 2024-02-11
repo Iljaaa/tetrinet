@@ -596,7 +596,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this.listener) this.listener.onLineCleared(countLines);
     
     // add special block
-    this.addSpecialBlock()
+    // this.addSpecialBlock()
   }
   
   /**
@@ -643,7 +643,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // check intersections with cup
     if (!this._cup.canPlace(this._nextFigure.getFields()))
     {
-      
       // and if we can not post figure is all over
       this._state = GameState.over
       console.log ('game over');

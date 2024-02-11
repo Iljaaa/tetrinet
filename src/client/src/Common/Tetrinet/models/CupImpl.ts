@@ -43,25 +43,25 @@ export class CupImpl implements Cup
 
     // this is from top
     // temp cup state
-    this._state.fields[0] = 1;
-    this._state.fields[1] = 1;
-    this._state.fields[2] = 1;
-    this._state.fields[5] = 1;
-    this._state.fields[4] = 1;
-    this._state.fields[6] = 1;
-    this._state.fields[7] = 1;
-    this._state.fields[8] = 1;
-    this._state.fields[9] = 1;
+    this._state.fields[180] = 1;
+    this._state.fields[181] = 1;
+    this._state.fields[182] = 1;
+    this._state.fields[185] = 1;
+    this._state.fields[184] = 1;
+    this._state.fields[186] = 1;
+    this._state.fields[187] = 1;
+    this._state.fields[188] = 1;
+    this._state.fields[189] = 1;
 
-    this._state.fields[10] = 1;
-    this._state.fields[11] = 1;
-    this._state.fields[12] = 1;
-    this._state.fields[15] = 1;
-    this._state.fields[14] = 1;
-    this._state.fields[16] = 1;
-    this._state.fields[17] = 1;
-    this._state.fields[18] = 1;
-    this._state.fields[19] = 1;
+    this._state.fields[190] = 1;
+    this._state.fields[191] = 1;
+    this._state.fields[192] = 1;
+    this._state.fields[195] = 1;
+    this._state.fields[194] = 1;
+    this._state.fields[196] = 1;
+    this._state.fields[197] = 1;
+    this._state.fields[198] = 1;
+    this._state.fields[199] = 1;
   }
   
   getFields = ():Array<number> => {
