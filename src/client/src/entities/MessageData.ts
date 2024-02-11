@@ -3,7 +3,8 @@ import {GameState} from "../Common/Tetrinet/screens/PlayScreen";
 
 export enum MessageTypes {
   letsPlay = 'letsPlay',
-  afterSet = 'afterSet'
+  afterSet = 'afterSet',
+  addLine = 'addLine'
 }
 
 /**

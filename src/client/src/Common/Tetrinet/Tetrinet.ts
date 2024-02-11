@@ -30,7 +30,6 @@ export class Tetrinet extends WebGlGame
     // get current screen
     let scr = this.getCurrentScreen() as PlayScreen;
 
-
     if (!scr)
     {
       // we get current screen
@@ -75,13 +74,21 @@ export class Tetrinet extends WebGlGame
   /**
    * Pause game
    */
-  pauseGame() {
+  pauseGame(sendState: boolean) {
     const currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
-    currentScreen.pause()
+    currentScreen.pause(sendState)
   }
 
-  resumeGame(){
-    (this.getCurrentScreen() as PlayScreen)?.resume();
+  /**
+   * Resume paused game
+   * @param sendState
+   */
+  resumeGame(sendState: boolean){
+    (this.getCurrentScreen() as PlayScreen)?.resume(sendState);
+  }
+
+  addRowToCup() {
+    (this.getCurrentScreen() as PlayScreen)?.addRow();
   }
 
 

@@ -20,6 +20,7 @@ class FirstTestSocket implements MessageComponentInterface
 
     const MESSAGE_START = 'start_party';
     const MESSAGE_JOIN = 'join_party';
+    const MESSAGE_ADD_LINE = 'addLine';
 
     /**
      * This is play party
@@ -120,6 +121,13 @@ class FirstTestSocket implements MessageComponentInterface
             {
                 Log::channel('socket')->info("type:set", $data);
                 $this->processSet($conn, $data);
+            }
+
+            // add line to opponent
+            if ($data['type'] == static::MESSAGE_ADD_LINE)
+            {
+                Log::channel('socket')->info("type:".static::MESSAGE_ADD_LINE, $data);
+                $this->processAddLine($conn, $data);
             }
 
             // deprecated mathod
@@ -267,4 +275,52 @@ class FirstTestSocket implements MessageComponentInterface
             ]));
         }
     }
+
+    /**
+     * @param ConnectionInterface $conn
+     * @param array $data
+     * @return void
+     */
+    private function processAddLine (ConnectionInterface $conn, array $data): void
+    {
+        // send to target player
+        // but, now we have two players and if it not a sender then it opponent
+
+        $players = $this->party->getPlayers();
+        Log::channel('socket')->info("party", ['len' => count($players)]);
+
+        // player index in party
+        $partyIndex = (int) $data['partyIndex'];
+
+        $source = (int) $data['source'];
+        $target = (int) $data['target'];
+
+        Log::channel('socket')->info("command data", [
+            'partyIndex' => $partyIndex,
+            'source' => $source,
+            'target' => $target
+        ]);
+
+        // this is temporary code
+        // we are searching opponent
+        /** @var ConnectionInterface $opponentConnection */
+        $opponentConnection = null;
+        foreach ($players as $pIndex => $p) {
+            if ($pIndex !== $source) {
+                $opponentConnection = $p;
+            }
+        }
+
+        // send command to opponent
+        if ($opponentConnection) {
+            $opponentConnection->send(json_encode([
+                'type' => static::MESSAGE_ADD_LINE,
+                'source' => $source,
+                'target' => $target
+            ]));
+        }
+
+    }
+
+
 }

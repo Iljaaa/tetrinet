@@ -84,7 +84,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     this.dropPoint = new Coords(
       Math.floor(this.widthInCells / 2) - 1,
       // this.heightInCells - 1
-        5
+        1
     )
   }
   
@@ -282,5 +282,5 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     
     return fullLines.length;
   }
-  
+
 }

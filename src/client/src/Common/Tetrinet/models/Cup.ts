@@ -49,7 +49,12 @@ export interface Cup
    * cup height
    */
   getHeightInCells: () => number
-  
+
+  /**
+   * Move cup up
+   */
+  moveCupUp: () => void
+
   /**
    * @param filedIndex
    * @param bonusIndex

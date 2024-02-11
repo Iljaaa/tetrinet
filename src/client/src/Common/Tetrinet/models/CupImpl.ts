@@ -1,6 +1,7 @@
 import {Coords} from "../math/Coords";
 import {Cup} from "./Cup";
 import {CupState} from "./CupState";
+import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
 
 
 export class CupImpl implements Cup
@@ -100,7 +101,11 @@ export class CupImpl implements Cup
   getWidthInCells(): number {
     return this.widthInCells;
   }
-  
+
+  /**
+   * todo: refactor coords object to x and y
+   * @param c
+   */
   getCellIndexByCoords(c: Coords): number {
       return c.y * this.widthInCells + c.x
   }
@@ -119,6 +124,41 @@ export class CupImpl implements Cup
    */
   addBonusFiled(fIndex: number, bonusIndex: number): void {
     this._state.fields[fIndex] = bonusIndex
+  }
+
+  moveCupUp(): void
+  {
+    // move cup up
+    for (let row = 0; row < this.heightInCells; row++)
+    {
+      // row start and end for this indexes
+      // const startIndex = row * this.widthInCells;
+      // const endIndex = startIndex +  this.widthInCells
+      for (let col = 0; col < this.widthInCells; col++)
+      {
+        const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
+
+        // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
+        const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
+
+        // if there is a block we move them above
+        if (this._state.fields[currentBlockIndex] > -1) {
+          this._state.fields[indexOfBlockAbove] = this._state.fields[currentBlockIndex]; // -1 it's mean that fiend if empty that we move them down
+          this._state.fields[currentBlockIndex] = -1;
+        }
+      }
+    }
+
+    // add row
+    const randomClearField = Math.floor(Math.random() * this.widthInCells);
+    const firstBlockIndex = this.getCellIndexByCoords({x: 0, y: this.heightInCells - 1})
+    // add line to bottom
+    for (let col = 0; col < this.widthInCells; col++) {
+      if (col != randomClearField) {
+        const i = firstBlockIndex + col
+        this._state.fields[i] = GenerateRandomColor()
+      }
+    }
   }
   
   

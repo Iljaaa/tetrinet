@@ -19,6 +19,7 @@ import {Square} from "../figures/Square";
 import {Coords} from "../math/Coords";
 import {CupState} from "../models/CupState";
 import {CupImpl} from "../models/CupImpl";
+import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
 
 /**
  * Game states
@@ -137,7 +138,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // this._nextFigure = this.generateNewFigure();
     
     // next figure random color
-    this._nextFigureColor = this.generateRandomColor();
+    // this._nextFigureColor = GenerateRandomColor();
     
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
@@ -195,7 +196,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._nextFigure = this.generateNewFigure();
     
     // next figure random color
-    this._nextFigureColor = this.generateRandomColor();
+    this._nextFigureColor = GenerateRandomColor();
     
     // generate new figure in cup
     const f = this.generateNewFigure();
@@ -213,21 +214,48 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // i am not sure that it need to be here
     this.listener?.onCupUpdated(this._state, this._cup.getState())
   }
-  
-  pause ()
+
+  /**
+   * Pause running game
+   * @param sendState
+   */
+  pause (sendState: boolean)
   {
+    if (this._state !== GameState.running) return;
+
     this._state = GameState.paused
-    
-    // call callback
-    this.listener?.onCupUpdated(this._state, this._cup.getState())
+
+    // rise update state callback
+    if (sendState && this.listener) {
+      this.listener.onCupUpdated(this._state, this._cup.getState())
+    }
   }
 
-  resume ()
+  /**
+   * Resume paused game
+   * @param sendState send our state after updating status
+   */
+  resume (sendState: boolean)
   {
+    // is game not on the pause
+    if (this._state !== GameState.paused) {
+      return;
+    }
+
     this._state = GameState.running
 
-    // call callback
-    this.listener?.onCupUpdated(this._state, this._cup.getState())
+    // rise update state callback
+    if (sendState && this.listener) {
+      this.listener.onCupUpdated(this._state, this._cup.getState())
+    }
+
+  }
+
+  /**
+   * We add empty row on bottom
+   */
+  addRow() {
+    this._cup.moveCupUp();
   }
 
   /**
@@ -684,7 +712,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       this._nextFigure = this.generateNewFigure();
       
       // next figure random color
-      this._nextFigureColor = this.generateRandomColor();
+      this._nextFigureColor = GenerateRandomColor();
     }
     
     // call update callback
@@ -718,9 +746,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    *
    * @private
    */
-  private generateRandomColor():number {
-    return Math.floor(Math.random() * 3);
-  }
+
 
 
   

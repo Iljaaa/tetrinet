@@ -49,12 +49,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * @private
    */
   private game:Tetrinet;
-  
+
   /**
-   * Socket connection
+   * Flag that we add row to opponent
    * @private
    */
-  // private socket:Socket | undefined;
+  private addRowToOpponent:boolean = false
   
   public state:State = {
     partyId: "",
@@ -81,8 +81,24 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * Callback from game when lines was cleared
    * @param countLines
    */
-  onLineCleared (countLines:number) {
+  onLineCleared (countLines:number)
+  {
+    // set score
     this.setState({score: this.state.score + ((countLines + countLines - 1) * 10) })
+
+    // save add row command
+    this.addRowToOpponent = true;
+    // send command
+    const data = {
+      type: MessageTypes.addLine,
+      partyId: this.state.partyId,
+      partyIndex: this.state.partyIndex as number,
+
+      source: this.state.partyIndex, // now this is same that partyIndex
+      target: null, // target should be selected player, but now we have only two players
+    }
+
+    SocketSingletone.getInstance()?.sendData(data)
   }
 
   /**
@@ -159,7 +175,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onPauseClicked = () =>
   {
     console.log ('onPauseClicked');
-    this.game.pauseGame();
+    this.game.pauseGame(true);
   }
 
   /**
@@ -168,7 +184,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onResumeClicked = () =>
   {
     console.log ('onResumeClicked');
-    this.game.resumeGame();
+    this.game.resumeGame(true);
   }
   
   /**
@@ -316,6 +332,11 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
        this.processAfterSet(data as AfterSetMessageDown)
     }
 
+    // we receive add line command
+    if (data.type === MessageTypes.addLine) {
+      this.processAddLine(data as AfterSetMessageDown)
+    }
+
   }
 
   /**
@@ -328,13 +349,14 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log ('after set', this.state.partyIndex, data.cups, typeof data.cups, Object.keys(data.cups));
 
     // is we run and comes pause
-    if (this.state.currentGameState === GameState.running && data.state === GameState.paused) {
-      this.game.pauseGame();
+    if (data.state === GameState.paused) {
+      this.game.pauseGame(false);
     }
 
     // from paused state to run
-    if (this.state.currentGameState === GameState.paused && data.state === GameState.running) {
-      this.game.resumeGame();
+    // I do not know looks like this is bad approach
+    if (data.state === GameState.running) {
+      this.game.resumeGame(false);
     }
 
     // find opponent key
@@ -342,8 +364,17 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       return parseInt(key) !== this.state.partyIndex
     })
 
-    // todo:  update other cups
+    // todo: update other cups
     if (opponentKey) this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
+  }
+
+  /**
+   * We receive add line command
+   * @param data
+   */
+  processAddLine(data:AfterSetMessageDown)
+  {
+    this.game.addRowToCup();
   }
   
   
