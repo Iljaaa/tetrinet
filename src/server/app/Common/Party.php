@@ -13,13 +13,19 @@ class Party
     public string $partId = '';
 
     /**
+     * Player connections
      * @var ConnectionInterface[]
      */
     private array $players = [];
 
     /**
+     * Player cups
+     * @var Cup[]
+     */
+    public array $cups = [];
+
+    /**
      * @param ConnectionInterface $hostConnection
-     * @throws RandomException
      */
     public function __construct (ConnectionInterface $hostConnection)
     {
@@ -28,17 +34,39 @@ class Party
 
         // add host tp party
         $this->players[] = $hostConnection;
+
+        // create cup for host
+        $this->cups[] = new Cup();
     }
 
     /**
      * Add player into party and return his index in in
      * @param ConnectionInterface $connection
-     * @return int
+     *
+     * @return int player index in the party
      */
     public function addPlayer (ConnectionInterface $connection): int
     {
         $this->players[] = $connection;
-        return array_search($connection, $this->players);
+
+        $playerIndexInTheParty = array_search($connection, $this->players);
+
+        // create cup for player
+        $this->cups[$playerIndexInTheParty] = new Cup();
+
+        return $playerIndexInTheParty;
+    }
+
+
+    /**
+     * @param int $partyIndex
+     * @param array $cup cup info from request
+     * @return void
+     */
+    public function setCupByPartyIndex(int $partyIndex, array $cup)
+    {
+        // update cup data
+        $this->cups[$partyIndex]->updateByData($cup);
     }
 
     /**

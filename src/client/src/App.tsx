@@ -4,15 +4,15 @@ import {Canvas} from "./Canvas";
 
 function App() {
   return (
-    <div className="App">
-      <Canvas />
-      <div>
-        <ul>
-          <li>start: Add connetion to temporary state</li>
-          <li>when all will be ready we start the game</li>
-        </ul>
+      <div className="App">
+          <Canvas/>
+          <h2>todo:</h2>
+          <ul>
+              <li>Block buttons by state</li>
+              <li>Show loader until socket connecting</li>
+              <li>Just play tetris</li>
+          </ul>
       </div>
-    </div>
   );
 }
 

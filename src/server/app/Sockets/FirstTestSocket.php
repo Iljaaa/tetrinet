@@ -28,17 +28,16 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private Party|null $party = null;
 
-    /**
+    /*
      * Cup object for sinchronize
-     * todo: move is to the party
      * @var Cup
      */
-    private Cup $cup;
+    // private Cup $cup;
 
-    public function __construct()
-    {
-        $this->cup = new Cup();
-    }
+//    public function __construct()
+//    {
+//        // $this->cup = new Cup();
+//    }
 
     /**
      * @param ConnectionInterface $conn
@@ -60,11 +59,6 @@ class FirstTestSocket implements MessageComponentInterface
         // $connection->app = App::findById('YOUR_APP_ID');
         $app = \BeyondCode\LaravelWebSockets\Apps\App::findById("app_id");
         $conn->app = $app;
-
-        // send connection id to client
-        // we do not send anything when connection is open
-        // $data = ['type' => 'welcome', 'id' => $connection->socketId];
-        // $connection->send(json_encode($data));
     }
 
     /**
@@ -189,12 +183,6 @@ class FirstTestSocket implements MessageComponentInterface
     {
         Log::channel('socket')->info(__METHOD__);
 
-        // clean up party
-        // $this->party = [$connection];
-
-        // store cup into redis
-        // Redis::set('cup', json_encode($data['cup']));
-
         // create party id
         $this->party = new Party($connection);
 
@@ -224,7 +212,7 @@ class FirstTestSocket implements MessageComponentInterface
             'yourIndex' => $playerIndex,
         ]));
 
-        // if we have full party send signal to players
+        // if we have full party send signal to players to start the game
         if ($this->party->isPartFull()) {
             foreach ($this->party->getPlayers() as $connection) {
                 $data = [
@@ -255,15 +243,22 @@ class FirstTestSocket implements MessageComponentInterface
         //
         $state = (int) $data['state']; // play, pause, ets
 
-        // todo: update cup state in party
-        // $cup = new Cup($data['cup']);
-        $this->cup->setCupByPartyIndex($partyIndex, $data['cup']);
+        // save cup info
+        $this->party->setCupByPartyIndex($partyIndex, $data['cup']);
 
         // Log::channel('socket')->info("party", ['len' => count($this->party)]);
 
         // store cup into redis
-        // todo here we need to clear cup
         // Redis::set('cup', json_encode($data['cup']));
+
+        //
+        $cupsData = array_map(function (Cup $c) {
+            return [
+                'fields' => $c->fields
+            ];
+        }, $this->party->cups);
+
+        Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
 
         // send data to all connections
         foreach ($players as $con) {
@@ -271,7 +266,7 @@ class FirstTestSocket implements MessageComponentInterface
                 'type' => 'afterSet',
                 'responsible' => $partyIndex,
                 'state' => $state,
-                'cups' => $this->cup->cup
+                'cups' => $cupsData
             ]));
         }
     }

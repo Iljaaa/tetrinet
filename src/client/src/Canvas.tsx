@@ -12,6 +12,7 @@ import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 
 import sprite from "./sprite.png"
 import {AddLineMessageData, AfterSetMessageDown, MessageTypes} from "./Common/Tetrinet/types/MessageData";
+import {RequestTypes} from "./Common/Tetrinet/types";
 
 type State =
 {
@@ -200,32 +201,33 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onStartClicked = () =>
   {
     console.log ('onStartClicked');
-    
     // open socket connection
-    // this.socket = new Socket();
-    SocketSingletone.reOpenConnection(() =>
-    {
-      // send start party
-      // todo: make special object
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({type: "start"}, (data:StartData) =>
-      {
-        console.log ('startDataReceived', data);
-        
-        this.setState({
-          partyId: data.partyId,
-          partyIndex: data.yourIndex
-        });
-
-        // prepare cup
-        this.game.prepareToGame(this);
-        
-        // set listener when game starts
-        SocketSingletone.getInstance()?.setListener(this);
-      })
-      
+    SocketSingletone.reOpenConnection(() => {
+      // send start party request
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({type: RequestTypes.start}, this.onStartResponse)
     })
   }
-  
+
+  /**
+   * When answer to start received
+   * @param data
+   */
+  onStartResponse = (data:StartData) =>
+  {
+    console.log ('onStartResponse', data);
+
+    this.setState({
+      partyId: data.partyId,
+      partyIndex: data.yourIndex
+    });
+
+    // prepare cup
+    this.game.prepareToGame(this);
+
+    // set listener when game starts
+    SocketSingletone.getInstance()?.setListener(this);
+  }
+
   /**
    * Here we join to party
    */
@@ -235,29 +237,30 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.reOpenConnection(() =>
-    {
-      // send start party
-      // todo: make special object
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
-        type: "join"
-      }, (data:StartData) =>
-      {
-        console.log ('joinDataReceived', data);
-        
-        this.setState({
-          partyId: data.partyId,
-          partyIndex: data.yourIndex
-        });
-        
-        // when socket open we start game
-        this.game.prepareToGame(this);
-
-        // set listener when game starts
-        SocketSingletone.getInstance()?.setListener(this);
-      })
-      
+    SocketSingletone.reOpenConnection(() => {
+      // send join party request
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({type: RequestTypes.join}, this.onJoinResponse)
     })
+  }
+
+  /**
+   * When answer to join received
+   * @param data
+   */
+  onJoinResponse = (data:StartData) =>
+  {
+    console.log ('onJoinResponse', data);
+
+    this.setState({
+      partyId: data.partyId,
+      partyIndex: data.yourIndex
+    });
+
+    // when socket open we start game
+    this.game.prepareToGame(this);
+
+    // set listener when game starts
+    SocketSingletone.getInstance()?.setListener(this);
   }
   
   onWatchClicked = () =>
@@ -426,19 +429,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             <div style={{backgroundColor: "green", width: "40px", height: "40px"}}></div>
             <div style={{backgroundColor: "blue", width: "40px", height: "40px"}}></div>
           </div>
-          
-          <h2>todo:</h2>
-          <ul>
-            <li>Draw paused alert</li>
-            <li>Add continue button</li>
-            <li>Block buttons by state</li>
-            <li>Show loader until socket connecting</li>
-            
-            <li>Resend messages to all connected clients</li>
-            <li>Temporary remove bonus field plus</li>
-            <li>Just play tetris</li>
-          </ul>
-          
           
         
         </div>

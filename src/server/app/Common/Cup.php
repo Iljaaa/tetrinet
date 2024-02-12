@@ -3,7 +3,7 @@
 namespace App\Common;
 
 /**
- * This is cup object received in set method
+ * This is one class
  */
 class Cup
 {
@@ -11,7 +11,7 @@ class Cup
     /**
      * @var array['fields' => array<int>]
      */
-    public array $cup = [];
+    public array $fields = [];
 
     /**
      * todo: we should init by party size
@@ -21,8 +21,16 @@ class Cup
 
     }
 
-    public function setCupByPartyIndex(int $partyIndex, array $cup)
+    /**
+     * Update data
+     * @param array $data
+     * @return void
+     */
+    public function updateByData (array $data)
     {
-        $this->cup[$partyIndex] = $cup;
+        // update fields info
+        if ($data['fields']) {
+            $this->fields = $data['fields'];
+        }
     }
 }
