@@ -1,5 +1,5 @@
-import {CupState} from "../Common/Tetrinet/models/CupState";
-import {GameState} from "../Common/Tetrinet/screens/PlayScreen";
+import {CupState} from "../models/CupState";
+import {GameState} from "../screens/PlayScreen";
 
 export enum MessageTypes {
   letsPlay = 'letsPlay',

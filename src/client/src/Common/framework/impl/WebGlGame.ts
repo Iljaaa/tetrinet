@@ -3,9 +3,7 @@ import {WebGlGraphics} from "./WebGlGraphics";
 import {GameScreen} from "../interfaces/GameScreen";
 import {WebInput} from "./WebInput";
 import {FpsCounter} from "../../Tetrinet/helpers/FpsCounter";
-import {screen} from "@testing-library/react";
 import {WebGlProgramManager} from "./WebGlProgramManager";
-import {Assets} from "../../Tetrinet/Assets";
 
 
 /**

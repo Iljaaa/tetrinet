@@ -11,7 +11,7 @@ import {SocketSingletone} from "./Common/Socket/SocketSingletone";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 
 import sprite from "./sprite.png"
-import {AddLineMessageData, AfterSetMessageDown, MessageTypes} from "./entities/MessageData";
+import {AddLineMessageData, AfterSetMessageDown, MessageTypes} from "./Common/Tetrinet/types/MessageData";
 
 type State =
 {
@@ -207,9 +207,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     {
       // send start party
       // todo: make special object
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
-        type: "start"
-      }, (data:StartData) =>
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({type: "start"}, (data:StartData) =>
       {
         console.log ('startDataReceived', data);
         

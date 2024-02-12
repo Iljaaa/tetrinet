@@ -7,11 +7,10 @@ import {CupImpl} from "../models/CupImpl";
 import {SocketEventListener} from "../../Socket/SocketEventListener";
 import {SocketSingletone} from "../../Socket/SocketSingletone";
 
-/**
+/*
  * How often we request data
- * todo: it should bee replaced by messages from server
  */
-const REQUEST_DATA_DELTA = 1000;
+// const REQUEST_DATA_DELTA = 1000;
 
 
 /**

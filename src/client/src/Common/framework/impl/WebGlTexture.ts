@@ -1,5 +1,4 @@
 import {Texture} from "../Texture";
-import {Assets} from "../../Tetrinet/Assets";
 
 /**
  * @version 0.0.1

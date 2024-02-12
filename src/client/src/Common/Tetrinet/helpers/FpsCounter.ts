@@ -7,10 +7,6 @@ export class FpsCounter {
   private frames:number = 0;
   private time:number = 0;
   
-  
-  constructor() {
-  }
-  
   update(deltaTime:number){
   
     this.frames++;

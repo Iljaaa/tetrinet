@@ -151,7 +151,7 @@ export class CupImpl implements Cup
     const firstBlockIndex = this.getCellIndexByCoords({x: 0, y: this.heightInCells - 1})
     // add line to bottom
     for (let col = 0; col < this.widthInCells; col++) {
-      if (col != randomClearField) {
+      if (col !== randomClearField) {
         const i = firstBlockIndex + col
         this._state.fields[i] = GenerateRandomColor()
       }
