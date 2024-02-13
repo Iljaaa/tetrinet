@@ -6,6 +6,7 @@ import {Coords} from "./math/Coords";
 import {Cup} from "./models/Cup";
 import {Figure} from "./models/Figure";
 import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
+import {CupState} from "./types/CupState";
 
 export class CupRenderer2
 {
@@ -172,6 +173,11 @@ export class CupRenderer2
         }
       }
     }
+
+    // if cup over draw game over
+    if (cup.getState() === CupState.over){
+      this.presentGameOver(gl)
+    }
   }
   
   /**
@@ -230,5 +236,32 @@ export class CupRenderer2
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.background.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, this.background.getVerticesCount())
+  }
+
+  /**
+   * Game over state present
+   * @param gl
+   * @private
+   */
+  private presentGameOver (gl: WebGL2RenderingContext)
+  {
+    console.log('CupRenderer2.presentPaused')
+
+    // move position to left
+    // todo: move to user cup position
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 0, 0)
+
+    // calc left position
+    // this._cup.getWidthInCells()
+
+    this._block.setVertices(Vertices.createTextureVerticesArray(
+        100, 450, 320, 64,
+        320, 192, 320, 64
+    ))
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+
+    // draw here
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 }

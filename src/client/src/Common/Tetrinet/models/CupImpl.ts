@@ -21,11 +21,10 @@ export class CupImpl implements Cup
    */
   protected heightInCells = 20;
 
-  
   /**
    */
   protected _state:CupData = {
-    status: CupState.online,
+    state: CupState.online,
     fields: [],
     bonuses: [],
     // bonusFields
@@ -37,6 +36,16 @@ export class CupImpl implements Cup
     // console.log ('CapClass.constructor');
     this.cleanFields();
   }
+
+  getState(): CupState {
+    return this._state.state;
+  }
+
+  setState(state:CupState): void {
+    this._state.state = state;
+  }
+
+
 
   /**
    * Clean up field
@@ -76,7 +85,7 @@ export class CupImpl implements Cup
     this._state.fields = fields;
   }
   
-  getState = ():CupData => {
+  getData = ():CupData => {
     return this._state;
   }
   

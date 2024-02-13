@@ -318,7 +318,7 @@ class FirstTestSocket implements MessageComponentInterface
             $con->send(json_encode([
                 'type' => 'afterSet',
                 'responsible' => $partyIndex,
-                'state' => $this->party,
+                'state' => $this->party->getGameState(),
                 'cups' => $cupsData
             ]));
         }

@@ -8,6 +8,8 @@ namespace App\Common;
 class Cup
 {
 
+    private CupState $state = CupState::online;
+
     /**
      * Field state data
      * @var array['fields' => array<int>]
@@ -15,7 +17,7 @@ class Cup
     private array $fields = [];
 
     /**
-     * todo: we should init by party size
+     *
      */
     public function __construct ()
     {
@@ -33,12 +35,17 @@ class Cup
         if ($data['fields']) {
             $this->fields = $data['fields'];
         }
+
+        if ($data['state']){
+            $this->state = CupState::from($data['state']);
+        }
+
     }
 
     public function createResponseData (): array
     {
         return [
-            'status' => $this->status,
+            'state' => $this->state->value,
             'fields' => $this->fields,
             'bonuses' => [], // todo: make it
         ];

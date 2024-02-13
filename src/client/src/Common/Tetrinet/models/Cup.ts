@@ -1,8 +1,19 @@
 import {Coords} from "../math/Coords";
 import {CupData} from "./CupData";
+import {CupState} from "../types/CupState";
 
 export interface Cup
 {
+  /**
+   * Current cup state
+   */
+  getState: () => CupState
+
+  /**
+   *
+   */
+  setState: (state:CupState) => void
+
   /**
    * @deprecated use get state
    * All fields array
@@ -17,7 +28,7 @@ export interface Cup
   /**
    * Cup state, this is array of fields
    */
-  getState: () => CupData
+  getData: () => CupData
 
   /**
    * Check can we place this array of indexes into cup
@@ -50,7 +61,6 @@ export interface Cup
    */
   getHeightInCells: () => number
 
-
   /**
    * Add random row below in cup
    * @param countLines Number of lines to add
@@ -63,4 +73,8 @@ export interface Cup
    */
   addBonusFiled: (filedIndex:number, bonusIndex:number) => void;
 
+  /**
+   *
+   */
+  // blowRandomField() => void
 }

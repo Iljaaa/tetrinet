@@ -21,6 +21,7 @@ import {CupData} from "../models/CupData";
 import {CupImpl} from "../models/CupImpl";
 import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
 import {GameState} from "../types";
+import {CupState} from "../types/CupState";
 
 
 /**
@@ -36,7 +37,6 @@ export interface PlayScreenEventListener
   
   /**
    * Summary event risen when cup data changed
-   * todo: refator to CupData
    */
   onCupUpdated: (state:GameState, cupState:CupData) => void
   
@@ -205,7 +205,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // call first callback
     // I'm not sure that it need to be here
-    this.listener?.onCupUpdated(this._state, this._cup.getState())
+    this.listener?.onCupUpdated(this._state, this._cup.getData())
   }
 
   /**
@@ -220,7 +220,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // rise update state callback
     if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getState())
+      this.listener.onCupUpdated(this._state, this._cup.getData())
     }
   }
 
@@ -239,7 +239,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // rise update state callback
     if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getState())
+      this.listener.onCupUpdated(this._state, this._cup.getData())
     }
 
   }
@@ -254,7 +254,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // rise update state callback
     if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getState())
+      this.listener.onCupUpdated(this._state, this._cup.getData())
     }
   }
 
@@ -263,7 +263,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @param o
    */
   setOpponentCup (o:CupData) {
+    //
     this._opponentCup.setFields(o.fields)
+    this._opponentCup.setState(o.state)
   }
   
   /**
@@ -687,6 +689,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * Previous figure moved to cup
    * so this is important event
+   * because it possible be game over
    */
   onFigureMovedToCup()
   {
@@ -698,9 +701,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // check intersections with cup
     if (!this._cup.canPlace(this._nextFigure.getFields()))
     {
+      console.log ('game over');
+
       // and if we can not post figure is all over
       this._state = GameState.over
-      console.log ('game over');
+
+      // set cup state to game over
+      this._cup.setState(CupState.over);
     }
     else
     {
@@ -716,7 +723,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
     
     // call update callback
-    this.listener?.onCupUpdated(this._state, this._cup.getState());
+    this.listener?.onCupUpdated(this._state, this._cup.getData());
   }
   
   /**

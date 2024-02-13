@@ -11,5 +11,6 @@ enum GameState : string
     case ready = 'ready';
     case running = 'running';
     case paused = 'paused';
-    case over = 'over';
+
+    case over = 'over'; // when all cups are over
 }
