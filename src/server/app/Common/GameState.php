@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Common;
+
+/**
+ * This is global game state
+ * we do not received it from client
+ */
+enum GameState : string
+{
+    case ready = 'ready';
+    case running = 'running';
+    case paused = 'paused';
+    case over = 'over';
+}

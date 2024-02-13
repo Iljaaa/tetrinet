@@ -3,13 +3,16 @@
 namespace App\Sockets;
 
 use App\Common\Cup;
+use App\Common\GameState;
+use App\Common\MessageType;
 use App\Common\Party;
 use Illuminate\Support\Facades\Log;
-// use Ratchet\App;
 use Illuminate\Support\Facades\Redis;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
+
+// use Ratchet\App;
 
 class FirstTestSocket implements MessageComponentInterface
 {
@@ -85,6 +88,7 @@ class FirstTestSocket implements MessageComponentInterface
      * @param ConnectionInterface $conn
      * @param MessageInterface $msg
      * @return void
+     * @throws RandomException
      */
     public function onMessage(ConnectionInterface $conn, MessageInterface $msg):void
     {
@@ -94,82 +98,83 @@ class FirstTestSocket implements MessageComponentInterface
 
         // dd($msg->getPayload());
         $data = json_decode($msg->getPayload(), true);
-        // Log::channel('socket')->info("data", $data);
+        Log::channel('socket')->info("data", $data);
 
-        //
-        if (isset($data['type']))
-        {
-            // start new party
-            if ($data['type'] == 'start') {
-                Log::channel('socket')->info("type:start");
-                $this->processStartParty($conn, $data);
-            }
-
-            if ($data['type'] == 'join') {
-                Log::channel('socket')->info("type:start");
-                $this->processJoinToParty($conn, $data);
-            }
-
-            // save player cup
-            if ($data['type'] == 'set')
-            {
-                Log::channel('socket')->info("type:set", $data);
-                $this->processSet($conn, $data);
-            }
-
-            // add line to opponent
-            if ($data['type'] == static::MESSAGE_ADD_LINE)
-            {
-                Log::channel('socket')->info("type:".static::MESSAGE_ADD_LINE, $data);
-                $this->processAddLine($conn, $data);
-            }
-
-            // deprecated mathod
-            if ($data['type'] == 'play' && !empty($data['cup']))
-            {
-                Log::channel('socket')->info("type:play");
-                // Log::channel('socket')->info("save", $data['cup']);
-
-                // add connection to the party
-                $this->party[] = $conn;
-
-                // store cup into redis
-                // todo here we need to clear cup
-                Redis::set('cup', json_encode($data['cup']));
-
-                // todo: generate and return id in the party
-                $conn->send(json_encode([
-                    'response' => 'Thanx save'
-                ]));
-            }
-
-            // we start watching
-            if ($data['type'] == 'watch')
-            {
-                Log::channel('socket')->info("type:watch");
-
-                // add connection to the party
-                $this->party[] = $conn;
-
-                $data = json_decode(Redis::get('cup'), true);
-                Log::channel('socket')->info("watch", $data ?? []);
-
-                $conn->send(json_encode([
-                    'cup' => $data
-                ]));
-            }
+        if (empty($data['type'])) {
+            Log::channel('socket')->info("Type is empty");
+            return;
         }
 
-        // if we receive state, we save it
-        // $data = json_decode($msg->getContents());
+        $messageType = MessageType::from($data['type']);
+        Log::channel('socket')->info("message", [$messageType]);
 
-        //
+        switch ($messageType) {
+            case MessageType::start: $this->processStartParty($conn, $data); break;
+            case MessageType::join: $this->processJoinToParty($conn, $data); break;
+            case MessageType::set: $this->processSet($conn, $data); break;
+            case MessageType::addLine: $this->processAddLine($conn, $data); break;
+        }
 
-        // return
 
-        // send message
-        // send random method
-        // $connection->send(json_encode($this->tempCup));
+        // start new party
+//        if ($data['type'] == 'start') {
+//            Log::channel('socket')->info("type:start");
+//            $this->processStartParty($conn, $data);
+//        }
+
+//        if ($data['type'] == 'join') {
+//            Log::channel('socket')->info("type:start");
+//            $this->processJoinToParty($conn, $data);
+//        }
+
+        // save player cup
+//        if ($data['type'] == 'set')
+//        {
+//            Log::channel('socket')->info("type:set", $data);
+//            $this->processSet($conn, $data);
+//        }
+
+        // add line to opponent
+//        if ($data['type'] == static::MESSAGE_ADD_LINE)
+//        {
+//            Log::channel('socket')->info("type:".static::MESSAGE_ADD_LINE, $data);
+//            $this->processAddLine($conn, $data);
+//        }
+
+        // deprecated method
+        if ($data['type'] == 'play' && !empty($data['cup']))
+        {
+            Log::channel('socket')->info("type:play");
+            // Log::channel('socket')->info("save", $data['cup']);
+
+            // add connection to the party
+            $this->party[] = $conn;
+
+            // store cup into redis
+            // todo here we need to clear cup
+            Redis::set('cup', json_encode($data['cup']));
+
+            // todo: generate and return id in the party
+            $conn->send(json_encode([
+                'response' => 'Thanx save'
+            ]));
+        }
+
+        // we start watching
+        if ($data['type'] == 'watch')
+        {
+            Log::channel('socket')->info("type:watch");
+
+            // add connection to the party
+            $this->party[] = $conn;
+
+            $data = json_decode(Redis::get('cup'), true);
+            Log::channel('socket')->info("watch", $data ?? []);
+
+            $conn->send(json_encode([
+                'cup' => $data
+            ]));
+        }
     }
 
     /**
@@ -188,7 +193,7 @@ class FirstTestSocket implements MessageComponentInterface
 
         //
         $connection->send(json_encode([
-            'partyId' => $this->party->partId,
+            'partyId' => $this->party->partyId,
             'yourIndex' => 0,
         ]));
     }
@@ -208,7 +213,7 @@ class FirstTestSocket implements MessageComponentInterface
         $playerIndex = $this->party->addPlayer($connection);
 
         $connection->send(json_encode([
-            'partyId' => $this->party->partId,
+            'partyId' => $this->party->partyId,
             'yourIndex' => $playerIndex,
         ]));
 
@@ -237,11 +242,16 @@ class FirstTestSocket implements MessageComponentInterface
         // todo: check players and we do not have this connection id in party drop this conection
 
         // player index in party
+        if (!isset($data['partyIndex']) || $data['partyIndex'] == '') {
+            Log::channel('socket')->info("Party index is not set, we ignore this set");
+            return;
+        }
         $partyIndex = (int) $data['partyIndex'];
-        Log::channel('socket')->info("part", ['partyIndex' => $partyIndex]);
+        Log::channel('socket')->info("partiIndex", ['partyIndex' => $partyIndex]);
 
-        //
-        $state = (int) $data['state']; // play, pause, ets
+        // global game state
+        $state = GameState::from($data['state']) ; // play, pause, game, ets
+        Log::channel('socket')->info("gameState", [$state]);
 
         // save cup info
         $this->party->setCupByPartyIndex($partyIndex, $data['cup']);
@@ -251,12 +261,8 @@ class FirstTestSocket implements MessageComponentInterface
         // store cup into redis
         // Redis::set('cup', json_encode($data['cup']));
 
-        //
-        $cupsData = array_map(function (Cup $c) {
-            return [
-                'fields' => $c->fields
-            ];
-        }, $this->party->cups);
+        // preparing cup data
+        $cupsData = array_map(fn (Cup $c) => $c->createResponseData(), $this->party->cups);
 
         Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
 
@@ -265,7 +271,7 @@ class FirstTestSocket implements MessageComponentInterface
             $con->send(json_encode([
                 'type' => 'afterSet',
                 'responsible' => $partyIndex,
-                'state' => $state,
+                'state' => $this->party,
                 'cups' => $cupsData
             ]));
         }

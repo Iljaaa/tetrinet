@@ -1,6 +1,20 @@
 import React from "react";
 
-import {MessageData, StartData, UpdateData} from "./entities";
+import {MessageTypes, RequestTypes} from "./Common/Tetrinet/types";
+import {StartResponse} from "./Common/Tetrinet/types/responses";
+
+import {
+  PauseRequest,
+  ResumeRequest,
+  SetRequest,
+  StartRequest
+} from "./Common/Tetrinet/types/requests";
+
+import {
+  Message,
+  SetMessage,
+  AddLineMessage
+} from "./Common/Tetrinet/types/messages";
 
 import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 import {Assets} from "./Common/Tetrinet/Assets";
@@ -11,8 +25,6 @@ import {SocketSingletone} from "./Common/Socket/SocketSingletone";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 
 import sprite from "./sprite.png"
-import {AddLineMessageData, AfterSetMessageDown, MessageTypes} from "./Common/Tetrinet/types/MessageData";
-import {RequestTypes} from "./Common/Tetrinet/types";
 
 type State =
 {
@@ -97,7 +109,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     {
       // send command
       const data = {
-        type: MessageTypes.addLine,
+        type: RequestTypes.addLine,
         partyId: this.state.partyId,
         partyIndex: this.state.partyIndex as number,
         linesCount: countClearedLines - 1,
@@ -178,21 +190,40 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   }
 
   /**
-   * todo: check current game state
+   * Pause game button clicked
    */
   onPauseClicked = () =>
   {
     console.log ('onPauseClicked');
-    this.game.pauseGame(true);
+
+    // request data
+    const request:PauseRequest = {
+      type: RequestTypes.pause,
+      initiator: this.state.partyIndex
+    }
+
+    // send data
+    SocketSingletone.getInstance()?.sendData(request);
   }
 
   /**
-   * Todo: check current game state
+   * Resume clicked
    */
   onResumeClicked = () =>
   {
     console.log ('onResumeClicked');
-    this.game.resumeGame(true);
+
+    // request data
+    const request:ResumeRequest = {
+      type: RequestTypes.pause,
+      initiator: this.state.partyIndex
+    }
+
+    // send data
+    SocketSingletone.getInstance()?.sendData(request);
+
+    // set game resume
+    // this.game.resumeGame(true);
   }
   
   /**
@@ -204,7 +235,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // open socket connection
     SocketSingletone.reOpenConnection(() => {
       // send start party request
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({type: RequestTypes.start}, this.onStartResponse)
+      const request:StartRequest = {type: RequestTypes.start}
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onStartResponse)
     })
   }
 
@@ -212,7 +244,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * When answer to start received
    * @param data
    */
-  onStartResponse = (data:StartData) =>
+  onStartResponse = (data:StartResponse) =>
   {
     console.log ('onStartResponse', data);
 
@@ -238,8 +270,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // open socket connection
     // this.socket = new Socket();
     SocketSingletone.reOpenConnection(() => {
-      // send join party request
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({type: RequestTypes.join}, this.onJoinResponse)
+      const request:StartRequest = {type: RequestTypes.join}
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
     })
   }
 
@@ -247,7 +279,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * When answer to join received
    * @param data
    */
-  onJoinResponse = (data:StartData) =>
+  onJoinResponse = (data:StartResponse) =>
   {
     console.log ('onJoinResponse', data);
 
@@ -298,23 +330,17 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onCupUpdated(state:GameState, cupState:CupState): void
   {
     console.log('onCupUpdated', state, cupState);
+
+    // just save game state
     this.setState({currentGameState: state})
 
-    const data:UpdateData = {
-      type: "set",
+    const data:SetRequest = {
+      type: RequestTypes.set,
       partyId: this.state.partyId,
       partyIndex: this.state.partyIndex as number,
       state: state,
       cup: cupState
     }
-
-    // send data to socket
-    // todo: make here special object
-    // const sendData = {
-    //   type: "set",
-    //   state: state,
-    //   cup: cupState
-    // }
 
     SocketSingletone.getInstance()?.sendData(data)
   }
@@ -325,7 +351,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * todo: move events listener to play screen
    * @param data
    */
-  onMessageReceive(data: MessageData): void
+  onMessageReceive(data: Message): void
   {
     console.log (data, 'Canvas.onMessageReceive');
     
@@ -337,13 +363,13 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
     // update cups state from server data
     if (data.type === MessageTypes.afterSet) {
-      this.processAfterSet(data as AfterSetMessageDown)
+      this.processAfterSet(data as SetMessage)
       return;
     }
 
     // we receive add line command
     if (data.type === MessageTypes.addLine) {
-      this.processAddLine(data as AddLineMessageData)
+      this.processAddLine(data as AddLineMessage)
     }
 
   }
@@ -352,7 +378,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * todo: move this method to play screen
    * @param data
    */
-  processAfterSet (data:AfterSetMessageDown)
+  processAfterSet (data:SetMessage)
   {
     // cups without our cup
     console.log ('after set', this.state.partyIndex, data.cups, typeof data.cups, Object.keys(data.cups));
@@ -381,11 +407,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * We receive add line command
    * @param data
    */
-  processAddLine(data:AddLineMessageData) {
+  processAddLine(data:AddLineMessage) {
     this.game.addRowsToCup(data.linesCount);
   }
-  
-  
+
   render () {
     return <div style={{padding: "2rem"}}>
       <div style={{display: "flex"}}>

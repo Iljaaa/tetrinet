@@ -8,9 +8,10 @@ use Ratchet\ConnectionInterface;
 class Party
 {
     /**
+     * Party is generated when game starts
      * @var string
      */
-    public string $partId = '';
+    public string $partyId = '';
 
     /**
      * Player connections
@@ -26,11 +27,12 @@ class Party
 
     /**
      * @param ConnectionInterface $hostConnection
+     * @throws RandomException
      */
     public function __construct (ConnectionInterface $hostConnection)
     {
         // generate party id
-        $this->partId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
+        $this->partyId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
 
         // add host tp party
         $this->players[] = $hostConnection;

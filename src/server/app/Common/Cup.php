@@ -9,9 +9,10 @@ class Cup
 {
 
     /**
+     * Field state data
      * @var array['fields' => array<int>]
      */
-    public array $fields = [];
+    private array $fields = [];
 
     /**
      * todo: we should init by party size
@@ -22,15 +23,22 @@ class Cup
     }
 
     /**
-     * Update data
+     * Update data by received from client
      * @param array $data
      * @return void
      */
-    public function updateByData (array $data)
+    public function updateByData (array $data): void
     {
         // update fields info
         if ($data['fields']) {
             $this->fields = $data['fields'];
         }
+    }
+
+    public function createResponseData (): array
+    {
+        return [
+            'fields' => $this->fields
+        ];
     }
 }

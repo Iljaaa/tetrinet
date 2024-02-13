@@ -25,10 +25,10 @@ import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
  * Game states
  */
 export enum GameState {
-  ready= 0,
-  running = 40,
-  paused = 50,
-  over = 100,
+  ready = 'ready',
+  running = 'running',
+  paused = 'paused',
+  over = 'over',
 }
 
 /**

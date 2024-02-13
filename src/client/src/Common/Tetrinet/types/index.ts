@@ -1,2 +1,2 @@
-export type {MessageData} from "./MessageData"
+export {MessageTypes} from "./MessageTypes"
 export {RequestTypes} from "./RequestTypes"
