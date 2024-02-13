@@ -2,6 +2,8 @@
 export enum MessageTypes {
   letsPlay = 'letsPlay',
   afterSet = 'afterSet',
-  addLine = 'addLine'
+  addLine = 'addLine',
+  paused = 'paused',
+  resumed = 'resumed',
 }
 

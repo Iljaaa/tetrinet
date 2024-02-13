@@ -25,6 +25,8 @@ import {SocketSingletone} from "./Common/Socket/SocketSingletone";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 
 import sprite from "./sprite.png"
+import {ResumedMessage} from "./Common/Tetrinet/types/messages/ResumedMessage";
+import {PausedMessage} from "./Common/Tetrinet/types/messages/PausedMessage";
 
 type State =
 {
@@ -215,7 +217,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
     // request data
     const request:ResumeRequest = {
-      type: RequestTypes.pause,
+      type: RequestTypes.resume,
       initiator: this.state.partyIndex
     }
 
@@ -310,9 +312,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       }, (data) =>
       {
         console.log ('startDataReceived', data);
-        
-        
-        
+
         // when socket open we start game
         this.game.watchGame();
       })
@@ -370,6 +370,19 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // we receive add line command
     if (data.type === MessageTypes.addLine) {
       this.processAddLine(data as AddLineMessage)
+      return;
+    }
+
+    // we receive add line command
+    if (data.type === MessageTypes.paused) {
+      this.processPause(data as PausedMessage)
+      return;
+    }
+
+    // we receive add line command
+    if (data.type === MessageTypes.resumed) {
+      this.processResume(data as ResumedMessage)
+      return;
     }
 
   }
@@ -410,6 +423,16 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   processAddLine(data:AddLineMessage) {
     this.game.addRowsToCup(data.linesCount);
   }
+
+  processPause(data:PausedMessage) {
+    this.game.pauseGame(false)
+  }
+
+  processResume(data:ResumedMessage) {
+    this.game.resumeGame(false);
+  }
+
+
 
   render () {
     return <div style={{padding: "2rem"}}>

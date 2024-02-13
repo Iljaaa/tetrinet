@@ -14,6 +14,12 @@ class Party
     public string $partyId = '';
 
     /**
+     * Global game state
+     * @var GameState
+     */
+    private GameState $state = GameState::ready;
+
+    /**
      * Player connections
      * @var ConnectionInterface[]
      */
@@ -72,10 +78,10 @@ class Party
     }
 
     /**
-     * If party full of palyers
+     * If party full of players
      * @return bool
      */
-    public function isPartFull ():bool
+    public function isPartyFull ():bool
     {
         return (count($this->players) == 2);
     }
@@ -86,6 +92,16 @@ class Party
     public function getPlayers (): array
     {
         return $this->players;
+    }
+
+    public function setGameState(GameState $state): void
+    {
+        $this->state = $state;
+    }
+
+    public function getGameState(): GameState
+    {
+        return $this->state;
     }
 
 }

@@ -6,6 +6,7 @@ use App\Common\Cup;
 use App\Common\GameState;
 use App\Common\MessageType;
 use App\Common\Party;
+use App\Common\ResponseType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Ratchet\ConnectionInterface;
@@ -21,8 +22,6 @@ class FirstTestSocket implements MessageComponentInterface
      */
     // private $tempCup = [-1,-1,-1,-1,1,1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
 
-    const MESSAGE_START = 'start_party';
-    const MESSAGE_JOIN = 'join_party';
     const MESSAGE_ADD_LINE = 'addLine';
 
     /**
@@ -106,11 +105,13 @@ class FirstTestSocket implements MessageComponentInterface
         }
 
         $messageType = MessageType::from($data['type']);
-        Log::channel('socket')->info("message", [$messageType]);
+        Log::channel('socket')->info(sprintf("message.type = %s", $messageType->value));
 
         switch ($messageType) {
             case MessageType::start: $this->processStartParty($conn, $data); break;
             case MessageType::join: $this->processJoinToParty($conn, $data); break;
+            case MessageType::pause: $this->processPause($conn, $data); break;
+            case MessageType::resume: $this->processResume($conn, $data); break;
             case MessageType::set: $this->processSet($conn, $data); break;
             case MessageType::addLine: $this->processAddLine($conn, $data); break;
         }
@@ -218,7 +219,7 @@ class FirstTestSocket implements MessageComponentInterface
         ]));
 
         // if we have full party send signal to players to start the game
-        if ($this->party->isPartFull()) {
+        if ($this->party->isPartyFull()) {
             foreach ($this->party->getPlayers() as $connection) {
                 $data = [
                     'type' => 'letsPlay'
@@ -226,6 +227,52 @@ class FirstTestSocket implements MessageComponentInterface
                 $connection->send(json_encode($data));
             }
         }
+    }
+
+    /**
+     * @param ConnectionInterface $conn
+     * @param array $data
+     * @return void
+     */
+    private function processPause(ConnectionInterface $conn, array $data)
+    {
+        Log::channel('socket')->info(__METHOD__);
+
+        $this->party->setGameState(GameState::paused);
+
+        // send data to all connections
+        $players = $this->party->getPlayers();
+        foreach ($players as $con) {
+            $con->send(json_encode([
+                'type' => ResponseType::paused,
+                'initiator' => $data['initiator'],
+                'state' => $this->party->getGameState(),
+            ]));
+        }
+    }
+
+    /**
+     * @param ConnectionInterface $conn
+     * @param array $data
+     * @return void
+     */
+    private function processResume(ConnectionInterface $conn, array $data)
+    {
+        Log::channel('socket')->info(__METHOD__);
+
+        // back to running
+        $this->party->setGameState(GameState::running);
+
+        // send data to all connections
+        $players = $this->party->getPlayers();
+        foreach ($players as $con) {
+            $con->send(json_encode([
+                'type' => ResponseType::resumed,
+                'initiator' => $data['initiator'],
+                'state' => $this->party->getGameState(),
+            ]));
+        }
+
     }
 
     /**
