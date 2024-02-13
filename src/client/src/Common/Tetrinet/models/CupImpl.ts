@@ -1,7 +1,8 @@
 import {Coords} from "../math/Coords";
 import {Cup} from "./Cup";
-import {CupState} from "./CupState";
+import {CupData} from "./CupData";
 import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
+import {CupState} from "../types/CupState";
 
 
 export class CupImpl implements Cup
@@ -23,8 +24,10 @@ export class CupImpl implements Cup
   
   /**
    */
-  protected _state:CupState = {
+  protected _state:CupData = {
+    status: CupState.online,
     fields: [],
+    bonuses: [],
     // bonusFields
   }
   
@@ -73,7 +76,7 @@ export class CupImpl implements Cup
     this._state.fields = fields;
   }
   
-  getState = ():CupState => {
+  getState = ():CupData => {
     return this._state;
   }
   

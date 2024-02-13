@@ -38,7 +38,9 @@ class Cup
     public function createResponseData (): array
     {
         return [
-            'fields' => $this->fields
+            'status' => $this->status,
+            'fields' => $this->fields,
+            'bonuses' => [], // todo: make it
         ];
     }
 }

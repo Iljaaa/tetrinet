@@ -3,7 +3,7 @@ import {WebGlGame} from "../framework/impl/WebGlGame";
 // screens
 import {PlayScreen, PlayScreenEventListener} from "./screens/PlayScreen";
 import {WatchScreen} from "./screens/WatchScreen";
-import {CupState} from "./models/CupState";
+import {CupData} from "./models/CupData";
 
 export class Tetrinet extends WebGlGame
 {
@@ -112,7 +112,7 @@ export class Tetrinet extends WebGlGame
    *
    * @param cup
    */
-  setOpponentCup (cup:CupState)
+  setOpponentCup (cup:CupData)
   {
     const s = this.getCurrentScreen();
     if (s instanceof  PlayScreen) {

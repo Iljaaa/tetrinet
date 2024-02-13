@@ -1,4 +1,4 @@
-import {GameState} from "../../screens/PlayScreen";
+import {GameState} from "../../types";
 import {Message} from "./Message";
 
 /**

@@ -17,19 +17,11 @@ import {BackFlash} from "../figures/BackFlash";
 import {Camel} from "../figures/Camel";
 import {Square} from "../figures/Square";
 import {Coords} from "../math/Coords";
-import {CupState} from "../models/CupState";
+import {CupData} from "../models/CupData";
 import {CupImpl} from "../models/CupImpl";
 import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
+import {GameState} from "../types";
 
-/**
- * Game states
- */
-export enum GameState {
-  ready = 'ready',
-  running = 'running',
-  paused = 'paused',
-  over = 'over',
-}
 
 /**
  * Listener of game events
@@ -44,8 +36,9 @@ export interface PlayScreenEventListener
   
   /**
    * Summary event risen when cup data changed
+   * todo: refator to CupData
    */
-  onCupUpdated: (state:GameState, cupState:CupState) => void
+  onCupUpdated: (state:GameState, cupState:CupData) => void
   
 }
 
@@ -269,7 +262,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Set opponent cup
    * @param o
    */
-  setOpponentCup (o:CupState) {
+  setOpponentCup (o:CupData) {
     this._opponentCup.setFields(o.fields)
   }
   

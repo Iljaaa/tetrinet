@@ -1,6 +1,6 @@
 import {Message} from "./Message";
-import {GameState} from "../../screens/PlayScreen";
-import {CupState} from "../../models/CupState";
+import {GameState} from "../../types";
+import {CupData} from "../../models/CupData";
 
 /**
  * Data for 'set' message request
@@ -11,5 +11,5 @@ export interface SetMessage extends Message
     state: GameState,
 
     // cups state
-    cups: Array<CupState>
+    cups: Array<CupData>
 }

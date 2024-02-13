@@ -1,6 +1,6 @@
 import {Request} from "./Request";
-import {GameState} from "../../screens/PlayScreen";
-import {CupState} from "../../models/CupState";
+import {GameState} from "../../types";
+import {CupData} from "../../models/CupData";
 
 
 /**
@@ -10,5 +10,5 @@ export interface SetRequest extends Request {
   partyId: string,
   partyIndex: number,
   state: GameState,
-  cup: CupState
+  cup: CupData
 }

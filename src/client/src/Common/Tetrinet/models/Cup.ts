@@ -1,5 +1,5 @@
 import {Coords} from "../math/Coords";
-import {CupState} from "./CupState";
+import {CupData} from "./CupData";
 
 export interface Cup
 {
@@ -17,7 +17,7 @@ export interface Cup
   /**
    * Cup state, this is array of fields
    */
-  getState: () => CupState
+  getState: () => CupData
 
   /**
    * Check can we place this array of indexes into cup

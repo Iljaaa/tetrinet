@@ -1,6 +1,6 @@
 import React from "react";
 
-import {MessageTypes, RequestTypes} from "./Common/Tetrinet/types";
+import {GameState, MessageTypes, RequestTypes} from "./Common/Tetrinet/types";
 import {StartResponse} from "./Common/Tetrinet/types/responses";
 
 import {
@@ -18,8 +18,8 @@ import {
 
 import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 import {Assets} from "./Common/Tetrinet/Assets";
-import {GameState, PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
-import {CupState} from "./Common/Tetrinet/models/CupState";
+import {PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
+import {CupData} from "./Common/Tetrinet/models/CupData";
 import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
 import {SocketSingletone} from "./Common/Socket/SocketSingletone";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
@@ -327,7 +327,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is callback method when something happen in cup
    */
-  onCupUpdated(state:GameState, cupState:CupState): void
+  onCupUpdated(state:GameState, cupState:CupData): void
   {
     console.log('onCupUpdated', state, cupState);
 
@@ -431,8 +431,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   processResume(data:ResumedMessage) {
     this.game.resumeGame(false);
   }
-
-
 
   render () {
     return <div style={{padding: "2rem"}}>
