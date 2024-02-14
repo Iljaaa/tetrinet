@@ -8,7 +8,7 @@ namespace App\Common;
 class Cup
 {
 
-    private CupState $state = CupState::online;
+    public CupState $state = CupState::online;
 
     /**
      * Field state data
@@ -42,6 +42,10 @@ class Cup
 
     }
 
+    /**
+     * Makes array to export to client
+     * @return array
+     */
     public function createResponseData (): array
     {
         return [

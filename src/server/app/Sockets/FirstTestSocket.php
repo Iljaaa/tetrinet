@@ -3,6 +3,7 @@
 namespace App\Sockets;
 
 use App\Common\Cup;
+use app\Common\CupState;
 use App\Common\GameState;
 use App\Common\MessageType;
 use App\Common\Party;
@@ -303,14 +304,17 @@ class FirstTestSocket implements MessageComponentInterface
         // save cup info
         $this->party->setCupByPartyIndex($partyIndex, $data['cup']);
 
-        // Log::channel('socket')->info("party", ['len' => count($this->party)]);
+        // check game over
+        // $activeCups = array_filter($this->party->cups, fn (Cup $c) => $c->state == CupState::online);
+        // this is global game over
+        // if (count($activeCups) <= 1) {
+            // $this->party->setGameState(GameState::over);
+            // todo: we need fine a winner
+        // }
 
-        // store cup into redis
-        // Redis::set('cup', json_encode($data['cup']));
 
         // preparing cup data
         $cupsData = array_map(fn (Cup $c) => $c->createResponseData(), $this->party->cups);
-
         Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
 
         // send data to all connections
