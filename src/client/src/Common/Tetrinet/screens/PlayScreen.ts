@@ -113,7 +113,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   // private redSquare:Vertices;
   
-  
   /**
    * In this constructor we create cup
    */
@@ -528,8 +527,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   
   onRight()
   {
-    // disable control if game not running
-    if (this._state !== GameState.running) return
+    // disable control if game is not running
+    // if (this._state !== GameState.running) return
+    if (!this.isControlOnline()) return
   
     // move figure right
     if (this._cup.moveFigureRight()){
@@ -546,8 +546,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   
   onLeft()
   {
-    // disable control if game not running
-    if (this._state !== GameState.running) return
+    // disable control if game is not running
+    // if (this._state !== GameState.running) return
+    if (!this.isControlOnline()) return
     
     // move figure
     if (this._cup.moveFigureLeft()) {
@@ -566,9 +567,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onDown()
   {
-    // disable control if game not running
-    if (this._state !== GameState.running) return
-    
+    // disable control if game is not running
+    // if (this._state !== GameState.running) return
+    if (!this.isControlOnline()) return
+
     // rerender cup
     // maybe it must be inside cause upper
     if (!this._cup.moveFigureDown()) {
@@ -587,8 +589,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onDrop()
   {
-    // disable control if game not running
-    if (this._state !== GameState.running) return
+    // disable control if game is not running
+    // if (this._state !== GameState.running) return
+    if (!this.isControlOnline()) return
     
     // if figure does not have not moved we need to create a new one
     if (!this._cup.dropFigureDown())
@@ -609,8 +612,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onRotateClockwise ()
   {
-    // disable control if game not running
-    if (this._state !== GameState.running) return
+    // disable control if game is not running
+    // if (this._state !== GameState.running) return
+    if (!this.isControlOnline()) return
     
     // rotate figure in the cup
     if (this._cup.rotateClockwise()){
@@ -629,8 +633,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onRotateCounterClockwise ()
   {
-    // disable control if game not running
-    if (this._state !== GameState.running) return
+    // disable control if game is not running
+    // if (this._state !== GameState.running) return
+    if (!this.isControlOnline()) return
     
     // rotate figure in the cup
     if (this._cup.rotateCounterClockwise()){
@@ -643,7 +648,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       this._cupRenderer.renderCupWithFigure(this._cup)
     }
   }
-  
+
+  /**
+   * Is your control online
+   * @private
+   */
+  private isControlOnline ():boolean {
+    return this._state === GameState.running
+  }
+
   /**
    * Callback when line was cleared in the cup
    * @param countLines
