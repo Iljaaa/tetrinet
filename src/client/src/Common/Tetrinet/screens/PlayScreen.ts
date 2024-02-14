@@ -6,7 +6,7 @@ import {Vertices} from "../../framework/Vertices";
 import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 
 // import {CupRenderer} from "./CupRenderer";
-import {CupRenderer2} from "../CupRenderer2";
+import {CupRenderer2, CupSize} from "../CupRenderer2";
 import {Figure} from "../models/Figure";
 
 import {ForwardHorse} from "../figures/ForwardHorse";
@@ -310,12 +310,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     WebGlProgramManager.sUseTextureProgram(gl);
     
     // render cup
-    this._cupRenderer?.setBlockSize(32);
+    this._cupRenderer?.setCupSize(CupSize.normal32);
     this._cupRenderer?.setPosition(32, 32)
     this._cupRenderer?.renderCupWithFigure(this._cup);
     
-    // render small cup
-    this._cupRenderer?.setBlockSize(16);
+    // render opponent
+    // this._cupRenderer?.setBlockSize(16);
+    this._cupRenderer?.setCupSize(CupSize.small16)
     this._cupRenderer?.setPosition(400, 32);
     this._cupRenderer?.renderCup(this._opponentCup);
     

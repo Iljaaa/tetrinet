@@ -8,25 +8,25 @@ import {Figure} from "./models/Figure";
 import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
 import {CupState} from "./types/CupState";
 
+export enum CupSize {
+  small16 = 'small16',
+  middle24 = 'middle24',
+  normal32 = 'normal32'
+}
+
 export class CupRenderer2
 {
   /**
    * @private
    */
   private graphic: WebGlGraphics;
-  
+
   /**
-   * Background vertices array
-   * @private
+   * Cup size set in constructor and then never change
    */
-  private background: Vertices;
-  // private background2: Vertices;
-  
-  /**
-   * Temp field for draw fields
-   * @private
-   */
-  private _block: Vertices;
+  private cupSizeInCells:{width:number, height:number} = {
+    width: 10, height: 20
+  }
   
   /**
    * Cup position
@@ -42,18 +42,38 @@ export class CupRenderer2
    * @private
    */
   private blockSize:number = 32;
+
+
+
+  /**
+   * Background vertices array
+   */
+  private _background: Vertices;
+
+  /**
+   * Game over vertices array
+   */
+  private _gameOver: Vertices;
+
+  /**
+   * Temp field for draw fields
+   */
+  private _block: Vertices;
   
   constructor(graphic:WebGlGraphics, cup:CupImpl) {
     this.graphic = graphic;
     
     //
-    let cupWidth = cup.getWidthInCells() * this.blockSize
-    let cupHeight = cup.getHeightInCells() * this.blockSize
+    this.cupSizeInCells = {
+      width: cup.getWidthInCells(),
+      height: cup.getHeightInCells()
+    }
+    let cupWidth = this.cupSizeInCells.width * this.blockSize
+    let cupHeight =this.cupSizeInCells.height * this.blockSize
     
-    // in background we use only texture
-    // todo: move resize of background to other method
-    this.background = new Vertices(false, true);
-    this.background.setVertices(Vertices.createTextureVerticesArray(
+    // init _background
+    this._background = new Vertices(false, true);
+    this._background.setVertices(Vertices.createTextureVerticesArray(
       0, 0, cupWidth, cupHeight,
       0, 0, cupWidth, cupHeight
     ))
@@ -64,10 +84,18 @@ export class CupRenderer2
       200, 200, this.blockSize, this.blockSize,
       0, 0, cupWidth, cupHeight
     ))
+
+    //
+    this._gameOver = new Vertices(false, true);
+    this._gameOver.setVertices(Vertices.createTextureVerticesArray(
+        0, 0, cupWidth, cupHeight,
+        0, 0, cupWidth, cupHeight
+    ))
   }
   
   /**
    * Set render position
+   * todo: remove it outside cup
    * @param x
    * @param y
    */
@@ -80,8 +108,41 @@ export class CupRenderer2
    * Set block size
    * @param blockSize
    */
-  public setBlockSize(blockSize:number) {
-    this.blockSize = blockSize
+  // public setBlockSize(blockSize:number) {
+  //   this.blockSize = blockSize
+  // }
+
+  public setCupSize (size:CupSize)
+  {
+    if (size === CupSize.small16) {
+      this.blockSize = 16;
+    }
+    else {
+      this.blockSize = 32;
+    }
+
+    // calculate _background size
+    let cupWidth = this.cupSizeInCells.width * this.blockSize
+    let cupHeight = this.cupSizeInCells.height * this.blockSize
+
+    // in _background we use only texture
+    this._background = new Vertices(false, true);
+    this._background.setVertices(Vertices.createTextureVerticesArray(
+      0, 0, cupWidth, cupHeight,
+      0, 0, cupWidth, cupHeight
+    ))
+
+    // calculate
+    // const textWidth = this.cupSizeInCells.width * this.blockSize;
+    const textHeight =  64 / 320 * cupWidth;
+    const marginTop = this.cupSizeInCells.height * this.blockSize * 0.2;
+
+    this._block.setVertices(Vertices.createTextureVerticesArray(
+       //  0, marginTop, textWidth, textHeight,
+        0, marginTop, cupWidth, textHeight,
+        320, 192, 320, 64
+    ))
+
   }
   
   /**
@@ -120,7 +181,7 @@ export class CupRenderer2
     //
     let gl:WebGL2RenderingContext = this.graphic.getGl();
     
-    // render background
+    // render _background
     this.renderBackground(gl, cup)
     
     // move cup
@@ -136,10 +197,12 @@ export class CupRenderer2
       {
         
         // bottom
-        const row = Math.floor(i / cup.getWidthInCells());
+        const row = Math.floor(i / this.cupSizeInCells.width);
+        // const row = Math.floor(i / cup.getWidthInCells());
         const bottom = row * this.blockSize;
         
-        const coll = i % cup.getWidthInCells();
+        const coll = i % this.cupSizeInCells.width;
+        // const coll = i % cup.getWidthInCells();
         const left = coll * this.blockSize;
         
         const fieldValue = fields[i]
@@ -212,30 +275,32 @@ export class CupRenderer2
   }
   
   /**
-   * Render background
+   * Render _background
    * @param gl
    * @param cup
    * @private
    */
   private renderBackground (gl:WebGL2RenderingContext, cup:Cup)
   {
-    // todo: move this calculations to set blocksize method
-    let cupWidth = cup.getWidthInCells() * this.blockSize
-    let cupHeight = cup.getHeightInCells() * this.blockSize
-    
-    // in background we use only texture
-    this.background = new Vertices(false, true);
-    this.background.setVertices(Vertices.createTextureVerticesArray(
-      0, 0, cupWidth, cupHeight,
-      0, 0, cup.getWidthInCells() * 32, cup.getHeightInCells() * 32
-    ))
-    
+    // // todo: move this calculations to set blocksize method
+    // // let cupWidth = cup.getWidthInCells() * this.blockSize
+    // let cupWidth = this.cupSizeInCells.width * this.blockSize
+    // // let cupHeight = cup.getHeightInCells() * this.blockSize
+    // let cupHeight = this.cupSizeInCells.height * this.blockSize
+    //
+    // // in _background we use only texture
+    // this._background = new Vertices(false, true);
+    // this._background.setVertices(Vertices.createTextureVerticesArray(
+    //   0, 0, cupWidth, cupHeight,
+    //   0, 0, cupWidth, cupHeight
+    // ))
+
     // move cup
     // todo: move position on constants
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
     
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.background.vertices), gl.STATIC_DRAW)
-    gl.drawArrays(gl.TRIANGLES, 0, this.background.getVerticesCount())
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._background.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, this._background.getVerticesCount())
   }
 
   /**
@@ -247,19 +312,10 @@ export class CupRenderer2
   {
     console.log('CupRenderer2.presentPaused')
 
-    // move position to left
-    // todo: move to user cup position
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 0, 0)
-
     // calc left position
     // this._cup.getWidthInCells()
 
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-        100, 450, 320, 64,
-        320, 192, 320, 64
-    ))
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._gameOver.vertices), gl.STATIC_DRAW)
 
     // draw here
     gl.drawArrays(gl.TRIANGLES, 0, 6);
