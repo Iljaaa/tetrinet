@@ -395,7 +395,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private presentGameOver (gl: WebGL2RenderingContext)
   {
-    console.log('PlayScreen.presentPaused')
+    console.log('PlayScreen.presentGameOver')
 
     // move position to left
     // todo: move to user cup position

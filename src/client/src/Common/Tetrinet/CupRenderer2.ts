@@ -104,7 +104,7 @@ export class CupRenderer2
     this.position.y = y;
   }
   
-  /**
+  /*
    * Set block size
    * @param blockSize
    */
@@ -112,6 +112,10 @@ export class CupRenderer2
   //   this.blockSize = blockSize
   // }
 
+  /**
+   * Set cup size for render
+   * @param size
+   */
   public setCupSize (size:CupSize)
   {
     if (size === CupSize.small16) {
@@ -132,13 +136,12 @@ export class CupRenderer2
       0, 0, cupWidth, cupHeight
     ))
 
-    // calculate
+    // calculate game ove position
     // const textWidth = this.cupSizeInCells.width * this.blockSize;
     const textHeight =  64 / 320 * cupWidth;
     const marginTop = this.cupSizeInCells.height * this.blockSize * 0.2;
 
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-       //  0, marginTop, textWidth, textHeight,
+    this._gameOver.setVertices(Vertices.createTextureVerticesArray(
         0, marginTop, cupWidth, textHeight,
         320, 192, 320, 64
     ))
@@ -163,13 +166,6 @@ export class CupRenderer2
     // render figure
     const f = cup.getFigure()
     if (f) this.renderFigure(gl, cup, f, cup.getFigureColor())
-    
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.background2.vertices), gl.STATIC_DRAW)
-    
-    // Draw all the triangles.
-    // gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length/8)
-    // gl.drawArrays(gl.TRIANGLES, 0, 6)
-    
   }
   
   /**
@@ -181,65 +177,77 @@ export class CupRenderer2
     //
     let gl:WebGL2RenderingContext = this.graphic.getGl();
     
-    // render _background
-    this.renderBackground(gl, cup)
-    
+    // render background
+    this.renderBackground(gl)
+
+    // render cup blocks
+    this.presentCupBlocks(gl, cup);
+
+    // if cup over draw game over
+    // fixme: here something wrong with render when we draw
+    if (cup.getState() === CupState.over){
+      this.presentGameOver(gl)
+    }
+  }
+
+  /**
+   * Blocks in cup
+   * @private
+   */
+  private presentCupBlocks(gl: WebGL2RenderingContext, cup:Cup)
+  {
+    console.log('CupRenderer2.presentCupBlocks')
+
     // move cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
-    
+
     // draw cup bodies
     const fields = cup.getFields()
     const len = fields.length;
-    
+
     for (let i = 0; i < len; i++)
     {
       if (fields[i] > -1)
       {
-        
+
         // bottom
         const row = Math.floor(i / this.cupSizeInCells.width);
         // const row = Math.floor(i / cup.getWidthInCells());
         const bottom = row * this.blockSize;
-        
+
         const coll = i % this.cupSizeInCells.width;
         // const coll = i % cup.getWidthInCells();
         const left = coll * this.blockSize;
-        
+
         const fieldValue = fields[i]
-        
+
         // take field color
         let f:number = 320 + (fieldValue * 32);
-        
+
         // update position
         this._block.setVertices(Vertices.createTextureVerticesArray(
-          left, bottom, this.blockSize, this.blockSize,
-          f, 32, 32, 32
+            left, bottom, this.blockSize, this.blockSize,
+            f, 32, 32, 32
         ))
-        
+
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-        
-        // draw here
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-        
-        //
+        // gl.drawArrays(gl.TRIANGLES, 0, 6);
+        gl.drawArrays(gl.TRIANGLES, 0, this._block.getVerticesCount());
+
+        /*
         if (fieldValue > 5) {
           // bonus
           this._block.setVertices(Vertices.createTextureVerticesArray(
-            left, bottom, this.blockSize, this.blockSize,
-            320, 32 * 4, 32, 32
+              left, bottom, this.blockSize, this.blockSize,
+              320, 32 * 4, 32, 32
           ))
-          
+
           gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-          
+
           // draw here
           gl.drawArrays(gl.TRIANGLES, 0, 6);
-        }
+        }*/
       }
-    }
-
-    // if cup over draw game over
-    if (cup.getState() === CupState.over){
-      this.presentGameOver(gl)
     }
   }
   
@@ -277,10 +285,9 @@ export class CupRenderer2
   /**
    * Render _background
    * @param gl
-   * @param cup
    * @private
    */
-  private renderBackground (gl:WebGL2RenderingContext, cup:Cup)
+  private renderBackground (gl:WebGL2RenderingContext)
   {
     // // todo: move this calculations to set blocksize method
     // // let cupWidth = cup.getWidthInCells() * this.blockSize
@@ -296,7 +303,6 @@ export class CupRenderer2
     // ))
 
     // move cup
-    // todo: move position on constants
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._background.vertices), gl.STATIC_DRAW)
@@ -310,14 +316,12 @@ export class CupRenderer2
    */
   private presentGameOver (gl: WebGL2RenderingContext)
   {
-    console.log('CupRenderer2.presentPaused')
+    console.log('CupRenderer2.presentGameOver')
 
-    // calc left position
-    // this._cup.getWidthInCells()
+    // move cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._gameOver.vertices), gl.STATIC_DRAW)
-
-    // draw here
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.drawArrays(gl.TRIANGLES, 0, this._gameOver.getVerticesCount());
   }
 }
