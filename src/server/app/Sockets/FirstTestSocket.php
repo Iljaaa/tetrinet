@@ -84,9 +84,16 @@ class FirstTestSocket implements MessageComponentInterface
         // when connection closed we mark party as paused
         if ($this->party) {
             // if we do not have
-            $this->party->onConnectionClose($conn);
+            $this->party->onConnectionClose($conn, fn() => $this->onAllPlayersOffline());
         }
 
+    }
+
+    private function onAllPlayersOffline()
+    {
+        $partyId = $this->party->partyId;
+        $this->party = null;
+        Log::channel('socket')->info('party '.$partyId.' terminated');
     }
 
     /**
@@ -109,10 +116,7 @@ class FirstTestSocket implements MessageComponentInterface
     public function onMessage(ConnectionInterface $conn, MessageInterface $msg):void
     {
         Log::channel('socket')->info(__METHOD__);
-        // Log::channel('socket')->info("count", [$msg->count()]);
-        // Log::channel('socket')->info("contents", [$msg->getContents()]);
 
-        // dd($msg->getPayload());
         $data = json_decode($msg->getPayload(), true);
         Log::channel('socket')->info("data", $data);
 
@@ -227,11 +231,9 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info(__METHOD__);
 
         // add player to pool
-        // todo: extends by personal data
         $this->playersPool[] = $connection;
 
-
-        // only two players
+        // only two players and the pull is full
         if (count($this->playersPool) >= 2)
         {
             $this->party = new Party();
@@ -260,33 +262,6 @@ class FirstTestSocket implements MessageComponentInterface
 //                $player->getConnection()->send(json_encode($data));
 //            }
         }
-
-        // return;
-
-        // join connection in party
-//        $playerIndex = $this->party->addPlayer($connection);
-//
-//
-//        // run game
-//
-//        // set game state is running
-//        $this->party->setGameState(GameState::running);
-//
-//        // send to play his id and party index
-//        $connection->send(json_encode([
-//            'partyId' => $this->party->partyId,
-//            'yourIndex' => $playerIndex,
-//        ]));
-//
-//        // if we have full party send signal to players to start the game
-//        if ($this->party->isPartyFull()) {
-//            foreach ($this->party->getPlayers() as $connection) {
-//                $data = [
-//                    'type' => 'letsPlay'
-//                ];
-//                $connection->send(json_encode($data));
-//            }
-//        }
     }
 
     /**
@@ -333,14 +308,6 @@ class FirstTestSocket implements MessageComponentInterface
             'initiator' => $data['initiator'],
             'state' => $this->party->getGameState(),
         ]);
-//        foreach ($this->party->getPlayers() as $p) {
-//            $p->getConnection()->send(json_encode([
-//                'type' => ResponseType::resumed,
-//                'initiator' => $data['initiator'],
-//                'state' => $this->party->getGameState(),
-//            ]));
-//        }
-
     }
 
     /**

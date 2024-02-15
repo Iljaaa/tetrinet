@@ -28,7 +28,7 @@ class Party
      */
     private array $players = [];
 
-    /**
+    /*
      * Player cups
      * @var Cup[]
      */
@@ -126,9 +126,17 @@ class Party
      * @param ConnectionInterface $conn
      * @return void
      */
-    public function onConnectionClose(ConnectionInterface $conn)
+    public function onConnectionClose(ConnectionInterface $conn, callable $onTerminate)
     {
+        foreach ($this->players as $p) {
+            if ($p->getConnection() === $conn) {
+                $p->setOffline();
+            }
+        }
 
+        // is all players offline we party should be terminated
+        $onLinePlayers = array_filter($this->players, fn(Player $p) => $p->state == PlayerState::online);
+        if (count($onLinePlayers)) $onTerminate();
     }
 
 }

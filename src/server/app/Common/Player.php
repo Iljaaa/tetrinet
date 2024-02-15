@@ -17,11 +17,18 @@ class Player
     /**
      * @var Cup
      */
-    public $cup;
+    private Cup $cup;
+
+    /**
+     * Player state
+     * @var PlayerState
+     */
+    public PlayerState $state;
 
     public function __construct(ConnectionInterface $connection)
     {
         $this->connetion = $connection;
+        $this->state = PlayerState::online;
         $this->cup = new Cup();
     }
 
@@ -45,5 +52,14 @@ class Player
     public function updateCup (array $data): void
     {
         $this->cup->updateByData($data);
+    }
+
+    /**
+     * Set status offline
+     * @return void
+     */
+    public function setOffline(): void
+    {
+        $this->state = PlayerState::offline;
     }
 }
