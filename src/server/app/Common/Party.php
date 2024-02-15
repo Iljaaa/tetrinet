@@ -58,13 +58,14 @@ class Party
     public function addPlayer (ConnectionInterface $connection): int
     {
         $this->players[] = new Player($connection);
+        return array_search($connection, $this->players);
 
-        $playerIndexInTheParty = array_search($connection, $this->players);
+        // $playerIndexInTheParty = array_search($connection, $this->players);
 
         // create cup for player
         // $this->cups[$playerIndexInTheParty] = new Cup();
 
-        return $playerIndexInTheParty;
+        // return $playerIndexInTheParty;
     }
 
     /**
@@ -72,11 +73,26 @@ class Party
      * @param array $cup cup info from request
      * @return void
      */
-    public function setCupByPartyIndex(int $partyIndex, array $cup)
+    public function setCupByPartyIndex(int $partyIndex, array $cup): void
     {
         // update cup data
         // $this->cups[$partyIndex]->updateByData($cup);
         $this->players[$partyIndex]->updateCup($cup);
+    }
+
+    /**
+     * Send data to all players
+     * @param array $data
+     * @return void
+     */
+    public function sendToAllPlayers(array $data): void {
+        foreach ($this->players as $index => $p) {
+            // if ($p->)
+            $p->getConnection()->send(json_encode(array_merge($data, [
+                'yourIndex' => $index,
+                'partyId' => $this->partyId
+            ])));
+        }
     }
 
     /**
@@ -87,11 +103,18 @@ class Party
         return $this->players;
     }
 
+    /**
+     * @param GameState $state
+     * @return void
+     */
     public function setGameState(GameState $state): void
     {
         $this->state = $state;
     }
 
+    /**
+     * @return GameState
+     */
     public function getGameState(): GameState
     {
         return $this->state;

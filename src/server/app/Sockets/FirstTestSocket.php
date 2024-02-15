@@ -248,14 +248,17 @@ class FirstTestSocket implements MessageComponentInterface
             $this->party->setGameState(GameState::running);
 
             // send to all players information
-            foreach ($this->party->getPlayers() as $index => $player) {
-                $data = [
-                    'type' => ResponseType::letsPlay,
-                    'partyId' => $this->party->partyId,
-                    'yourIndex' => $index,
-                ];
-                $player->getConnection()->send(json_encode($data));
-            }
+            $this->party->sendToAllPlayers([
+                'type' => ResponseType::letsPlay
+            ]);
+//            foreach ($this->party->getPlayers() as $index => $player) {
+//                $data = [
+//                    'type' => ResponseType::letsPlay,
+//                    'partyId' => $this->party->partyId,
+//                    'yourIndex' => $index,
+//                ];
+//                $player->getConnection()->send(json_encode($data));
+//            }
         }
 
         // return;
@@ -298,13 +301,18 @@ class FirstTestSocket implements MessageComponentInterface
         $this->party->setGameState(GameState::paused);
 
         // send data to all connections
-        foreach ($this->party->getPlayers() as $p) {
+        $this->party->sendToAllPlayers([
+            'type' => ResponseType::paused,
+            'initiator' => $data['initiator'],
+            'state' => $this->party->getGameState(),
+        ]);
+        /*foreach ($this->party->getPlayers() as $p) {
             $p->getConnection()->send(json_encode([
                 'type' => ResponseType::paused,
                 'initiator' => $data['initiator'],
                 'state' => $this->party->getGameState(),
             ]));
-        }
+        }*/
     }
 
     /**
@@ -320,13 +328,18 @@ class FirstTestSocket implements MessageComponentInterface
         $this->party->setGameState(GameState::running);
 
         // send data to all connections
-        foreach ($this->party->getPlayers() as $p) {
-            $p->getConnection()->send(json_encode([
-                'type' => ResponseType::resumed,
-                'initiator' => $data['initiator'],
-                'state' => $this->party->getGameState(),
-            ]));
-        }
+        $this->party->sendToAllPlayers([
+            'type' => ResponseType::resumed,
+            'initiator' => $data['initiator'],
+            'state' => $this->party->getGameState(),
+        ]);
+//        foreach ($this->party->getPlayers() as $p) {
+//            $p->getConnection()->send(json_encode([
+//                'type' => ResponseType::resumed,
+//                'initiator' => $data['initiator'],
+//                'state' => $this->party->getGameState(),
+//            ]));
+//        }
 
     }
 
@@ -365,7 +378,6 @@ class FirstTestSocket implements MessageComponentInterface
 
              // mar winner
              foreach ($this->party->getPlayers() as $p) {
-
                 if ($p->getCup()->state == CupState::online) {
                     $p->getCup()->setCupAsWinner();
                     break;
@@ -373,20 +385,17 @@ class FirstTestSocket implements MessageComponentInterface
              }
          }
 
-
         // preparing cup data
         $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
         Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
 
         // send data to all players
-        foreach ($this->party->getPlayers() as $p) {
-            $p->getConnection()->send(json_encode([
-                'type' => ResponseType::afterSet,
-                'responsible' => $partyIndex,
-                'state' => $this->party->getGameState(),
-                'cups' => $cupsData
-            ]));
-        }
+        $this->party->sendToAllPlayers([
+            'type' => ResponseType::afterSet,
+            'responsible' => $partyIndex,
+            'state' => $this->party->getGameState(),
+            'cups' => $cupsData
+        ]);
     }
 
     /**
