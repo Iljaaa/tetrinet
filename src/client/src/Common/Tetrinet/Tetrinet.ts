@@ -27,6 +27,7 @@ export class Tetrinet extends WebGlGame
    */
   prepareToGame (eventListener: PlayScreenEventListener)
   {
+    console.log ('Tetrinet.prepareToGame');
     // get current screen
     let scr = this.getCurrentScreen() as PlayScreen;
 
@@ -44,6 +45,7 @@ export class Tetrinet extends WebGlGame
     }
 
     // clear sup from previous game
+    // todo: move it to start game
     scr.cleanUpCup();
 
     // start request
@@ -67,8 +69,7 @@ export class Tetrinet extends WebGlGame
     // currentScreen.setGameEventListener(eventListener)
     
     // start game
-    const s = this.getCurrentScreen() as PlayScreen
-    s.startNewGame()
+    (this.getCurrentScreen() as PlayScreen)?.startNewGame()
   }
   
   /**

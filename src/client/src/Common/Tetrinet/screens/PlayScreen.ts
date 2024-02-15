@@ -183,6 +183,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // if (!this._cupRenderer){
     //   throw new Error('Cup render not initialised')
     // }
+
+    // todo: clear cup
     
     // next figure random color
     this._nextFigure = this.generateNewFigure();
@@ -218,12 +220,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * Resume paused game
    */
-  resume ()
-  {
+  resume (){
     // is game not on the pause
     if (this._state !== GameState.paused) return;
     this._state = GameState.running
-
   }
 
   gameOver() {
@@ -263,9 +263,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._state === GameState.running) {
       this._updateRunning(deltaTime);
     }
-    else if (this._state === GameState.over) {
-      // this.updatePaused();
-    }
+    // else if (this._state === GameState.over) {
+    //   // this.updatePaused();
+    // }
   }
   
   /**
@@ -328,7 +328,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private presentReady (gl: WebGL2RenderingContext)
   {
-    console.log('PlayScreen.presentReady')
 
     // move position to left
     // todo: move to user cup position

@@ -73,6 +73,8 @@ class FirstTestSocket implements MessageComponentInterface
     /**
      * @param ConnectionInterface $conn
      * @return void
+     *
+     * todo: check whp lost connection and stop the game
      */
     public function onClose(ConnectionInterface $conn): void
     {
@@ -246,33 +248,32 @@ class FirstTestSocket implements MessageComponentInterface
             }
         }
 
-
-        return;
+        // return;
 
         // join connection in party
-        $playerIndex = $this->party->addPlayer($connection);
-
-
-        // run game
-
-        // set game state is running
-        $this->party->setGameState(GameState::running);
-
-        // send to play his id and party index
-        $connection->send(json_encode([
-            'partyId' => $this->party->partyId,
-            'yourIndex' => $playerIndex,
-        ]));
-
-        // if we have full party send signal to players to start the game
-        if ($this->party->isPartyFull()) {
-            foreach ($this->party->getPlayers() as $connection) {
-                $data = [
-                    'type' => 'letsPlay'
-                ];
-                $connection->send(json_encode($data));
-            }
-        }
+//        $playerIndex = $this->party->addPlayer($connection);
+//
+//
+//        // run game
+//
+//        // set game state is running
+//        $this->party->setGameState(GameState::running);
+//
+//        // send to play his id and party index
+//        $connection->send(json_encode([
+//            'partyId' => $this->party->partyId,
+//            'yourIndex' => $playerIndex,
+//        ]));
+//
+//        // if we have full party send signal to players to start the game
+//        if ($this->party->isPartyFull()) {
+//            foreach ($this->party->getPlayers() as $connection) {
+//                $data = [
+//                    'type' => 'letsPlay'
+//                ];
+//                $connection->send(json_encode($data));
+//            }
+//        }
     }
 
     /**
@@ -343,7 +344,7 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info("partiIndex", ['partyIndex' => $partyIndex]);
 
         // global game state
-        $state = GameState::from($data['state']) ; // play, pause, game, ets
+        $state = GameState::from($data['state']) ; // play, pause, game over, ets
         Log::channel('socket')->info("gameState", [$state]);
 
         // save cup info
@@ -351,10 +352,19 @@ class FirstTestSocket implements MessageComponentInterface
 
         // check game over
          $activeCups = array_filter($this->party->cups, fn (Cup $c) => $c->state == CupState::online);
+
          // this is global game over
-         if (count($activeCups) <= 1) {
+         if (count($activeCups) <= 1)
+         {
              $this->party->setGameState(GameState::over);
-             // todo: we need fine a winner
+
+             // mar winner
+             foreach ($this->party->cups as $c) {
+                if ($c->state == CupState::online) {
+                    $c->setCupAsWinner();
+                    break;
+                }
+             }
          }
 
 
@@ -365,7 +375,7 @@ class FirstTestSocket implements MessageComponentInterface
         // send data to all players
         foreach ($players as $con) {
             $con->send(json_encode([
-                'type' => 'afterSet',
+                'type' => ResponseType::afterSet,
                 'responsible' => $partyIndex,
                 'state' => $this->party->getGameState(),
                 'cups' => $cupsData

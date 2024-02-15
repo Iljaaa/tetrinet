@@ -265,7 +265,15 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // this.socket = new Socket();
     SocketSingletone.reOpenConnection(() => {
       const request:StartRequest = {type: RequestTypes.join}
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
+      // SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
+
+      // set listener when game starts
+      SocketSingletone.getInstance()?.setListener(this);
+
+      // when socket open prepare to game
+      this.game.prepareToGame(this);
+
+      SocketSingletone.getInstance()?.sendData(request)
     })
   }
 
@@ -273,21 +281,21 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * When answer to join received
    * @param data
    */
-  onJoinResponse = (data:StartResponse) =>
-  {
-    console.log ('onJoinResponse', data);
-
-    // this.setState({
-    //   partyId: data.partyId,
-    //   partyIndex: data.yourIndex
-    // });
-
-    // when socket open we start game
-    this.game.prepareToGame(this);
-
-    // set listener when game starts
-    SocketSingletone.getInstance()?.setListener(this);
-  }
+  // onJoinResponse = (data:StartResponse) =>
+  // {
+  //   console.log ('onJoinResponse', data);
+  //
+  //   // this.setState({
+  //   //   partyId: data.partyId,
+  //   //   partyIndex: data.yourIndex
+  //   // });
+  //
+  //   // when socket open we start game
+  //   this.game.prepareToGame(this);
+  //
+  //   // set listener when game starts
+  //   SocketSingletone.getInstance()?.setListener(this);
+  // }
   
   onWatchClicked = () =>
   {
@@ -358,6 +366,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   processLetsPlay (data:LetsPlayMessage)
   {
+    console.log ('Canvas.processLetsPlay');
+
     // save party data
     this.setState({
       partyId: data.partyId,
@@ -375,7 +385,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   processAfterSet (data:SetMessage)
   {
     // cups without our cup
-    console.log ('after set', this.state.partyIndex, data.cups, typeof data.cups, Object.keys(data.cups));
+    console.log ('canvas.processAfterSet', data.cups);
 
     // is this is game over
     if (data.state === GameState.over){
@@ -443,7 +453,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             </div>
             <hr/>
             <div>
-              <button onClick={this.onStartClicked}>Start party</button>
+              <button onClick={this.onStartClicked} disabled={false}>Start party</button>
             </div>
             <div style={{marginTop: ".25rem"}}>
               <button onClick={this.onJoinClicked}>Join party</button>

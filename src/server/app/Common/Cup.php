@@ -36,10 +36,18 @@ class Cup
             $this->fields = $data['fields'];
         }
 
+        // update cup state
         if ($data['state']){
             $this->state = CupState::from($data['state']);
         }
+    }
 
+    /**
+     * @return void
+     */
+    public function setCupAsWinner (): void
+    {
+        $this->state = CupState::winner;
     }
 
     /**
