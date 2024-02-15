@@ -214,6 +214,10 @@ class FirstTestSocket implements MessageComponentInterface
         // join connection in party
         $playerIndex = $this->party->addPlayer($connection);
 
+        // set game state is running
+        $this->party->setGameState(GameState::running);
+
+        // send to play his id and party index
         $connection->send(json_encode([
             'partyId' => $this->party->partyId,
             'yourIndex' => $playerIndex,
@@ -305,19 +309,19 @@ class FirstTestSocket implements MessageComponentInterface
         $this->party->setCupByPartyIndex($partyIndex, $data['cup']);
 
         // check game over
-        // $activeCups = array_filter($this->party->cups, fn (Cup $c) => $c->state == CupState::online);
-        // this is global game over
-        // if (count($activeCups) <= 1) {
-            // $this->party->setGameState(GameState::over);
-            // todo: we need fine a winner
-        // }
+         $activeCups = array_filter($this->party->cups, fn (Cup $c) => $c->state == CupState::online);
+         // this is global game over
+         if (count($activeCups) <= 1) {
+             $this->party->setGameState(GameState::over);
+             // todo: we need fine a winner
+         }
 
 
         // preparing cup data
         $cupsData = array_map(fn (Cup $c) => $c->createResponseData(), $this->party->cups);
         Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
 
-        // send data to all connections
+        // send data to all players
         foreach ($players as $con) {
             $con->send(json_encode([
                 'type' => 'afterSet',

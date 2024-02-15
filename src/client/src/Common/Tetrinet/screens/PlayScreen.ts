@@ -243,6 +243,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   }
 
+  gameOver() {
+    this._state = GameState.over;
+  }
+
   /**
    * We add empty row on bottom
    */

@@ -196,8 +196,6 @@ export class CupRenderer2
    */
   private presentCupBlocks(gl: WebGL2RenderingContext, cup:Cup)
   {
-    console.log('CupRenderer2.presentCupBlocks')
-
     // move cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
 

@@ -3,18 +3,9 @@ import React from "react";
 import {GameState, MessageTypes, RequestTypes} from "./Common/Tetrinet/types";
 import {StartResponse} from "./Common/Tetrinet/types/responses";
 
-import {
-  PauseRequest,
-  ResumeRequest,
-  SetRequest,
-  StartRequest
-} from "./Common/Tetrinet/types/requests";
+import {PauseRequest, ResumeRequest, SetRequest, StartRequest} from "./Common/Tetrinet/types/requests";
 
-import {
-  Message,
-  SetMessage,
-  AddLineMessage
-} from "./Common/Tetrinet/types/messages";
+import {AddLineMessage, Message, SetMessage} from "./Common/Tetrinet/types/messages";
 
 import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 import {Assets} from "./Common/Tetrinet/Assets";
@@ -396,13 +387,20 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // cups without our cup
     console.log ('after set', this.state.partyIndex, data.cups, typeof data.cups, Object.keys(data.cups));
 
+    // is this is game over
+    if (data.state === GameState.over){
+      this.game.setGameOver();
+    }
+
     // is we run and comes pause
+    // todo: remake in on special commands
     if (data.state === GameState.paused) {
       this.game.pauseGame(false);
     }
 
     // from paused state to run
     // I do not know looks like this is bad approach
+    // todo: remake in on special commands
     if (data.state === GameState.running) {
       this.game.resumeGame(false);
     }
