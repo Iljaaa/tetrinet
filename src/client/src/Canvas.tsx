@@ -219,40 +219,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // set game resume
     // this.game.resumeGame(true);
   }
-  
-  /**
-   * Here we start party
-   */
-  onStartClicked = () =>
-  {
-    console.log ('onStartClicked');
-    // open socket connection
-    SocketSingletone.reOpenConnection(() => {
-      // send start party request
-      const request:StartRequest = {type: RequestTypes.start}
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onStartResponse)
-    })
-  }
-
-  /**
-   * When answer to start received
-   * @param data
-   */
-  onStartResponse = (data:StartResponse) =>
-  {
-    console.log ('onStartResponse', data);
-
-    this.setState({
-      partyId: data.partyId,
-      partyIndex: data.yourIndex
-    });
-
-    // prepare cup
-    this.game.prepareToGame(this);
-
-    // set listener when game starts
-    SocketSingletone.getInstance()?.setListener(this);
-  }
 
   /**
    * Here we join to party
@@ -392,17 +358,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       this.game.setGameOver();
     }
 
-    // is we run and comes pause
-    // if (data.state === GameState.paused) {
-    //   this.game.pauseGame(false);
-    // }
-
-    // from paused state to run
-    // I do not know looks like this is bad approach
-    // if (data.state === GameState.running) {
-    //   this.game.resumeGame(false);
-    // }
-
     // find opponent key
     const opponentKey = Object.keys(data.cups).find((key:string) => {
       return parseInt(key) !== this.state.partyIndex
@@ -445,18 +400,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
           
           <div style={{marginTop: "1rem"}}>
             <div>
-              <button onClick={this.onPlayClicked}>Play</button>
+              <button onClick={this.onPlayClicked} disabled={true}>Play</button>
+              <button onClick={this.onJoinClicked}>Join</button>
             </div>
             <div style={{marginTop: ".25rem"}}>
               <button onClick={this.onPauseClicked}>Pause</button>
               <button onClick={this.onResumeClicked}>Resume</button>
-            </div>
-            <hr/>
-            <div>
-              <button onClick={this.onStartClicked} disabled={false}>Start party</button>
-            </div>
-            <div style={{marginTop: ".25rem"}}>
-              <button onClick={this.onJoinClicked}>Join party</button>
             </div>
             <hr />
             <div style={{marginTop: ".25rem"}}>
