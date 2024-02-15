@@ -1,0 +1,29 @@
+
+.JoinButtonsWrap {
+    border: solid 4px green;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0 2rem 0;
+
+    > div {
+        margin: 0 1rem;
+    }
+
+    .JoinButton {
+        border: solid 2px black;
+        padding: 1rem 3rem;
+        font-size: 24px;
+        background-color: silver;
+        box-shadow: rgba(255, 255, 255) 7px 7px 0 0;
+
+        &:hover {
+            background-color: gray;
+        }
+
+        &:active {
+            background-color: gray;
+            color: whitesmoke;
+        }
+    }
+}
