@@ -209,37 +209,20 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   /**
    * Pause running game
-   * @param sendState
    */
-  pause (sendState: boolean = true)
-  {
+  pause (){
     if (this._state !== GameState.running) return;
-
     this._state = GameState.paused
-
-    // rise update state callback
-    if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getData())
-    }
   }
 
   /**
    * Resume paused game
-   * @param sendState send our state after updating status
    */
-  resume (sendState: boolean = true)
+  resume ()
   {
     // is game not on the pause
-    if (this._state !== GameState.paused) {
-      return;
-    }
-
+    if (this._state !== GameState.paused) return;
     this._state = GameState.running
-
-    // rise update state callback
-    if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getData())
-    }
 
   }
 

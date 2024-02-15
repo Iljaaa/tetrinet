@@ -297,21 +297,14 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // this.socket = new Socket();
     SocketSingletone.openConnection(() =>
     {
-      // send start party
       // todo: make special object
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer({
-        type: "watch"
-      }, (data) =>
-      {
-        console.log ('startDataReceived', data);
+      const request = {type: "watch"}
 
+      // send start party
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, (data) => {
         // when socket open we start game
         this.game.watchGame();
       })
-      
-      
-      // when socket open we start game
-      this.game.watchGame();
     })
     
   }
@@ -321,11 +314,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   onCupUpdated(state:GameState, cupState:CupData): void
   {
-    console.log('onCupUpdated', state, cupState);
+    console.log('Canvas.onCupUpdated', state, cupState);
 
     // just save game state
-    this.setState({currentGameState: state})
-
+    // this.setState({currentGameState: state})
     const data:SetRequest = {
       type: RequestTypes.set,
       partyId: this.state.partyId,
@@ -346,37 +338,18 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   onMessageReceive(data: Message): void
   {
     console.log (data, 'Canvas.onMessageReceive');
-    
-    // party is created, it is time to play
-    if (data.type === MessageTypes.letsPlay) {
-      this.processLetsPlay(data as LetsPlayMessage)
-      return
-    }
 
-    // update cups state from server data
-    if (data.type === MessageTypes.afterSet) {
-      this.processAfterSet(data as SetMessage)
-      return;
-    }
+    switch (data.type) {
+      // party is created, it is time to play
+      case MessageTypes.letsPlay: this.processLetsPlay(data as LetsPlayMessage); break;
+      // some cup was updated, and we process this message
+      case MessageTypes.afterSet: this.processAfterSet(data as SetMessage); break;
+      // we receive add line command
+      case MessageTypes.addLine: this.processAddLine(data as AddLineMessage); break;
 
-    // we receive add line command
-    if (data.type === MessageTypes.addLine) {
-      this.processAddLine(data as AddLineMessage)
-      return;
+      case MessageTypes.paused: this.processPause(data as PausedMessage); break;
+      case MessageTypes.resumed: this.processResume(data as ResumedMessage); break;
     }
-
-    // we receive add line command
-    if (data.type === MessageTypes.paused) {
-      this.processPause(data as PausedMessage)
-      return;
-    }
-
-    // we receive add line command
-    if (data.type === MessageTypes.resumed) {
-      this.processResume(data as ResumedMessage)
-      return;
-    }
-
   }
 
   /**
@@ -439,12 +412,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
   processPause(data:PausedMessage) {
     this.setState({currentGameState: GameState.paused})
-    this.game.pauseGame(false)
+    this.game.pauseGame()
   }
 
   processResume(data:ResumedMessage) {
     this.setState({currentGameState: GameState.running})
-    this.game.resumeGame(false);
+    this.game.resumeGame();
   }
 
   render () {

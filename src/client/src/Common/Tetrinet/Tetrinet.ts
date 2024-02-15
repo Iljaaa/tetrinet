@@ -74,17 +74,15 @@ export class Tetrinet extends WebGlGame
   /**
    * Pause game
    */
-  pauseGame(sendState: boolean) {
-    const currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
-    currentScreen.pause(sendState)
+  pauseGame() {
+    (this.getCurrentScreen() as PlayScreen)?.pause();
   }
 
   /**
    * Resume paused game
-   * @param sendState
    */
-  resumeGame(sendState: boolean){
-    (this.getCurrentScreen() as PlayScreen)?.resume(sendState);
+  resumeGame(){
+    (this.getCurrentScreen() as PlayScreen)?.resume();
   }
 
   /**
@@ -106,7 +104,6 @@ export class Tetrinet extends WebGlGame
    */
   watchGame()
   {
-    console.log ('start watch');
     // let currentScreen:PlayScreen = this.getCurrentScreen() as PlayScreen;
     this.setScreen(new WatchScreen(this))
 
