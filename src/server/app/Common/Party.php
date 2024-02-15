@@ -104,6 +104,15 @@ class Party
     }
 
     /**
+     * Pause game
+     * @return void
+     */
+    public function pause ():void
+    {
+        $this->state = GameState::paused;
+    }
+
+    /**
      * @param GameState $state
      * @return void
      */

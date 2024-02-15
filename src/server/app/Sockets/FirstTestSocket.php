@@ -74,21 +74,31 @@ class FirstTestSocket implements MessageComponentInterface
     /**
      * @param ConnectionInterface $conn
      * @return void
-     *
-     * todo: check whp lost connection and stop the game
      */
     public function onClose(ConnectionInterface $conn): void
     {
         Log::channel('socket')->info(__METHOD__);
 
         // when connection closed we mark party as paused
-        if ($this->party) {
-            // if we do not have
+        if ($this->party)
+        {
+            // set party on pause
+            $this->party->pause();
+            $this->party->sendToAllPlayers([
+                'type' => ResponseType::paused,
+                'initiator' => -1,
+                'state' => $this->party->getGameState()
+            ]);
+
+            //
             $this->party->onConnectionClose($conn, fn() => $this->onAllPlayersOffline());
         }
-
     }
 
+    /**
+     * this is callback method when all players leave
+     * @return void
+     */
     private function onAllPlayersOffline()
     {
         $partyId = $this->party->partyId;
@@ -200,6 +210,7 @@ class FirstTestSocket implements MessageComponentInterface
     }
 
     /**
+     * @deprecated
      * Create new party and add itself to this
      * @param ConnectionInterface $connection
      * @param array $data
@@ -269,11 +280,13 @@ class FirstTestSocket implements MessageComponentInterface
      * @param array $data
      * @return void
      */
-    private function processPause(ConnectionInterface $conn, array $data)
+    private function processPause(ConnectionInterface $conn, array $data): void
     {
         Log::channel('socket')->info(__METHOD__);
 
-        $this->party->setGameState(GameState::paused);
+        // pause ga,e
+        $this->party->pause();
+        // $this->party->setGameState(GameState::paused);
 
         // send data to all connections
         $this->party->sendToAllPlayers([

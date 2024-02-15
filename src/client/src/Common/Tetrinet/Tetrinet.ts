@@ -70,6 +70,7 @@ export class Tetrinet extends WebGlGame
     
     // start game
     (this.getCurrentScreen() as PlayScreen)?.startNewGame()
+
   }
   
   /**

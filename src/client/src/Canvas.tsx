@@ -64,6 +64,13 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     partyId: "",
     score: 0
   }
+
+  /**
+   * This is the main party index,
+   * because in the stat it is updated with delay
+   * @private
+   */
+  private partyIndex:number|null = null;
   
   constructor(props: { }, context: any)
   {
@@ -105,9 +112,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       const data = {
         type: RequestTypes.addLine,
         partyId: this.state.partyId,
-        partyIndex: this.state.partyIndex as number,
+        partyIndex: this.partyIndex as number,
         linesCount: countClearedLines - 1,
-        source: this.state.partyIndex, // now this is same that partyIndex
+        source: this.partyIndex, // now this is same that partyIndex
         target: null, // target should be selected player, but now we have only two players
     }
 
@@ -193,7 +200,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // request data
     const request:PauseRequest = {
       type: RequestTypes.pause,
-      initiator: this.state.partyIndex
+      initiator: this.partyIndex as number
     }
 
     // send data
@@ -210,7 +217,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // request data
     const request:ResumeRequest = {
       type: RequestTypes.resume,
-      initiator: this.state.partyIndex
+      initiator: this.partyIndex as number
     }
 
     // send data
@@ -295,7 +302,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     const data:SetRequest = {
       type: RequestTypes.set,
       partyId: this.state.partyId,
-      partyIndex: this.state.partyIndex as number,
+      partyIndex: this.partyIndex as number,
       state: state,
       cup: cupState
     }
@@ -334,6 +341,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   {
     console.log ('Canvas.processLetsPlay');
 
+    // save party index
+    this.partyIndex = data.yourIndex
+
     // save party data
     this.setState({
       partyId: data.partyId,
@@ -360,7 +370,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
     // find opponent key
     const opponentKey = Object.keys(data.cups).find((key:string) => {
-      return parseInt(key) !== this.state.partyIndex
+      return parseInt(key) !== this.partyIndex
     })
 
     // todo: update other cups
