@@ -26,6 +26,12 @@ class FirstTestSocket implements MessageComponentInterface
     const MESSAGE_ADD_LINE = 'addLine';
 
     /**
+     * Pool of player for play
+     * @var ConnectionInterface[]
+     */
+    private array $playersPool = [];
+
+    /**
      * This is play party
      * @var Party|null
      */
@@ -101,7 +107,7 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info("data", $data);
 
         if (empty($data['type'])) {
-            Log::channel('socket')->info("Type is empty");
+            Log::channel('socket')->info("message.type is empty, ignore it");
             return;
         }
 
@@ -184,7 +190,6 @@ class FirstTestSocket implements MessageComponentInterface
      * @param ConnectionInterface $connection
      * @param array $data
      * @return void
-     * @throws \Random\RandomException
      */
     private function processStartParty (ConnectionInterface $connection, array $data):void
     {
@@ -211,8 +216,44 @@ class FirstTestSocket implements MessageComponentInterface
     {
         Log::channel('socket')->info(__METHOD__);
 
+        // add player to pool
+        // todo: extends by personal data
+        $this->playersPool[] = $connection;
+
+
+        // only two players
+        if (count($this->playersPool) >= 2)
+        {
+            $this->party = new Party();
+
+            // move players to party
+            foreach ($this->playersPool as $p) {
+                $this->party->addPlayer($p);
+            }
+
+            // run game
+            $this->party->setGameState(GameState::running);
+
+            // send to all players information
+            foreach ($this->party->getPlayers() as $index => $connection) {
+                $data = [
+                    'type' => 'letsPlay',
+                    'partyId' => $this->party->partyId,
+                    'yourIndex' => $index,
+
+                ];
+                $connection->send(json_encode($data));
+            }
+        }
+
+
+        return;
+
         // join connection in party
         $playerIndex = $this->party->addPlayer($connection);
+
+
+        // run game
 
         // set game state is running
         $this->party->setGameState(GameState::running);

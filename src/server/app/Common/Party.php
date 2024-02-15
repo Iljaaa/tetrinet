@@ -5,6 +5,9 @@ namespace App\Common;
 // use Random\RandomException;
 use Ratchet\ConnectionInterface;
 
+/**
+ * @version 0.0.2
+ */
 class Party
 {
     /**
@@ -32,19 +35,18 @@ class Party
     public array $cups = [];
 
     /**
-     * @param ConnectionInterface $hostConnection
      * @throws RandomException
      */
-    public function __construct (ConnectionInterface $hostConnection)
+    public function __construct ()
     {
         // generate party id
         $this->partyId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
 
         // add host tp party
-        $this->players[] = $hostConnection;
+        // $this->players[] = $hostConnection;
 
         // create cup for host
-        $this->cups[] = new Cup();
+        // $this->cups[] = new Cup();
     }
 
     /**

@@ -18,6 +18,7 @@ import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 import sprite from "./sprite.png"
 import {ResumedMessage} from "./Common/Tetrinet/types/messages/ResumedMessage";
 import {PausedMessage} from "./Common/Tetrinet/types/messages/PausedMessage";
+import {LetsPlayMessage} from "./Common/Tetrinet/types/messages/LetsPlayMessage";
 
 type State =
 {
@@ -276,10 +277,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   {
     console.log ('onJoinResponse', data);
 
-    this.setState({
-      partyId: data.partyId,
-      partyIndex: data.yourIndex
-    });
+    // this.setState({
+    //   partyId: data.partyId,
+    //   partyIndex: data.yourIndex
+    // });
 
     // when socket open we start game
     this.game.prepareToGame(this);
@@ -348,7 +349,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // party is created, it is time to play
     if (data.type === MessageTypes.letsPlay) {
-      this.game.playGame();
+      this.processLetsPlay(data as LetsPlayMessage)
       return
     }
 
@@ -379,6 +380,22 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   }
 
   /**
+   * Part created and we get from server
+   * signal to start the game
+   */
+  processLetsPlay (data:LetsPlayMessage)
+  {
+    // save party data
+    this.setState({
+      partyId: data.partyId,
+      partyIndex: data.yourIndex
+    });
+
+    // start game
+    this.game.playGame();
+  }
+
+  /**
    * todo: move this method to play screen
    * @param data
    */
@@ -393,17 +410,15 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     }
 
     // is we run and comes pause
-    // todo: remake in on special commands
-    if (data.state === GameState.paused) {
-      this.game.pauseGame(false);
-    }
+    // if (data.state === GameState.paused) {
+    //   this.game.pauseGame(false);
+    // }
 
     // from paused state to run
     // I do not know looks like this is bad approach
-    // todo: remake in on special commands
-    if (data.state === GameState.running) {
-      this.game.resumeGame(false);
-    }
+    // if (data.state === GameState.running) {
+    //   this.game.resumeGame(false);
+    // }
 
     // find opponent key
     const opponentKey = Object.keys(data.cups).find((key:string) => {
@@ -423,10 +438,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   }
 
   processPause(data:PausedMessage) {
+    this.setState({currentGameState: GameState.paused})
     this.game.pauseGame(false)
   }
 
   processResume(data:ResumedMessage) {
+    this.setState({currentGameState: GameState.running})
     this.game.resumeGame(false);
   }
 
