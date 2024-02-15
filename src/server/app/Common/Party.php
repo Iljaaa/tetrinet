@@ -24,7 +24,7 @@ class Party
 
     /**
      * Player connections
-     * @var ConnectionInterface[]
+     * @var Player[]
      */
     private array $players = [];
 
@@ -32,7 +32,7 @@ class Party
      * Player cups
      * @var Cup[]
      */
-    public array $cups = [];
+    // public array $cups = [];
 
     /**
      * @throws RandomException
@@ -57,16 +57,15 @@ class Party
      */
     public function addPlayer (ConnectionInterface $connection): int
     {
-        $this->players[] = $connection;
+        $this->players[] = new Player($connection);
 
         $playerIndexInTheParty = array_search($connection, $this->players);
 
         // create cup for player
-        $this->cups[$playerIndexInTheParty] = new Cup();
+        // $this->cups[$playerIndexInTheParty] = new Cup();
 
         return $playerIndexInTheParty;
     }
-
 
     /**
      * @param int $partyIndex
@@ -76,20 +75,12 @@ class Party
     public function setCupByPartyIndex(int $partyIndex, array $cup)
     {
         // update cup data
-        $this->cups[$partyIndex]->updateByData($cup);
+        // $this->cups[$partyIndex]->updateByData($cup);
+        $this->players[$partyIndex]->updateCup($cup);
     }
 
     /**
-     * If party full of players
-     * @return bool
-     */
-    public function isPartyFull ():bool
-    {
-        return (count($this->players) == 2);
-    }
-
-    /**
-     * @return ConnectionInterface[]
+     * @return Player[]
      */
     public function getPlayers (): array
     {
@@ -104,6 +95,17 @@ class Party
     public function getGameState(): GameState
     {
         return $this->state;
+    }
+
+    /**
+     * This method called when closed
+     * and we remove player with this connection from list
+     * @param ConnectionInterface $conn
+     * @return void
+     */
+    public function onConnectionClose(ConnectionInterface $conn)
+    {
+
     }
 
 }

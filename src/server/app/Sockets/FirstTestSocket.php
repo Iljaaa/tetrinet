@@ -7,6 +7,7 @@ use app\Common\CupState;
 use App\Common\GameState;
 use App\Common\MessageType;
 use App\Common\Party;
+use App\Common\Player;
 use App\Common\ResponseType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -79,6 +80,13 @@ class FirstTestSocket implements MessageComponentInterface
     public function onClose(ConnectionInterface $conn): void
     {
         Log::channel('socket')->info(__METHOD__);
+
+        // when connection closed we mark party as paused
+        if ($this->party) {
+            // if we do not have
+            $this->party->onConnectionClose($conn);
+        }
+
     }
 
     /**
@@ -233,18 +241,20 @@ class FirstTestSocket implements MessageComponentInterface
                 $this->party->addPlayer($p);
             }
 
+            // clean up pull
+            $this->playersPool = [];
+
             // run game
             $this->party->setGameState(GameState::running);
 
             // send to all players information
-            foreach ($this->party->getPlayers() as $index => $connection) {
+            foreach ($this->party->getPlayers() as $index => $player) {
                 $data = [
-                    'type' => 'letsPlay',
+                    'type' => ResponseType::letsPlay,
                     'partyId' => $this->party->partyId,
                     'yourIndex' => $index,
-
                 ];
-                $connection->send(json_encode($data));
+                $player->getConnection()->send(json_encode($data));
             }
         }
 
@@ -288,9 +298,8 @@ class FirstTestSocket implements MessageComponentInterface
         $this->party->setGameState(GameState::paused);
 
         // send data to all connections
-        $players = $this->party->getPlayers();
-        foreach ($players as $con) {
-            $con->send(json_encode([
+        foreach ($this->party->getPlayers() as $p) {
+            $p->getConnection()->send(json_encode([
                 'type' => ResponseType::paused,
                 'initiator' => $data['initiator'],
                 'state' => $this->party->getGameState(),
@@ -311,9 +320,8 @@ class FirstTestSocket implements MessageComponentInterface
         $this->party->setGameState(GameState::running);
 
         // send data to all connections
-        $players = $this->party->getPlayers();
-        foreach ($players as $con) {
-            $con->send(json_encode([
+        foreach ($this->party->getPlayers() as $p) {
+            $p->getConnection()->send(json_encode([
                 'type' => ResponseType::resumed,
                 'initiator' => $data['initiator'],
                 'state' => $this->party->getGameState(),
@@ -329,9 +337,6 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private function processSet (ConnectionInterface $connection, array $data)
     {
-        $players = $this->party->getPlayers();
-        Log::channel('socket')->info("party", ['len' => count($players)]);
-
         // todo: check party id ans if we do not have such party we drop connection
         // todo: check players and we do not have this connection id in party drop this conection
 
@@ -351,7 +356,7 @@ class FirstTestSocket implements MessageComponentInterface
         $this->party->setCupByPartyIndex($partyIndex, $data['cup']);
 
         // check game over
-         $activeCups = array_filter($this->party->cups, fn (Cup $c) => $c->state == CupState::online);
+         $activeCups = array_filter($this->party->getPlayers(), fn (Player $p) => $p->getCup()->state == CupState::online);
 
          // this is global game over
          if (count($activeCups) <= 1)
@@ -359,9 +364,10 @@ class FirstTestSocket implements MessageComponentInterface
              $this->party->setGameState(GameState::over);
 
              // mar winner
-             foreach ($this->party->cups as $c) {
-                if ($c->state == CupState::online) {
-                    $c->setCupAsWinner();
+             foreach ($this->party->getPlayers() as $p) {
+
+                if ($p->getCup()->state == CupState::online) {
+                    $p->getCup()->setCupAsWinner();
                     break;
                 }
              }
@@ -369,12 +375,12 @@ class FirstTestSocket implements MessageComponentInterface
 
 
         // preparing cup data
-        $cupsData = array_map(fn (Cup $c) => $c->createResponseData(), $this->party->cups);
+        $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
         Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
 
         // send data to all players
-        foreach ($players as $con) {
-            $con->send(json_encode([
+        foreach ($this->party->getPlayers() as $p) {
+            $p->getConnection()->send(json_encode([
                 'type' => ResponseType::afterSet,
                 'responsible' => $partyIndex,
                 'state' => $this->party->getGameState(),
@@ -393,9 +399,6 @@ class FirstTestSocket implements MessageComponentInterface
         // send to target player
         // but, now we have two players and if it not a sender then it opponent
 
-        $players = $this->party->getPlayers();
-        Log::channel('socket')->info("party", ['len' => count($players)]);
-
         // player index in party
         $partyIndex = (int) $data['partyIndex'];
 
@@ -410,6 +413,11 @@ class FirstTestSocket implements MessageComponentInterface
             'linesCount' => $linesCount,
         ]);
 
+
+        // here we need playeers for found the opponent and add line to him
+        $players = $this->party->getPlayers();
+        Log::channel('socket')->info("party", ['len' => count($players)]);
+
         // this is temporary code
         // we are searching opponent
         /** @var ConnectionInterface $opponentConnection */
@@ -422,7 +430,7 @@ class FirstTestSocket implements MessageComponentInterface
 
         // send command to opponent
         if ($opponentConnection) {
-            $opponentConnection->send(json_encode([
+            $opponentConnection->getConnection()->send(json_encode([
                 'type' => static::MESSAGE_ADD_LINE,
                 'source' => $source,
                 'target' => $target,
