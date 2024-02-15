@@ -2,19 +2,26 @@ import React from 'react';
 import './App.css';
 import {Canvas} from "./Canvas";
 import {JoinButtons} from "./widgets/JoinButtons/JoinButtons";
+import {Help} from "./widgets/Help/Help";
 
-function App() {
+function App()
+{
+
   return (
-      <div className="App">
-          <JoinButtons />
-          <Canvas />
-          <h2>todo:</h2>
+      <div className="App" style={{border: "solid 2px orange", maxWidth: '1024px'}}>
+          <div><JoinButtons /></div>
+          <div><Canvas /></div>
+
+
+          <div>
+              <Help/>
+          </div>
+          <h2>Road map:</h2>
           <ul>
-              <li>Global game over and winner</li>
               <li>Prepare eight people party</li>
-              <li>Block buttons by state</li>
+              <li>Winner text</li>
+              <li>Super blocks</li>
               <li>Show loader until socket connecting</li>
-              <li>Just play tetris</li>
           </ul>
       </div>
   );

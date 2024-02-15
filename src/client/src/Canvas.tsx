@@ -396,58 +396,35 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   }
 
   render () {
-    return <div style={{padding: "2rem"}}>
-      <div style={{display: "flex"}}>
+    return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem"}}>
+
+      <div style={{display: "flex", alignItems: "center", marginBottom: "1rem", width: "100%"}}>
+        <div style={{display: "flex", alignItems: "center", flex: "1"}}>
+          <div>
+            <button onClick={this.onPlayClicked} disabled={true}>Play</button>
+            <button onClick={this.onJoinClicked}>Join</button>
+          </div>
+          <div>
+            <button onClick={this.onPauseClicked}>Pause</button>
+            <button onClick={this.onResumeClicked}>Resume</button>
+          </div>
+          <div>
+            <button onClick={this.onWatchClicked} disabled={true}>Watch</button>
+          </div>
+        </div>
         <div>
-          <canvas id="canvas" width={800} height={704} style={{border: "solid 2px orange"}} ref={this._canvas}/>
+          <div style={{display: "flex", alignItems: "center"}}>
+            <div>score <b>{this.state.score}</b></div>
+            <div style={{margin: "0 0 0 1rem"}}>state <b>{this.state.currentGameState}</b></div>
+            <div style={{margin: "0 0 0 1rem"}}>party id: <b>{this.state.partyId}</b></div>
+            <div style={{margin: "0 0 0 1rem"}}>party index: <b>{this.state.partyIndex}</b></div>
+          </div>
         </div>
-        <div style={{textAlign: "left", paddingLeft: "2rem"}}>
-          
-          <div>score <b>{this.state.score}</b></div>
-          <div style={{margin: ".25rem 0 0 0"}}>state <b>{this.state.currentGameState}</b></div>
-          <div style={{margin: ".25rem 0 0 0"}}>party id: <b>{this.state.partyId}</b></div>
-          <div style={{margin: ".25rem 0 0 0"}}>party index: <b>{this.state.partyIndex}</b></div>
-          
-          <div style={{marginTop: "1rem"}}>
-            <div>
-              <button onClick={this.onPlayClicked} disabled={true}>Play</button>
-              <button onClick={this.onJoinClicked}>Join</button>
-            </div>
-            <div style={{marginTop: ".25rem"}}>
-              <button onClick={this.onPauseClicked}>Pause</button>
-              <button onClick={this.onResumeClicked}>Resume</button>
-            </div>
-            <hr />
-            <div style={{marginTop: ".25rem"}}>
-              <button onClick={this.onWatchClicked}>Watch</button>
-            </div>
-          </div>
-          
-          <div style={{margin: "1rem 0 0 0"}}>
-            <Help/>
-          </div>
-          
-          <div style={{display: "flex", justifyContent: "flex-start", marginTop: "1rem"}}>
-            <div style={{backgroundColor: "red", width: "40px", height: "40px"}}></div>
-            <div style={{backgroundColor: "green", width: "40px", height: "40px"}}></div>
-            <div style={{backgroundColor: "blue", width: "40px", height: "40px"}}></div>
-          </div>
-          
-        
-        </div>
+      </div>
+
+      <div>
+        <canvas id="canvas" width={1000} height={704} style={{border: "solid 2px orange"}} ref={this._canvas}/>
       </div>
     </div>
   }
-}
-
-
-const Help = () => {
-  return <div>
-    left - A<br/>
-    right - D<br/>
-    rotate clockwise - E<br/>
-    rotate counterclockwise - Q<br/>
-    down - S<br/>
-    drop - Space
-  </div>
 }
