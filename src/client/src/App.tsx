@@ -8,23 +8,24 @@ function App()
 {
 
   return (
-      <div className="App" style={{border: "solid 2px orange", maxWidth: '1024px'}}>
-          <div><JoinButtons /></div>
-          <div><Canvas /></div>
-
-
-          <div>
-              <Help/>
-          </div>
-          <h2>Road map:</h2>
-          <ul>
-              <li>Prepare eight people party</li>
-              <li>Winner text</li>
-              <li>Super blocks</li>
-              <li>Show loader until socket connecting</li>
-              <li>Super blocks help</li>
-          </ul>
+    <div className="App">
+      <div className="container">
+        <div><JoinButtons/></div>
+        <div><Canvas/></div>
+        <div>
+          <Help/>
+        </div>
+        <h2>Road map:</h2>
+        <ul>
+          <li>Prepare eight people party</li>
+          <li>Winner text</li>
+          <li>Super blocks</li>
+          <li>Show loader until socket connecting</li>
+          <li>Super blocks help</li>
+          <li>Set bonuses nice</li>
+        </ul>
       </div>
+    </div>
   );
 }
 
