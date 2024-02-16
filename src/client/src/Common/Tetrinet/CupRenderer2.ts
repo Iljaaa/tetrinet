@@ -203,7 +203,7 @@ export class CupRenderer2
 
     // draw cup bodies
     const fields = cup.getFields()
-    const bonuses = cup.getBonusFieldsFields()
+    const bonuses = cup.getBonusFields()
     const len = fields.length;
 
     for (let i = 0; i < len; i++)

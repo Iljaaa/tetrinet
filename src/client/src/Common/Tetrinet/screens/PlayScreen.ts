@@ -770,13 +770,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   {
     // collect available places
     const allFields = this._cup.getFields();
+    const bonusFields = this._cup.getBonusFields();
     
     // find blocks with none
     let notFreeFieldsIds:Array<number> = []
     allFields.forEach((value:number, cellId:number) =>
     {
-      // if it clear field
+      // if it is a clear field
       if (value === -1) return
+
+      // if there bonus
+      if (bonusFields[cellId] && bonusFields[cellId] != -1) return
 
       // clear bonus fields
       notFreeFieldsIds.push(cellId)

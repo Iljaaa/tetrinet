@@ -111,7 +111,7 @@ export class CupImpl implements Cup
     this._state.fields = fields;
   }
 
-  getBonusFieldsFields():Array<number> {
+  getBonusFields():Array<number> {
     return this._state.bonuses;
   }
 

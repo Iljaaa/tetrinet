@@ -27,7 +27,7 @@ export interface Cup
   /**
    * Super fields array
    */
-  getBonusFieldsFields(): Array<number>
+  getBonusFields(): Array<number>
 
   /**
    * Cup state, this is array of fields
