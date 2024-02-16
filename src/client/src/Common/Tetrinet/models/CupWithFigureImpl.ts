@@ -13,7 +13,7 @@ export type CupEventListener =
    * When lines cleared
    * @param countLines
    */
-  onLineCleared: (countLines:number) => void,
+  onLineCleared: (clearData:{countLines:number, bonuses: Array<number>}) => void,
   
   /**
    * When figure moved to cup
@@ -194,10 +194,10 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     })
     
     // clear full lines
-    const countClearedLines:number = this.clearLines();
+    const clearData = this.clearAndMoveLines();
     
-    // rise callback method
-    if (countClearedLines > 0) this.listener.onLineCleared(countClearedLines)
+    // rise callback about clear lines
+    if (clearData.countLines > 0) this.listener.onLineCleared(clearData)
     
     // rise callback event
     this.listener.onFigureMovedToCup()
@@ -219,10 +219,11 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
   }
   
   /**
-   * Clear lines after figure moved to
+   * Clear lines after figure moved to cup
+   * and move down cup on clear place
    * returns number of cleared lines
    */
-  private clearLines():number
+  private clearAndMoveLines():{countLines: number, bonuses: number[]}
   {
     // we find full lines
     const fullLines:Array<number> = [];
@@ -245,14 +246,26 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     }
     
     if (fullLines.length === 0) {
-      return 0;
+      return {countLines: 0, bonuses: []};
     }
     
     // clear lines
+    const bonuses:number[] = [];
     fullLines.forEach((fullLineIndex:number) => {
       for (let i = 0; i < this.widthInCells; i++) {
         let index = this.getCellIndexByCoords({x: i, y: fullLineIndex})
         this._state.fields[index] = -1
+
+        // if there is bonus
+        if (this._state.bonuses[index] > -1)
+        {
+          // add to return array
+          bonuses.push(this._state.bonuses[index])
+
+          // clear bonus field
+          this._state.bonuses[index] = -1
+        }
+
       }
     })
     
@@ -266,21 +279,28 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
       {
         for (let col = 0; col < this.widthInCells; col++)
         {
+          //
           const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
           
           // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
           const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
           
-          // if there is a block we move them to this libe
+          // if there is a block we move them
           if (this._state.fields[indexOfBlockAbove] > -1){
             this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
             this._state.fields[indexOfBlockAbove] = -1; // -1 it's mean that fiend if empty that we move them down
+          }
+
+          // if there is a bonus
+          if (this._state.bonuses[indexOfBlockAbove] > -1) {
+            this._state.bonuses[currentBlockIndex] = this._state.bonuses[indexOfBlockAbove];
+            this._state.bonuses[indexOfBlockAbove] = -1;
           }
         }
       }
     })
     
-    return fullLines.length;
+    return {countLines: fullLines.length, bonuses: bonuses};
   }
 
 }

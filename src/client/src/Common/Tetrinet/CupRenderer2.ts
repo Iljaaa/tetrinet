@@ -183,6 +183,8 @@ export class CupRenderer2
     // render cup blocks
     this.presentCupBlocks(gl, cup);
 
+    // this.presentSpecialBlocks();
+
     // if cup over draw game over
     // fixme: here something wrong with render when we draw
     if (cup.getState() === CupState.over){
@@ -201,20 +203,18 @@ export class CupRenderer2
 
     // draw cup bodies
     const fields = cup.getFields()
+    const bonuses = cup.getBonusFieldsFields()
     const len = fields.length;
 
     for (let i = 0; i < len; i++)
     {
+      // draw block
       if (fields[i] > -1)
       {
-
-        // bottom
         const row = Math.floor(i / this.cupSizeInCells.width);
-        // const row = Math.floor(i / cup.getWidthInCells());
         const bottom = row * this.blockSize;
 
         const coll = i % this.cupSizeInCells.width;
-        // const coll = i % cup.getWidthInCells();
         const left = coll * this.blockSize;
 
         const fieldValue = fields[i]
@@ -232,20 +232,34 @@ export class CupRenderer2
         // gl.drawArrays(gl.TRIANGLES, 0, 6);
         gl.drawArrays(gl.TRIANGLES, 0, this._block.getVerticesCount());
 
-        /*
-        if (fieldValue > 5) {
-          // bonus
-          this._block.setVertices(Vertices.createTextureVerticesArray(
-              left, bottom, this.blockSize, this.blockSize,
-              320, 32 * 4, 32, 32
-          ))
-
-          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-
-          // draw here
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        }*/
       }
+
+      // draw super block
+      // todo: here we must be shure that field have block, because bonus could be without block
+      if (bonuses[i] > -1)
+      {
+        const row = Math.floor(i / this.cupSizeInCells.width);
+        const bottom = row * this.blockSize;
+
+        const coll = i % this.cupSizeInCells.width;
+        const left = coll * this.blockSize;
+
+        const fieldValue = bonuses[i]
+
+        // take field color
+        let f:number = 320 + (fieldValue * 32);
+
+        // update position
+        this._block.setVertices(Vertices.createTextureVerticesArray(
+            left, bottom, this.blockSize, this.blockSize,
+            f, 128, 32, 32
+        ))
+
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+        // gl.drawArrays(gl.TRIANGLES, 0, 6);
+        gl.drawArrays(gl.TRIANGLES, 0, this._block.getVerticesCount());
+      }
+
     }
   }
   

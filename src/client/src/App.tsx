@@ -22,6 +22,7 @@ function App()
               <li>Winner text</li>
               <li>Super blocks</li>
               <li>Show loader until socket connecting</li>
+              <li>Super blocks help</li>
           </ul>
       </div>
   );

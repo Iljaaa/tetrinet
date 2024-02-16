@@ -5,6 +5,9 @@ import {PlayScreen, PlayScreenEventListener} from "./screens/PlayScreen";
 import {WatchScreen} from "./screens/WatchScreen";
 import {CupData} from "./models/CupData";
 
+/**
+ * @version 0.1.0
+ */
 export class Tetrinet extends WebGlGame
 {
   

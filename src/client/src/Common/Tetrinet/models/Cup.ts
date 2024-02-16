@@ -15,7 +15,6 @@ export interface Cup
   setState: (state:CupState) => void
 
   /**
-   * @deprecated use get state
    * All fields array
    */
   getFields: () => Array<number>
@@ -24,6 +23,11 @@ export interface Cup
    * Set fields data
    */
   setFields: (fields:Array<number>) => void
+
+  /**
+   * Super fields array
+   */
+  getBonusFieldsFields(): Array<number>
 
   /**
    * Cup state, this is array of fields

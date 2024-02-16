@@ -45,16 +45,42 @@ export class CupImpl implements Cup
     this._state.state = state;
   }
 
-
-
   /**
    * Clean up field
    */
   cleanFields ()
   {
+    // clear bonuses
+    this._state.bonuses = []
+
+    // clear field
     this._state.fields = new Array<number>(this.widthInCells * this.heightInCells).fill(-1)
 
     // this is from top
+    // temp cup state
+    this._state.fields[150] = 1;
+    this._state.bonuses[150] = 0;
+
+    this._state.fields[160] = 1;
+    this._state.fields[161] = 1;
+    this._state.fields[162] = 1;
+    this._state.fields[165] = 1;
+    this._state.fields[164] = 1;
+    this._state.fields[166] = 1;
+    this._state.fields[167] = 1;
+    this._state.fields[168] = 1;
+    this._state.fields[169] = 1;
+
+    this._state.fields[170] = 1;
+    this._state.fields[171] = 1;
+    this._state.fields[172] = 1;
+    this._state.fields[175] = 1;
+    this._state.fields[174] = 1;
+    this._state.fields[176] = 1;
+    this._state.fields[177] = 1;
+    this._state.fields[178] = 1;
+    this._state.fields[179] = 1;
+
     // temp cup state
     this._state.fields[180] = 1;
     this._state.fields[181] = 1;
@@ -84,7 +110,11 @@ export class CupImpl implements Cup
   setFields(fields: Array<number>): void {
     this._state.fields = fields;
   }
-  
+
+  getBonusFieldsFields():Array<number> {
+    return this._state.bonuses;
+  }
+
   getData = ():CupData => {
     return this._state;
   }
@@ -135,7 +165,7 @@ export class CupImpl implements Cup
    * @param bonusIndex
    */
   addBonusFiled(fIndex: number, bonusIndex: number): void {
-    this._state.fields[fIndex] = bonusIndex
+    this._state.bonuses[fIndex] = bonusIndex
   }
 
   /**

@@ -102,6 +102,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private listener: PlayScreenEventListener|undefined;
 
   /**
+   * Your bonuses
+   * @private
+   */
+  private bonuses: Array<number> = [1];
+
+  /**
    * Temp field for draw fields
    * @private
    */
@@ -297,17 +303,22 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // render cup
     this._cupRenderer?.setCupSize(CupSize.normal32);
+    // todo: move position out of the screen
     this._cupRenderer?.setPosition(32, 32)
     this._cupRenderer?.renderCupWithFigure(this._cup);
     
     // render opponent
     // this._cupRenderer?.setBlockSize(16);
     this._cupRenderer?.setCupSize(CupSize.small16)
+    // todo: move position out of the screen
     this._cupRenderer?.setPosition(400, 32);
     this._cupRenderer?.renderCup(this._opponentCup);
     
     // render next figure
     this.presentNextFigure(gl);
+
+    // render bonus fields
+    this.presentBonuses(gl)
 
     // present interface
     if (this._state === GameState.ready){
@@ -401,7 +412,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
-
   /**
    * Draw next figure
    * @param gl
@@ -470,6 +480,35 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     //   // draw here
     //   gl.drawArrays(gl.TRIANGLES, 0, 6);
     // }
+  }
+
+  private presentBonuses (gl: WebGL2RenderingContext){
+
+    // move cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x + 100, this.nextFigurePosition.y + 100)
+
+    // const fields:Array<Array<boolean>> = this._nextFigure.getPreviewFields();
+
+    const BLOCK_SIZE = 32;
+
+
+    // for (let r = 0; r < rows; r++) {
+    this.bonuses.forEach((value:number, bonusIndex:number) =>
+    {
+      const spriteLeft = 320 + value * BLOCK_SIZE;
+      const left = bonusIndex * BLOCK_SIZE;
+
+      this._block.setVertices(Vertices.createTextureVerticesArray(
+          left, 0, BLOCK_SIZE, BLOCK_SIZE,
+          spriteLeft, 128, BLOCK_SIZE, BLOCK_SIZE
+      ))
+
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+
+      // draw here
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+    })
+
   }
   
   //
@@ -645,15 +684,22 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   /**
    * Callback when line was cleared in the cup
-   * @param countLines
+   * @param data
    */
-  onLineCleared(countLines: number): void
+  onLineCleared(data:{countLines: number, bonuses: number[]}): void
   {
     // call event
-    if (this.listener) this.listener.onLineCleared(countLines);
+    if (this.listener) this.listener.onLineCleared(data.countLines);
+
+    // add bonuses to me
+    if (data.bonuses.length > 0){
+      if (this.bonuses.length < 10) {
+        this.bonuses = this.bonuses.concat(data.bonuses.slice(0, 10 - this.bonuses.length));
+      }
+    }
     
     // add special block
-    // this.addSpecialBlock()
+    this.addSpecialBlock()
   }
   
   /**
@@ -664,26 +710,30 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // collect available places
     const allFields = this._cup.getFields();
     
-    // filter not free
-    let notFreeFieldsIds:Array<number> = [];
-    
-    allFields.forEach((value:number, cellId:number) => {
-      if (value !== -1) notFreeFieldsIds.push(cellId)
+    // find blocks with none
+    let notFreeFieldsIds:Array<number> = []
+    allFields.forEach((value:number, cellId:number) =>
+    {
+      // if it clear field
+      if (value === -1) return
+
+      // clear bonus fields
+      notFreeFieldsIds.push(cellId)
     });
-    
-    console.log(notFreeFieldsIds, 'notFreeFieldsIds')
     
     //
     if (notFreeFieldsIds.length === 0) return
+
+    // random field index
+    const randomFieldIndexInNoFreeFields:number = Math.floor(Math.random() * notFreeFieldsIds.length);
+    const bonusFieldIndex = notFreeFieldsIds[randomFieldIndexInNoFreeFields];
     
-    // todo: take random
-    const randomFieldId = notFreeFieldsIds[0];
-    
-    // random block
-    const b = 333
-    
+    // take random block
+    // now we have only 2 special blocks
+    const b = Math.floor(Math.random() * 2);
+
     // place it
-    this._cup.addBonusFiled(randomFieldId, b)
+    this._cup.addBonusFiled(bonusFieldIndex, b)
   }
   
   /**
@@ -748,13 +798,4 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     return f;
   }
-  
-  /**
-   *
-   * @private
-   */
-
-
-
-  
 }
