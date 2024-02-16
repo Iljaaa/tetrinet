@@ -110,13 +110,8 @@ export class Tetrinet extends WebGlGame
   /**
    * @param bonus
    */
-  realiseBonus(bonus:Bonus)
-  {
-    // todo: add additional blocks
-    switch (bonus) {
-      case Bonus.add: (this.getCurrentScreen() as PlayScreen)?.addRows(1); break;
-      case Bonus.clear: (this.getCurrentScreen() as PlayScreen)?.clearRows(1); break;
-    }
+  realiseBonus(bonus:Bonus)  {
+    (this.getCurrentScreen() as PlayScreen)?.realiseBonus(bonus)
   }
 
   /**

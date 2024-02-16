@@ -720,8 +720,16 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    *
    */
-  private sendBonusToMe (){
-    console.log ('PlayScreen.sendBonusToMe');
+  private sendBonusToMe ()
+  {
+    if (this.bonuses.length === 0) return;
+
+    const firstBonus:Bonus|undefined = this.bonuses.shift();
+    if (firstBonus === undefined) return;
+
+    console.log ('PlayScreen.sendBonusToMe', firstBonus);
+
+    this.realiseBonus(firstBonus)
   }
 
   /**
@@ -741,6 +749,18 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // todo: add opponent index
     this.listener?.onSendBonusToOpponent(firstBonus, 1)
 
+  }
+
+  /**
+   * @param bonus
+   */
+  realiseBonus(bonus:Bonus)
+  {
+    // todo: add additional blocks
+    switch (bonus) {
+      case Bonus.add: this.addRows(1); break;
+      case Bonus.clear: this.clearRows(1); break;
+    }
   }
 
   /**
