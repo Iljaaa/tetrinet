@@ -7,5 +7,6 @@ export enum RequestTypes {
     set = 'set', // this is when cup updated
     pause = 'pause',
     resume = 'resume',
-    addLine = 'addLine'
+    addLine = 'addLine',
+    sendBonus = 'sendBonus',
 }

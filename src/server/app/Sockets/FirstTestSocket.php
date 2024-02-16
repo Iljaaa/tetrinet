@@ -2,8 +2,8 @@
 
 namespace App\Sockets;
 
-use App\Common\Cup;
-use app\Common\CupState;
+use App\Common\BonusType;
+use App\Common\CupState;
 use App\Common\GameState;
 use App\Common\MessageType;
 use App\Common\Party;
@@ -39,7 +39,7 @@ class FirstTestSocket implements MessageComponentInterface
     private Party|null $party = null;
 
     /*
-     * Cup object for sinchronize
+     * Cup object for synchronize
      * @var Cup
      */
     // private Cup $cup;
@@ -52,9 +52,9 @@ class FirstTestSocket implements MessageComponentInterface
     /**
      * @param ConnectionInterface $conn
      * @return void
-     * @throws \Random\RandomException
+     * @throws RandomException
      */
-    public function onOpen(ConnectionInterface $conn)
+    public function onOpen(ConnectionInterface $conn): void
     {
         Log::channel('socket')->info(__METHOD__);
 
@@ -99,7 +99,7 @@ class FirstTestSocket implements MessageComponentInterface
      * this is callback method when all players leave
      * @return void
      */
-    private function onAllPlayersOffline()
+    private function onAllPlayersOffline(): void
     {
         $partyId = $this->party->partyId;
         $this->party = null;
@@ -121,7 +121,6 @@ class FirstTestSocket implements MessageComponentInterface
      * @param ConnectionInterface $conn
      * @param MessageInterface $msg
      * @return void
-     * @throws RandomException
      */
     public function onMessage(ConnectionInterface $conn, MessageInterface $msg):void
     {
@@ -145,6 +144,7 @@ class FirstTestSocket implements MessageComponentInterface
             case MessageType::resume: $this->processResume($conn, $data); break;
             case MessageType::set: $this->processSet($conn, $data); break;
             case MessageType::addLine: $this->processAddLine($conn, $data); break;
+            case MessageType::sendBonus: $this->processSendBonus($conn, $data); break;
         }
 
 
@@ -235,9 +235,8 @@ class FirstTestSocket implements MessageComponentInterface
      * @param ConnectionInterface $connection
      * @param array $data
      * @return void
-     * @throws \Random\RandomException
      */
-    private function processJoinToParty (ConnectionInterface $connection, array $data)
+    private function processJoinToParty (ConnectionInterface $connection, array $data): void
     {
         Log::channel('socket')->info(__METHOD__);
 
@@ -308,7 +307,7 @@ class FirstTestSocket implements MessageComponentInterface
      * @param array $data
      * @return void
      */
-    private function processResume(ConnectionInterface $conn, array $data)
+    private function processResume(ConnectionInterface $conn, array $data): void
     {
         Log::channel('socket')->info(__METHOD__);
 
@@ -328,10 +327,10 @@ class FirstTestSocket implements MessageComponentInterface
      * @param array $data
      * @return void
      */
-    private function processSet (ConnectionInterface $connection, array $data)
+    private function processSet (ConnectionInterface $connection, array $data): void
     {
         // todo: check party id ans if we do not have such party we drop connection
-        // todo: check players and we do not have this connection id in party drop this conection
+        // todo: check players and we do not have this connection id in party drop this connection
 
         // player index in party
         if (!isset($data['partyIndex']) || $data['partyIndex'] == '') {
@@ -371,6 +370,7 @@ class FirstTestSocket implements MessageComponentInterface
 
         // send data to all players
         $this->party->sendToAllPlayers([
+            // todo: use type from type
             'type' => ResponseType::afterSet,
             'responsible' => $partyIndex,
             'state' => $this->party->getGameState(),
@@ -395,7 +395,7 @@ class FirstTestSocket implements MessageComponentInterface
         $target = (int) $data['target'];
         $linesCount = (int) $data['linesCount'];
 
-        Log::channel('socket')->info("command data", [
+        Log::channel('socket')->info("add line", [
             'partyIndex' => $partyIndex,
             'source' => $source,
             'target' => $target,
@@ -403,9 +403,77 @@ class FirstTestSocket implements MessageComponentInterface
         ]);
 
 
-        // here we need playeers for found the opponent and add line to him
+        // here we need players for found the opponent and add line to him
         $players = $this->party->getPlayers();
         Log::channel('socket')->info("party", ['len' => count($players)]);
+
+        // found opponent
+        // todo: refactor it to index
+        $opponent = $this->getOpponent($source);
+
+        // send command to opponent
+        if ($opponent) {
+            $opponent->getConnection()->send(json_encode([
+                // todo: use type from type
+                'type' => static::MESSAGE_ADD_LINE,
+                'source' => $source,
+                'target' => $target,
+                'linesCount' => $linesCount,
+            ]));
+        }
+
+    }
+
+    /**
+     * @param ConnectionInterface $conn
+     * @param array $data
+     * @return void
+     */
+    private function processSendBonus (ConnectionInterface $conn, array $data): void
+    {
+        // send to target player
+        // but, now we have two players and if it not a sender then it opponent
+
+        // player index in party
+        $partyIndex = (int) $data['partyIndex'];
+
+        $source = (int) $data['source'];
+        $target = (int) $data['target'];
+
+        $bonus = BonusType::from((int) $data['bonus']);
+
+        Log::channel('socket')->info("send bonus", [
+            'partyIndex' => $partyIndex,
+            'source' => $source,
+            'target' => $target,
+            'bonus' => $bonus,
+        ]);
+
+        // found opponent
+        // todo: refactor it to index
+        $opponent = $this->getOpponent($source);
+
+        // send command to opponent
+        if ($opponent) {
+            $opponent->getConnection()->send(json_encode([
+                'type' => ResponseType::getBonus,
+                'source' => $source,
+                'target' => $target,
+                'bonus' => $bonus->value
+            ]));
+        }
+
+    }
+
+    /**
+     * @param int $source
+     * @return Player|null
+     */
+    private function getOpponent (int $source):? Player
+    {
+        // here we need players for found the opponent and add line to him
+        $players = $this->party->getPlayers();
+        // Log::channel('socket')->info("party", ['len' => count($players)]);
 
         // this is temporary code
         // we are searching opponent
@@ -417,16 +485,7 @@ class FirstTestSocket implements MessageComponentInterface
             }
         }
 
-        // send command to opponent
-        if ($opponentConnection) {
-            $opponentConnection->getConnection()->send(json_encode([
-                'type' => static::MESSAGE_ADD_LINE,
-                'source' => $source,
-                'target' => $target,
-                'linesCount' => $linesCount,
-            ]));
-        }
-
+        return $opponentConnection;
     }
 
 

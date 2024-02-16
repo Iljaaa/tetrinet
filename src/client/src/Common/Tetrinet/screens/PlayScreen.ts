@@ -22,6 +22,7 @@ import {CupImpl} from "../models/CupImpl";
 import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
 import {GameState} from "../types";
 import {CupState} from "../types/CupState";
+import {Bonus} from "../types/Bonus";
 
 
 /**
@@ -34,12 +35,21 @@ export interface PlayScreenEventListener
    * @param numberOfLines
    */
   onLineCleared: (numberOfLines:number) => void
+
+  /**
+   *
+   */
+  // onSendBonusToMe: () => void,
+
+  /**
+   * Send bonus field to opponent
+   */
+  onSendBonusToOpponent: (bonus:Bonus, opponentIndex:number) => void,
   
   /**
    * Summary event risen when cup data changed
    */
   onCupUpdated: (state:GameState, cupState:CupData) => void
-  
 }
 
 /**
@@ -105,7 +115,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Your bonuses
    * @private
    */
-  private bonuses: Array<number> = [1];
+  // private bonuses: Array<Bonus> = [Bonus.add,Bonus.add,Bonus.add];
+  private bonuses: Array<Bonus> = [Bonus.clear,Bonus.clear,Bonus.clear];
 
   /**
    * Temp field for draw fields
@@ -243,6 +254,20 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   {
     // add lines
     this._cup.addRandomRowBellow(countLines);
+
+    // rise update state callback
+    if (sendState && this.listener) {
+      this.listener.onCupUpdated(this._state, this._cup.getData())
+    }
+  }
+
+  /**
+   * Remove rows
+   */
+  clearRows(countLines:number, sendState: boolean = true)
+  {
+    // add lines
+    this._cup.removeRowsBellow(countLines);
 
     // rise update state callback
     if (sendState && this.listener) {
@@ -526,23 +551,33 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       this.onLeft();
     }
     
-    if (code === "KeyS") {
-      this.onDown();
-    }
-    
     if (code === "KeyQ") {
       this.onRotateCounterClockwise();
     }
-    
-    //
+
     if (code === "KeyE") {
       this.onRotateClockwise();
     }
-    
+
+    if (code === "KeyS") {
+      this.onDown();
+    }
+
     if (code === "Space") {
       
       // drop figure down
       this.onDrop();
+    }
+
+    // me
+    if (code === "Backquote"){
+      this.sendBonusToMe();
+    }
+
+    // to oppenent
+    // todo: compare buttons with components
+    if (code === "Digit1"){
+      this.sendBonusToOpponent();
     }
   }
   
@@ -680,6 +715,32 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private isControlOnline ():boolean {
     return this._state === GameState.running
+  }
+
+  /**
+   *
+   */
+  private sendBonusToMe (){
+    console.log ('PlayScreen.sendBonusToMe');
+  }
+
+  /**
+   * We send surprise to opponent
+   * @private
+   */
+  private sendBonusToOpponent ()
+  {
+    if (this.bonuses.length === 0) return;
+
+    const firstBonus:Bonus|undefined = this.bonuses.shift();
+    if (firstBonus === undefined) return;
+
+    console.log ('PlayScreen.sendBonusToOpponent', firstBonus);
+
+    // rise event
+    // todo: add opponent index
+    this.listener?.onSendBonusToOpponent(firstBonus, 1)
+
   }
 
   /**

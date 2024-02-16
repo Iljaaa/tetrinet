@@ -13,4 +13,5 @@ enum MessageType:string
     case pause = 'pause';
     case resume = 'resume';
     case addLine = 'addLine';
+    case sendBonus = 'sendBonus'; // surprise, surprise mother facker
 }

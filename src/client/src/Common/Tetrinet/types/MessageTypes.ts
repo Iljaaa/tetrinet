@@ -5,5 +5,6 @@ export enum MessageTypes {
   addLine = 'addLine',
   paused = 'paused',
   resumed = 'resumed',
+  getBonus = 'getBonus',
 }
 

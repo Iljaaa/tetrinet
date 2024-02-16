@@ -4,6 +4,9 @@ import {WebGlGame} from "../framework/impl/WebGlGame";
 import {PlayScreen, PlayScreenEventListener} from "./screens/PlayScreen";
 import {WatchScreen} from "./screens/WatchScreen";
 import {CupData} from "./models/CupData";
+import {Bonus} from "./types/Bonus";
+import {LetsPlayMessage} from "./types/messages/LetsPlayMessage";
+import {SetMessage} from "./types/messages";
 
 /**
  * @version 0.1.0
@@ -102,6 +105,18 @@ export class Tetrinet extends WebGlGame
    */
   addRowsToCup(countLineToAdd:number) {
     (this.getCurrentScreen() as PlayScreen)?.addRows(countLineToAdd);
+  }
+
+  /**
+   * @param bonus
+   */
+  realiseBonus(bonus:Bonus)
+  {
+    // todo: add additional blocks
+    switch (bonus) {
+      case Bonus.add: (this.getCurrentScreen() as PlayScreen)?.addRows(1); break;
+      case Bonus.clear: (this.getCurrentScreen() as PlayScreen)?.clearRows(1); break;
+    }
   }
 
   /**

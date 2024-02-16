@@ -175,15 +175,15 @@ export class CupImpl implements Cup
   addRandomRowBellow(countLines:number): void
   {
     for (let i = 0; i < countLines; i++) {
-      this.addOneLine ()
+      this.addOneRandomLineBellow ()
     }
   }
 
   /**
-   * Add one line
+   * Add one random line
    * @private
    */
-  private addOneLine ()
+  private addOneRandomLineBellow ()
   {
     //
     this.moveCupUp();
@@ -223,9 +223,81 @@ export class CupImpl implements Cup
           this._state.fields[indexOfBlockAbove] = this._state.fields[currentBlockIndex]; // -1 it's mean that fiend if empty that we move them down
           this._state.fields[currentBlockIndex] = -1;
         }
+
+        // move bonus fields
+        if (this._state.bonuses[currentBlockIndex] > -1) {
+          this._state.bonuses[indexOfBlockAbove] = this._state.bonuses[currentBlockIndex]; // -1 it's mean that fiend if empty that we move them down
+          this._state.bonuses[currentBlockIndex] = -1;
+        }
       }
     }
   }
-  
-  
+
+  /**
+   * Remove rows bellow cup
+   */
+  removeRowsBellow(countLines:number):void
+  {
+    for (let i = 0; i < countLines; i++) {
+      this.removeOneRowBelow ()
+    }
+  }
+
+  /**
+   *
+   */
+  private removeOneRowBelow()
+  {
+    // clear line
+    this.clearBottomLine();
+
+    // move cup down
+    this.moveCupDown();
+  }
+
+  private clearBottomLine()
+  {
+    const rowIndex = this.heightInCells - 1;
+    for (let col = 0; col < this.widthInCells; col++)
+    {
+      const blockIndex = this.getCellIndexByCoords({x: col, y: rowIndex})
+      this._state.fields[blockIndex] = -1;
+
+      //
+      if (this._state.bonuses[blockIndex] !== -1) {
+        this._state.bonuses[blockIndex] = -1;
+      }
+    }
+  }
+
+  /**
+   * Move all lines up
+   */
+  private moveCupDown ()
+  {
+    // move cup up
+    for (let row = this.heightInCells -1; row >= 0; row--)
+    {
+      for (let col = 0; col < this.widthInCells; col++)
+      {
+        const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
+
+        // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
+        const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
+
+        // if there is a block we move them above
+        if (this._state.fields[indexOfBlockAbove] > -1) {
+          this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
+          this._state.fields[indexOfBlockAbove] = -1;
+        }
+
+        // move bonus fields
+        if (this._state.bonuses[indexOfBlockAbove] > -1) {
+          this._state.bonuses[currentBlockIndex] = this._state.bonuses[indexOfBlockAbove];
+          this._state.bonuses[indexOfBlockAbove] = -1;
+        }
+      }
+    }
+  }
+
 }

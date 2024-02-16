@@ -19,6 +19,9 @@ import sprite from "./sprite.png"
 import {ResumedMessage} from "./Common/Tetrinet/types/messages/ResumedMessage";
 import {PausedMessage} from "./Common/Tetrinet/types/messages/PausedMessage";
 import {LetsPlayMessage} from "./Common/Tetrinet/types/messages/LetsPlayMessage";
+import {Bonus} from "./Common/Tetrinet/types/Bonus";
+import {SendBonusRequest} from "./Common/Tetrinet/types/requests/SendBonusRequest";
+import {GetBonusMessage} from "./Common/Tetrinet/types/messages/GetBonusMessage";
 
 type State =
 {
@@ -122,6 +125,23 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     }
   }
 
+  onSendBonusToOpponent (bonus:Bonus, opponentIndex:number){
+    console.log('Canvas.onSendBonusToOpponent', bonus, opponentIndex)
+
+
+    // send command
+    const data:SendBonusRequest = {
+      type: RequestTypes.sendBonus,
+      partyId: this.state.partyId,
+      partyIndex: this.partyIndex as number,
+      source: this.partyIndex as number, // now this is same that partyIndex
+      target: opponentIndex, //
+      bonus: bonus
+    }
+
+    SocketSingletone.getInstance()?.sendData(data)
+  }
+
   /**
    *
    */
@@ -200,6 +220,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // request data
     const request:PauseRequest = {
       type: RequestTypes.pause,
+      partyId: this.state.partyId,
+      partyIndex: this.partyIndex as number,
       initiator: this.partyIndex as number
     }
 
@@ -217,6 +239,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // request data
     const request:ResumeRequest = {
       type: RequestTypes.resume,
+      partyId: this.state.partyId,
+      partyIndex: this.partyIndex as number,
       initiator: this.partyIndex as number
     }
 
@@ -237,7 +261,11 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // open socket connection
     // this.socket = new Socket();
     SocketSingletone.reOpenConnection(() => {
-      const request:StartRequest = {type: RequestTypes.join}
+      const request:StartRequest = {
+        type: RequestTypes.join,
+        partyId: "",
+        partyIndex: -1
+      }
       // SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
 
       // set listener when game starts
@@ -327,7 +355,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       case MessageTypes.afterSet: this.processAfterSet(data as SetMessage); break;
       // we receive add line command
       case MessageTypes.addLine: this.processAddLine(data as AddLineMessage); break;
-
+      case MessageTypes.getBonus: this.processGetBonus(data as GetBonusMessage); break;
       case MessageTypes.paused: this.processPause(data as PausedMessage); break;
       case MessageTypes.resumed: this.processResume(data as ResumedMessage); break;
     }
@@ -383,6 +411,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   processAddLine(data:AddLineMessage) {
     this.game.addRowsToCup(data.linesCount);
+  }
+
+  processGetBonus (data:GetBonusMessage) {
+    this.game.realiseBonus(data.bonus);
   }
 
   processPause(data:PausedMessage) {

@@ -66,19 +66,25 @@ export interface Cup
   getHeightInCells: () => number
 
   /**
+   * @param filedIndex
+   * @param bonusIndex
+   */
+  addBonusFiled: (filedIndex:number, bonusIndex:number) => void;
+
+  /*
+   *
+   */
+  // blowRandomField() => void
+
+  /**
    * Add random row below in cup
    * @param countLines Number of lines to add
    */
   addRandomRowBellow: (countLines:number) => void
 
   /**
-   * @param filedIndex
-   * @param bonusIndex
+   * Remove rows from bottom of cup
+   * @param countLines Number of lines to add
    */
-  addBonusFiled: (filedIndex:number, bonusIndex:number) => void;
-
-  /**
-   *
-   */
-  // blowRandomField() => void
+  removeRowsBellow: (countLines:number) => void
 }
