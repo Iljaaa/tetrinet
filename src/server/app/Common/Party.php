@@ -2,7 +2,7 @@
 
 namespace App\Common;
 
-// use Random\RandomException;
+use App\Common\Types\PlayerState;
 use Ratchet\ConnectionInterface;
 
 /**
@@ -37,16 +37,9 @@ class Party
     /**
      * @throws RandomException
      */
-    public function __construct ()
-    {
+    public function __construct () {
         // generate party id
         $this->partyId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
-
-        // add host tp party
-        // $this->players[] = $hostConnection;
-
-        // create cup for host
-        // $this->cups[] = new Cup();
     }
 
     /**
@@ -59,16 +52,26 @@ class Party
     {
         $this->players[] = new Player($connection);
         return array_search($connection, $this->players);
-
-        // $playerIndexInTheParty = array_search($connection, $this->players);
-
-        // create cup for player
-        // $this->cups[$playerIndexInTheParty] = new Cup();
-
-        // return $playerIndexInTheParty;
     }
 
     /**
+     * Is party has connection
+     * @param ConnectionInterface $conn
+     * @return bool
+     */
+    public function isConnectionBelongs (ConnectionInterface $conn): bool
+    {
+        foreach ($this->players as $p) {
+            if ($p->getConnectionId() == $conn->socketId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * todo: refactor to socketId
      * @param int $partyIndex
      * @param array $cup cup info from request
      * @return void
@@ -76,7 +79,6 @@ class Party
     public function setCupByPartyIndex(int $partyIndex, array $cup): void
     {
         // update cup data
-        // $this->cups[$partyIndex]->updateByData($cup);
         $this->players[$partyIndex]->updateCup($cup);
     }
 
@@ -98,8 +100,7 @@ class Party
     /**
      * @return Player[]
      */
-    public function getPlayers (): array
-    {
+    public function getPlayers (): array {
         return $this->players;
     }
 
@@ -107,8 +108,7 @@ class Party
      * Pause game
      * @return void
      */
-    public function pause ():void
-    {
+    public function pause ():void {
         $this->state = GameState::paused;
     }
 
@@ -116,16 +116,14 @@ class Party
      * @param GameState $state
      * @return void
      */
-    public function setGameState(GameState $state): void
-    {
+    public function setGameState(GameState $state): void {
         $this->state = $state;
     }
 
     /**
      * @return GameState
      */
-    public function getGameState(): GameState
-    {
+    public function getGameState(): GameState {
         return $this->state;
     }
 
@@ -135,7 +133,7 @@ class Party
      * @param ConnectionInterface $conn
      * @return void
      */
-    public function onConnectionClose(ConnectionInterface $conn, callable $onTerminate)
+    public function onConnectionClose(ConnectionInterface $conn, callable $onTerminate): void
     {
         foreach ($this->players as $p) {
             if ($p->getConnection() === $conn) {

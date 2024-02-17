@@ -2,6 +2,8 @@
 
 namespace App\Common;
 
+use App\Common\Types\CupState;
+
 /**
  * This is one class
  */

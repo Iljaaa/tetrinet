@@ -612,6 +612,16 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
     );
 
     public static $classMap = array (
+        'App\\Common\\Cup' => __DIR__ . '/../..' . '/app/Common/Cup.php',
+        'App\\Common\\GameState' => __DIR__ . '/../..' . '/app/Common/GameState.php',
+        'App\\Common\\Party' => __DIR__ . '/../..' . '/app/Common/Party.php',
+        'App\\Common\\Player' => __DIR__ . '/../..' . '/app/Common/Player.php',
+        'App\\Common\\Types\\BonusType' => __DIR__ . '/../..' . '/app/Common/Types/BonusType.php',
+        'App\\Common\\Types\\CupState' => __DIR__ . '/../..' . '/app/Common/Types/CupState.php',
+        'App\\Common\\Types\\MessageType' => __DIR__ . '/../..' . '/app/Common/Types/MessageType.php',
+        'App\\Common\\Types\\PlayerState' => __DIR__ . '/../..' . '/app/Common/Types/PlayerState.php',
+        'App\\Common\\Types\\ResponseType' => __DIR__ . '/../..' . '/app/Common/Types/ResponseType.php',
+        'App\\Console\\Commands\\Server' => __DIR__ . '/../..' . '/app/Console/Commands/Server.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
@@ -630,7 +640,9 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
+        'App\\Providers\\MyCustomAppProvider' => __DIR__ . '/../..' . '/app/Providers/MyCustomAppProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
+        'App\\Sockets\\FirstTestSocket' => __DIR__ . '/../..' . '/app/Sockets/FirstTestSocket.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'BeyondCode\\LaravelWebSockets\\Apps\\App' => __DIR__ . '/..' . '/beyondcode/laravel-websockets/src/Apps/App.php',
         'BeyondCode\\LaravelWebSockets\\Apps\\AppProvider' => __DIR__ . '/..' . '/beyondcode/laravel-websockets/src/Apps/AppProvider.php',

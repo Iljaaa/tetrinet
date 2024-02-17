@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Common;
+namespace App\Common\Types;
 
 /**
  * Type messages received from client

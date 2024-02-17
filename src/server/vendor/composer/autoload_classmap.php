@@ -6,6 +6,16 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Common\\Cup' => $baseDir . '/app/Common/Cup.php',
+    'App\\Common\\GameState' => $baseDir . '/app/Common/GameState.php',
+    'App\\Common\\Party' => $baseDir . '/app/Common/Party.php',
+    'App\\Common\\Player' => $baseDir . '/app/Common/Player.php',
+    'App\\Common\\Types\\BonusType' => $baseDir . '/app/Common/Types/BonusType.php',
+    'App\\Common\\Types\\CupState' => $baseDir . '/app/Common/Types/CupState.php',
+    'App\\Common\\Types\\MessageType' => $baseDir . '/app/Common/Types/MessageType.php',
+    'App\\Common\\Types\\PlayerState' => $baseDir . '/app/Common/Types/PlayerState.php',
+    'App\\Common\\Types\\ResponseType' => $baseDir . '/app/Common/Types/ResponseType.php',
+    'App\\Console\\Commands\\Server' => $baseDir . '/app/Console/Commands/Server.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
@@ -24,7 +34,9 @@ return array(
     'App\\Providers\\AuthServiceProvider' => $baseDir . '/app/Providers/AuthServiceProvider.php',
     'App\\Providers\\BroadcastServiceProvider' => $baseDir . '/app/Providers/BroadcastServiceProvider.php',
     'App\\Providers\\EventServiceProvider' => $baseDir . '/app/Providers/EventServiceProvider.php',
+    'App\\Providers\\MyCustomAppProvider' => $baseDir . '/app/Providers/MyCustomAppProvider.php',
     'App\\Providers\\RouteServiceProvider' => $baseDir . '/app/Providers/RouteServiceProvider.php',
+    'App\\Sockets\\FirstTestSocket' => $baseDir . '/app/Sockets/FirstTestSocket.php',
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'BeyondCode\\LaravelWebSockets\\Apps\\App' => $vendorDir . '/beyondcode/laravel-websockets/src/Apps/App.php',
     'BeyondCode\\LaravelWebSockets\\Apps\\AppProvider' => $vendorDir . '/beyondcode/laravel-websockets/src/Apps/AppProvider.php',

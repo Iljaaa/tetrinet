@@ -2,13 +2,14 @@
 
 namespace App\Sockets;
 
-use App\Common\BonusType;
-use App\Common\CupState;
+use app\Common\Connection;
+use App\Common\Types\BonusType;
+use App\Common\Types\CupState;
 use App\Common\GameState;
-use App\Common\MessageType;
+use App\Common\Types\MessageType;
 use App\Common\Party;
 use App\Common\Player;
-use App\Common\ResponseType;
+use App\Common\Types\ResponseType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Ratchet\ConnectionInterface;
@@ -28,7 +29,7 @@ class FirstTestSocket implements MessageComponentInterface
 
     /**
      * Pool of player for play
-     * @var ConnectionInterface[]
+     * @var Connection[]
      */
     private array $duelPlayersPool = [];
 
@@ -68,7 +69,7 @@ class FirstTestSocket implements MessageComponentInterface
      */
     public function onClose(ConnectionInterface $conn): void
     {
-        Log::channel('socket')->info(__METHOD__);
+        Log::channel('socket')->info(__METHOD__, ['socketId' =>  $conn->socketId]);
 
         // looking for connection in players pool
         $index = array_search($conn, $this->duelPlayersPool);
@@ -81,7 +82,7 @@ class FirstTestSocket implements MessageComponentInterface
 
         // when connection closed we mark party as paused
         // todo: refactor to many parties
-        if ($this->party)
+        if ($this->party && $this->party->isConnectionBelongs($conn))
         {
             // set party on pause
             $this->party->pause();

@@ -2,6 +2,7 @@
 
 namespace App\Common;
 
+use App\Common\Types\PlayerState;
 use Ratchet\ConnectionInterface;
 
 /**
@@ -40,6 +41,18 @@ class Player
         return $this->connetion;
     }
 
+    /**
+     * Get socket is from connection
+     * @return string
+     */
+    public function getConnectionId(): string
+    {
+        return $this->connetion->socketId;
+    }
+
+    /**
+     * @return Cup
+     */
     public function getCup(): Cup
     {
         return $this->cup;
