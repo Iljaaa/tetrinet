@@ -1,4 +1,4 @@
-import {Socket} from "./Socket";
+import {Socket} from "./Socket/Socket";
 
 /**
  *

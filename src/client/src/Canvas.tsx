@@ -12,7 +12,7 @@ import {Assets} from "./Common/Tetrinet/Assets";
 import {PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupData} from "./Common/Tetrinet/models/CupData";
 import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
-import {SocketSingletone} from "./Common/Socket/SocketSingletone";
+import {SocketSingletone} from "./Common/SocketSingletone";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 
 import sprite from "./sprite.png"
@@ -22,6 +22,7 @@ import {LetsPlayMessage} from "./Common/Tetrinet/types/messages/LetsPlayMessage"
 import {Bonus} from "./Common/Tetrinet/types/Bonus";
 import {SendBonusRequest} from "./Common/Tetrinet/types/requests/SendBonusRequest";
 import {GetBonusMessage} from "./Common/Tetrinet/types/messages/GetBonusMessage";
+import {TetrinetSingleton} from "./Common/TetrinetSingleton";
 
 type State =
 {
@@ -63,7 +64,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * Game object
    * @private
    */
-  private game:Tetrinet;
+  // private game:Tetrinet;
 
   /**
    * State
@@ -110,7 +111,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // create game
     // this.game =  new PlayScreen();
-    this.game = new Tetrinet()
+    // this.game = new Tetrinet()
+    TetrinetSingleton.init();
     
     // generate user id
   }
@@ -190,13 +192,15 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
      * bind controller events
      * i'm not sure that initialization must be here
      */
-    this.game.getInput().bind();
-    
+    // this.game.getInput().bind();
+    TetrinetSingleton.getInstance().getInput().bind();
+
     /**
      * Init game graphics
      */
-    this.game.initGraphic(this._canvas.current as HTMLCanvasElement)
-    
+    // this.game.initGraphic(this._canvas.current as HTMLCanvasElement)
+    TetrinetSingleton.getInstance().initGraphic(this._canvas.current as HTMLCanvasElement)
+
     // start loading assets
     Assets.load(sprite, () =>
     {
@@ -205,8 +209,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       console.log ('Assets loaded, updates graphics');
       
       //
-      const gl:WebGL2RenderingContext|null = this.game.getGLGraphics().getGl();
-      
+      // const gl:WebGL2RenderingContext|null = this.game.getGLGraphics().getGl();
+      const gl:WebGL2RenderingContext|null = TetrinetSingleton.getInstance().getGLGraphics().getGl();
+
       // bind this texture
       Assets.sprite.bind(gl)
       
@@ -227,7 +232,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   componentWillUnmount()
   {
     // unbind events
-    this.game.getInput().unBind();
+    // this.game.getInput().unBind();
+    TetrinetSingleton.getInstance().getInput().unBind();
   }
   
   /**
@@ -242,10 +248,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     SocketSingletone.openConnection(() =>
     {
       // prepare
-      this.game.prepareToGame(this)
-      
+      // this.game.prepareToGame(this)
+      TetrinetSingleton.getInstance().prepareToGame(this)
+
       // when socket open we start game
-      this.game.playGame();
+      // this.game.playGame();
+      TetrinetSingleton.getInstance().playGame();
     })
   }
 
@@ -330,7 +338,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     SocketSingletone.getInstance()?.setListener(this);
 
     // when socket open prepare to game
-    this.game.prepareToGame(this);
+    // this.game.prepareToGame(this);
+    TetrinetSingleton.getInstance().prepareToGame(this);
   }
   
   onWatchClicked = () =>
@@ -347,7 +356,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // send start party
       SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, (data) => {
         // when socket open we start game
-        this.game.watchGame();
+        // this.game.watchGame();
+        TetrinetSingleton.getInstance().watchGame();
       })
     })
     
@@ -437,7 +447,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     });
 
     // start game
-    this.game.playGame();
+    // this.game.playGame();
+    TetrinetSingleton.getInstance().playGame();
   }
 
   /**
@@ -451,7 +462,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
     // is this is game over
     if (data.state === GameState.over){
-      this.game.setGameOver();
+      // this.game.setGameOver();
+      TetrinetSingleton.getInstance().setGameOver();
     }
 
     // find opponent key
@@ -460,7 +472,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     })
 
     // todo: update other cups
-    if (opponentKey) this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
+    if (opponentKey) {
+      // this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
+      TetrinetSingleton.getInstance().setOpponentCup(data.cups[parseInt(opponentKey)]);
+    }
   }
 
   /**
@@ -468,21 +483,25 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * @param data
    */
   processAddLine(data:AddLineMessage) {
-    this.game.addRowsToCup(data.linesCount);
+    // this.game.addRowsToCup(data.linesCount);
+    TetrinetSingleton.getInstance().addRowsToCup(data.linesCount);
   }
 
   processGetBonus (data:GetBonusMessage) {
-    this.game.realiseBonus(data.bonus);
+    // this.game.realiseBonus(data.bonus);
+    TetrinetSingleton.getInstance().realiseBonus(data.bonus);
   }
 
   processPause(data:PausedMessage) {
     this.setState({currentGameState: GameState.paused})
-    this.game.pauseGame()
+    // this.game.pauseGame()
+    TetrinetSingleton.getInstance().pauseGame()
   }
 
   processResume(data:ResumedMessage) {
     this.setState({currentGameState: GameState.running})
-    this.game.resumeGame();
+    // this.game.resumeGame();
+    TetrinetSingleton.getInstance().resumeGame();
   }
 
   render () {

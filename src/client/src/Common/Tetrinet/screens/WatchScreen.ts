@@ -5,7 +5,7 @@ import {CupRenderer2} from "../CupRenderer2";
 
 import {CupImpl} from "../models/CupImpl";
 import {SocketEventListener} from "../../Socket/SocketEventListener";
-import {SocketSingletone} from "../../Socket/SocketSingletone";
+import {SocketSingletone} from "../../SocketSingletone";
 
 /*
  * How often we request data
