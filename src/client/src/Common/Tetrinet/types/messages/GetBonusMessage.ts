@@ -1,4 +1,3 @@
-import {GameState} from "../../types";
 import {Message} from "./Message";
 import {Bonus} from "../Bonus";
 
@@ -8,14 +7,16 @@ import {Bonus} from "../Bonus";
 export interface GetBonusMessage extends Message
 {
     /**
-     * Index of cup who send it
+     * Player socket id who send a bonus
+     * this field not use in logic
      */
-    source: number,
+    source: string,
 
     /**
-     * Index of cup who is the target
+     * Player who receive bonus
+     * this field not use in logic, because a server responsible for this
      */
-    target: number,
+    target: string,
 
     /**
      * With one bonus receive

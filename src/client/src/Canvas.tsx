@@ -44,6 +44,11 @@ type State =
    * Index inside party
    */
   partyIndex?: number
+
+  /**
+   * this is your socket id
+   */
+  socketId: string
 }
 
 export class Canvas extends React.PureComponent<{}, State> implements PlayScreenEventListener, SocketEventListener
@@ -65,8 +70,15 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   public state:State = {
     partyId: "",
+    socketId: "",
     score: 0
   }
+
+  /**
+   * Party id
+   * we should use it here not from state
+   */
+  // private partyId: string
 
   /**
    * This is the main party index,
@@ -74,7 +86,19 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * @private
    */
   private partyIndex:number|null = null;
-  
+
+  /**
+   * This is id of your socket
+   * received when you start search party
+   * @private
+   */
+  private socketId:string|null = null;
+
+  /**
+   * This is mapping keys to index inside party
+   */
+  private partyIndexToSocketId:Array<string> = [];
+
   constructor(props: { }, context: any)
   {
     super(props, context);
@@ -101,10 +125,11 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.setState({score: this.state.score + ((countLines + countLines - 1) * 10) })
 
     // send request to add lines to opponent
-    this.sendAddLineToOpponent(countLines);
+    // this.sendAddLineToOpponent(countLines);
   }
 
   /**
+   * @deprecated
    * Here we send request to opponent to add few rows
    */
   sendAddLineToOpponent (countClearedLines:number) {
@@ -125,9 +150,21 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     }
   }
 
-  onSendBonusToOpponent (bonus:Bonus, opponentIndex:number){
+  /**
+   * Send a request with gift
+   * @param bonus
+   * @param opponentIndex
+   */
+  onSendBonusToOpponent (bonus:Bonus, opponentIndex:number)
+  {
     console.log('Canvas.onSendBonusToOpponent', bonus, opponentIndex)
 
+    // try to fine opponent socket id in the party
+    const targetSocketId = this.partyIndexToSocketId[opponentIndex]
+    console.log('targetSocketId', targetSocketId)
+
+    // when opponent not found
+    if (!targetSocketId) return;
 
     // send command
     const data:SendBonusRequest = {
@@ -136,6 +173,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       partyIndex: this.partyIndex as number,
       source: this.partyIndex as number, // now this is same that partyIndex
       target: opponentIndex, //
+      sourceSocketId: this.socketId ?? '',
+      targetSocketId: targetSocketId,
       bonus: bonus
     }
 
@@ -261,20 +300,17 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // open socket connection
     // this.socket = new Socket();
     SocketSingletone.reOpenConnection(() => {
+
+      // send handshake and waiting our data
       const request:StartRequest = {
         type: RequestTypes.join,
         partyId: "",
-        partyIndex: -1
+        partyIndex: -1,
       }
-      // SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
 
-      // set listener when game starts
-      SocketSingletone.getInstance()?.setListener(this);
+      SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
 
-      // when socket open prepare to game
-      this.game.prepareToGame(this);
-
-      SocketSingletone.getInstance()?.sendData(request)
+      // SocketSingletone.getInstance()?.sendData(request)
     })
   }
 
@@ -282,21 +318,20 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * When answer to join received
    * @param data
    */
-  // onJoinResponse = (data:StartResponse) =>
-  // {
-  //   console.log ('onJoinResponse', data);
-  //
-  //   // this.setState({
-  //   //   partyId: data.partyId,
-  //   //   partyIndex: data.yourIndex
-  //   // });
-  //
-  //   // when socket open we start game
-  //   this.game.prepareToGame(this);
-  //
-  //   // set listener when game starts
-  //   SocketSingletone.getInstance()?.setListener(this);
-  // }
+  onJoinResponse = (data:StartResponse) =>
+  {
+    // todo here we get a socketId
+    console.log ('onJoinResponse', data);
+
+    this.socketId = data.yourSocketId
+    this.setState({socketId: data.yourSocketId})
+
+    // set listener when game starts
+    SocketSingletone.getInstance()?.setListener(this);
+
+    // when socket open prepare to game
+    this.game.prepareToGame(this);
+  }
   
   onWatchClicked = () =>
   {
@@ -341,7 +376,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is callback method from socket
    * it is here because we need to get event that party starts
-   * todo: move events listener to play screen
    * @param data
    */
   onMessageReceive(data: Message): void
@@ -367,10 +401,34 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   processLetsPlay (data:LetsPlayMessage)
   {
-    console.log ('Canvas.processLetsPlay');
+    console.log ('Canvas.processLetsPlay', data);
 
     // save party index
+    // todo: remove party index, and remake it on socketID
     this.partyIndex = data.yourIndex
+
+    //
+    let myIndexInTheParty:number|null = null;
+
+    //
+    this.partyIndexToSocketId = [];
+
+    // map opponents key
+    Object.keys(data.party).forEach((p:string) => {
+      const arrayKey = parseInt(p)
+      const it = data.party[arrayKey]
+      if (it.socketId === this.socketId) myIndexInTheParty = arrayKey
+      else {
+        // we start from 1
+        this.partyIndexToSocketId[this.partyIndexToSocketId.length + 1] = it.socketId
+      }
+    })
+
+    console.info('Your index in the party:', myIndexInTheParty);
+    console.log(this.partyIndexToSocketId, 'this.partyIndexToSocketId');
+
+    // calculate my index in the party
+    // also calculate map of indexes with socketId
 
     // save party data
     this.setState({
@@ -447,9 +505,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
         <div>
           <div style={{display: "flex", alignItems: "center"}}>
             <div>score <b>{this.state.score}</b></div>
-            <div style={{margin: "0 0 0 1rem"}}>state <b>{this.state.currentGameState}</b></div>
+            <div style={{margin: "0 0 0 1rem"}}>state: <b>{this.state.currentGameState}</b></div>
             <div style={{margin: "0 0 0 1rem"}}>party id: <b>{this.state.partyId}</b></div>
             <div style={{margin: "0 0 0 1rem"}}>party index: <b>{this.state.partyIndex}</b></div>
+            <div style={{margin: "0 0 0 1rem"}}>socket id: <b>{this.state.socketId}</b></div>
           </div>
         </div>
       </div>

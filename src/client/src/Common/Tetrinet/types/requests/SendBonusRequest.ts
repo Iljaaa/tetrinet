@@ -2,7 +2,29 @@ import {Request} from "./Request";
 import {Bonus} from "../Bonus";
 
 export interface SendBonusRequest extends Request {
-    source: number, // now this is same that partyIndex
-    target: number, // target should be selected player, but now we have only two players
+
+    /**
+     * @deprecated because we should use sourceSocketId
+     * now this is same that partyIndex
+     */
+    source: number,
+
+    /**
+     * @deprecated this old type of select opponent, now we use targetSocketId
+     * target should be selected player, but now we have only two players
+     */
+    target: number,
+
+    /**
+     * this is your socket id
+     */
+    sourceSocketId: string
+
+    /**
+     * Target player socket id
+     */
+    targetSocketId: string
+
+
     bonus: Bonus
 }

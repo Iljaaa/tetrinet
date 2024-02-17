@@ -20,7 +20,7 @@ function App()
           <li>Prepare eight people party</li>
           <li>Winner text</li>
           <li>extend Super blocks</li>
-          <li>Set bonuses nice</li>
+          <li>Display bonuses nice</li>
           <li>Create party for many peoples</li>
           <li>refactor terinet to singletone</li>
           <li>stop game when connetion is lost</li>
@@ -31,6 +31,7 @@ function App()
           <li>client alert when connection lost</li>
           <li>save lost connection into store</li>
           <li>pretty message that the we cannot connect to server</li>
+          <li>There the bug: if you send bonus to not existing opponent, the bonus just disappear. We should first check that opponent exists and only then send bonus</li>
         </ul>
       </div>
     </div>

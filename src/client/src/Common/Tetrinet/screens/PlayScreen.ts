@@ -539,7 +539,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   //
   // key events
   //
-  
+
+  /**
+   * todo: refactor to case
+   * @param code
+   */
   onKeyDown(code:string): void
   {
     // transfer events
@@ -575,10 +579,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
 
     // to oppenent
-    // todo: compare buttons with components
-    if (code === "Digit1"){
-      this.sendBonusToOpponent();
-    }
+    if (code === "Digit1") this.sendBonusToOpponent(1);
+    if (code === "Digit2") this.sendBonusToOpponent(2);
+    if (code === "Digit3") this.sendBonusToOpponent(3);
+    if (code === "Digit4") this.sendBonusToOpponent(4);
+    if (code === "Digit5") this.sendBonusToOpponent(5);
+    if (code === "Digit6") this.sendBonusToOpponent(6);
+    if (code === "Digit7") this.sendBonusToOpponent(7);
+    if (code === "Digit8") this.sendBonusToOpponent(8);
+    if (code === "Digit9") this.sendBonusToOpponent(9);
   }
   
   onKeyUp(code:string): void {
@@ -734,9 +743,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   /**
    * We send surprise to opponent
+   * todo: strange bug, because we do not
    * @private
    */
-  private sendBonusToOpponent ()
+  private sendBonusToOpponent (indexOfOpponent:number)
   {
     if (this.bonuses.length === 0) return;
 
@@ -747,7 +757,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // rise event
     // todo: add opponent index
-    this.listener?.onSendBonusToOpponent(firstBonus, 1)
+    this.listener?.onSendBonusToOpponent(firstBonus, indexOfOpponent)
 
   }
 

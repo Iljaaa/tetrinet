@@ -1,7 +1,7 @@
 import {Request} from "./Request";
 
 /**
- * Start play server request
+ * Search game request
  */
 export interface StartRequest extends Request {
 
