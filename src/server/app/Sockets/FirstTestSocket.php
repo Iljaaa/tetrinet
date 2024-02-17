@@ -30,24 +30,15 @@ class FirstTestSocket implements MessageComponentInterface
      * Pool of player for play
      * @var ConnectionInterface[]
      */
-    private array $playersPool = [];
+    private array $duelPlayersPool = [];
+
 
     /**
      * This is play party
+     * todo: make pool of parties
      * @var Party|null
      */
     private Party|null $party = null;
-
-    /*
-     * Cup object for synchronize
-     * @var Cup
-     */
-    // private Cup $cup;
-
-//    public function __construct()
-//    {
-//        // $this->cup = new Cup();
-//    }
 
     /**
      * @param ConnectionInterface $conn
@@ -79,7 +70,17 @@ class FirstTestSocket implements MessageComponentInterface
     {
         Log::channel('socket')->info(__METHOD__);
 
+        // looking for connection in players pool
+        $index = array_search($conn, $this->duelPlayersPool);
+        if ($index > -1) {
+            Log::channel('socket')->info('connection found in duel pull', ['index' => $index, 'size' => count($this->duelPlayersPool)]);
+            // filter from pool out connection
+            $this->duelPlayersPool = array_filter($this->duelPlayersPool, fn (ConnectionInterface $c) =>  $c != $conn);
+            Log::channel('socket')->info('after filter', ['size' => count($this->duelPlayersPool)]);
+        }
+
         // when connection closed we mark party as paused
+        // todo: refactor to many parties
         if ($this->party)
         {
             // set party on pause
@@ -90,13 +91,13 @@ class FirstTestSocket implements MessageComponentInterface
                 'state' => $this->party->getGameState()
             ]);
 
-            //
+            // mark in party that user lost connection
             $this->party->onConnectionClose($conn, fn() => $this->onAllPlayersOffline());
         }
     }
 
     /**
-     * this is callback method when all players leave
+     * this is callback method when all players leave the party and it destoyed
      * @return void
      */
     private function onAllPlayersOffline(): void
@@ -146,32 +147,6 @@ class FirstTestSocket implements MessageComponentInterface
             case MessageType::addLine: $this->processAddLine($conn, $data); break;
             case MessageType::sendBonus: $this->processSendBonus($conn, $data); break;
         }
-
-
-        // start new party
-//        if ($data['type'] == 'start') {
-//            Log::channel('socket')->info("type:start");
-//            $this->processStartParty($conn, $data);
-//        }
-
-//        if ($data['type'] == 'join') {
-//            Log::channel('socket')->info("type:start");
-//            $this->processJoinToParty($conn, $data);
-//        }
-
-        // save player cup
-//        if ($data['type'] == 'set')
-//        {
-//            Log::channel('socket')->info("type:set", $data);
-//            $this->processSet($conn, $data);
-//        }
-
-        // add line to opponent
-//        if ($data['type'] == static::MESSAGE_ADD_LINE)
-//        {
-//            Log::channel('socket')->info("type:".static::MESSAGE_ADD_LINE, $data);
-//            $this->processAddLine($conn, $data);
-//        }
 
         // deprecated method
         if ($data['type'] == 'play' && !empty($data['cup']))
@@ -240,21 +215,25 @@ class FirstTestSocket implements MessageComponentInterface
     {
         Log::channel('socket')->info(__METHOD__);
 
+        // todo: check type of game and move to this pull
+
         // add player to pool
-        $this->playersPool[] = $connection;
+        $this->duelPlayersPool[] = $connection;
+        Log::channel('socket')->info('connection added to duel pool', ['poolSize' => count($this->duelPlayersPool)]);
 
         // only two players and the pull is full
-        if (count($this->playersPool) >= 2)
+        if (count($this->duelPlayersPool) >= 2)
         {
             $this->party = new Party();
 
             // move players to party
-            foreach ($this->playersPool as $p) {
+            foreach ($this->duelPlayersPool as $p) {
                 $this->party->addPlayer($p);
             }
 
             // clean up pull
-            $this->playersPool = [];
+            // todo: may be remove only added connections
+            $this->duelPlayersPool = [];
 
             // run game
             $this->party->setGameState(GameState::running);

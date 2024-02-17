@@ -19,10 +19,18 @@ function App()
         <ul>
           <li>Prepare eight people party</li>
           <li>Winner text</li>
-          <li>Super blocks</li>
-          <li>Show loader until socket connecting</li>
-          <li>Super blocks help</li>
+          <li>extend Super blocks</li>
           <li>Set bonuses nice</li>
+          <li>Create party for many peoples</li>
+          <li>refactor terinet to singletone</li>
+          <li>stop game when connetion is lost</li>
+          <li>stop game when focus is lost</li>
+          <li>prety search a game</li>
+          <li>create party</li>
+          <li>watch</li>
+          <li>client alert when connection lost</li>
+          <li>save lost connection into store</li>
+          <li>pretty message that the we cannot connect to server</li>
         </ul>
       </div>
     </div>

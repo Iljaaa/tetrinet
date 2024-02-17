@@ -116,8 +116,9 @@ export class Socket
     // if (error.type === "error")
   }
   
-  protected onClose = () => {
-    console.log ('Socket.onClose');
+  protected onClose = (event:any) => {
+    console.log ('Socket.onClose', event);
+    alert ('connection lost or closed by server');
   }
   
   /**
