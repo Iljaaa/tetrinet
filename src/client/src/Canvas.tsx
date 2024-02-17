@@ -7,7 +7,6 @@ import {PauseRequest, ResumeRequest, SetRequest, StartRequest} from "./Common/Te
 
 import {AddLineMessage, Message, SetMessage} from "./Common/Tetrinet/types/messages";
 
-import {Tetrinet} from "./Common/Tetrinet/Tetrinet";
 import {Assets} from "./Common/Tetrinet/Assets";
 import {PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupData} from "./Common/Tetrinet/models/CupData";
@@ -68,6 +67,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
   /**
    * State
+   * todo: remove state from here
    */
   public state:State = {
     partyId: "",
@@ -461,12 +461,28 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log ('canvas.processAfterSet', data.cups);
 
     // is this is game over
-    if (data.state === GameState.over){
+    if (data.state === GameState.over)
+    {
+
       // this.game.setGameOver();
       TetrinetSingleton.getInstance().setGameOver();
+
+      // checkm maybe we are a winner
+      // todo: refactor to socketId
+      // find opponent key
+      const mainCupIndex = Object.keys(data.cups).find((key:string) => {
+        return parseInt(key) === this.partyIndex
+      })
+
+      // update our cup state
+      if (mainCupIndex) {
+        const mineCup = data.cups[parseInt(mainCupIndex)]
+        TetrinetSingleton.getInstance().setCupState(mineCup.state);
+      }
     }
 
     // find opponent key
+    // todo: refactor to socketId
     const opponentKey = Object.keys(data.cups).find((key:string) => {
       return parseInt(key) !== this.partyIndex
     })

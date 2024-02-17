@@ -1,4 +1,5 @@
 /**
+ * @deprecated remove this object
  * Coords class x and y
  */
 export class Coords {

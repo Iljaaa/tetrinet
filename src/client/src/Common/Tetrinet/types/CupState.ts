@@ -4,4 +4,5 @@
 export enum CupState {
     online = 'online',
     over = 'over',
+    winner = 'winner',
 }

@@ -16,13 +16,20 @@ import {ForwardFlash} from "../figures/ForwardFlash";
 import {BackFlash} from "../figures/BackFlash";
 import {Camel} from "../figures/Camel";
 import {Square} from "../figures/Square";
+
 import {Coords} from "../math/Coords";
 import {CupData} from "../models/CupData";
 import {CupImpl} from "../models/CupImpl";
 import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
+
 import {GameState} from "../types";
 import {CupState} from "../types/CupState";
 import {Bonus} from "../types/Bonus";
+
+import {
+  SearchForAGame,
+  Paused
+} from "../textures";
 
 
 /**
@@ -129,7 +136,23 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   // private redSquare:Vertices;
-  
+
+  /**
+   * Position of player cup
+   */
+  private mainCupPosition = {
+    x: 32,
+    y: 32,
+  }
+
+  /**
+   * Text vertical position
+   */
+  private textsHeight = 100;
+
+  private searchForTexture:SearchForAGame;
+  private pausedTexture:Paused;
+
   /**
    * In this constructor we create cup
    */
@@ -142,7 +165,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // your opponent cup
     this._opponentCup = new CupImpl();
-    
+
+    // init textures
+    this.searchForTexture = new SearchForAGame();
+    this.pausedTexture = new Paused();
+
     // generate next figure
     // this._nextFigure = this.generateNewFigure();
     
@@ -165,6 +192,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // bind this to input listener
     this.game.getInput().setListener(this);
+
   }
   
   /**
@@ -276,6 +304,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
 
   /**
+   * update our cuo state
+   * @param state
+   */
+  setCupState(state:CupState){
+    this._cup.setState(state)
+  }
+
+  /**
    * Set opponent cup
    * @param o
    */
@@ -352,9 +388,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._state === GameState.paused){
       this.presentPaused(gl);
     }
-    if (this._state === GameState.over){
-      this.presentGameOver(gl);
-    }
+
+    // game over present in a cup
+    // if (this._state === GameState.over){
+    //   this.presentGameOver(gl);
+    // }
   }
 
   /**
@@ -364,17 +402,16 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private presentReady (gl: WebGL2RenderingContext)
   {
-
-    // move position to left
-    // todo: move to user cup position
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 0, 0)
+    // move position of cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y)
 
     // calc left position
     // this._cup.getWidthInCells()
 
     this._block.setVertices(Vertices.createTextureVerticesArray(
-        110, 450, 160, 64,
-        320, 256, 192, 64
+        0, this.textsHeight, 320, 64,
+        // 320, 256, 192, 64
+        this.searchForTexture.texX, this.searchForTexture.texY, this.searchForTexture.texWidth, this.searchForTexture.texHeight
     ))
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
@@ -393,15 +430,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     console.log('PlayScreen.presentPaused')
 
     // move position to left
-    // todo: move to user cup position
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 0, 0)
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y)
 
     // calc left position
     // this._cup.getWidthInCells()
 
     this._block.setVertices(Vertices.createTextureVerticesArray(
-        110, 450, 160, 64,
-        320, 320, 192, 64
+        78, this.textsHeight, 160, 64,
+        // 320, 320, 192, 64
+      this.pausedTexture.texX, this.pausedTexture.texY, this.pausedTexture.texWidth, this.pausedTexture.texHeight
     ))
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
@@ -410,32 +447,26 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
-  /**
-   * Ready state present
+  /*
+   * Game over present
    * @param gl
    * @private
    */
-  private presentGameOver (gl: WebGL2RenderingContext)
-  {
-    console.log('PlayScreen.presentGameOver')
-
-    // move position to left
-    // todo: move to user cup position
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 0, 0)
-
-    // calc left position
-    // this._cup.getWidthInCells()
-
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-        32, 450, 320, 64,
-        320, 192, 320, 64
-    ))
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-
-    // draw here
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-  }
+  // private presentGameOver (gl: WebGL2RenderingContext)
+  // {
+  //   // move position of cup
+  //   WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y)
+  //
+  //   this._block.setVertices(Vertices.createTextureVerticesArray(
+  //       32, 450, 320, 64,
+  //       320, 192, 320, 64
+  //   ))
+  //
+  //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+  //
+  //   // draw here
+  //   gl.drawArrays(gl.TRIANGLES, 0, 6);
+  // }
 
   /**
    * Draw next figure
