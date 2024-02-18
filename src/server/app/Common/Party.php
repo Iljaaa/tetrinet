@@ -24,6 +24,7 @@ class Party
 
     /**
      * Player connections
+     * where key id playerId aka socketId and value is a player
      * @var Player[]
      */
     private array $players = [];
@@ -107,17 +108,33 @@ class Party
      * Pause game
      * @return void
      */
-    public function pause ():void {
+    public function setPause ():void {
         $this->state = GameState::paused;
     }
 
     /**
+     * Set game over state
+     * @return void
+     */
+    public function setGameOver ():void {
+        $this->state = GameState::over;
+    }
+
+    /**
+     * Set game over state
+     * @return void
+     */
+    public function setGameRunning ():void {
+        $this->state = GameState::over;
+    }
+
+    /*
      * @param GameState $state
      * @return void
      */
-    public function setGameState(GameState $state): void {
-        $this->state = $state;
-    }
+//    public function setGameState(GameState $state): void {
+//        $this->state = $state;
+//    }
 
     /**
      * @return GameState
@@ -147,7 +164,7 @@ class Party
     }
 
     /**
-     * Data for response to
+     * Data for response to client
      * @return array
      */
     public function getCupsResponse (): array
