@@ -20,10 +20,4 @@ export type Request =
      * SocketIs is the connection id got from join request
      */
     playerId: string
-
-    /**
-     * @deprecated it must be changed to socketId
-     * Your index in party
-     */
-    partyIndex?: number
 }

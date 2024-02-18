@@ -39,11 +39,6 @@ type State =
    * Party id
    */
   partyId: string,
-  
-  /**
-   * Index inside party
-   */
-  partyIndex?: number
 
   /**
    * this is your socket id
@@ -80,13 +75,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * we should use it here not from state
    */
   private partyId: string = '';
-
-  /**
-   * @deprecated
-   * This is the main party index,
-   * because in the stat it is updated with delay
-   */
-  private partyIndex:number|null = null;
 
   /**
    * This is id of your socket
@@ -309,7 +297,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
         type: RequestTypes.join,
         partyId: '',
         playerId: '',
-        partyIndex: -1,
       }
 
       SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
@@ -367,12 +354,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log('Canvas.onCupUpdated', state, cupState);
 
     // just save game state
-    // this.setState({currentGameState: state})
     const data:SetRequest = {
       type: RequestTypes.set,
       partyId: this.partyId,
       playerId: this.playerId,
-      // partyIndex: this.partyIndex as number,
       // state: state,
       cup: cupState
     }
@@ -410,13 +395,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   {
     console.log ('Canvas.processLetsPlay', data);
 
-    // save party index
-    // todo: remove party index, because we already have our id from handshake
-    this.partyIndex = data.yourIndex
+    // save party id
     this.partyId = data.partyId
 
-    //
-    let myIndexInTheParty:number|null = null;
 
     //
     this.partyIndexToSocketId = [];
@@ -426,14 +407,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     Object.keys(data.party).forEach((p:string) => {
       const arrayKey = parseInt(p)
       const it = data.party[arrayKey]
-      if (it.socketId === this.playerId) myIndexInTheParty = arrayKey
-      else {
+      if (it.socketId !== this.playerId) {
         // we start from 1
         this.partyIndexToSocketId[this.partyIndexToSocketId.length + 1] = it.socketId
       }
     })
 
-    console.info('Your index in the party:', myIndexInTheParty);
     console.log(this.partyIndexToSocketId, 'this.partyIndexToSocketId');
 
     // calculate my index in the party
@@ -441,8 +420,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
     // save party data
     this.setState({
-      partyId: data.partyId,
-      partyIndex: data.yourIndex
+      partyId: data.partyId
     });
 
     // start game
@@ -545,7 +523,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
             <div>score <b>{this.state.score}</b></div>
             <div style={{margin: "0 0 0 1rem"}}>state: <b>{this.state.currentGameState}</b></div>
             <div style={{margin: "0 0 0 1rem"}}>party id: <b>{this.state.partyId}</b></div>
-            <div style={{margin: "0 0 0 1rem"}}>party index: <b>{this.state.partyIndex}</b></div>
             <div style={{margin: "0 0 0 1rem"}}>socket id: <b>{this.state.socketId}</b></div>
           </div>
         </div>
