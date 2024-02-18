@@ -2,6 +2,10 @@ import {Message} from "./Message";
 import {GameState} from "../../types";
 import {CupData} from "../../models/CupData";
 
+interface IDictionary {
+    [index: string]: CupData;
+}
+
 /**
  * Data for 'set' message request
  */
@@ -11,5 +15,6 @@ export interface SetMessage extends Message
     state: GameState,
 
     // cups state
-    cups: Array<CupData>
+    // cups: Array<CupData>
+    cups: IDictionary
 }

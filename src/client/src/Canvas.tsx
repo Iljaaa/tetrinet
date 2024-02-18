@@ -134,23 +134,23 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    * @deprecated
    * Here we send request to opponent to add few rows
    */
-  sendAddLineToOpponent (countClearedLines:number) {
-    //
-    if (countClearedLines > 1)
-    {
-      // send command
-      const data = {
-        type: RequestTypes.addLine,
-        partyId: this.partyId,
-        partyIndex: this.partyIndex as number,
-        linesCount: countClearedLines - 1,
-        source: this.partyIndex, // now this is same that partyIndex
-        target: null, // target should be selected player, but now we have only two players
-    }
-
-      SocketSingletone.getInstance()?.sendData(data)
-    }
-  }
+  // sendAddLineToOpponent (countClearedLines:number) {
+  //   //
+  //   if (countClearedLines > 1)
+  //   {
+  //     // send command
+  //     const data = {
+  //       type: RequestTypes.addLine,
+  //       partyId: this.partyId,
+  //       partyIndex: this.partyIndex as number,
+  //       linesCount: countClearedLines - 1,
+  //       source: this.partyIndex, // now this is same that partyIndex
+  //       target: null, // target should be selected player, but now we have only two players
+  //   }
+  //
+  //     SocketSingletone.getInstance()?.sendData(data)
+  //   }
+  // }
 
   /**
    * Send a request with gift
@@ -270,7 +270,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       type: RequestTypes.pause,
       partyId: this.partyId,
       playerId: this.playerId,
-      partyIndex: this.partyIndex as number,
     }
 
     // send data
@@ -289,7 +288,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       type: RequestTypes.resume,
       partyId: this.partyId,
       playerId: this.playerId,
-      partyIndex: this.partyIndex as number,
     }
 
     // send data
@@ -378,8 +376,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       type: RequestTypes.set,
       partyId: this.partyId,
       playerId: this.playerId,
-      partyIndex: this.partyIndex as number,
-      state: state,
+      // partyIndex: this.partyIndex as number,
+      // state: state,
       cup: cupState
     }
 
@@ -417,8 +415,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log ('Canvas.processLetsPlay', data);
 
     // save party index
-    // todo: remove party index, and remake it on socketID
+    // todo: remove party index, because we already have our id from handshake
     this.partyIndex = data.yourIndex
+    this.partyId = data.partyId
 
     //
     let myIndexInTheParty:number|null = null;
@@ -471,30 +470,34 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // this.game.setGameOver();
       TetrinetSingleton.getInstance().setGameOver();
 
-      // checkm maybe we are a winner
-      // todo: refactor to socketId
-      // find opponent key
-      const mainCupIndex = Object.keys(data.cups).find((key:string) => {
-        return parseInt(key) === this.partyIndex
-      })
+      const mineCup = data.cups[this.playerId]
+      TetrinetSingleton.getInstance().setCupState(mineCup.state);
+
+      // check maybe we are a winner
+      //const mineCupIndex = Object.keys(data.cups).find((key:string) => {
+        // return parseInt(key) === this.partyIndex
+        // return key === this.playerId
+      // })
 
       // update our cup state
-      if (mainCupIndex) {
-        const mineCup = data.cups[parseInt(mainCupIndex)]
-        TetrinetSingleton.getInstance().setCupState(mineCup.state);
-      }
+      // if (mineCupIndex) {
+      //   const mineCup = data.cups[parseInt(mineCupIndex)]
+      //   TetrinetSingleton.getInstance().setCupState(mineCup.state);
+      // }
     }
 
     // find opponent key
-    // todo: refactor to socketId
-    const opponentKey = Object.keys(data.cups).find((key:string) => {
-      return parseInt(key) !== this.partyIndex
+    // todo: refactor to many cups
+    const opponentPlayerId = Object.keys(data.cups).find((key:string) => {
+      // return parseInt(key) !== this.partyIndex
+      return key !== this.playerId
     })
 
     // todo: update other cups
-    if (opponentKey) {
+    if (opponentPlayerId) {
       // this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
-      TetrinetSingleton.getInstance().setOpponentCup(data.cups[parseInt(opponentKey)]);
+      // TetrinetSingleton.getInstance().setOpponentCup(data.cups[parseInt(opponentKey)]);
+      TetrinetSingleton.getInstance().setOpponentCup(data.cups[opponentPlayerId]);
     }
   }
 

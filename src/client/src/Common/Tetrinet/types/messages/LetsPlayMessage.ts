@@ -6,7 +6,7 @@ import {Message} from "./Message";
 export interface LetsPlayMessage extends Message
 {
     /**
-     * Id of created part
+     * Id of party
      */
     partyId: string,
 

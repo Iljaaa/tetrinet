@@ -25,5 +25,5 @@ export type Request =
      * @deprecated it must be changed to socketId
      * Your index in party
      */
-    partyIndex: number
+    partyIndex?: number
 }

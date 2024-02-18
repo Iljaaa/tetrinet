@@ -288,6 +288,8 @@ class FirstTestSocket implements MessageComponentInterface
         // back to running
         $this->party->setGameState(GameState::running);
 
+        // todo: add log message
+
         // send data to all connections
         $this->party->sendToAllPlayers([
             'type' => ResponseType::resumed,
@@ -303,25 +305,34 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private function processSet (ConnectionInterface $conn, array $data): void
     {
-        // todo: check party id ans if we do not have such party we drop connection
-        // todo: check players and we do not have this connection id in party drop this connection
-
         // player index in party
-        if (!isset($data['partyIndex']) || $data['partyIndex'] == '') {
-            Log::channel('socket')->info("Party index is not set, we ignore this set");
+//        if (!isset($data['partyIndex']) || $data['partyIndex'] == '') {
+//            Log::channel('socket')->info("Party index is not set, we ignore this set");
+//            return;
+//        }
+//        $partyIndex = (int) $data['partyIndex'];
+//        Log::channel('socket')->info("partiIndex", ['partyIndex' => $partyIndex]);
+
+        $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
+        $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';
+        Log::channel('socket')->info("set", ['partyId' => $partyId, 'playerId' => $playerId]);
+
+        if (empty($partyId)){
+            Log::channel('socket')->info("Party id is empty, ignore request");
             return;
         }
-        $partyIndex = (int) $data['partyIndex'];
-        Log::channel('socket')->info("partiIndex", ['partyIndex' => $partyIndex]);
 
-        // todo: refactor party index to partyId
+        if (empty($playerId)){
+            Log::channel('socket')->info("Player id is empty, ignore request");
+            return;
+        }
 
         // global game state
-        $state = GameState::from($data['state']) ; // play, pause, game over, ets
-        Log::channel('socket')->info("gameState", [$state]);
+//        $state = GameState::from($data['state']) ; // play, pause, game over, ets
+//        Log::channel('socket')->info("gameState", [$state]);
 
         // save cup info
-        $this->party->setCupByPartyIndex($partyIndex, $data['cup']);
+        $this->party->updateCupByPlayerId($playerId, $data['cup']);
 
         // check game over
         $activeCups = array_filter($this->party->getPlayers(), fn(Player $p) => $p->getCup()->state == CupState::online);
@@ -344,16 +355,16 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info("response2", ['cupsResponse' => $cupsResponse]);
 
         // preparing cup data
-        $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
-        Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
+//        $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
+//        Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
 
         // send data to all players
         $this->party->sendToAllPlayers([
             'type' => ResponseType::afterSet,
-            'responsible' => $partyIndex, // todo: remove this field
-            'responsibleId' => $conn->socketId, // todo: rename to sourceId
+            // 'responsible' => $partyIndex,
+            // 'responsibleId' => $conn->socketId
             'state' => $this->party->getGameState(),
-            'cups' => $cupsData
+            'cups' => $cupsResponse
         ]);
     }
 

@@ -71,16 +71,14 @@ class Party
     }
 
     /**
-     * @deprecated
-     * todo: refactor to socketId
-     * @param int $partyIndex
+     * @param string $playerId
      * @param array $cup cup info from request
      * @return void
      */
-    public function setCupByPartyIndex(int $partyIndex, array $cup): void
+    public function updateCupByPlayerId(string $playerId, array $cup): void
     {
         // update cup data
-        $this->players[$partyIndex]->updateCup($cup);
+        $this->players[$playerId]->updateCup($cup);
     }
 
     /**
