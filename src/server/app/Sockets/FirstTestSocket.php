@@ -3,6 +3,7 @@
 namespace App\Sockets;
 
 use App\Common\Connection;
+use App\Common\Helper;
 use App\Common\Types\BonusType;
 use App\Common\Types\CupState;
 use App\Common\GameState;
@@ -20,19 +21,12 @@ use Ratchet\WebSocket\MessageComponentInterface;
 
 class FirstTestSocket implements MessageComponentInterface
 {
-    /**
-     * @var int[]
-     */
-    // private $tempCup = [-1,-1,-1,-1,1,1,1,1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
-
-    const MESSAGE_ADD_LINE = 'addLine';
 
     /**
      * Pool of player for play
      * @var ConnectionInterface[]
      */
     private array $duelPlayersPool = [];
-
 
     /**
      * This is play party
@@ -44,18 +38,16 @@ class FirstTestSocket implements MessageComponentInterface
     /**
      * @param ConnectionInterface $conn
      * @return void
-     * @throws RandomException
      */
     public function onOpen(ConnectionInterface $conn): void
     {
         Log::channel('socket')->info(__METHOD__);
 
         // generate socket is
-        $socketId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
-        $conn->socketId = $socketId;
+        $conn->socketId = Helper::random();
 
         //
-        Log::channel('socket')->info(sprintf('Connection open with %s', $socketId));
+        Log::channel('socket')->info(sprintf('Connection open with %s', $conn->socketId));
 
         // what this code do?
         // $connection->app = App::findById('YOUR_APP_ID');
@@ -73,6 +65,7 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info(__METHOD__, ['socketId' =>  $conn->socketId]);
 
         // looking for connection in players pool
+        // todo: refactor to socketId
         $index = array_search($conn, $this->duelPlayersPool);
         if ($index > -1) {
             Log::channel('socket')->info('connection found in duel pull', ['index' => $index, 'size' => count($this->duelPlayersPool)]);
@@ -274,20 +267,13 @@ class FirstTestSocket implements MessageComponentInterface
         $this->party->pause();
         // $this->party->setGameState(GameState::paused);
 
+        // todo: add log message
+
         // send data to all connections
         $this->party->sendToAllPlayers([
             'type' => ResponseType::paused,
-            'initiator' => $data['initiator'],
             'state' => $this->party->getGameState(),
         ]);
-
-        /*foreach ($this->party->getPlayers() as $p) {
-            $p->getConnection()->send(json_encode([
-                'type' => ResponseType::paused,
-                'initiator' => $data['initiator'],
-                'state' => $this->party->getGameState(),
-            ]));
-        }*/
     }
 
     /**
@@ -305,12 +291,12 @@ class FirstTestSocket implements MessageComponentInterface
         // send data to all connections
         $this->party->sendToAllPlayers([
             'type' => ResponseType::resumed,
-            'initiator' => $data['initiator'],
             'state' => $this->party->getGameState(),
         ]);
     }
 
     /**
+     * todo: refactor
      * @param ConnectionInterface $conn
      * @param array $data
      * @return void
@@ -338,21 +324,24 @@ class FirstTestSocket implements MessageComponentInterface
         $this->party->setCupByPartyIndex($partyIndex, $data['cup']);
 
         // check game over
-         $activeCups = array_filter($this->party->getPlayers(), fn (Player $p) => $p->getCup()->state == CupState::online);
+        $activeCups = array_filter($this->party->getPlayers(), fn(Player $p) => $p->getCup()->state == CupState::online);
 
-         // this is global game over
-         if (count($activeCups) <= 1)
-         {
-             $this->party->setGameState(GameState::over);
+        // this is global game over
+        if (count($activeCups) <= 1) {
+            $this->party->setGameState(GameState::over);
 
-             // mar winner
-             foreach ($this->party->getPlayers() as $p) {
+            // mar winner
+            foreach ($this->party->getPlayers() as $p) {
                 if ($p->getCup()->state == CupState::online) {
                     $p->getCup()->setCupAsWinner();
                     break;
                 }
-             }
-         }
+            }
+        }
+
+        //
+        $cupsResponse = $this->party->getCupsResponse();
+        Log::channel('socket')->info("response2", ['cupsResponse' => $cupsResponse]);
 
         // preparing cup data
         $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
@@ -406,8 +395,7 @@ class FirstTestSocket implements MessageComponentInterface
         // send command to opponent
         if ($opponent) {
             $opponent->getConnection()->send(json_encode([
-                // todo: use type from type
-                'type' => static::MESSAGE_ADD_LINE,
+                'type' => ResponseType::addLine,
                 'source' => $source, // todo: remake source to socket id
                 'sourceId' => $conn->socketId,
                 'target' => $target,

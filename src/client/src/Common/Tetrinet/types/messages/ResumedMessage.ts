@@ -8,9 +8,4 @@ export interface ResumedMessage extends Message
 {
     // game state
     state: GameState,
-
-    /**
-     * Wham?
-     */
-    initiator: number,
 }

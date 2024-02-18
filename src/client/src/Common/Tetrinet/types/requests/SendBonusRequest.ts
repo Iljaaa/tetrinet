@@ -16,11 +16,13 @@ export interface SendBonusRequest extends Request {
     target: number,
 
     /**
+     * @deprecated
      * this is your socket id
      */
     sourceSocketId: string
 
     /**
+     * @deprecated
      * Target player socket id
      */
     targetSocketId: string

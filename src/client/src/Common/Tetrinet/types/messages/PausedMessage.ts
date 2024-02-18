@@ -8,9 +8,4 @@ export interface PausedMessage extends Message
 {
     // game state
     state: GameState,
-
-    /**
-     * Wham?
-     */
-    initiator: number,
 }

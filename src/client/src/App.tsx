@@ -18,7 +18,6 @@ function App()
         <h2>Road map:</h2>
         <ul>
           <li>Prepare eight people party</li>
-          <li>Winner text</li>
           <li>extend Super blocks</li>
           <li>Display bonuses nice</li>
           <li>Create party for many peoples</li>
@@ -33,6 +32,8 @@ function App()
           <li>There the bug: if you send bonus to not existing opponent, the bonus just disappear. We should first check that opponent exists and only then send bonus</li>
           <li>Count bonus fields according cleared lines</li>
           <li>Player name</li>
+          <li>When one play lost connection and seccond click pause server has error</li>
+          <li>The A froze on the opponent cup</li>
         </ul>
       </div>
     </div>

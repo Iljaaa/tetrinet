@@ -35,23 +35,23 @@ class Party
     // public array $cups = [];
 
     /**
-     * @throws RandomException
+     *
      */
-    public function __construct () {
+    public function __construct ()
+    {
         // generate party id
-        $this->partyId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
+        // $this->partyId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
+        $this->partyId = Helper::random();
     }
 
     /**
-     * Add player into party and return his index in in
-     * @param ConnectionInterface $connection
-     *
-     * @return int player index in the party
+     * Add player into party and return his index in
+     * @param ConnectionInterface $conn
      */
-    public function addPlayer (ConnectionInterface $connection): int
+    public function addPlayer (ConnectionInterface $conn): void
     {
-        $this->players[] = new Player($connection);
-        return array_search($connection, $this->players);
+        $this->players[$conn->socketId] = new Player($conn);
+        // return array_search($connection, $this->players);
     }
 
     /**
@@ -71,6 +71,7 @@ class Party
     }
 
     /**
+     * @deprecated
      * todo: refactor to socketId
      * @param int $partyIndex
      * @param array $cup cup info from request
@@ -128,9 +129,10 @@ class Party
     }
 
     /**
-     * This method called when closed
+     * This method called when player socket closed
      * and we remove player with this connection from list
      * @param ConnectionInterface $conn
+     * @param callable $onTerminate
      * @return void
      */
     public function onConnectionClose(ConnectionInterface $conn, callable $onTerminate): void
@@ -144,6 +146,17 @@ class Party
         // is all players offline we party should be terminated
         $onLinePlayers = array_filter($this->players, fn(Player $p) => $p->state == PlayerState::online);
         if (count($onLinePlayers)) $onTerminate();
+    }
+
+    /**
+     * Data for response to
+     * @return array
+     */
+    public function getCupsResponse (): array
+    {
+        return array_map(function (Player $p):array {
+            return $p->getCup()->createResponseData();
+        }, $this->players);
     }
 
 }
