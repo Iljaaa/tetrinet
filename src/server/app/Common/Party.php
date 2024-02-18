@@ -3,10 +3,11 @@
 namespace App\Common;
 
 use App\Common\Types\PlayerState;
+use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;
 
 /**
- * @version 0.0.2
+ * @version 0.1.3
  */
 class Party
 {
@@ -45,6 +46,12 @@ class Party
         $this->partyId = Helper::random();
     }
 
+    public function __destruct()
+    {
+        Log::channel('socket')->info('party '.$this->partyId.' terminated2222');
+    }
+
+
     /**
      * Add player into party and return his index in
      * @param ConnectionInterface $conn
@@ -55,11 +62,11 @@ class Party
         // return array_search($connection, $this->players);
     }
 
-    /**
+    /*
      * Is party has connection
      * @param ConnectionInterface $conn
      * @return bool
-     */
+
     public function isConnectionBelongs (ConnectionInterface $conn): bool
     {
         foreach ($this->players as $p) {
@@ -69,6 +76,16 @@ class Party
         }
 
         return false;
+    }*/
+
+    /**
+     * Is player in this party
+     * @param string $playerId
+     * @return bool
+     */
+    public function isPartyHasPlayerById (string$playerId): bool
+    {
+        return array_key_exists($playerId, $this->players);
     }
 
     /**
@@ -125,7 +142,7 @@ class Party
      * @return void
      */
     public function setGameRunning ():void {
-        $this->state = GameState::over;
+        $this->state = GameState::running;
     }
 
     /*
@@ -135,6 +152,30 @@ class Party
 //    public function setGameState(GameState $state): void {
 //        $this->state = $state;
 //    }
+
+    /**
+     * @param string $playerId
+     * @return Player|null
+     */
+    public function findPlayerById (string $playerId):? Player
+    {
+        // here we need players for found the opponent and add line to him
+        // $players = $this->party->getPlayers();
+        // Log::channel('socket')->info("party", ['len' => count($players)]);
+
+        // this is temporary code
+        // we are searching opponent
+//        $opponentConnection = null;
+//        // foreach ($players as $pIndex => $p) {
+//        foreach ($players as $p) {
+//            if ($p->getConnectionId() === $playerId) {
+//                $opponentConnection = $p;
+//            }
+//        }
+
+        // return $opponentConnection;
+        return $this->players[$playerId];
+    }
 
     /**
      * @return GameState
@@ -152,15 +193,22 @@ class Party
      */
     public function onConnectionClose(ConnectionInterface $conn, callable $onTerminate): void
     {
-        foreach ($this->players as $p) {
-            if ($p->getConnection() === $conn) {
+        Log::channel('socket')->info(__METHOD__);
+        foreach ($this->players as $playerId => $p) {
+            if ($playerId == $conn->socketId){
                 $p->setOffline();
             }
+//            if ($p->getConnection() === $conn) {
+//                $p->setOffline();
+//            }
         }
 
         // is all players offline we party should be terminated
         $onLinePlayers = array_filter($this->players, fn(Player $p) => $p->state == PlayerState::online);
-        if (count($onLinePlayers)) $onTerminate();
+        Log::channel('socket')->info('after filter', ['count($onLinePlayers)' => count($onLinePlayers)]);
+        if (count($onLinePlayers) == 0) {
+            $onTerminate();
+        }
     }
 
     /**
