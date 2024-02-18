@@ -5,7 +5,7 @@ import {CupRenderer2} from "../CupRenderer2";
 
 import {CupImpl} from "../models/CupImpl";
 import {SocketEventListener} from "../../Socket/SocketEventListener";
-import {SocketSingletone} from "../../SocketSingletone";
+import {SocketSingleton} from "../../SocketSingleton";
 
 /*
  * How often we request data
@@ -52,7 +52,7 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
     
     // bind to socket events
-    SocketSingletone.getInstance()?.setListener(this);
+    SocketSingleton.getInstance()?.setListener(this);
     
   }
   

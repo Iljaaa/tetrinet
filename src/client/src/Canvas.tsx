@@ -11,7 +11,7 @@ import {Assets} from "./Common/Tetrinet/Assets";
 import {PlayScreenEventListener} from "./Common/Tetrinet/screens/PlayScreen";
 import {CupData} from "./Common/Tetrinet/models/CupData";
 import {WebGlProgramManager} from "./Common/framework/impl/WebGlProgramManager";
-import {SocketSingletone} from "./Common/SocketSingletone";
+import {SocketSingleton} from "./Common/SocketSingleton";
 import {SocketEventListener} from "./Common/Socket/SocketEventListener";
 
 import sprite from "./sprite.png"
@@ -182,7 +182,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       bonus: bonus
     }
 
-    SocketSingletone.getInstance()?.sendData(data)
+    SocketSingleton.getInstance()?.sendData(data)
   }
 
   /**
@@ -247,7 +247,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.openConnection(() =>
+    SocketSingleton.openConnection(() =>
     {
       // prepare
       // this.game.prepareToGame(this)
@@ -274,7 +274,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     }
 
     // send data
-    SocketSingletone.getInstance()?.sendData(request);
+    SocketSingleton.getInstance()?.sendData(request);
   }
 
   /**
@@ -292,7 +292,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     }
 
     // send data
-    SocketSingletone.getInstance()?.sendData(request);
+    SocketSingleton.getInstance()?.sendData(request);
 
     // set game resume
     // this.game.resumeGame(true);
@@ -307,7 +307,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.reOpenConnection(() => {
+    SocketSingleton.reOpenConnection(() => {
 
       // send handshake and waiting our data
       const request:StartRequest = {
@@ -316,7 +316,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
         playerId: '',
       }
 
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
+      SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
 
       // SocketSingletone.getInstance()?.sendData(request)
     })
@@ -335,7 +335,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.setState({socketId: data.yourSocketId})
 
     // set listener when game starts
-    SocketSingletone.getInstance()?.setListener(this);
+    SocketSingleton.getInstance()?.setListener(this);
 
     // when socket open prepare to game
     // this.game.prepareToGame(this);
@@ -348,13 +348,13 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     
     // open socket connection
     // this.socket = new Socket();
-    SocketSingletone.openConnection(() =>
+    SocketSingleton.openConnection(() =>
     {
       // todo: make special object
       const request = {type: "watch"}
 
       // send start party
-      SocketSingletone.getInstance()?.sendDataAndWaitAnswer(request, (data) => {
+      SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, (data:any) => {
         // when socket open we start game
         // this.game.watchGame();
         TetrinetSingleton.getInstance().watchGame();
@@ -379,7 +379,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       cup: cupState
     }
 
-    SocketSingletone.getInstance()?.sendData(data)
+    SocketSingleton.getInstance()?.sendData(data)
   }
   
   /**

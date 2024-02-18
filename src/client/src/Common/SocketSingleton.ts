@@ -3,7 +3,7 @@ import {Socket} from "./Socket/Socket";
 /**
  *
  */
-export class SocketSingletone
+export class SocketSingleton
 {
   /**
    * Singleton socket instance
@@ -17,12 +17,12 @@ export class SocketSingletone
   public static reOpenConnection(onOpenCallback:()=>void)
   {
     // close old connection
-    if (SocketSingletone.socketInstance) {
-      SocketSingletone.socketInstance.close();
+    if (SocketSingleton.socketInstance) {
+      SocketSingleton.socketInstance.close();
     }
 
     // create new instance
-    SocketSingletone.socketInstance = new Socket(onOpenCallback);
+    SocketSingleton.socketInstance = new Socket(onOpenCallback);
 
   }
 
@@ -31,10 +31,10 @@ export class SocketSingletone
    */
   public static openConnection(onOpenCallback:()=>void)
   {
-    if (!SocketSingletone.socketInstance)
+    if (!SocketSingleton.socketInstance)
     {
       // create new instance
-      SocketSingletone.socketInstance = new Socket(onOpenCallback);
+      SocketSingleton.socketInstance = new Socket(onOpenCallback);
     }
   }
   
@@ -42,6 +42,6 @@ export class SocketSingletone
    *
    */
   public static getInstance() {
-    return SocketSingletone.socketInstance;
+    return SocketSingleton.socketInstance;
   }
 }
