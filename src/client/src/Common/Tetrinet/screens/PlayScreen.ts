@@ -787,7 +787,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     console.log ('PlayScreen.sendBonusToOpponent', firstBonus);
 
     // rise event
-    // todo: add opponent index
     this.listener?.onSendBonusToOpponent(firstBonus, indexOfOpponent)
 
   }

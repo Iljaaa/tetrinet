@@ -162,22 +162,18 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log('Canvas.onSendBonusToOpponent', bonus, opponentIndex)
 
     // try to fine opponent socket id in the party
-    const targetSocketId = this.partyIndexToSocketId[opponentIndex]
-    console.log('targetSocketId', targetSocketId)
+    const targetPlayerId = this.partyIndexToSocketId[opponentIndex]
+    console.log('targetSocketId', targetPlayerId)
 
     // when opponent not found
-    if (!targetSocketId) return;
+    if (!targetPlayerId) return;
 
     // send command
     const data:SendBonusRequest = {
       type: RequestTypes.sendBonus,
       partyId: this.partyId,
       playerId: this.playerId,
-      partyIndex: this.partyIndex as number,
-      source: this.partyIndex as number, // now this is same that partyIndex
-      target: opponentIndex, //
-      sourceSocketId: this.playerId,
-      targetSocketId: targetSocketId,
+      target: targetPlayerId,
       bonus: bonus
     }
 

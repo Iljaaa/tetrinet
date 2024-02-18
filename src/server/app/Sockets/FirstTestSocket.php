@@ -400,8 +400,7 @@ class FirstTestSocket implements MessageComponentInterface
         Log::channel('socket')->info("party", ['len' => count($players)]);
 
         // found opponent
-        // todo: refactor it to index
-        $opponent = $this->getOpponent($source);
+        $opponent = $this->findPlayerById($source);
 
         // send command to opponent
         if ($opponent) {
@@ -427,38 +426,40 @@ class FirstTestSocket implements MessageComponentInterface
         // but, now we have two players and if it not a sender then it opponent
 
         // player index in party
-        $partyIndex = (int) $data['partyIndex'];
+        // $partyIndex = (int) $data['partyIndex'];
 
         /**
          * todo: refactor like socketFields
          */
-        $source = (int) $data['source'];
+        // $source = (int) $data['source'];
 
         /**
          * todo: refactor like socketFields
          */
-        $target = (int) $data['target'];
+        $target = $data['target'];
 
-
-        $sourceSocketId = $data['sourceSocketId'];
-        $targetSocketId = $data['targetSocketId'];
+//        $sourceSocketId = $data['sourceSocketId'];
+//        $targetSocketId = $data['targetSocketId'];
 
         $bonus = BonusType::from((int) $data['bonus']);
 
+        // add log
+
         // found opponent
-        // todo: refactor it to index
-        $opponent = $this->getOpponent($source);
+        $opponent = $this->findPlayerById($target);
 
         Log::channel('socket')->info("send bonus", [
-            'partyIndex' => $partyIndex,
-            'source' => $source,
-            'connectionSocketId' => $conn->socketId,
-            'sourceSocketId' => $sourceSocketId,
-            'targetSocketId' => $targetSocketId,
+//            'partyIndex' => $partyIndex,
+//            'source' => $source,
+//            'connectionSocketId' => $conn->socketId,
+//            'sourceSocketId' => $sourceSocketId,
+//            'targetSocketId' => $targetSocketId,
             'opponent' => $opponent->getConnectionId(),
             'target' => $target,
             'bonus' => $bonus,
         ]);
+
+        // todo: add modal
 
         // send command to opponent
         if ($opponent) {
@@ -473,11 +474,11 @@ class FirstTestSocket implements MessageComponentInterface
     }
 
     /**
-     * @deprecated use socketId for searching opponent
-     * @param int $source
+     * todo: refactor to party
+     * @param string $playerId
      * @return Player|null
      */
-    private function getOpponent (int $source):? Player
+    private function findPlayerById (string $playerId):? Player
     {
         // here we need players for found the opponent and add line to him
         $players = $this->party->getPlayers();
@@ -487,8 +488,9 @@ class FirstTestSocket implements MessageComponentInterface
         // we are searching opponent
         /** @var ConnectionInterface $opponentConnection */
         $opponentConnection = null;
-        foreach ($players as $pIndex => $p) {
-            if ($pIndex !== $source) {
+        // foreach ($players as $pIndex => $p) {
+        foreach ($players as $p) {
+            if ($p->getConnectionId() === $playerId) {
                 $opponentConnection = $p;
             }
         }
