@@ -380,14 +380,14 @@ class FirstTestSocket implements MessageComponentInterface
         // but, now we have two players and if it not a sender then it opponent
 
         // player index in party
-        $partyIndex = (int) $data['partyIndex'];
+        // $partyIndex = (int) $data['partyIndex'];
 
         $source = (int) $data['source'];
         $target = (int) $data['target'];
         $linesCount = (int) $data['linesCount'];
 
         Log::channel('socket')->info("add line", [
-            'partyIndex' => $partyIndex,
+            // 'partyIndex' => $partyIndex,
             'source' => $source,
             'sourceId' => $conn->socketId,
             'target' => $target,
