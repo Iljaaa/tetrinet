@@ -2,7 +2,7 @@ import {Message} from "./Message";
 import {GameState} from "../../types";
 import {CupData} from "../../models/CupData";
 
-interface IDictionary {
+interface CupsCollection {
     [index: string]: CupData;
 }
 
@@ -16,5 +16,5 @@ export interface SetMessage extends Message
 
     // cups state
     // cups: Array<CupData>
-    cups: IDictionary
+    cups: CupsCollection
 }

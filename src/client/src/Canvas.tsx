@@ -46,6 +46,22 @@ type State =
   socketId: string
 }
 
+/**
+ * Map keys 1-9
+ * with player id
+ */
+interface KeysPlayerMap {
+  [index: number]: string
+}
+
+/**
+ * Collection of cups data received from server
+ * after update
+ */
+export interface CupsDataCollection {
+  [index: string]: CupData
+}
+
 export class Canvas extends React.PureComponent<{}, State> implements PlayScreenEventListener, SocketEventListener
 {
   /**
@@ -86,7 +102,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is mapping keys to index inside party
    */
-  private partyIndexToSocketId:Array<string> = [];
+  // private partyIndexToSocketId:Array<string> = [];
+  private partyIndexToSocketId:KeysPlayerMap = {};
 
   constructor(props: { }, context: any)
   {
@@ -398,9 +415,13 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // save party id
     this.partyId = data.partyId
 
+    // clear mapping array
+    this.partyIndexToSocketId = {};
 
-    //
-    this.partyIndexToSocketId = [];
+    /**
+     * key index of player
+     */
+    let i:number = 1
 
     // map opponents
     // in array where key is index and value is player id
@@ -408,12 +429,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       const arrayKey = parseInt(p)
       const it = data.party[arrayKey]
       if (it.socketId !== this.playerId) {
-        // we start from 1
-        this.partyIndexToSocketId[this.partyIndexToSocketId.length + 1] = it.socketId
+        this.partyIndexToSocketId[i] = it.socketId
+        i++
       }
     })
 
-    console.log(this.partyIndexToSocketId, 'this.partyIndexToSocketId');
+    // todo: init opponent cups in the game, may be it is not necessary
 
     // calculate my index in the party
     // also calculate map of indexes with socketId
@@ -460,19 +481,32 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // }
     }
 
-    // find opponent key
-    // todo: refactor to many cups
-    const opponentPlayerId = Object.keys(data.cups).find((key:string) => {
-      // return parseInt(key) !== this.partyIndex
-      return key !== this.playerId
+    // filter our cup out of our cup
+    let ccc:CupsDataCollection = {}
+
+    Object.keys(data.cups).forEach((key:string) => {
+      if (key !== this.playerId){
+        ccc[key] = data.cups[key]
+      }
     })
 
-    // todo: update other cups
-    if (opponentPlayerId) {
-      // this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
-      // TetrinetSingleton.getInstance().setOpponentCup(data.cups[parseInt(opponentKey)]);
-      TetrinetSingleton.getInstance().setOpponentCup(data.cups[opponentPlayerId]);
-    }
+    // update cups
+    TetrinetSingleton.getInstance().updateCups(ccc);
+
+
+    // find opponent key
+    // todo: refactor to many cups
+    // const opponentPlayerId = Object.keys(data.cups).find((key:string) => {
+    //   // return parseInt(key) !== this.partyIndex
+    //   return key !== this.playerId
+    // })
+    //
+    // // todo: update other cups
+    // if (opponentPlayerId) {
+    //   // this.game.setOpponentCup(data.cups[parseInt(opponentKey)]);
+    //   // TetrinetSingleton.getInstance().setOpponentCup(data.cups[parseInt(opponentKey)]);
+    //   TetrinetSingleton.getInstance().setOpponentCup(data.cups[opponentPlayerId]);
+    // }
   }
 
   /**

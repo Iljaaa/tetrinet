@@ -1,9 +1,9 @@
 import {WebGlGame} from "../framework/impl/WebGlGame";
 import {PlayScreen, PlayScreenEventListener} from "./screens/PlayScreen";
 import {WatchScreen} from "./screens/WatchScreen";
-import {CupData} from "./models/CupData";
 import {Bonus} from "./types/Bonus";
 import {CupState} from "./types/CupState";
+import {CupsDataCollection} from "../../Canvas";
 
 /**
  * @version 0.1.0
@@ -127,16 +127,20 @@ export class Tetrinet extends WebGlGame
     (this.getCurrentScreen() as PlayScreen)?.setCupState(state)
   }
 
-  /**
-   *
+  /*
+   * this method update opponent cup
    * @param cup
    */
-  setOpponentCup (cup:CupData)
-  {
-    const s = this.getCurrentScreen()
-    if (s instanceof PlayScreen) {
-      s.setOpponentCup(cup)
-    }
+  // setOpponentCup (cup:CupData) {
+  //   (this.getCurrentScreen() as PlayScreen)?.setOpponentCup(cup)
+  // }
+
+  /**
+   * this method update opponent cup
+   * @param data
+   */
+  updateCups (data:CupsDataCollection) {
+    (this.getCurrentScreen() as PlayScreen)?.updateCups(data)
   }
   
   /**

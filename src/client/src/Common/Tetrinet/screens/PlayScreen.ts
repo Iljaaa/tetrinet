@@ -30,6 +30,8 @@ import {
   SearchForAGame,
   Paused
 } from "../textures";
+import {Cup} from "../models/Cup";
+import {CupsDataCollection} from "../../../Canvas";
 
 
 /**
@@ -44,12 +46,7 @@ export interface PlayScreenEventListener
   onLineCleared: (numberOfLines:number) => void
 
   /**
-   *
-   */
-  // onSendBonusToMe: () => void,
-
-  /**
-   * Send bonus field to opponent
+   * Send bonus to some one
    */
   onSendBonusToOpponent: (bonus:Bonus, opponentIndex:number) => void,
   
@@ -60,13 +57,20 @@ export interface PlayScreenEventListener
 }
 
 /**
+ * Cups collection
+ */
+export interface CupsCollection {
+  [index: string]: Cup
+}
+
+
+/**
  * @vaersion 0.0.1
  */
 export class PlayScreen extends WebGlScreen implements CupEventListener, WebInputEventListener
 {
   /**
    * Cup object
-   * @private
    */
   private readonly _cup: CupWithFigureImpl;
 
@@ -75,8 +79,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * for temp test
    * @private
    */
-  private readonly _opponentCup: CupImpl
-  
+  // private readonly _opponentCup: CupImpl
+  private readonly _cups: CupsCollection
+
   /**
    * Render
    * @private
@@ -163,8 +168,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // create cup object
     this._cup =  new CupWithFigureImpl(this);
 
-    // your opponent cup
-    this._opponentCup = new CupImpl();
+    // init cups collection
+    // this._opponentCup = new CupImpl();
+    this._cups = {}
 
     // init textures
     this.searchForTexture = new SearchForAGame();
@@ -312,14 +318,28 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
 
   /**
+   * Update cups,
+   * here already filtered opponent cup
+   * @param data
+   */
+  updateCups (data:CupsDataCollection) {
+    Object.keys(data).forEach((playerId:string) => {
+      if (!this._cups[playerId]) this._cups[playerId] = new CupImpl();
+      const cd = data[playerId]
+      this._cups[playerId].setFields(cd.fields)
+      this._cups[playerId].setState(cd.state)
+    })
+  }
+
+  /*
    * Set opponent cup
    * @param o
    */
-  setOpponentCup (o:CupData) {
+  // setOpponentCup (o:CupData) {
     //
-    this._opponentCup.setFields(o.fields)
-    this._opponentCup.setState(o.state)
-  }
+    // this._opponentCup.setFields(o.fields)
+    // this._opponentCup.setState(o.state)
+  // }
   
   /**
    * Update cup
@@ -368,12 +388,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cupRenderer?.setPosition(32, 32)
     this._cupRenderer?.renderCupWithFigure(this._cup);
     
-    // render opponent
-    // this._cupRenderer?.setBlockSize(16);
-    this._cupRenderer?.setCupSize(CupSize.small16)
-    // todo: move position out of the screen
-    this._cupRenderer?.setPosition(400, 32);
-    this._cupRenderer?.renderCup(this._opponentCup);
+    // render opponents cups
+    Object.keys(this._cups).forEach((playerId:string, index:number) => {
+      // todo: calculate position by index
+      if (this._cups[playerId]) {
+        this._cupRenderer?.setCupSize(CupSize.small16)
+        // todo: move position out of the screen
+        this._cupRenderer?.setPosition(400 + (400 * index), 32);
+        this._cupRenderer?.renderCup(this._cups[playerId]);
+      }
+    })
+
     
     // render next figure
     this.presentNextFigure(gl);

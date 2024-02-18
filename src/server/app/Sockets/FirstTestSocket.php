@@ -2,7 +2,6 @@
 
 namespace App\Sockets;
 
-use App\Common\Connection;
 use App\Common\Helper;
 use App\Common\PoolOfParties;
 use App\Common\Types\BonusType;
@@ -248,8 +247,9 @@ class FirstTestSocket implements MessageComponentInterface
             'yourSocketId' => $conn->socketId
         ]));
 
+
         // only two players and the pull is full
-        if (count($this->duelPlayersPool) >= 2)
+        if (count($this->duelPlayersPool) >= 3)
         {
             // $party = new Party();
             $party = $this->partiesPool->createParty();
