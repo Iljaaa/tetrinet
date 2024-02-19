@@ -8,6 +8,7 @@ import {Figure} from "./models/Figure";
 import {CupState} from "./types/CupState";
 import {GameOver} from "./textures/GameOver";
 import {WinnerTexture} from "./textures/WinnerTexture";
+import {Numbers} from "./textures/Numbers";
 
 export enum CupSize {
   small16 = 'small16',
@@ -36,19 +37,6 @@ export class CupRenderer2
   //   x: 32,
   //   y: 32
   // }
-  
-  /**
-   * Block size
-   * @private
-   */
-  private blockSize:number = 32;
-
-
-
-  /**
-   * Background vertices array
-   */
-  private _background: Vertices;
 
   /**
    *
@@ -56,6 +44,17 @@ export class CupRenderer2
    */
   private gameOverTexture:GameOver;
   private winnerTexture:WinnerTexture;
+  
+  /**
+   * Block size
+   * @private
+   */
+  private blockSize:number = 32;
+
+  /**
+   * Background vertices array
+   */
+  private _background: Vertices;
 
   /**
    * Game over vertices array
@@ -71,7 +70,13 @@ export class CupRenderer2
    * Temp field for draw fields
    */
   private _block: Vertices;
-  
+
+  /**
+   * Left position on cup index
+   * @private
+   */
+  private _indexLeftPosition: number = 320
+
   constructor(graphic:WebGlGraphics, cup:CupImpl) {
     this.graphic = graphic;
     
@@ -155,7 +160,7 @@ export class CupRenderer2
     this._background = new Vertices(false, true);
     this._background.setVertices(Vertices.createTextureVerticesArray(
       0, 0, cupWidth, cupHeight,
-      0, 0, cupWidth, cupHeight
+      0, 0, 320, 640
     ))
 
     // calculate game ove position
@@ -174,6 +179,8 @@ export class CupRenderer2
         // 320, 192, 320, 64
         this.winnerTexture.texX, this.winnerTexture.texY, this.winnerTexture.texWidth, this.winnerTexture.texHeight
     ))
+
+    this._indexLeftPosition = 320;
 
   }
   
@@ -211,6 +218,9 @@ export class CupRenderer2
 
     // render cup blocks
     this.presentCupBlocks(gl, cup);
+
+    // render index
+    this.presentCupIndex(gl, cup);
 
     // this.presentSpecialBlocks();
 
@@ -365,6 +375,39 @@ export class CupRenderer2
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._gameOverVertices.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, this._gameOverVertices.getVerticesCount());
+  }
+
+
+  /**
+   * Render _background
+   * @param gl
+   * @private
+   */
+  private presentCupIndex (gl:WebGL2RenderingContext, cup:Cup)
+  {
+    // // let cupWidth = cup.getWidthInCells() * this.blockSize
+    // let cupWidth = this.cupSizeInCells.width * this.blockSize
+    // // let cupHeight = cup.getHeightInCells() * this.blockSize
+    // let cupHeight = this.cupSizeInCells.height * this.blockSize
+    //
+    // // in _background we use only texture
+    // this._background = new Vertices(false, true);
+    // this._background.setVertices(Vertices.createTextureVerticesArray(
+    //   0, 0, cupWidth, cupHeight,
+    //   0, 0, cupWidth, cupHeight
+    // ))
+
+    // move cup
+    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
+
+    this._block.setVertices(Vertices.createTextureVerticesArray(
+      8, 0, 16, 32,
+      // 320, 192, 320, 64
+      Numbers.one.texX, Numbers.one.texY, Numbers.one.texWidth, Numbers.one.texHeight
+    ))
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, this._block.getVerticesCount())
   }
 
   /**

@@ -1,5 +1,8 @@
 import {Sprite} from "../../framework/Sprite";
 
+/**
+ * todo: make static
+ */
 export class GameOver extends Sprite {
 
   constructor() {
