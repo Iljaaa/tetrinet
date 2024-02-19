@@ -383,9 +383,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     WebGlProgramManager.sUseTextureProgram(gl);
     
     // render cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
-    // todo: move position out of the screen
-    this._cupRenderer?.setPosition(32, 32)
+    // this._cupRenderer?.setPosition(32, 32)
     this._cupRenderer?.renderCupWithFigure(this._cup);
     
     // render opponents cups
@@ -393,8 +393,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       // todo: calculate position by index
       if (this._cups[playerId]) {
         this._cupRenderer?.setCupSize(CupSize.small16)
+        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 400 + (400 * index), 32);
         // todo: move position out of the screen
-        this._cupRenderer?.setPosition(400 + (400 * index), 32);
+        // this._cupRenderer?.setPosition(400 + (400 * index), 32);
         this._cupRenderer?.renderCup(this._cups[playerId]);
       }
     })

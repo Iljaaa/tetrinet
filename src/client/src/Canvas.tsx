@@ -43,7 +43,7 @@ type State =
   /**
    * this is your socket id
    */
-  socketId: string
+  playerId: string
 }
 
 /**
@@ -82,7 +82,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   public state:State = {
     partyId: "",
-    socketId: "",
+    playerId: "",
     score: 0
   }
 
@@ -102,8 +102,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is mapping keys to index inside party
    */
-  // private partyIndexToSocketId:Array<string> = [];
-  private partyIndexToSocketId:KeysPlayerMap = {};
+  private partyIndexToplayerId:KeysPlayerMap = {};
 
   constructor(props: { }, context: any)
   {
@@ -167,8 +166,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log('Canvas.onSendBonusToOpponent', bonus, opponentIndex)
 
     // try to fine opponent socket id in the party
-    const targetPlayerId = this.partyIndexToSocketId[opponentIndex]
-    console.log('targetSocketId', targetPlayerId)
+    const targetPlayerId = this.partyIndexToplayerId[opponentIndex]
+    console.log('targetplayerId', targetPlayerId)
 
     // when opponent not found
     if (!targetPlayerId) return;
@@ -328,11 +327,11 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   onJoinResponse = (data:StartResponse) =>
   {
-    // todo here we get a socketId
+    // todo here we get a playerId
     console.log ('onJoinResponse', data);
 
     this.playerId = data.yourSocketId
-    this.setState({socketId: data.yourSocketId})
+    this.setState({playerId: data.yourSocketId})
 
     // set listener when game starts
     SocketSingleton.getInstance()?.setListener(this);
@@ -416,7 +415,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.partyId = data.partyId
 
     // clear mapping array
-    this.partyIndexToSocketId = {};
+    this.partyIndexToplayerId = {};
 
     /**
      * key index of player
@@ -429,7 +428,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       const arrayKey = parseInt(p)
       const it = data.party[arrayKey]
       if (it.socketId !== this.playerId) {
-        this.partyIndexToSocketId[i] = it.socketId
+        this.partyIndexToplayerId[i] = it.socketId
         i++
       }
     })
@@ -437,7 +436,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     // todo: init opponent cups in the game, may be it is not necessary
 
     // calculate my index in the party
-    // also calculate map of indexes with socketId
+    // also calculate map of indexes with playerId
 
     // save party data
     this.setState({
@@ -556,8 +555,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
           <div style={{display: "flex", alignItems: "center"}}>
             <div>score <b>{this.state.score}</b></div>
             <div style={{margin: "0 0 0 1rem"}}>state: <b>{this.state.currentGameState}</b></div>
-            <div style={{margin: "0 0 0 1rem"}}>party id: <b>{this.state.partyId}</b></div>
-            <div style={{margin: "0 0 0 1rem"}}>socket id: <b>{this.state.socketId}</b></div>
+            <div style={{margin: "0 0 0 1rem"}}>partyId: <b>{this.state.partyId}</b></div>
+            <div style={{margin: "0 0 0 1rem"}}>playerId: <b>{this.state.playerId}</b></div>
           </div>
         </div>
       </div>

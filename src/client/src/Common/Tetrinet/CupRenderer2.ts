@@ -32,12 +32,11 @@ export class CupRenderer2
   
   /**
    * Cup position
-   * todo: remove position from this object
    */
-  private position = {
-    x: 32,
-    y: 32
-  }
+  // private position = {
+  //   x: 32,
+  //   y: 32
+  // }
   
   /**
    * Block size
@@ -118,16 +117,15 @@ export class CupRenderer2
     ))
   }
   
-  /**
+  /*
    * Set render position
-   * todo: remove it outside cup
    * @param x
    * @param y
    */
-  public setPosition(x:number, y:number){
-    this.position.x = x;
-    this.position.y = y;
-  }
+  // public setPosition(x:number, y:number){
+  //   this.position.x = x;
+  //   this.position.y = y;
+  // }
   
   /*
    * Set block size
@@ -233,7 +231,7 @@ export class CupRenderer2
   private presentCupBlocks(gl: WebGL2RenderingContext, cup:Cup)
   {
     // move cup
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
+    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
 
     // draw cup bodies
     const fields = cup.getFields()
@@ -348,7 +346,7 @@ export class CupRenderer2
     // ))
 
     // move cup
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
+    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._background.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, this._background.getVerticesCount())
