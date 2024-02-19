@@ -562,7 +562,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       </div>
 
       <div>
-        <canvas id="canvas" width={1000} height={704} style={{border: "solid 2px orange"}} ref={this._canvas}/>
+        <canvas id="canvas" width={1000} height={750} style={{border: "solid 2px orange"}} ref={this._canvas}/>
       </div>
     </div>
   }

@@ -32,6 +32,8 @@ import {
 } from "../textures";
 import {Cup} from "../models/Cup";
 import {CupsDataCollection} from "../../../Canvas";
+import {SpecialBG} from "../textures/SpecialBG";
+import {NextBG} from "../textures/NextBG";
 
 
 /**
@@ -104,7 +106,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Position of left bottom point of next figure
    * @private
    */
-  private nextFigurePosition:Coords = new Coords(352, 512);
+  private nextFigurePosition:Coords = new Coords(370, 32);
   
   /**
    * Timer for next down
@@ -157,6 +159,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   private searchForTexture:SearchForAGame;
   private pausedTexture:Paused;
+  private specialBG:SpecialBG;
+  private nextBG:NextBG;
 
   /**
    * In this constructor we create cup
@@ -175,6 +179,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // init textures
     this.searchForTexture = new SearchForAGame();
     this.pausedTexture = new Paused();
+    this.specialBG = new SpecialBG();
+    this.nextBG = new NextBG();
 
     // generate next figure
     // this._nextFigure = this.generateNewFigure();
@@ -393,7 +399,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       // todo: calculate position by index
       if (this._cups[playerId]) {
         this._cupRenderer?.setCupSize(CupSize.small16)
-        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 400 + (400 * index), 32);
+        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 576 + (400 * index), 32);
         // todo: move position out of the screen
         // this._cupRenderer?.setPosition(400 + (400 * index), 32);
         this._cupRenderer?.renderCup(this._cups[playerId]);
@@ -506,6 +512,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // move cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)
 
+    // draw next bg
+    this._block.setVertices(Vertices.createTextureVerticesArray(
+      0, 0, 160, 160,
+      this.nextBG.texX, this.nextBG.texY, this.nextBG.texWidth, this.nextBG.texHeight
+    ))
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+
+
     const fields:Array<Array<boolean>> = this._nextFigure.getPreviewFields();
 
     const BLOCK_SIZE = 32;
@@ -517,10 +534,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     const cols = fields[0].length
 
     // calculate left margin
-    const leftMargin = ((4 - cols) / 2) * BLOCK_SIZE;
+    const leftMargin = ((4 - cols) / 2) * BLOCK_SIZE + 16;
 
     // calculate left margin
-    const bottomMargin = ((4 - rows) / 2) * BLOCK_SIZE;
+    const bottomMargin = ((4 - rows) / 2) * BLOCK_SIZE + 16;
 
     // for (let r = 0; r < rows; r++) {
     fields.reverse().forEach((row:Array<boolean>, rowIndex:number) => {
@@ -566,28 +583,33 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   private presentBonuses (gl: WebGL2RenderingContext){
 
-    // move cup
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x + 100, this.nextFigurePosition.y + 100)
+    // move to position
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 685)
+
+    // draw bg
+    this._block.setVertices(Vertices.createTextureVerticesArray(
+      0, 0, 320, 32,
+      this.specialBG.texX, this.specialBG.texY, this.specialBG.texWidth, this.specialBG.texHeight
+    ))
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
 
     // const fields:Array<Array<boolean>> = this._nextFigure.getPreviewFields();
 
     const BLOCK_SIZE = 32;
-
-
     // for (let r = 0; r < rows; r++) {
     this.bonuses.forEach((value:number, bonusIndex:number) =>
     {
       const spriteLeft = 320 + value * BLOCK_SIZE;
-      const left = bonusIndex * BLOCK_SIZE;
+      const left = bonusIndex * BLOCK_SIZE -2;
 
       this._block.setVertices(Vertices.createTextureVerticesArray(
-          left, 0, BLOCK_SIZE, BLOCK_SIZE,
+          left, -2, BLOCK_SIZE, BLOCK_SIZE,
           spriteLeft, 128, BLOCK_SIZE, BLOCK_SIZE
       ))
 
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-
-      // draw here
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     })
 

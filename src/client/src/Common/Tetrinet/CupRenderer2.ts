@@ -5,7 +5,6 @@ import {CupImpl} from "./models/CupImpl";
 import {Coords} from "./math/Coords";
 import {Cup} from "./models/Cup";
 import {Figure} from "./models/Figure";
-import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
 import {CupState} from "./types/CupState";
 import {GameOver} from "./textures/GameOver";
 import {WinnerTexture} from "./textures/WinnerTexture";
