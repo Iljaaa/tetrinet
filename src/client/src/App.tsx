@@ -21,7 +21,6 @@ function App()
           <ul>
             <li>Prepare eight people party</li>
             <li>extend Super blocks</li>
-            <li>Display bonuses nice</li>
             <li>Create party for many peoples</li>
             <li>stop game when connection is lost</li>
             <li>stop game when focus is lost</li>

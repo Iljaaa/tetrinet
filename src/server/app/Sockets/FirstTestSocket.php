@@ -249,7 +249,7 @@ class FirstTestSocket implements MessageComponentInterface
 
 
         // only two players and the pull is full
-        if (count($this->duelPlayersPool) >= 2)
+        if (count($this->duelPlayersPool) >= 3)
         {
             // $party = new Party();
             $party = $this->partiesPool->createParty();

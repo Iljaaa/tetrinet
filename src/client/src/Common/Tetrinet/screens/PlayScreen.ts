@@ -65,6 +65,17 @@ export interface CupsCollection {
   [index: string]: Cup
 }
 
+interface CupsPositionInterface {
+  [index: number]: {x:number, y: number}
+}
+
+const CupsPosition:CupsPositionInterface = {
+  0: {x: 576, y: 32},
+  1: {x: 768, y: 32},
+  2: {x: 384, y: 384},
+  3: {x: 576, y: 384},
+  4: {x: 768, y: 384},
+}
 
 /**
  * @vaersion 0.0.1
@@ -396,10 +407,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // render opponents cups
     Object.keys(this._cups).forEach((playerId:string, index:number) => {
-      // todo: calculate position by index
       if (this._cups[playerId]) {
         this._cupRenderer?.setCupSize(CupSize.small16)
-        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 576 + (400 * index), 32);
+        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
         // todo: move position out of the screen
         // this._cupRenderer?.setPosition(400 + (400 * index), 32);
         this._cupRenderer?.renderCup(this._cups[playerId]);
