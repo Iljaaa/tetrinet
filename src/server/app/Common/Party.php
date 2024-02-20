@@ -198,9 +198,6 @@ class Party
             if ($playerId == $conn->socketId){
                 $p->setOffline();
             }
-//            if ($p->getConnection() === $conn) {
-//                $p->setOffline();
-//            }
         }
 
         // is all players offline we party should be terminated

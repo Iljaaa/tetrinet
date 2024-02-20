@@ -4,6 +4,7 @@ namespace App\Sockets;
 
 use App\Common\Helper;
 use App\Common\PoolOfParties;
+use App\Common\PoolOfPlayers;
 use App\Common\Types\BonusType;
 use App\Common\Types\CupState;
 use App\Common\Types\MessageType;
@@ -19,9 +20,8 @@ class FirstTestSocket implements MessageComponentInterface
 
     /**
      * Pool of player for play
-     * @var ConnectionInterface[]
      */
-    private array $duelPlayersPool = [];
+    private PoolOfPlayers $playersPool;
 
     /*
      * This is play party
@@ -40,7 +40,9 @@ class FirstTestSocket implements MessageComponentInterface
      */
     public function __construct()
     {
+        $this->info('Socket created');
         $this->partiesPool = new PoolOfParties();
+        $this->playersPool = new PoolOfPlayers();
     }
 
 
@@ -50,13 +52,13 @@ class FirstTestSocket implements MessageComponentInterface
      */
     public function onOpen(ConnectionInterface $conn): void
     {
-        Log::channel('socket')->info(__METHOD__);
+        $this->info(__METHOD__);
 
         // generate socket is
         $conn->socketId = Helper::random();
 
         //
-        Log::channel('socket')->info(sprintf('Connection open with %s', $conn->socketId));
+        $this->info(sprintf('Connection open with %s', $conn->socketId));
 
         // what this code do?
         // $connection->app = App::findById('YOUR_APP_ID');
@@ -71,22 +73,13 @@ class FirstTestSocket implements MessageComponentInterface
      */
     public function onClose(ConnectionInterface $conn): void
     {
-        Log::channel('socket')->info(__METHOD__, ['socketId' =>  $conn->socketId]);
+        $this->info(__METHOD__, ['socketId' =>  $conn->socketId]);
 
-        // looking for connection in players pool
-        // todo: refactor to socketId
-        $index = array_search($conn, $this->duelPlayersPool);
-        if ($index > -1) {
-            Log::channel('socket')->info('connection found in duel pull', ['index' => $index, 'size' => count($this->duelPlayersPool)]);
-            // filter from pool out connection
-            $this->duelPlayersPool = array_filter($this->duelPlayersPool, fn (ConnectionInterface $c) =>  $c != $conn);
-            Log::channel('socket')->info('after filter', ['size' => count($this->duelPlayersPool)]);
-        }
+        // if connection was in search pool
+        $this->playersPool->onConnectionClose($conn);
 
         // when connection closed we mark party as paused
         $party = $this->partiesPool->findPartyByPlayerId($conn->socketId);
-        // $party = $this->party;
-        // if ($party && $party->isConnectionBelongs($conn))
         if ($party)
         {
             // set party on pause
@@ -104,9 +97,6 @@ class FirstTestSocket implements MessageComponentInterface
             {
                 // this is new method
                 $this->partiesPool->terminatePartyByPartyId($party->partyId);
-
-                // old close party method
-                // $this->onAllPlayersOffline();
             });
         }
     }
@@ -125,7 +115,7 @@ class FirstTestSocket implements MessageComponentInterface
 //        // clear party
 //        $this->party = null;
 //
-//        Log::channel('socket')->info('party AAAAA terminated');
+//        $this->info('party AAAAA terminated');
 //    }
 
     /**
@@ -135,8 +125,8 @@ class FirstTestSocket implements MessageComponentInterface
      */
     public function onError(ConnectionInterface $conn, \Exception $e): void
     {
-        Log::channel('socket')->info(__METHOD__);
-        Log::channel('socket')->info($e->getMessage());
+        $this->info(__METHOD__);
+        $this->info($e->getMessage());
     }
 
     /**
@@ -146,18 +136,18 @@ class FirstTestSocket implements MessageComponentInterface
      */
     public function onMessage(ConnectionInterface $conn, MessageInterface $msg):void
     {
-        Log::channel('socket')->info(__METHOD__);
+        $this->info(__METHOD__);
 
         $data = json_decode($msg->getPayload(), true);
-        Log::channel('socket')->info("data", $data);
+        $this->info("data", $data);
 
         if (empty($data['type'])) {
-            Log::channel('socket')->info("message.type is empty, ignore it");
+            $this->info("message.type is empty, ignore it");
             return;
         }
 
         $messageType = MessageType::from($data['type']);
-        Log::channel('socket')->info(sprintf("message.type = %s", $messageType->value));
+        $this->info(sprintf("message.type = %s", $messageType->value));
 
         switch ($messageType) {
             // case MessageType::start: $this->processStartParty($conn, $data); break;
@@ -172,8 +162,8 @@ class FirstTestSocket implements MessageComponentInterface
         // deprecated method
 //        if ($data['type'] == 'play' && !empty($data['cup']))
 //        {
-//            Log::channel('socket')->info("type:play");
-//            // Log::channel('socket')->info("save", $data['cup']);
+//            $this->info("type:play");
+//            // $this->info("save", $data['cup']);
 //
 //            // add connection to the party
 //            $this->party[] = $conn;
@@ -191,13 +181,13 @@ class FirstTestSocket implements MessageComponentInterface
         // we start watching
 //        if ($data['type'] == 'watch')
 //        {
-//            Log::channel('socket')->info("type:watch");
+//            $this->info("type:watch");
 //
 //            // add connection to the party
 //            $this->party[] = $conn;
 //
 //            $data = json_decode(Redis::get('cup'), true);
-//            Log::channel('socket')->info("watch", $data ?? []);
+//            $this->info("watch", $data ?? []);
 //
 //            $conn->send(json_encode([
 //                'cup' => $data
@@ -214,7 +204,7 @@ class FirstTestSocket implements MessageComponentInterface
      */
 //    private function processStartParty (ConnectionInterface $connection, array $data):void
 //    {
-//        Log::channel('socket')->info(__METHOD__);
+//        $this->info(__METHOD__);
 //
 //        // create party id
 //        $party = new Party();
@@ -235,22 +225,25 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private function processJoinToParty (ConnectionInterface $conn, array $data): void
     {
-        Log::channel('socket')->info(__METHOD__);
-
-        // todo: check type of game and move to this pull
-        // add player to pool
-        $this->duelPlayersPool[] = $conn;
-        Log::channel('socket')->info('connection added to duel pool', ['poolSize' => count($this->duelPlayersPool)]);
+        $this->info(__METHOD__);
 
         // send answer to handshake with connection id
+        // todo: refactor to yourPlayerId
         $conn->send(json_encode([
             'yourSocketId' => $conn->socketId
         ]));
 
+        // in witch pool we should add user
+        $pool = $data['partyType'] ?? 'duel';
+        $this->info('connection added to '.$pool.' pool');
 
-        // only two players and the pull is full
-        if (count($this->duelPlayersPool) >= 3)
+        /**
+         * @param ConnectionInterface[] $players
+         * @return void
+         */
+        $onPoolReadyToMakeParty = function (array $players)
         {
+            // create party
             // $party = new Party();
             $party = $this->partiesPool->createParty();
             $this->partiesPool->addParty($party);
@@ -258,33 +251,32 @@ class FirstTestSocket implements MessageComponentInterface
             // $this->party = $party;
 
             // move players to party
-            foreach ($this->duelPlayersPool as $p) {
-                $party->addPlayer($p);
-            }
+            // foreach ($this->duelPlayersPool as $p) $party->addPlayer($p);
+            foreach ($players as $p) $party->addPlayer($p);
 
             // clean up pull
-            // todo: may be remove only added connections
-            $this->duelPlayersPool = [];
+            // $this->duelPlayersPool = [];
 
             // run game
             // $this->party->setGameState(GameState::running);
             $party->setGameRunning();
 
-            //
+            // collect party info
             $partyResponse = [];
-            foreach ($party->getPlayers() as $p) {
-                $partyResponse[] = [
-                    'socketId' => $p->getConnectionId(),
-                    // 'name' => '' this is musk be player name
-                ];
-            }
+            foreach ($party->getPlayers() as $p) $partyResponse[] = [
+                'socketId' => $p->getConnectionId(),
+            ];
 
             // send to all players information that game starts
             $party->sendToAllPlayers([
                 'type' => ResponseType::letsPlay,
                 'party' => $partyResponse // this is party description
             ]);
-        }
+        };
+
+        // add to pool
+        if ($pool === 'duel') $this->playersPool->addToDuels($conn, $onPoolReadyToMakeParty);
+        if ($pool === 'party') $this->playersPool->addToParty($conn, $onPoolReadyToMakeParty);
     }
 
     /**
@@ -294,7 +286,7 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private function processPause(ConnectionInterface $conn, array $data): void
     {
-        Log::channel('socket')->info(__METHOD__);
+        $this->info(__METHOD__);
 
         $partyId = $data['partyId'] ?? '';
 
@@ -320,7 +312,7 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private function processResume(ConnectionInterface $conn, array $data): void
     {
-        Log::channel('socket')->info(__METHOD__);
+        $this->info(__METHOD__);
 
         $partyId = $data['partyId'] ?? '';
 
@@ -352,29 +344,29 @@ class FirstTestSocket implements MessageComponentInterface
     {
         // player index in party
 //        if (!isset($data['partyIndex']) || $data['partyIndex'] == '') {
-//            Log::channel('socket')->info("Party index is not set, we ignore this set");
+//            $this->info("Party index is not set, we ignore this set");
 //            return;
 //        }
 //        $partyIndex = (int) $data['partyIndex'];
-//        Log::channel('socket')->info("partiIndex", ['partyIndex' => $partyIndex]);
+//        $this->info("partiIndex", ['partyIndex' => $partyIndex]);
 
         $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
         $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';
-        Log::channel('socket')->info("set", ['partyId' => $partyId, 'playerId' => $playerId]);
+        $this->info("set", ['partyId' => $partyId, 'playerId' => $playerId]);
 
         if (empty($partyId)){
-            Log::channel('socket')->info("Party id is empty, ignore request");
+            $this->info("Party id is empty, ignore request");
             return;
         }
 
         if (empty($playerId)){
-            Log::channel('socket')->info("Player id is empty, ignore request");
+            $this->info("Player id is empty, ignore request");
             return;
         }
 
         // global game state
 //        $state = GameState::from($data['state']) ; // play, pause, game over, ets
-//        Log::channel('socket')->info("gameState", [$state]);
+//        $this->info("gameState", [$state]);
 
         // $partyId = $data['partyId'] ?? '';
 
@@ -405,11 +397,11 @@ class FirstTestSocket implements MessageComponentInterface
 
         //
         $cupsResponse = $party->getCupsResponse();
-        Log::channel('socket')->info("response2", ['cupsResponse' => $cupsResponse]);
+        // $this->info("response", ['cupsResponse' => $cupsResponse]);
 
         // preparing cup data
 //        $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
-//        Log::channel('socket')->info("response", ['cupsData' => $cupsData]);
+//        $this->info("response", ['cupsData' => $cupsData]);
 
         // send data to all players
         $party->sendToAllPlayers([
@@ -439,7 +431,7 @@ class FirstTestSocket implements MessageComponentInterface
 //        $target = (int) $data['target'];
 //        $linesCount = (int) $data['linesCount'];
 //
-//        Log::channel('socket')->info("add line", [
+//        $this->info("add line", [
 //            // 'partyIndex' => $partyIndex,
 //            'source' => $source,
 //            'sourceId' => $conn->socketId,
@@ -450,7 +442,7 @@ class FirstTestSocket implements MessageComponentInterface
 //
 //        // here we need players for found the opponent and add line to him
 //        $players = $this->party->getPlayers();
-//        Log::channel('socket')->info("party", ['len' => count($players)]);
+//        $this->info("party", ['len' => count($players)]);
 //
 //        // found opponent
 //        $opponent = $this->findPlayerById($source);
@@ -506,7 +498,7 @@ class FirstTestSocket implements MessageComponentInterface
 
         $opponent = $party->findPlayerById($target);
 
-        Log::channel('socket')->info("send bonus", [
+        $this->info("send bonus", [
 //            'partyIndex' => $partyIndex,
 //            'source' => $source,
 //            'connectionSocketId' => $conn->socketId,
@@ -538,7 +530,7 @@ class FirstTestSocket implements MessageComponentInterface
 //    {
 //        // here we need players for found the opponent and add line to him
 //        $players = $this->party->getPlayers();
-//        // Log::channel('socket')->info("party", ['len' => count($players)]);
+//        // $this->info("party", ['len' => count($players)]);
 //
 //        // this is temporary code
 //        // we are searching opponent
@@ -554,5 +546,14 @@ class FirstTestSocket implements MessageComponentInterface
 //        return $opponentConnection;
 //    }
 
+    /**
+     * @param string $message
+     * @param array $data
+     * @return void
+     */
+    private function info (string $message, array $data = []) :void
+    {
+        Log::channel('socket')->info($message, $data);
+    }
 
 }

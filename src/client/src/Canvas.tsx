@@ -300,9 +300,9 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * Here we join to party
    */
-  onJoinClicked = () =>
+  onJoinToDuelClicked = () =>
   {
-    console.log ('onJoinClicked');
+    console.log ('onJoinToDuelClicked');
     
     // open socket connection
     // this.socket = new Socket();
@@ -311,6 +311,32 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       // send handshake and waiting our data
       const request:StartRequest = {
         type: RequestTypes.join,
+        partyType: 'duel',
+        partyId: '',
+        playerId: '',
+      }
+
+      SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
+
+      // SocketSingletone.getInstance()?.sendData(request)
+    })
+  }
+
+  /**
+   * Here we join to party
+   */
+  onJoinToPartyClicked = () =>
+  {
+    console.log ('onJoinToDuelClicked');
+
+    // open socket connection
+    // this.socket = new Socket();
+    SocketSingleton.reOpenConnection(() => {
+
+      // send handshake and waiting our data
+      const request:StartRequest = {
+        type: RequestTypes.join,
+        partyType: 'party',
         partyId: '',
         playerId: '',
       }
@@ -541,7 +567,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
         <div style={{display: "flex", alignItems: "center", flex: "1"}}>
           <div>
             <button onClick={this.onPlayClicked} disabled={true}>Play</button>
-            <button onClick={this.onJoinClicked}>Join</button>
+            <button onClick={this.onJoinToDuelClicked}>Duel</button>
+            <button onClick={this.onJoinToPartyClicked}>Party 5</button>
           </div>
           <div>
             <button onClick={this.onPauseClicked}>Pause</button>
