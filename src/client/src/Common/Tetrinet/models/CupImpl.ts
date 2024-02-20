@@ -5,6 +5,9 @@ import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
 
 
+/**
+ * todo: split to cup and cup with super blocks
+ */
 export class CupImpl implements Cup
 {
   /**
@@ -58,6 +61,7 @@ export class CupImpl implements Cup
 
     // this is from top
     // temp cup state
+
     this._state.fields[150] = 1;
     this._state.bonuses[150] = 0;
 
@@ -145,11 +149,18 @@ export class CupImpl implements Cup
   }
 
   /**
-   * todo: refactor coords object to x and y
    * @param c
    */
   getCellIndexByCoords(c: Coords): number {
-      return c.y * this.widthInCells + c.x
+      // return c.y * this.widthInCells + c.x
+      return this.getCellIndex(c.x, c.y)
+  }
+
+  /**
+   * Cell index
+   */
+  getCellIndex(x: number, y:number): number {
+      return y * this.widthInCells + x
   }
   
   getCoordsByIndex(cellIndex: number): Coords {
@@ -158,7 +169,43 @@ export class CupImpl implements Cup
       y:  Math.floor(cellIndex / this.widthInCells)
     }
   }
-  
+
+  /**
+   * Move block if it possible
+   * @param sourcePosition
+   * @param destPosition
+   * @private
+   */
+  public copyBlockByCoords (sourcePosition:Coords, destPosition:Coords)
+  {
+    // move block
+    if (destPosition.x < 0) return;
+    if (destPosition.x > this.widthInCells - 1) return;
+    if (destPosition.y < 0) return;
+    if (destPosition.y > this.heightInCells -1) return;
+
+    const sourceIndex = this.getCellIndexByCoords(sourcePosition)
+    if (this._state.fields[sourceIndex] !== -1) {
+      const destIndex = this.getCellIndexByCoords(destPosition)
+
+      this._state.fields[destIndex] = this._state.fields[sourceIndex]
+      this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
+    }
+  }
+
+  public clearBlockByCoords (position:Coords) {
+    this.clearBlock(this.getCellIndex(position.x, position.y))
+  }
+
+  /**
+   * Clear block
+   * @param index
+   */
+  public clearBlock (index:number) {
+    this._state.fields[index] = -1;
+    this._state.bonuses[index] = -1;
+  }
+
   /**
    *
    * @param fIndex
@@ -169,6 +216,8 @@ export class CupImpl implements Cup
   }
 
   /**
+   *
+   * @deprecated todo: move to play screen
    * This method add row bellow
    * @param countLines Number of lines to add
    */
@@ -180,6 +229,7 @@ export class CupImpl implements Cup
   }
 
   /**
+   * @deprecated todo: move to play screen
    * Add one random line
    * @private
    */

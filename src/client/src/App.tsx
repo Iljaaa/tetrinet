@@ -36,6 +36,7 @@ function App()
             <li>bug: The A froze on the opponent cup</li>
             <li>bug: If any player game is over you still can throw him a special block</li>
             <li>bug: on small cup background draws incorrect</li>
+            <li>extend block bomb</li>
           </ul>
         </div>
       </div>

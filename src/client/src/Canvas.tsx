@@ -318,7 +318,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
       SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
 
-      // SocketSingletone.getInstance()?.sendData(request)
+      // SocketSingleton.getInstance()?.sendData(request)
     })
   }
 
@@ -343,7 +343,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
 
       SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
 
-      // SocketSingletone.getInstance()?.sendData(request)
+      // SocketSingleton.getInstance()?.sendData(request)
     })
   }
 
@@ -544,7 +544,6 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   }
 
   processGetBonus (data:GetBonusMessage) {
-    // this.game.realiseBonus(data.bonus);
     TetrinetSingleton.getInstance().realiseBonus(data.bonus);
   }
 
