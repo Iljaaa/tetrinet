@@ -22,6 +22,7 @@ import {Bonus} from "./Common/Tetrinet/types/Bonus";
 import {SendBonusRequest} from "./Common/Tetrinet/types/requests/SendBonusRequest";
 import {GetBonusMessage} from "./Common/Tetrinet/types/messages/GetBonusMessage";
 import {TetrinetSingleton} from "./Common/TetrinetSingleton";
+import {ChatItem} from "./Common/Tetrinet/types/ChatItem";
 
 type State =
 {
@@ -102,7 +103,12 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   /**
    * This is mapping keys to index inside party
    */
-  private partyIndexToplayerId:KeysPlayerMap = {};
+  private partyIndexToPlayerId:KeysPlayerMap = {};
+
+  /**
+   * Chat and log
+   */
+  private chat:Array<ChatItem> = [];
 
   constructor(props: { }, context: any)
   {
@@ -166,7 +172,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     console.log('Canvas.onSendBonusToOpponent', bonus, opponentIndex)
 
     // try to fine opponent socket id in the party
-    const targetPlayerId = this.partyIndexToplayerId[opponentIndex]
+    const targetPlayerId = this.partyIndexToPlayerId[opponentIndex]
     console.log('targetplayerId', targetPlayerId)
 
     // when opponent not found
@@ -298,52 +304,40 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
   }
 
   /**
-   * Here we join to party
+   * Here we join duel
    */
   onJoinToDuelClicked = () =>
   {
-    console.log ('onJoinToDuelClicked');
-    
-    // open socket connection
-    // this.socket = new Socket();
-    SocketSingleton.reOpenConnection(() => {
-
-      // send handshake and waiting our data
-      const request:StartRequest = {
-        type: RequestTypes.join,
-        partyType: 'duel',
-        partyId: '',
-        playerId: '',
-      }
-
-      SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
-
-      // SocketSingleton.getInstance()?.sendData(request)
-    })
+    console.log ('onJoinToDuelClicked')
+    this.joinToParty('duel')
   }
 
   /**
-   * Here we join to party
+   * Here we join party
    */
   onJoinToPartyClicked = () =>
   {
     console.log ('onJoinToDuelClicked');
+    this.joinToParty('party')
+  }
 
-    // open socket connection
-    // this.socket = new Socket();
+  /**
+   * Join to party.
+   * party type: party, duel
+   * @param partyType
+   */
+  joinToParty (partyType:string)
+  {
+    console.log ('onJoinToDuelClicked')
     SocketSingleton.reOpenConnection(() => {
-
       // send handshake and waiting our data
       const request:StartRequest = {
         type: RequestTypes.join,
-        partyType: 'party',
+        partyType: partyType,
         partyId: '',
         playerId: '',
       }
-
       SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
-
-      // SocketSingleton.getInstance()?.sendData(request)
     })
   }
 
@@ -353,11 +347,8 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
    */
   onJoinResponse = (data:StartResponse) =>
   {
-    // todo here we get a playerId
-    console.log ('onJoinResponse', data);
-
-    this.playerId = data.yourSocketId
-    this.setState({playerId: data.yourSocketId})
+    this.playerId = data.yourPlayerId
+    this.setState({playerId: data.yourPlayerId})
 
     // set listener when game starts
     SocketSingleton.getInstance()?.setListener(this);
@@ -441,7 +432,7 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
     this.partyId = data.partyId
 
     // clear mapping array
-    this.partyIndexToplayerId = {};
+    this.partyIndexToPlayerId = {};
 
     /**
      * key index of player
@@ -454,15 +445,10 @@ export class Canvas extends React.PureComponent<{}, State> implements PlayScreen
       const arrayKey = parseInt(p)
       const it = data.party[arrayKey]
       if (it.socketId !== this.playerId) {
-        this.partyIndexToplayerId[i] = it.socketId
+        this.partyIndexToPlayerId[i] = it.socketId
         i++
       }
     })
-
-    // todo: init opponent cups in the game, may be it is not necessary
-
-    // calculate my index in the party
-    // also calculate map of indexes with playerId
 
     // save party data
     this.setState({

@@ -3,12 +3,15 @@
 namespace App\Sockets;
 
 use App\Common\Helper;
+use App\Common\Messages\JoinToPartyMessage;
+use App\Common\Messages\LetsPlayMessage;
 use App\Common\PoolOfParties;
 use App\Common\PoolOfPlayers;
 use App\Common\Types\BonusType;
 use App\Common\Types\CupState;
 use App\Common\Types\MessageType;
 use App\Common\Player;
+use App\Common\Types\PartyType;
 use App\Common\Types\ResponseType;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;
@@ -227,15 +230,17 @@ class FirstTestSocket implements MessageComponentInterface
     {
         $this->info(__METHOD__);
 
-        // send answer to handshake with connection id
-        // todo: refactor to yourPlayerId
-        $conn->send(json_encode([
-            'yourSocketId' => $conn->socketId
-        ]));
-
         // in witch pool we should add user
-        $pool = $data['partyType'] ?? 'duel';
-        $this->info('connection added to '.$pool.' pool');
+        $pool = PartyType::from($data['partyType'] ?? 'duel');
+        $this->info('connection added to '.$pool->value.' pool');
+
+        // create message
+        $m = (new JoinToPartyMessage())
+            ->setPartyType($pool)
+            ->setYourPlayerId($conn->socketId);
+
+        // send answer to handshake with connection id
+        $conn->send($m->getDataAsString());
 
         /**
          * @param ConnectionInterface[] $players
@@ -261,22 +266,20 @@ class FirstTestSocket implements MessageComponentInterface
             // $this->party->setGameState(GameState::running);
             $party->setGameRunning();
 
-            // collect party info
-            $partyResponse = [];
-            foreach ($party->getPlayers() as $p) $partyResponse[] = [
-                'socketId' => $p->getConnectionId(),
-            ];
+            // create message
+            $m = new LetsPlayMessage($party);
+            $party->sendMessageToAllPlayers($m);
 
             // send to all players information that game starts
-            $party->sendToAllPlayers([
-                'type' => ResponseType::letsPlay,
-                'party' => $partyResponse // this is party description
-            ]);
+//            $party->sendToAllPlayers([
+//                'type' => ResponseType::letsPlay,
+//                'party' => $partyResponse // this is party description
+//            ]);
         };
 
         // add to pool
-        if ($pool === 'duel') $this->playersPool->addToDuels($conn, $onPoolReadyToMakeParty);
-        if ($pool === 'party') $this->playersPool->addToParty($conn, $onPoolReadyToMakeParty);
+        if ($pool === PartyType::duel) $this->playersPool->addToDuels($conn, $onPoolReadyToMakeParty);
+        if ($pool === PartyType::party) $this->playersPool->addToParty($conn, $onPoolReadyToMakeParty);
     }
 
     /**

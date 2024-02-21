@@ -2,6 +2,7 @@
 
 namespace App\Common;
 
+use App\Common\Messages\Message;
 use App\Common\Types\PlayerState;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;
@@ -30,6 +31,11 @@ class Party
      */
     private array $players = [];
 
+    /**
+     * @var array
+     */
+    private array $chat = [];
+
     /*
      * Player cups
      * @var Cup[]
@@ -44,6 +50,10 @@ class Party
         // generate party id
         // $this->partyId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
         $this->partyId = Helper::random();
+
+        // add chat message
+        $this->chat[] = new ChatMessage('Party created.', 'Admin');
+
     }
 
     public function __destruct()
@@ -111,6 +121,18 @@ class Party
                 'yourIndex' => $index,
                 'partyId' => $this->partyId
             ])));
+        }
+    }
+
+    /**
+     * Send data to all players
+     * @param Message $m
+     * @return void
+     */
+    public function sendMessageToAllPlayers(Message $m): void {
+        $mString = $m->getDataAsString();
+        foreach ($this->players as $p) {
+            $p->getConnection()->send($mString);
         }
     }
 
@@ -217,6 +239,23 @@ class Party
         return array_map(function (Player $p):array {
             return $p->getCup()->createResponseData();
         }, $this->players);
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getChat (): array
+    {
+        return $this->chat;
+    }
+
+    /**
+     * @return array
+     */
+    public function getChatAssArray(): array
+    {
+        return array_map(fn (ChatMessage $m) => $m->asArray(), $this->chat);
     }
 
 }
