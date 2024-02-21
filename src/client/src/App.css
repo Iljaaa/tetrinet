@@ -16,9 +16,11 @@
 }
 
 .App-body {
-  border: solid 1px white;
-  background-color: navy;
-  box-shadow: rgba(255, 255, 255) 7px 7px 0 0;
+  /*background-color: #5fb9ba;*/
+  background-color: #008080;
+  border-radius: .25rem;
+  box-shadow: silver 0px 0px 5px 0;
+  margin-bottom: 2.5rem;
 }
 
 .App-link {

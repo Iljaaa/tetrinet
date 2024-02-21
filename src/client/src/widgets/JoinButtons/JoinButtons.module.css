@@ -3,21 +3,21 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem 0 2rem 0;
+    padding: 1.5rem 0 1.5rem 0;
 
     > div {
         margin: 0 1rem;
     }
 
     .JoinButton {
-        border: solid 2px black;
+        border: none;
         padding: 1rem 3rem;
         font-size: 24px;
-        background-color: silver;
-        box-shadow: rgba(255, 255, 255) 7px 7px 0 0;
+        background-color: whitesmoke;
+        box-shadow: #daa520 9px 9px 0 0;
 
         &:hover {
-            background-color: gray;
+            background-color: silver;
         }
 
         &:active {
