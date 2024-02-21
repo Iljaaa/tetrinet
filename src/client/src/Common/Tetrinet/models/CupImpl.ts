@@ -4,6 +4,23 @@ import {CupData} from "./CupData";
 import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
 
+/**
+ *
+ */
+export type CupEventListener =
+{
+  /**
+   * When lines cleared
+   * @param countLines
+   */
+  onLineCleared: (clearData:{countLines:number, bonuses: Array<number>}) => void,
+
+  /**
+   * When figure moved to cup
+   */
+  onFigureMovedToCup: () => void,
+}
+
 
 /**
  * todo: split to cup and cup with super blocks
@@ -25,6 +42,11 @@ export class CupImpl implements Cup
   protected heightInCells = 20;
 
   /**
+   * Event listener
+   */
+  protected listener: CupEventListener|null = null;
+
+  /**
    */
   protected _state:CupData = {
     state: CupState.online,
@@ -33,11 +55,13 @@ export class CupImpl implements Cup
     // bonusFields
   }
   
-  constructor()
+  constructor(listener:CupEventListener|null)
   {
+    if (listener) this.listener = listener
+
     // init field with start value
     // console.log ('CapClass.constructor');
-    this.cleanFields();
+    this.cleanBeforeNewGame();
   }
 
   getState(): CupState {
@@ -51,7 +75,7 @@ export class CupImpl implements Cup
   /**
    * Clean up field
    */
-  cleanFields ()
+  cleanBeforeNewGame ()
   {
     // clear bonuses
     this._state.bonuses = []
@@ -61,6 +85,10 @@ export class CupImpl implements Cup
 
     // this is from top
     // temp cup state
+
+    this._state.fields[100] = 1;
+    this._state.fields[102] = 1;
+    this._state.fields[103] = 0;
 
     this._state.fields[150] = 1;
     this._state.bonuses[150] = 0;
@@ -119,6 +147,52 @@ export class CupImpl implements Cup
     return this._state.bonuses;
   }
 
+  /**
+   * Get field info
+   * todo: refactor this method when we goes to objects
+   * todo: move this method to interface
+   * @param x
+   * @param y
+   */
+  getFieldByCoords(x: number, y:number):{field:number, bonus:number} {
+    return this.getFieldByIndex(this.getCellIndex(x, y));
+  }
+  /**
+   * Get field info
+   * todo: refactor this method when we goes to objects
+   * todo: move this method to interface
+   * @param index
+   */
+  getFieldByIndex(index:number):{field:number, bonus:number} {
+    return {
+      field: this._state.fields[index],
+      bonus: this._state.bonuses[index]
+    }
+  }
+
+  /**
+   * Set field info
+   * todo: refactor this method when we goes to objects
+   * todo: move this method to interface
+   * @param x
+   * @param y
+   * @param field
+   */
+  setFieldByCoordinates(x: number, y:number, field:{field:number, bonus:number}):void {
+    this.setFieldByIndex(this.getCellIndex(x, y), field);
+  }
+
+  /**
+   * Set field info
+   * todo: refactor this method when we goes to objects
+   * todo: move this method to interface
+   */
+  setFieldByIndex (index:number, field:{field:number, bonus:number}):void{
+    this._state.fields[index] = field.field
+    this._state.bonuses[index] = field.bonus
+  }
+
+
   getData = ():CupData => {
     return this._state;
   }
@@ -176,7 +250,7 @@ export class CupImpl implements Cup
    * @param destPosition
    * @private
    */
-  public copyBlockByCoords (sourcePosition:Coords, destPosition:Coords)
+  copyBlockByCoords (sourcePosition:Coords, destPosition:Coords)
   {
     // move block
     if (destPosition.x < 0) return;
@@ -185,12 +259,11 @@ export class CupImpl implements Cup
     if (destPosition.y > this.heightInCells -1) return;
 
     const sourceIndex = this.getCellIndexByCoords(sourcePosition)
-    if (this._state.fields[sourceIndex] !== -1) {
-      const destIndex = this.getCellIndexByCoords(destPosition)
+    const destIndex = this.getCellIndexByCoords(destPosition)
 
-      this._state.fields[destIndex] = this._state.fields[sourceIndex]
-      this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
-    }
+    // todo: remake in on object
+    this._state.fields[destIndex] = this._state.fields[sourceIndex]
+    this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
   }
 
   public clearBlockByCoords (position:Coords) {
@@ -348,6 +421,100 @@ export class CupImpl implements Cup
         }
       }
     }
+  }
+
+  /**
+   * Clear lines after figure moved to cup
+   * and move down cup on clear place
+   * returns number of cleared lines
+   */
+  // public clearAndMoveLines(callCallback:boolean = true):{countLines: number, bonuses: number[]}
+  public clearAndMoveLines(callCallback:boolean = true):void
+  {
+    // we find full lines
+    const fullLines:Array<number> = [];
+    for (let row = 0; row < this.heightInCells; row++)
+    {
+      const startIndex = row * this.widthInCells;
+      const endIndex = startIndex +  this.widthInCells
+
+      let fullLine:boolean = true;
+      for (let i = startIndex; i < endIndex; i++)
+      {
+        if (this._state.fields[i] === -1) {
+          fullLine = false
+          break
+        }
+      }
+
+      // if we have full line
+      if (fullLine) fullLines.push(row)
+    }
+
+    if (fullLines.length === 0) {
+      // return {countLines: 0, bonuses: []};
+      return;
+    }
+
+    // clear lines
+    const bonuses:number[] = [];
+    fullLines.forEach((fullLineIndex:number) => {
+      for (let i = 0; i < this.widthInCells; i++) {
+        let index = this.getCellIndexByCoords({x: i, y: fullLineIndex})
+        this._state.fields[index] = -1
+
+        // if there is bonus
+        if (this._state.bonuses[index] > -1)
+        {
+          // add to return array
+          bonuses.push(this._state.bonuses[index])
+
+          // clear bonus field
+          this._state.bonuses[index] = -1
+        }
+
+      }
+    })
+
+    // move blocks to cleared lines
+    // from top to bottom
+    // fullLines.reverse().forEach((fullLineIndex:number) =>
+    fullLines.forEach((fullLineIndex:number) =>
+    {
+      for (let row = fullLineIndex; row > 0; row--)
+        // for (let row = fullLineIndex; row < this.heightInCells; row++)
+      {
+        for (let col = 0; col < this.widthInCells; col++)
+        {
+          //
+          const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
+
+          // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
+          const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
+
+          // if there is a block we move them
+          if (this._state.fields[indexOfBlockAbove] > -1){
+            this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
+            this._state.fields[indexOfBlockAbove] = -1; // -1 it's mean that fiend if empty that we move them down
+          }
+
+          // if there is a bonus
+          if (this._state.bonuses[indexOfBlockAbove] > -1) {
+            this._state.bonuses[currentBlockIndex] = this._state.bonuses[indexOfBlockAbove];
+            this._state.bonuses[indexOfBlockAbove] = -1;
+          }
+        }
+      }
+    })
+
+    // const clearData = {countLines: fullLines.length, bonuses: bonuses}
+
+    // rise callback about clear lines
+    if (fullLines.length > 0 && this.listener && callCallback) {
+      this.listener.onLineCleared({countLines: fullLines.length, bonuses: bonuses})
+    }
+
+    // return clearData;
   }
 
 }

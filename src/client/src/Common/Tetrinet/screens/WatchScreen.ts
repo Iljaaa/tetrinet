@@ -46,7 +46,7 @@ export class WatchScreen extends WebGlScreen implements SocketEventListener
     console.log ('WatchScreen constructor');
     
     // create cup object
-    this._cup =  new CupImpl();
+    this._cup =  new CupImpl(null);
     
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)

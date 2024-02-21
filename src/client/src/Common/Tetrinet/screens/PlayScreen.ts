@@ -1,4 +1,4 @@
-import {CupEventListener, CupWithFigureImpl} from "../models/CupWithFigureImpl";
+import {CupWithFigureImpl} from "../models/CupWithFigureImpl";
 import {WebGlScreen} from "../../framework/impl/WebGlScreen";
 import {Tetrinet} from "../Tetrinet";
 import {WebInputEventListener} from "../../framework/impl/WebInput";
@@ -19,17 +19,14 @@ import {Square} from "../figures/Square";
 
 import {Coords} from "../math/Coords";
 import {CupData} from "../models/CupData";
-import {CupImpl} from "../models/CupImpl";
+import {CupEventListener, CupImpl} from "../models/CupImpl";
 import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
 
 import {GameState} from "../types";
 import {CupState} from "../types/CupState";
 import {Bonus} from "../types/Bonus";
 
-import {
-  SearchForAGame,
-  Paused
-} from "../textures";
+import {Paused, SearchForAGame} from "../textures";
 import {Cup} from "../models/Cup";
 import {CupsDataCollection} from "../../../Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
@@ -141,7 +138,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   // private playerBonuses: Array<Bonus> = [Bonus.add,Bonus.add,Bonus.add];
-  private playerBonuses: Array<Bonus> = [Bonus.blockBomb, Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,Bonus.clearSpecials,Bonus.clear,Bonus.clear];
+  private playerBonuses: Array<Bonus> = [Bonus.gravity, Bonus.quake, Bonus.bomb,
+    // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,Bonus.clearSpecials,Bonus.clear,Bonus.clear
+  ];
 
   /**
    * Temp field for draw fields
@@ -239,7 +238,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   cleanUpCup ()
   {
     console.log('PlayScreen.cleanUpCup')
-    this._cup.cleanFields();
+    this._cup.cleanBeforeNewGame();
   }
 
   /**
@@ -327,186 +326,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
 
   /**
-   * Implementation of clear special blocks bonus
-   */
-  private realiseClearSpecial (sendState: boolean = true)
-  {
-    //
-    this.playerBonuses = [];
-
-    // rise update state callback
-    if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getData())
-    }
-  }
-
-  /**
-   * Implementation of clear random blocks
-   */
-  private realiseRandomClear (sendState: boolean = true)
-  {
-    for(let row:number = 0; row < this._cup.getHeightInCells(); row++)
-    {
-      // get count not empty fields in this row
-      const startIndex = row * this._cup.getWidthInCells();
-
-      // clear 1 field
-      let r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
-      this._cup.clearBlock(r)
-
-      // clear 1 field
-      r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
-      this._cup.clearBlock(r)
-
-      // clear 1 field
-      r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
-      this._cup.clearBlock(r)
-    }
-
-    // rise update state callback
-    if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getData())
-    }
-  }
-
-  /**
-   * Implementation of block bomb bones
-   */
-  private realiseBlockBombSpecial (sendState: boolean = true)
-  {
-    // get random cell
-    let centerOfBlow:Coords = {
-      x: Math.floor(Math.random() * this._cup.getHeightInCells()),
-      y: Math.floor(Math.random() * this._cup.getWidthInCells())
-    }
-
-    // centerOfBlow = {y: 17, x: 6}
-
-    // if it is the bottom line
-    // let ifItIsATopLine = (centerOfBlow.y <= 0);
-    // let ifItIsABottomLine = (centerOfBlow.y >= this._cup.getHeightInCells() - 1);
-    // let ifItIsOnRightAge = (centerOfBlow.x >= this._cup.getWidthInCells() - 1);
-    // let ifItIsOnLeftEdge = (centerOfBlow.x <= 0);
-
-    //
-    // let centerOfBlowIndex = (centerOfBlow.y * this._cup.getWidthInCells()) + centerOfBlow.x
-    // let centerOfBlowIndex = this._cup.getCellIndex(centerOfBlow.x, centerOfBlow.y)
-
-    // clear center block
-    this._cup.clearBlockByCoords(centerOfBlow)
-
-    // this._cup.setFields(fields)
-
-    // fields[centerOfBlowIndex] = -1
-
-
-    let pos:Coords = {x:0, y: 0}
-    let newPosition:Coords = {x:0, y: 0}
-
-    // above
-    pos = {x: centerOfBlow.x, y: centerOfBlow.y - 1}
-    newPosition = {x: pos.x, y: pos.y - 2}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
-
-    // right top
-    pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y - 1}
-    newPosition = {x: pos.x + 1, y: pos.y - 1}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
-
-    // right
-    pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y}
-    newPosition = {x: pos.x + 2, y: pos.y}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
-
-    // right bottom
-    pos = {x: centerOfBlow.x + 1,y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x + 2, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
-
-    // bellow
-    pos = {x: centerOfBlow.x, y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
-
-    // left bottom
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x - 2, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
-
-    // left
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y}
-    newPosition = {x: pos.x - 2, y: pos.y}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
-
-    // left top
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y - 1}
-    newPosition = {x: pos.x - 1,y: pos.y - 1}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
-
-
-    // rise update state callback
-    if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getData())
-    }
-  }
-
-  /**
-   * Implementation of block quake bones
-   */
-  private realiseBlockQuakeSpecial (sendState: boolean = true)
-  {
-    const fields = this._cup.getFields();
-
-    for(let row:number = 0; row < this._cup.getHeightInCells(); row++)
-    {
-      // save last cell
-      let lastCellIndex = row * this._cup.getWidthInCells() + this._cup.getWidthInCells();
-      // let c = fields[firstCellIndex]
-
-
-      // save first cell
-      // let firstCell =
-
-      for (let col:number = 0; col < this._cup.getWidthInCells(); col++)
-      {
-        // cell
-        let cellIndex = row * this._cup.getWidthInCells() + col
-        if (fields[cellIndex] !== -1) {
-
-          // cell on the right
-          let cellOnTheRight = cellIndex + 1;
-
-          //
-
-
-
-          // if it last cell
-
-
-        }
-
-      }
-    }
-
-
-    // rise update state callback
-    if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getData())
-    }
-  }
-
-
-
-
-  /**
    * update our cuo state
    * @param state
    */
@@ -521,7 +340,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   updateCups (data:CupsDataCollection) {
     Object.keys(data).forEach((playerId:string) => {
-      if (!this._cups[playerId]) this._cups[playerId] = new CupImpl();
+      if (!this._cups[playerId]) this._cups[playerId] = new CupImpl(null);
       const cd = data[playerId]
       this._cups[playerId].setFields(cd.fields)
       this._cups[playerId].setState(cd.state)
@@ -1005,8 +824,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     const firstBonus:Bonus|undefined = this.playerBonuses.shift();
     if (firstBonus === undefined) return;
 
-    console.log ('PlayScreen.sendBonusToMe', firstBonus);
-
     this.realiseBonus(firstBonus)
   }
 
@@ -1040,8 +857,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       case Bonus.clear: this.clearRows(1); break;
       case Bonus.clearSpecials: this.realiseClearSpecial(); break;
       case Bonus.randomClear: this.realiseRandomClear(); break;
-      case Bonus.blockBomb: this.realiseBlockBombSpecial(); break;
-      case Bonus.blockQuake: this.realiseBlockQuakeSpecial(); break;
+      case Bonus.bomb: this.realiseBlockBombSpecial(); break;
+      case Bonus.quake: this.realiseQuakeSpecial(); break;
+      case Bonus.gravity: this.realiseGravitySpecial(); break;
     }
   }
 
@@ -1094,10 +912,23 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // random field index
     const randomFieldIndexInNoFreeFields:number = Math.floor(Math.random() * notFreeFieldsIds.length);
     const bonusFieldIndex = notFreeFieldsIds[randomFieldIndexInNoFreeFields];
-    
+
+    // todo: store in global
+    const availableBonuses = [
+      Bonus.add,
+      Bonus.clear,
+      Bonus.clearSpecials,
+      Bonus.randomClear,
+      Bonus.bomb,
+      Bonus.quake,
+      Bonus.gravity,
+      Bonus.switch,
+      Bonus.nuke
+    ];
+
     // take random block
     // now we have only 3 special blocks
-    const b = Math.floor(Math.random() * 10);
+    const b = availableBonuses[Math.floor(Math.random() * availableBonuses.length)]
 
     // place it
     this._cup.addBonusFiled(bonusFieldIndex, b)
@@ -1164,5 +995,235 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
     
     return f;
+  }
+
+
+
+  /**
+   * Implementation of clear special blocks bonus
+   */
+  private realiseClearSpecial (sendState: boolean = true)
+  {
+    //
+    this.playerBonuses = [];
+
+    // rise update state callback
+    if (sendState && this.listener) {
+      this.listener.onCupUpdated(this._state, this._cup.getData())
+    }
+  }
+
+  /**
+   * Implementation of clear random blocks
+   */
+  private realiseRandomClear (sendState: boolean = true)
+  {
+    for(let row:number = 0; row < this._cup.getHeightInCells(); row++)
+    {
+      // get count not empty fields in this row
+      const startIndex = row * this._cup.getWidthInCells();
+
+      // clear 1 field
+      let r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
+      this._cup.clearBlock(r)
+
+      // clear 1 field
+      r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
+      this._cup.clearBlock(r)
+
+      // clear 1 field
+      r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
+      this._cup.clearBlock(r)
+    }
+
+    // rise update state callback
+    if (sendState && this.listener) {
+      this.listener.onCupUpdated(this._state, this._cup.getData())
+    }
+  }
+
+  /**
+   * Implementation of block bomb bones
+   */
+  private realiseBlockBombSpecial (sendState: boolean = true)
+  {
+    // get random cell
+    let centerOfBlow:Coords = {
+      x: Math.floor(Math.random() * this._cup.getHeightInCells()),
+      y: Math.floor(Math.random() * this._cup.getWidthInCells())
+    }
+
+    // centerOfBlow = {y: 17, x: 6}
+
+    // if it is the bottom line
+    // let ifItIsATopLine = (centerOfBlow.y <= 0);
+    // let ifItIsABottomLine = (centerOfBlow.y >= this._cup.getHeightInCells() - 1);
+    // let ifItIsOnRightAge = (centerOfBlow.x >= this._cup.getWidthInCells() - 1);
+    // let ifItIsOnLeftEdge = (centerOfBlow.x <= 0);
+
+    //
+    // let centerOfBlowIndex = (centerOfBlow.y * this._cup.getWidthInCells()) + centerOfBlow.x
+    // let centerOfBlowIndex = this._cup.getCellIndex(centerOfBlow.x, centerOfBlow.y)
+
+    // clear center block
+    this._cup.clearBlockByCoords(centerOfBlow)
+
+    // let pos:Coords = {x:0, y: 0}
+    // let newPosition:Coords = {x:0, y: 0}
+
+    // above
+    let pos = {x: centerOfBlow.x, y: centerOfBlow.y - 1}
+    let newPosition = {x: pos.x, y: pos.y - 2}
+    this._cup.copyBlockByCoords(pos, newPosition)
+    this._cup.clearBlockByCoords(pos)
+
+    // right top
+    pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y - 1}
+    newPosition = {x: pos.x + 1, y: pos.y - 1}
+    this._cup.copyBlockByCoords(pos, newPosition)
+    this._cup.clearBlockByCoords(pos)
+
+    // right
+    pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y}
+    newPosition = {x: pos.x + 2, y: pos.y}
+    this._cup.copyBlockByCoords(pos, newPosition)
+    this._cup.clearBlockByCoords(pos)
+
+    // right bottom
+    pos = {x: centerOfBlow.x + 1,y: centerOfBlow.y + 1}
+    newPosition = {x: pos.x + 2, y: pos.y + 2}
+    this._cup.copyBlockByCoords(pos, newPosition)
+    this._cup.clearBlockByCoords(pos)
+
+    // bellow
+    pos = {x: centerOfBlow.x, y: centerOfBlow.y + 1}
+    newPosition = {x: pos.x, y: pos.y + 2}
+    this._cup.copyBlockByCoords(pos, newPosition)
+    this._cup.clearBlockByCoords(pos)
+
+    // left bottom
+    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y + 1}
+    newPosition = {x: pos.x - 2, y: pos.y + 2}
+    this._cup.copyBlockByCoords(pos, newPosition)
+    this._cup.clearBlockByCoords(pos)
+
+    // left
+    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y}
+    newPosition = {x: pos.x - 2, y: pos.y}
+    this._cup.copyBlockByCoords(pos, newPosition)
+    this._cup.clearBlockByCoords(pos)
+
+    // left top
+    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y - 1}
+    newPosition = {x: pos.x - 1,y: pos.y - 1}
+    this._cup.copyBlockByCoords(pos, newPosition)
+    this._cup.clearBlockByCoords(pos)
+
+
+    // rise update state callback
+    if (sendState && this.listener) {
+      this.listener.onCupUpdated(this._state, this._cup.getData())
+    }
+  }
+
+  /**
+   * Implementation of block quake bones
+   */
+  private realiseQuakeSpecial (sendState: boolean = true)
+  {
+    const methods = [
+      this.quakeOneRowToRight,
+      this.quakeOneRowToLeft,
+      () => {}
+    ];
+    for(let row:number = 0; row < this._cup.getHeightInCells(); row++) {
+      const randomIndex = Math.floor(Math.random() * methods.length);
+      methods[randomIndex](row)
+    }
+
+    // rise update state callback
+    if (sendState && this.listener) {
+      this.listener.onCupUpdated(this._state, this._cup.getData())
+    }
+  }
+
+  private quakeOneRowToLeft = (row: number) =>
+  {
+    let firstCell = this._cup.getFieldByCoords(0, row)
+
+    for (let col:number = 0; col < this._cup.getWidthInCells(); col++)
+    {
+      if (col === this._cup.getWidthInCells() - 1) {
+        this._cup.setFieldByCoordinates(col, row, firstCell);
+      }
+      else {
+        // move right cell to left
+        this._cup.copyBlockByCoords({x: col + 1, y: row}, {x: col, y:row});
+      }
+    }
+  }
+
+  private quakeOneRowToRight = (row: number)=>
+  {
+    let lastCell = this._cup.getFieldByCoords(this._cup.getWidthInCells() - 1, row)
+
+    for (let col:number = this._cup.getWidthInCells(); col >= 0; col--)
+    {
+      if (col === 0) {
+        this._cup.setFieldByCoordinates(col, row, lastCell);
+      }
+      else {
+        // move left cell to right
+        this._cup.copyBlockByCoords({x: col - 1, y: row}, {x: col, y:row});
+      }
+    }
+  }
+
+
+  /**
+   * Implementation of block quake bones
+   */
+  private realiseGravitySpecial (sendState: boolean = true)
+  {
+    for(let col:number = 0; col < this._cup.getWidthInCells(); col++) {
+      this.gravityOneColl(col);
+    }
+
+    // clear full lines
+    this._cup.clearAndMoveLines();
+  }
+
+  private gravityOneColl (col:number)
+  {
+
+      let rowToSplit = this._cup.getHeightInCells() - 1;
+      let rowToChange = rowToSplit - 1
+
+      while (rowToSplit >= 0)
+      {
+        const splitCell = this._cup.getFieldByCoords(col, rowToSplit)
+
+        // if block is busy we just go to next
+        if (splitCell.field !== -1){
+          rowToSplit--;
+          continue;
+        }
+
+        // search not empty blocks above
+        rowToChange = rowToSplit - 1
+        let blockAbove = this._cup.getFieldByCoords(col, rowToChange)
+        while (blockAbove.field === -1 && rowToChange > 0) {
+          rowToChange--
+          blockAbove = this._cup.getFieldByCoords(col, rowToChange)
+        }
+
+        //
+        if (blockAbove.field !== -1){
+          this._cup.copyBlockByCoords({x: col, y: rowToChange}, {x: col, y: rowToSplit});
+          this._cup.clearBlockByCoords({x: col, y: rowToChange})
+        }
+
+        rowToSplit--
+      }
   }
 }

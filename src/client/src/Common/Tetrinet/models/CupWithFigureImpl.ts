@@ -1,25 +1,10 @@
 import {Figure} from "./Figure";
 import {CapWithFigure} from "./CupWithFigure";
 
-import {CupImpl} from "./CupImpl";
+import {CupEventListener, CupImpl} from "./CupImpl";
 import {Coords} from "../math/Coords";
 
-/**
- *
- */
-export type CupEventListener =
-{
-  /**
-   * When lines cleared
-   * @param countLines
-   */
-  onLineCleared: (clearData:{countLines:number, bonuses: Array<number>}) => void,
-  
-  /**
-   * When figure moved to cup
-   */
-  onFigureMovedToCup: () => void,
-}
+
 
 // export class FigureClass implements Figure
 // {
@@ -60,12 +45,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
    * @private
    */
   private _figureColor:number = 0
-  
-  /**
-   * Event listener
-   * @private
-   */
-  private listener: CupEventListener;
+
   
   /**
    * Coords to drop new figure
@@ -75,9 +55,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
   
   constructor(listener:CupEventListener)
   {
-    super();
-    
-    this.listener = listener;
+    super(listener);
     
     // calculate drop point
     // todo: set move position on z = 1
@@ -194,13 +172,14 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     })
     
     // clear full lines
-    const clearData = this.clearAndMoveLines();
-    
+    // const clearData = this.clearAndMoveLines();
+    this.clearAndMoveLines();
+
     // rise callback about clear lines
-    if (clearData.countLines > 0) this.listener.onLineCleared(clearData)
-    
+    // if (clearData.countLines > 0) this.listener.onLineCleared(clearData)
+
     // rise callback event
-    this.listener.onFigureMovedToCup()
+    if (this.listener) this.listener.onFigureMovedToCup()
     
     // if a new figure not putted it means....
     // if (!this.generateAndPutNewFigure()) {
@@ -218,89 +197,6 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     return this._figure.rotateCounterClockwise();
   }
   
-  /**
-   * Clear lines after figure moved to cup
-   * and move down cup on clear place
-   * returns number of cleared lines
-   */
-  private clearAndMoveLines():{countLines: number, bonuses: number[]}
-  {
-    // we find full lines
-    const fullLines:Array<number> = [];
-    for (let row = 0; row < this.heightInCells; row++)
-    {
-      const startIndex = row * this.widthInCells;
-      const endIndex = startIndex +  this.widthInCells
-      
-      let fullLine:boolean = true;
-      for (let i = startIndex; i < endIndex; i++)
-      {
-        if (this._state.fields[i] === -1) {
-          fullLine = false
-          break
-        }
-      }
-      
-      // if we have full line
-      if (fullLine) fullLines.push(row)
-    }
-    
-    if (fullLines.length === 0) {
-      return {countLines: 0, bonuses: []};
-    }
-    
-    // clear lines
-    const bonuses:number[] = [];
-    fullLines.forEach((fullLineIndex:number) => {
-      for (let i = 0; i < this.widthInCells; i++) {
-        let index = this.getCellIndexByCoords({x: i, y: fullLineIndex})
-        this._state.fields[index] = -1
 
-        // if there is bonus
-        if (this._state.bonuses[index] > -1)
-        {
-          // add to return array
-          bonuses.push(this._state.bonuses[index])
-
-          // clear bonus field
-          this._state.bonuses[index] = -1
-        }
-
-      }
-    })
-    
-    // move blocks to cleared lines
-    // from top to bottom
-    // fullLines.reverse().forEach((fullLineIndex:number) =>
-    fullLines.forEach((fullLineIndex:number) =>
-    {
-      for (let row = fullLineIndex; row > 0; row--)
-      // for (let row = fullLineIndex; row < this.heightInCells; row++)
-      {
-        for (let col = 0; col < this.widthInCells; col++)
-        {
-          //
-          const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
-          
-          // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
-          const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
-          
-          // if there is a block we move them
-          if (this._state.fields[indexOfBlockAbove] > -1){
-            this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
-            this._state.fields[indexOfBlockAbove] = -1; // -1 it's mean that fiend if empty that we move them down
-          }
-
-          // if there is a bonus
-          if (this._state.bonuses[indexOfBlockAbove] > -1) {
-            this._state.bonuses[currentBlockIndex] = this._state.bonuses[indexOfBlockAbove];
-            this._state.bonuses[indexOfBlockAbove] = -1;
-          }
-        }
-      }
-    })
-    
-    return {countLines: fullLines.length, bonuses: bonuses};
-  }
 
 }
