@@ -31,6 +31,7 @@ import {Cup} from "../models/Cup";
 import {CupsDataCollection} from "../../../Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
 import {NextBG} from "../textures/NextBG";
+import {Field} from "../models/Field";
 
 
 /**
@@ -890,17 +891,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   {
     // collect available places
     const allFields = this._cup.getFields();
-    const bonusFields = this._cup.getBonusFields();
+    // const bonusFields = this._cup.getFields();
     
     // find blocks with none
     let notFreeFieldsIds:Array<number> = []
-    allFields.forEach((value:number, cellId:number) =>
+    allFields.forEach((value:Field, cellId:number) =>
     {
       // if it is a clear field
-      if (value === -1) return
+      if (value.block === -1) return
 
       // if there bonus
-      if (bonusFields[cellId] && bonusFields[cellId] !== -1) return
+      if (value.block) return
 
       // clear bonus fields
       notFreeFieldsIds.push(cellId)
@@ -1204,7 +1205,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
         const splitCell = this._cup.getFieldByCoords(col, rowToSplit)
 
         // if block is busy we just go to next
-        if (splitCell.field !== -1){
+        if (splitCell.block !== -1){
           rowToSplit--;
           continue;
         }
@@ -1212,13 +1213,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
         // search not empty blocks above
         rowToChange = rowToSplit - 1
         let blockAbove = this._cup.getFieldByCoords(col, rowToChange)
-        while (blockAbove.field === -1 && rowToChange > 0) {
+        while (blockAbove.block === -1 && rowToChange > 0) {
           rowToChange--
           blockAbove = this._cup.getFieldByCoords(col, rowToChange)
         }
 
         //
-        if (blockAbove.field !== -1){
+        if (blockAbove.block !== -1){
           this._cup.copyBlockByCoords({x: col, y: rowToChange}, {x: col, y: rowToSplit});
           this._cup.clearBlockByCoords({x: col, y: rowToChange})
         }

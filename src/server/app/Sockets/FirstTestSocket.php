@@ -356,6 +356,7 @@ class FirstTestSocket implements MessageComponentInterface
         $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
         $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';
         $this->info("set", ['partyId' => $partyId, 'playerId' => $playerId]);
+        $this->info("received", ['data.cup' => $data['cup']]);
 
         if (empty($partyId)){
             $this->info("Party id is empty, ignore request");
@@ -406,6 +407,7 @@ class FirstTestSocket implements MessageComponentInterface
 //        $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
 //        $this->info("response", ['cupsData' => $cupsData]);
 
+        $this->info("response", ['cups' => $cupsResponse]);
         // send data to all players
         $party->sendToAllPlayers([
             'type' => ResponseType::afterSet,

@@ -165,7 +165,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     // move figure to the cup
     this._figure.getFields().forEach((f:number) => {
       // move figure
-      this._state.fields[f] = this._figureColor;
+      this._state.fields[f].block = this._figureColor;
       
       // move color
       // this.colors[f] = this._figureColor;

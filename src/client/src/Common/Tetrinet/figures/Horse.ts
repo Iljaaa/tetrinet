@@ -204,7 +204,7 @@ export abstract class Horse extends FourBlocksFigure implements Figure
       const createIndexByCoords = this._cap.getCellIndexByCoords(c)
       
       // check in fields
-      if (this._cap.getFieldValueByIndex(createIndexByCoords) > -1) {
+      if (this._cap.getFieldByIndex(createIndexByCoords).block > -1) {
         return true
       }
       
@@ -280,7 +280,7 @@ export abstract class Horse extends FourBlocksFigure implements Figure
       const createIndexByCoords = this._cap.getCellIndexByCoords(c)
       
       // check in fields
-      if (this._cap.getFieldValueByIndex(createIndexByCoords) > -1) {
+      if (this._cap.getFieldByIndex(createIndexByCoords).block > -1) {
         return true
       }
       

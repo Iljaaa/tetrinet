@@ -3,6 +3,8 @@ import {Cup} from "./Cup";
 import {CupData} from "./CupData";
 import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
+import {Field} from "./Field";
+import {Bonus} from "../types/Bonus";
 
 /**
  *
@@ -51,7 +53,7 @@ export class CupImpl implements Cup
   protected _state:CupData = {
     state: CupState.online,
     fields: [],
-    bonuses: [],
+    // bonuses: [],
     // bonusFields
   }
   
@@ -78,74 +80,84 @@ export class CupImpl implements Cup
   cleanBeforeNewGame ()
   {
     // clear bonuses
-    this._state.bonuses = []
+    // this._state.bonuses = []
 
     // clear field
-    this._state.fields = new Array<number>(this.widthInCells * this.heightInCells).fill(-1)
+    this._state.fields = new Array<Field>(this.widthInCells * this.heightInCells) // .fill( {block: -1})
+
+
+    for (let i = 0; i < this._state.fields.length; i++) {
+      this._state.fields[i] = {block: -1}
+      // people.push(person);
+    }
 
     // this is from top
     // temp cup state
 
-    this._state.fields[100] = 1;
-    this._state.fields[102] = 1;
-    this._state.fields[103] = 0;
-
-    this._state.fields[150] = 1;
-    this._state.bonuses[150] = 0;
-
-    this._state.fields[160] = 1;
-    this._state.fields[161] = 1;
-    this._state.fields[162] = 1;
-    this._state.fields[165] = 1;
-    this._state.fields[164] = 1;
-    this._state.fields[166] = 1;
-    this._state.fields[167] = 1;
-    this._state.fields[168] = 1;
-    this._state.fields[169] = 1;
-
-    this._state.fields[170] = 1;
-    this._state.fields[171] = 1;
-    this._state.fields[172] = 1;
-    this._state.fields[175] = 1;
-    this._state.fields[174] = 1;
-    this._state.fields[176] = 1;
-    this._state.fields[177] = 1;
-    this._state.fields[178] = 1;
-    this._state.fields[179] = 1;
-
-    // temp cup state
-    this._state.fields[180] = 1;
-    this._state.fields[181] = 1;
-    this._state.fields[182] = 1;
-    this._state.fields[185] = 1;
-    this._state.fields[184] = 1;
-    this._state.fields[186] = 1;
-    this._state.fields[187] = 1;
-    this._state.fields[188] = 1;
-    this._state.fields[189] = 1;
-
-    this._state.fields[190] = 1;
-    this._state.fields[191] = 1;
-    this._state.fields[192] = 1;
-    this._state.fields[195] = 1;
-    this._state.fields[194] = 1;
-    this._state.fields[196] = 1;
-    this._state.fields[197] = 1;
-    this._state.fields[198] = 1;
-    this._state.fields[199] = 1;
+    console.log (this._state.fields[100], 'this._state.fields[100]');
+    console.log (this._state, 'this._state');
+    this._state.fields[100].block = 1;
+    console.log (this._state.fields[100], 'this._state.fields[100] 2');
+    console.log (this._state, 'this._state 2');
+    // this._state.fields[102].block = 1;
+    // this._state.fields[103].block = 0;
+    //
+    // this._state.fields[150].block = 1;
+    // this._state.fields[150].bonus = Bonus.add;
+    //
+    // this._state.fields[160].block = 1;
+    // this._state.fields[161].block = 1;
+    // this._state.fields[162].block = 1;
+    // this._state.fields[165].block = 1;
+    // this._state.fields[164].block = 1;
+    // this._state.fields[166].block = 1;
+    // this._state.fields[167].block = 1;
+    // this._state.fields[168].block = 1;
+    // this._state.fields[169].block = 1;
+    //
+    // this._state.fields[170].block = 1;
+    // this._state.fields[171].block = 1;
+    // this._state.fields[172].block = 1;
+    // this._state.fields[175].block = 1;
+    // this._state.fields[174].block = 1;
+    // this._state.fields[176].block = 1;
+    // this._state.fields[177].block = 1;
+    // this._state.fields[178].block = 1;
+    // this._state.fields[179].block = 1;
+    //
+    // // temp cup state
+    // this._state.fields[180].block = 1;
+    // this._state.fields[181].block = 1;
+    // this._state.fields[182].block = 1;
+    // this._state.fields[184].block = 1;
+    // this._state.fields[185].block = 1;
+    // this._state.fields[186].block = 1;
+    // this._state.fields[187].block = 1;
+    // this._state.fields[188].block = 1;
+    // this._state.fields[189].block = 1;
+    //
+    // this._state.fields[190].block = 1;
+    // this._state.fields[191].block = 1;
+    // this._state.fields[192].block = 1;
+    // this._state.fields[195].block = 1;
+    // this._state.fields[194].block = 1;
+    // this._state.fields[196].block = 1;
+    // this._state.fields[197].block = 1;
+    // this._state.fields[198].block = 1;
+    // this._state.fields[199].block = 1;
   }
   
-  getFields = ():Array<number> => {
+  getFields = ():Array<Field> => {
     return this._state.fields;
   }
   
-  setFields(fields: Array<number>): void {
+  setFields(fields: Array<Field>): void {
     this._state.fields = fields;
   }
 
-  getBonusFields():Array<number> {
-    return this._state.bonuses;
-  }
+  // getBonusFields():Array<number> {
+  //   return this._state.bonuses;
+  // }
 
   /**
    * Get field info
@@ -154,20 +166,15 @@ export class CupImpl implements Cup
    * @param x
    * @param y
    */
-  getFieldByCoords(x: number, y:number):{field:number, bonus:number} {
+  getFieldByCoords(x: number, y:number):Field {
     return this.getFieldByIndex(this.getCellIndex(x, y));
   }
   /**
    * Get field info
-   * todo: refactor this method when we goes to objects
-   * todo: move this method to interface
    * @param index
    */
-  getFieldByIndex(index:number):{field:number, bonus:number} {
-    return {
-      field: this._state.fields[index],
-      bonus: this._state.bonuses[index]
-    }
+  getFieldByIndex(index:number):Field {
+    return this._state.fields[index]
   }
 
   /**
@@ -178,18 +185,15 @@ export class CupImpl implements Cup
    * @param y
    * @param field
    */
-  setFieldByCoordinates(x: number, y:number, field:{field:number, bonus:number}):void {
+  setFieldByCoordinates(x: number, y:number, field:Field):void {
     this.setFieldByIndex(this.getCellIndex(x, y), field);
   }
 
   /**
    * Set field info
-   * todo: refactor this method when we goes to objects
-   * todo: move this method to interface
    */
-  setFieldByIndex (index:number, field:{field:number, bonus:number}):void{
-    this._state.fields[index] = field.field
-    this._state.bonuses[index] = field.bonus
+  setFieldByIndex (index:number, field:Field):void{
+    this._state.fields[index] = field
   }
 
 
@@ -204,15 +208,16 @@ export class CupImpl implements Cup
   canPlace (newFields:Array<number>): boolean
   {
     const i:number = newFields.findIndex((cellIndex:number) => {
-      return this._state.fields[cellIndex] > -1
+      if (cellIndex < 0) return false
+      return this._state.fields[cellIndex].block > -1
     });
     
     return i === -1;
   }
   
-  getFieldValueByIndex(index: number): number {
-    return this._state.fields[index]
-  }
+  // getFieldValueByIndex(index: number): number {
+  //   return this._state.fields[index].block
+  // }
   
   getHeightInCells(): number {
     return this.heightInCells;
@@ -261,9 +266,8 @@ export class CupImpl implements Cup
     const sourceIndex = this.getCellIndexByCoords(sourcePosition)
     const destIndex = this.getCellIndexByCoords(destPosition)
 
-    // todo: remake in on object
     this._state.fields[destIndex] = this._state.fields[sourceIndex]
-    this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
+    // this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
   }
 
   public clearBlockByCoords (position:Coords) {
@@ -275,8 +279,8 @@ export class CupImpl implements Cup
    * @param index
    */
   public clearBlock (index:number) {
-    this._state.fields[index] = -1;
-    this._state.bonuses[index] = -1;
+    this._state.fields[index].block = -1;
+    this._state.fields[index].bonus = undefined;
   }
 
   /**
@@ -285,7 +289,7 @@ export class CupImpl implements Cup
    * @param bonusIndex
    */
   addBonusFiled(fIndex: number, bonusIndex: number): void {
-    this._state.bonuses[fIndex] = bonusIndex
+    this._state.fields[fIndex].bonus = bonusIndex
   }
 
   /**
@@ -318,7 +322,7 @@ export class CupImpl implements Cup
     for (let col = 0; col < this.widthInCells; col++) {
       if (col !== randomClearField) {
         const i = firstBlockIndex + col
-        this._state.fields[i] = GenerateRandomColor()
+        this._state.fields[i].block = GenerateRandomColor()
       }
     }
   }
@@ -342,15 +346,15 @@ export class CupImpl implements Cup
         const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
 
         // if there is a block we move them above
-        if (this._state.fields[currentBlockIndex] > -1) {
+        if (this._state.fields[currentBlockIndex].block > -1) {
           this._state.fields[indexOfBlockAbove] = this._state.fields[currentBlockIndex]; // -1 it's mean that fiend if empty that we move them down
-          this._state.fields[currentBlockIndex] = -1;
+          this._state.fields[currentBlockIndex].block = -1;
         }
 
         // move bonus fields
-        if (this._state.bonuses[currentBlockIndex] > -1) {
-          this._state.bonuses[indexOfBlockAbove] = this._state.bonuses[currentBlockIndex]; // -1 it's mean that fiend if empty that we move them down
-          this._state.bonuses[currentBlockIndex] = -1;
+        if (this._state.fields[currentBlockIndex].bonus !== undefined) {
+          this._state.fields[indexOfBlockAbove] = this._state.fields[currentBlockIndex]; // -1 it's mean that fiend if empty that we move them down
+          this._state.fields[currentBlockIndex].bonus = undefined;
         }
       }
     }
@@ -384,11 +388,11 @@ export class CupImpl implements Cup
     for (let col = 0; col < this.widthInCells; col++)
     {
       const blockIndex = this.getCellIndexByCoords({x: col, y: rowIndex})
-      this._state.fields[blockIndex] = -1;
+      this._state.fields[blockIndex].block = -1;
 
       //
-      if (this._state.bonuses[blockIndex] !== -1) {
-        this._state.bonuses[blockIndex] = -1;
+      if (this._state.fields[blockIndex].bonus) {
+        this._state.fields[blockIndex].bonus = undefined;
       }
     }
   }
@@ -409,15 +413,15 @@ export class CupImpl implements Cup
         const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
 
         // if there is a block we move them above
-        if (this._state.fields[indexOfBlockAbove] > -1) {
+        if (this._state.fields[indexOfBlockAbove].block > -1) {
           this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
-          this._state.fields[indexOfBlockAbove] = -1;
+          this._state.fields[indexOfBlockAbove].block = -1;
         }
 
         // move bonus fields
-        if (this._state.bonuses[indexOfBlockAbove] > -1) {
-          this._state.bonuses[currentBlockIndex] = this._state.bonuses[indexOfBlockAbove];
-          this._state.bonuses[indexOfBlockAbove] = -1;
+        if (this._state.fields[indexOfBlockAbove]) {
+          this._state.fields[currentBlockIndex].bonus = this._state.fields[indexOfBlockAbove].bonus;
+          this._state.fields[indexOfBlockAbove].bonus = -1;
         }
       }
     }
@@ -441,7 +445,7 @@ export class CupImpl implements Cup
       let fullLine:boolean = true;
       for (let i = startIndex; i < endIndex; i++)
       {
-        if (this._state.fields[i] === -1) {
+        if (this._state.fields[i].block === -1) {
           fullLine = false
           break
         }
@@ -457,20 +461,21 @@ export class CupImpl implements Cup
     }
 
     // clear lines
-    const bonuses:number[] = [];
+    const bonuses:Array<Bonus> = [];
     fullLines.forEach((fullLineIndex:number) => {
       for (let i = 0; i < this.widthInCells; i++) {
         let index = this.getCellIndexByCoords({x: i, y: fullLineIndex})
-        this._state.fields[index] = -1
+        this._state.fields[index].block = -1
 
         // if there is bonus
-        if (this._state.bonuses[index] > -1)
+        let b = this._state.fields[index].bonus
+        if (b != undefined)
         {
           // add to return array
-          bonuses.push(this._state.bonuses[index])
+          bonuses.push(b)
 
           // clear bonus field
-          this._state.bonuses[index] = -1
+          this._state.fields[index].bonus = undefined
         }
 
       }
@@ -493,15 +498,15 @@ export class CupImpl implements Cup
           const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
 
           // if there is a block we move them
-          if (this._state.fields[indexOfBlockAbove] > -1){
+          if (this._state.fields[indexOfBlockAbove].block > -1){
             this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
-            this._state.fields[indexOfBlockAbove] = -1; // -1 it's mean that fiend if empty that we move them down
+            this._state.fields[indexOfBlockAbove].block = -1; // -1 it's mean that fiend if empty that we move them down
           }
 
           // if there is a bonus
-          if (this._state.bonuses[indexOfBlockAbove] > -1) {
-            this._state.bonuses[currentBlockIndex] = this._state.bonuses[indexOfBlockAbove];
-            this._state.bonuses[indexOfBlockAbove] = -1;
+          if (this._state.fields[indexOfBlockAbove].bonus) {
+            this._state.fields[currentBlockIndex].bonus = this._state.fields[indexOfBlockAbove].bonus;
+            this._state.fields[indexOfBlockAbove].bonus = undefined;
           }
         }
       }

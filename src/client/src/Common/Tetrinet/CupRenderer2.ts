@@ -244,13 +244,12 @@ export class CupRenderer2
 
     // draw cup bodies
     const fields = cup.getFields()
-    const bonuses = cup.getBonusFields()
     const len = fields.length;
 
     for (let i = 0; i < len; i++)
     {
       // draw block
-      if (fields[i] > -1)
+      if (fields[i].block > -1)
       {
         const row = Math.floor(i / this.cupSizeInCells.width);
         const bottom = row * this.blockSize;
@@ -258,7 +257,7 @@ export class CupRenderer2
         const coll = i % this.cupSizeInCells.width;
         const left = coll * this.blockSize;
 
-        const fieldValue = fields[i]
+        const fieldValue = fields[i].block
 
         // take field color
         let f:number = 320 + (fieldValue * 32);
@@ -277,7 +276,7 @@ export class CupRenderer2
 
       // draw super block
       // todo: here we must be shure that field have block, because bonus could be without block
-      if (bonuses[i] > -1)
+      if (fields[i].bonus)
       {
         const row = Math.floor(i / this.cupSizeInCells.width);
         const bottom = row * this.blockSize;
@@ -285,7 +284,8 @@ export class CupRenderer2
         const coll = i % this.cupSizeInCells.width;
         const left = coll * this.blockSize;
 
-        const fieldValue = bonuses[i]
+        // todo: make here select
+        const fieldValue = fields[i].bonus as number
 
         // take field color
         let f:number = 320 + (fieldValue * 32);

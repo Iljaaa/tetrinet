@@ -1,6 +1,7 @@
 import {Coords} from "../math/Coords";
 import {CupData} from "./CupData";
 import {CupState} from "../types/CupState";
+import {Field} from "./Field";
 
 export interface Cup
 {
@@ -17,17 +18,35 @@ export interface Cup
   /**
    * All fields array
    */
-  getFields: () => Array<number>
+  getFields: () => Array<Field>
 
   /**
    * Set fields data
    */
-  setFields: (fields:Array<number>) => void
+  setFields (fields:Array<Field>): void
+
+  /**
+   *
+   * @param index
+   */
+  getFieldByIndex (index:number): Field
+
+  /**
+   * @param x
+   * @param y
+   * @param field
+   */
+  setFieldByCoordinates(x: number, y:number, field:Field):void
+
+  /**
+   * Set field info
+   */
+  setFieldByIndex (index:number, field:Field):void
 
   /**
    * Super fields array
    */
-  getBonusFields(): Array<number>
+  // getBonusFields(): Array<number>
 
   /**
    * Cup state, this is array of fields
@@ -43,7 +62,7 @@ export interface Cup
   /**
    * Get field value
    */
-  getFieldValueByIndex(index:number):number
+  // getFieldValueByIndex(index:number):number
 
   /**
    * Convert cell index into coords
