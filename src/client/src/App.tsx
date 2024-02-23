@@ -6,6 +6,7 @@ import {JoinButtons} from "./widgets/JoinButtons/JoinButtons";
 import {Help} from "./widgets/Help/Help";
 
 import './App.css';
+import {StateRow} from "./widgets/StateRow/StateRow";
 
 function App()
 {
@@ -28,6 +29,7 @@ function App()
         <div className="App-body">
           <div><JoinButtons/></div>
           <hr style={{background: "#53adae", height: "1px", border: "none"}} />
+          <div><StateRow /></div>
           <div><Canvas/></div>
           <div style={{backgroundColor: "#ded9c6", padding: "4rem 0"}}>
             <Help/>

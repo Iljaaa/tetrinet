@@ -1,32 +1,9 @@
 import React from "react";
 
-import {GameState} from "./Common/Tetrinet/types";
 import {CupData} from "./Common/Tetrinet/models/CupData";
 import {SocketSingleton} from "./Common/SocketSingleton";
 import {TetrinetSingleton} from "./Common/TetrinetSingleton";
 
-type State =
-{
-  /**
-   * Current score
-   */
-  score: number,
-  
-  /**
-   * Cup state
-   */
-  currentGameState?:GameState
-  
-  /**
-   * Party id
-   */
-  partyId: string,
-
-  /**
-   * this is your socket id
-   */
-  playerId: string
-}
 
 
 /**
@@ -37,7 +14,7 @@ export interface CupsDataCollection {
   [index: string]: CupData
 }
 
-export class Canvas extends React.PureComponent<{}, State>
+export class Canvas extends React.PureComponent
 {
   /**
    * Ref to canvas
@@ -50,16 +27,6 @@ export class Canvas extends React.PureComponent<{}, State>
    * @private
    */
   // private game:Tetrinet;
-
-  /**
-   * State
-   * todo: remove state from here
-   */
-  public state:State = {
-    partyId: "",
-    playerId: "",
-    score: 0
-  }
 
   constructor(props: { }, context: any)
   {
@@ -75,32 +42,6 @@ export class Canvas extends React.PureComponent<{}, State>
     // this.game = new Tetrinet()
     TetrinetSingleton.init();
   }
-  
-
-
-  /**
-   * @deprecated
-   * Here we send request to opponent to add few rows
-   */
-  // sendAddLineToOpponent (countClearedLines:number) {
-  //   //
-  //   if (countClearedLines > 1)
-  //   {
-  //     // send command
-  //     const data = {
-  //       type: RequestTypes.addLine,
-  //       partyId: this.partyId,
-  //       partyIndex: this.partyIndex as number,
-  //       linesCount: countClearedLines - 1,
-  //       source: this.partyIndex, // now this is same that partyIndex
-  //       target: null, // target should be selected player, but now we have only two players
-  //   }
-  //
-  //     SocketSingletone.getInstance()?.sendData(data)
-  //   }
-  // }
-
-
 
   /**
    *
@@ -125,7 +66,6 @@ export class Canvas extends React.PureComponent<{}, State>
   {
     console.log ('onPlayClicked');
     TetrinetSingleton.getInstance().oldPlayMethod();
-
   }
 
   /**
@@ -144,26 +84,7 @@ export class Canvas extends React.PureComponent<{}, State>
   onResumeClicked = () =>
   {
     console.log ('onResumeClicked');
-
     TetrinetSingleton.getInstance().resume();
-  }
-
-  /**
-   * Here we join duel
-   */
-  onJoinToDuelClicked = () =>
-  {
-    console.log ('onJoinToDuelClicked')
-    TetrinetSingleton.getInstance().joinToParty('duel')
-  }
-
-  /**
-   * Here we join party
-   */
-  onJoinToPartyClicked = () =>
-  {
-    console.log ('onJoinToDuelClicked');
-    TetrinetSingleton.getInstance().joinToParty('party')
   }
 
   onWatchClicked = () =>
@@ -187,9 +108,6 @@ export class Canvas extends React.PureComponent<{}, State>
     
   }
 
-
-
-
   render () {
     return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem"}}>
 
@@ -197,8 +115,6 @@ export class Canvas extends React.PureComponent<{}, State>
         <div style={{display: "flex", alignItems: "center", flex: "1"}}>
           <div>
             <button onClick={this.onPlayClicked} disabled={true}>Play</button>
-            <button onClick={this.onJoinToDuelClicked}>Duel</button>
-            <button onClick={this.onJoinToPartyClicked}>Party 5</button>
           </div>
           <div>
             <button onClick={this.onPauseClicked}>Pause</button>
@@ -206,14 +122,6 @@ export class Canvas extends React.PureComponent<{}, State>
           </div>
           <div>
             <button onClick={this.onWatchClicked} disabled={true}>Watch</button>
-          </div>
-        </div>
-        <div>
-          <div style={{display: "flex", alignItems: "center"}}>
-            <div>score <b>{this.state.score}</b></div>
-            <div style={{margin: "0 0 0 1rem"}}>state: <b>{this.state.currentGameState}</b></div>
-            <div style={{margin: "0 0 0 1rem"}}>partyId: <b>{this.state.partyId}</b></div>
-            <div style={{margin: "0 0 0 1rem"}}>playerId: <b>{this.state.playerId}</b></div>
           </div>
         </div>
       </div>

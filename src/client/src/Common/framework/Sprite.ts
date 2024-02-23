@@ -1,4 +1,5 @@
 /**
+ * @deprecated mada it static
  * @version 0.0.1
  */
 export abstract class Sprite

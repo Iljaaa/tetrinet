@@ -43,7 +43,12 @@ export interface PlayScreenEventListener
    * When line is cleared
    * @param numberOfLines
    */
-  onLineCleared: (numberOfLines:number) => void
+  // onLineCleared: (numberOfLines:number) => void
+
+  /**
+   * score update
+   */
+  onScoreChanged: (newScore:number) => void
 
   /**
    * Send bonus to some one
@@ -67,6 +72,9 @@ interface CupsPositionInterface {
   [index: number]: {x:number, y: number}
 }
 
+/**
+ * Position of cups for party play
+ */
 const CupsPosition:CupsPositionInterface = {
   0: {x: 576, y: 32},
   1: {x: 768, y: 32},
@@ -80,6 +88,18 @@ const CupsPosition:CupsPositionInterface = {
  */
 export class PlayScreen extends WebGlScreen implements CupEventListener, WebInputEventListener
 {
+
+  /**
+   * Current game state
+   * @private
+   */
+  private _state:GameState = GameState.ready;
+
+  /**
+   * Current game score
+   */
+  private _score:number = 0
+
   /**
    * Cup object
    */
@@ -122,12 +142,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private _downTimer:number = 0;
-  
-  /**
-   * Current game state
-   * @private
-   */
-  private _state:GameState = GameState.ready;
   
   /**
    * @private
@@ -871,17 +885,24 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   onLineCleared(data:{countLines: number, bonuses: number[]}): void
   {
     // call event
-    if (this.listener) this.listener.onLineCleared(data.countLines);
+    this._score = this._score + ((data.countLines + data.countLines - 1) * 10);
 
-    // add playerBonuses to me
+    //
+    this.listener?.onScoreChanged(this._score);
+
+    // add cleared bonuses to me
     if (data.bonuses.length > 0){
       if (this.playerBonuses.length < 10) {
         this.playerBonuses = this.playerBonuses.concat(data.bonuses.slice(0, 10 - this.playerBonuses.length));
       }
     }
-    
+
     // add special block
-    this.addSpecialBlock()
+    for (let i = 0; i < data.countLines; i++) {
+
+      this.addSpecialBlock()
+    }
+
   }
   
   /**
@@ -953,7 +974,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       console.log ('game over');
 
       // and if we can not post figure is all over
-      this._state = GameState.over
+      // this._state = GameState.over
 
       // set cup state to game over
       this._cup.setState(CupState.over);
@@ -1184,7 +1205,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * Implementation of block quake bones
    */
-  private realiseGravitySpecial (sendState: boolean = true)
+  private realiseGravitySpecial ()
   {
     for(let col:number = 0; col < this._cup.getWidthInCells(); col++) {
       this.gravityOneColl(col);
