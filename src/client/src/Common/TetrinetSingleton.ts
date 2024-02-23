@@ -1,4 +1,4 @@
-import {Tetrinet} from "./Tetrinet/Tetrinet";
+import {TetrinetNetworkLayer} from "./TetrinetNetworkLayer";
 
 /**
  *
@@ -9,19 +9,23 @@ export class TetrinetSingleton
    * Singleton instance
    * @private
    */
-  private static instance:Tetrinet
+  private static instance:TetrinetNetworkLayer
 
   /**
    * Init new instance
    */
   public static init (){
-    TetrinetSingleton.instance = new Tetrinet()
+    TetrinetSingleton.instance = new TetrinetNetworkLayer()
   }
 
   /**
    *
    */
-  public static getInstance():Tetrinet {
+  public static getInstance():TetrinetNetworkLayer {
     return TetrinetSingleton.instance;
   }
+
+
+
+
 }

@@ -20,9 +20,9 @@ export class Tetrinet extends WebGlGame
    * Through init graphics method
    * @param canvas
    */
-  initGraphic(canvas:HTMLCanvasElement) {
-    super.initGraphic(canvas);
-  }
+  // initGraphic(canvas:HTMLCanvasElement) {
+  //   super.initGraphic(canvas);
+  // }
   
   /**
    * Waiting opponents

@@ -35,8 +35,6 @@ function App()
           <div style={{backgroundColor: "#ef7f57", padding: "4rem 2rem"}}>
             <h2>Road map:</h2>
             <ul>
-              <li>big refactor: fields from index to objects</li>
-              <li>big refactor: tetrinet network layer</li>
               <li>Prepare eight people party</li>
               <li>extend Super blocks</li>
               <li>Create party for many peoples</li>

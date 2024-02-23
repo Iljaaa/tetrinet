@@ -85,66 +85,58 @@ export class CupImpl implements Cup
     // clear field
     this._state.fields = new Array<Field>(this.widthInCells * this.heightInCells) // .fill( {block: -1})
 
-
     for (let i = 0; i < this._state.fields.length; i++) {
       this._state.fields[i] = {block: -1}
       // people.push(person);
     }
 
-    // this is from top
-    // temp cup state
-
-    console.log (this._state.fields[100], 'this._state.fields[100]');
-    console.log (this._state, 'this._state');
     this._state.fields[100].block = 1;
-    console.log (this._state.fields[100], 'this._state.fields[100] 2');
-    console.log (this._state, 'this._state 2');
-    // this._state.fields[102].block = 1;
-    // this._state.fields[103].block = 0;
-    //
-    // this._state.fields[150].block = 1;
-    // this._state.fields[150].bonus = Bonus.add;
-    //
-    // this._state.fields[160].block = 1;
-    // this._state.fields[161].block = 1;
-    // this._state.fields[162].block = 1;
-    // this._state.fields[165].block = 1;
-    // this._state.fields[164].block = 1;
-    // this._state.fields[166].block = 1;
-    // this._state.fields[167].block = 1;
-    // this._state.fields[168].block = 1;
-    // this._state.fields[169].block = 1;
-    //
-    // this._state.fields[170].block = 1;
-    // this._state.fields[171].block = 1;
-    // this._state.fields[172].block = 1;
-    // this._state.fields[175].block = 1;
-    // this._state.fields[174].block = 1;
-    // this._state.fields[176].block = 1;
-    // this._state.fields[177].block = 1;
-    // this._state.fields[178].block = 1;
-    // this._state.fields[179].block = 1;
-    //
-    // // temp cup state
-    // this._state.fields[180].block = 1;
-    // this._state.fields[181].block = 1;
-    // this._state.fields[182].block = 1;
-    // this._state.fields[184].block = 1;
-    // this._state.fields[185].block = 1;
-    // this._state.fields[186].block = 1;
-    // this._state.fields[187].block = 1;
-    // this._state.fields[188].block = 1;
-    // this._state.fields[189].block = 1;
-    //
-    // this._state.fields[190].block = 1;
-    // this._state.fields[191].block = 1;
-    // this._state.fields[192].block = 1;
-    // this._state.fields[195].block = 1;
-    // this._state.fields[194].block = 1;
-    // this._state.fields[196].block = 1;
-    // this._state.fields[197].block = 1;
-    // this._state.fields[198].block = 1;
-    // this._state.fields[199].block = 1;
+    this._state.fields[102].block = 1;
+    this._state.fields[103].block = 0;
+
+    this._state.fields[150].block = 1;
+    this._state.fields[150].bonus = Bonus.add;
+
+    this._state.fields[160].block = 1;
+    this._state.fields[161].block = 1;
+    this._state.fields[162].block = 1;
+    this._state.fields[165].block = 1;
+    this._state.fields[164].block = 1;
+    this._state.fields[166].block = 1;
+    this._state.fields[167].block = 1;
+    this._state.fields[168].block = 1;
+    this._state.fields[169].block = 1;
+
+    this._state.fields[170].block = 1;
+    this._state.fields[171].block = 1;
+    this._state.fields[172].block = 1;
+    this._state.fields[175].block = 1;
+    this._state.fields[174].block = 1;
+    this._state.fields[176].block = 1;
+    this._state.fields[177].block = 1;
+    this._state.fields[178].block = 1;
+    this._state.fields[179].block = 1;
+
+    // temp cup state
+    this._state.fields[180].block = 1;
+    this._state.fields[181].block = 1;
+    this._state.fields[182].block = 1;
+    this._state.fields[184].block = 1;
+    this._state.fields[185].block = 1;
+    this._state.fields[186].block = 1;
+    this._state.fields[187].block = 1;
+    this._state.fields[188].block = 1;
+    this._state.fields[189].block = 1;
+
+    this._state.fields[190].block = 1;
+    this._state.fields[191].block = 1;
+    this._state.fields[192].block = 1;
+    this._state.fields[195].block = 1;
+    this._state.fields[194].block = 1;
+    this._state.fields[196].block = 1;
+    this._state.fields[197].block = 1;
+    this._state.fields[198].block = 1;
+    this._state.fields[199].block = 1;
   }
   
   getFields = ():Array<Field> => {
