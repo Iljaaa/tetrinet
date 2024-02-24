@@ -29,7 +29,7 @@ export interface Cup
    *
    * @param index
    */
-  getFieldByIndex (index:number): Field
+  getFieldByIndex (index:number): Field|undefined
 
   /**
    * @param x

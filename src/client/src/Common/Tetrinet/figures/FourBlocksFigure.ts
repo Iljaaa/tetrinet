@@ -29,8 +29,6 @@ export abstract class FourBlocksFigure
     //this.center = new Coords(this.center.x, center.y)
   }
   
-  
-  
   /**
    * It must have
    * @param coords it must have 4 elements!
@@ -186,5 +184,34 @@ export abstract class FourBlocksFigure
     if (y >= this._cap.getHeightInCells()) return true
 
     return false;
+  }
+
+  /**
+   * In array of fields we are looking who is outside field or intersect with blocks in cup
+   * @protected
+   */
+  protected findSinfulnessIndex (items:Array<Coords>): number
+  {
+    return items.findIndex((c:Coords) =>
+    {
+      // check min max position
+      // if (c.x < 0) return true
+      // if (c.y < 0) return true
+      // if (c.y >= this._cap.getHeightInCells()) return true
+      // if (c.x >= capWidth) return true
+      // if (c.y > this.) check in it higher than top
+      if (this.isBlockOutsideCup(c.x, c.y)){
+        return true;
+      }
+
+      // cell index in field coords
+      const createIndexByCoords = this._cap.getCellIndexByCoords(c)
+
+      // check in fields
+      let b = this._cap.getFieldByIndex(createIndexByCoords)
+      if (b !== undefined && b.block > -1) return true
+
+      return false
+    });
   }
 }

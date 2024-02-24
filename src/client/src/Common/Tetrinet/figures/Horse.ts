@@ -188,28 +188,7 @@ export abstract class Horse extends FourBlocksFigure implements Figure
     const coordsAfterRotate = this.getCoordsOfAllCellsByStateAndCenter(nextPosition, centerX, this.center.y)
     
     // check can we update
-    const sinfulnessIndex:number = coordsAfterRotate.findIndex((c:Coords) =>
-    {
-      // check min max position
-      // if (c.x < 0) return true
-      // if (c.y < 0) return true
-      // if (c.y >= this._cap.getHeightInCells()) return true
-      // if (c.x >= capWidth) return true
-      // if (c.y > this.) check in it higher than top
-      if (this.isBlockOutsideCup(c.x, c.y)){
-        return true;
-      }
-      
-      // cell index in field coords
-      const createIndexByCoords = this._cap.getCellIndexByCoords(c)
-      
-      // check in fields
-      if (this._cap.getFieldByIndex(createIndexByCoords).block > -1) {
-        return true
-      }
-      
-      return false
-    });
+    const sinfulnessIndex:number = this.findSinfulnessIndex(coordsAfterRotate)
     
     //
     if (-1 !== sinfulnessIndex){
@@ -264,28 +243,7 @@ export abstract class Horse extends FourBlocksFigure implements Figure
     // this.updateByPosition(this._position);
     
     // check can we update
-    const sinfulnessIndex = coordsAfterRotate.findIndex((c:{x:number, y:number}) =>
-    {
-      // check min max position
-      // if (c.x < 0) return true
-      // if (c.y < 0) return true
-      // if (c.y >= this._cap.getHeightInCells()) return true
-      // if (c.x >= capWidth) return true
-      // if (c.y > this.) check in it higher than top
-      if (this.isBlockOutsideCup(c.x, c.y)){
-        return true;
-      }
-      
-      // cell index in field coords
-      const createIndexByCoords = this._cap.getCellIndexByCoords(c)
-      
-      // check in fields
-      if (this._cap.getFieldByIndex(createIndexByCoords).block > -1) {
-        return true
-      }
-      
-      return false
-    });
+    const sinfulnessIndex  = this.findSinfulnessIndex(coordsAfterRotate)
     
     if (sinfulnessIndex !== -1){
       return false
