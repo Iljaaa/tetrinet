@@ -297,7 +297,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   }
 
   private processGetBonusMessage (data:GetBonusMessage) {
-    this.realiseBonus(data.bonus);
+    this.realiseBonus(data.bonus, this.playerId, data);
   }
 
   private processPause(data:PausedMessage) {

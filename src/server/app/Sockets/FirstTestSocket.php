@@ -142,7 +142,7 @@ class FirstTestSocket implements MessageComponentInterface
         $this->info(__METHOD__);
 
         $data = json_decode($msg->getPayload(), true);
-        $this->info("data", $data);
+        // $this->info("data", $data);
 
         if (empty($data['type'])) {
             $this->info("message.type is empty, ignore it");
@@ -338,7 +338,6 @@ class FirstTestSocket implements MessageComponentInterface
     }
 
     /**
-     * todo: refactor
      * @param ConnectionInterface $conn
      * @param array $data
      * @return void
@@ -356,7 +355,7 @@ class FirstTestSocket implements MessageComponentInterface
         $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
         $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';
         $this->info("set", ['partyId' => $partyId, 'playerId' => $playerId]);
-        $this->info("received", ['data.cup' => $data['cup']]);
+        // $this->info("received", ['data.cup' => $data['cup']]);
 
         if (empty($partyId)){
             $this->info("Party id is empty, ignore request");
@@ -407,7 +406,7 @@ class FirstTestSocket implements MessageComponentInterface
 //        $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
 //        $this->info("response", ['cupsData' => $cupsData]);
 
-        $this->info("response", ['cups' => $cupsResponse]);
+        // $this->info("response", ['cups' => $cupsResponse]);
         // send data to all players
         $party->sendToAllPlayers([
             'type' => ResponseType::afterSet,
@@ -481,6 +480,9 @@ class FirstTestSocket implements MessageComponentInterface
          */
         // $source = (int) $data['source'];
 
+        // party
+        $partyId = $data['partyId'] ?? '';
+
         /**
          * Target player id
          */
@@ -491,11 +493,17 @@ class FirstTestSocket implements MessageComponentInterface
 
         $bonus = BonusType::from((int) $data['bonus']);
 
+        // special situation split cup bonus
+        if ($bonus == BonusType::switch) {
+            $playerId = $data['playerId'];
+            $this->info('process swith', ['data' => $data]);
+            $this->processSwitchSpecial($partyId, $playerId, $target);
+            return;
+        }
+
         // add log
 
         // found opponent
-        // $opponent = $this->findPlayerById($target);
-        $partyId = $data['partyId'] ?? '';
 
         // pause game
         // $party = $this->party;
@@ -514,8 +522,6 @@ class FirstTestSocket implements MessageComponentInterface
             'bonus' => $bonus,
         ]);
 
-        // todo: add modal
-
         // send command to opponent
         if ($opponent) {
             $opponent->getConnection()->send(json_encode([
@@ -525,6 +531,50 @@ class FirstTestSocket implements MessageComponentInterface
                 'bonus' => $bonus->value
             ]));
         }
+    }
+
+    /**
+     * This is process special block Switch
+     * @param string $partyId
+     * @param string $sourcePlayerId
+     * @param string $targetPlayerId
+     * @return void
+     */
+    private function processSwitchSpecial(string $partyId, string $sourcePlayerId, string $targetPlayerId): void
+    {
+        $this->info(__METHOD__, ['partyId' => $partyId, 'sourcePlayerId' => $sourcePlayerId, 'targetPlayerId' => $targetPlayerId]);
+        $party = $this->partiesPool->getPartyById($partyId);
+        if (!$party) return;
+        $this->info("party: ".$party->partyId);
+
+        $sourcePlayer = $party->getPlayerById($sourcePlayerId);
+        if (!$sourcePlayer) return;
+        $this->info('source player: '.$sourcePlayer->getConnectionId());
+
+        $targetPlayer = $party->getPlayerById($targetPlayerId);
+        if (!$targetPlayer) return;
+        $this->info('target: '.$targetPlayer->getConnectionId());
+
+        // split cups
+        $targetPlayerCup = $targetPlayer->getCup();
+
+        $targetPlayer->setCup($sourcePlayer->getCup());
+        $sourcePlayer->setCup($targetPlayerCup);
+
+        $this->info('end switch');
+
+        // send response to all
+        $party->sendToAllPlayers([
+            'type' => ResponseType::getBonus,
+            // 'responsible' => $partyIndex,
+            // 'responsibleId' => $conn->socketId
+            'source' => $sourcePlayerId,
+            'target' => $targetPlayer,
+            'bonus' => BonusType::switch,
+            'state' => $party->getGameState(),
+            'cups' => $party->getCupsResponse()
+        ]);
+
     }
 
     /**

@@ -32,6 +32,8 @@ import {CupsDataCollection} from "../../../Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
 import {NextBG} from "../textures/NextBG";
 import {Field} from "../models/Field";
+import {GetBonusMessage} from "../types/messages/GetBonusMessage";
+import {GetSwitchBonusMessage} from "../types/messages/GetSwitchBonusMessage";
 
 
 /**
@@ -153,7 +155,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   // private playerBonuses: Array<Bonus> = [Bonus.add,Bonus.add,Bonus.add];
-  private playerBonuses: Array<Bonus> = [Bonus.nuke, Bonus.quake, Bonus.bomb,
+  private playerBonuses: Array<Bonus> = [Bonus.switch, Bonus.quake, Bonus.bomb,
     // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,Bonus.clearSpecials,Bonus.clear,Bonus.clear
   ];
 
@@ -839,6 +841,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     const firstBonus:Bonus|undefined = this.playerBonuses.shift();
     if (firstBonus === undefined) return;
 
+    // ignore switch bonus
+    if (firstBonus === Bonus.switch) return;
+
     this.realiseBonus(firstBonus)
   }
 
@@ -863,8 +868,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   /**
    * @param bonus
+   * @param minePlayerId
+   * @param data
    */
-  realiseBonus(bonus:Bonus)
+  realiseBonus(bonus:Bonus, minePlayerId?:string, data?:GetBonusMessage)
   {
     // todo: add additional blocks
     switch (bonus) {
@@ -875,7 +882,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       case Bonus.bomb: this.realiseBlockBombSpecial(); break;
       case Bonus.quake: this.realiseQuakeSpecial(); break;
       case Bonus.gravity: this.realiseGravitySpecial(); break;
-      case Bonus.switch: alert('switch not ready'); break;
+      case Bonus.switch: this.realiseSwitch(minePlayerId as string, data as GetSwitchBonusMessage); break;
       case Bonus.nuke: this.realiseNukeSpecial(); break;
     }
   }
@@ -1020,7 +1027,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     return f;
   }
-
 
 
   /**
@@ -1261,7 +1267,31 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
         this._cup.setFieldByCoordinates(col, row, {block: -1})
       }
     }
+  }
 
+  /**
+   * Implementation of block quake bones
+   */
+  private realiseSwitch (minePlayerId:string, data:GetSwitchBonusMessage)
+  {
+    console.log(data.cups, 'data')
 
+    // fow to find our id
+
+    this._cup.setFields(data.cups[minePlayerId].fields)
+
+    // this.setCupState(data.cups[])
+
+    // filter opponent cups
+    let opponentsCups:CupsDataCollection = new class implements CupsDataCollection {
+      [index: string]: CupData;
+    };
+    Object.keys(data.cups).forEach((playerId:string) => {
+      if (playerId !== minePlayerId) {
+        opponentsCups[playerId] = (data.cups[playerId]);
+      }
+    })
+
+    this.updateCups(opponentsCups)
   }
 }

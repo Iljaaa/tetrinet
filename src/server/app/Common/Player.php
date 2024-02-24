@@ -59,6 +59,16 @@ class Player
     }
 
     /**
+     * @param Cup $cup
+     * @return Player
+     */
+    public function setCup(Cup $cup): static
+    {
+        $this->cup = $cup;
+        return $this;
+    }
+
+    /**
      * @param array $data
      * @return void
      */

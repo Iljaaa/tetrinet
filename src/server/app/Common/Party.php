@@ -144,6 +144,14 @@ class Party
     }
 
     /**
+     * @param string $playerId
+     * @return Player|null
+     */
+    public function getPlayerById (string $playerId): ?Player {
+        return $this->players[$playerId] ?? null;
+    }
+
+    /**
      * Pause game
      * @return void
      */

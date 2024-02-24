@@ -4,6 +4,7 @@ import {WatchScreen} from "./screens/WatchScreen";
 import {Bonus} from "./types/Bonus";
 import {CupState} from "./types/CupState";
 import {CupsDataCollection} from "../../Canvas";
+import {GetBonusMessage} from "./types/messages/GetBonusMessage";
 
 /**
  * @version 0.1.0
@@ -105,9 +106,11 @@ export class Tetrinet extends WebGlGame
 
   /**
    * @param bonus
+   * @param minePlayerId
+   * @param data
    */
-  realiseBonus(bonus:Bonus)  {
-    (this.getCurrentScreen() as PlayScreen)?.realiseBonus(bonus)
+  realiseBonus(bonus:Bonus, minePlayerId:string, data:GetBonusMessage)  {
+    (this.getCurrentScreen() as PlayScreen)?.realiseBonus(bonus, minePlayerId, data)
   }
 
   /**
