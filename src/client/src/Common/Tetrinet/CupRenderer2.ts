@@ -275,8 +275,7 @@ export class CupRenderer2
       }
 
       // draw super block
-      // todo: here we must be shure that field have block, because bonus could be without block
-      if (fields[i].bonus)
+      if (fields[i].bonus !== undefined)
       {
         const row = Math.floor(i / this.cupSizeInCells.width);
         const bottom = row * this.blockSize;
