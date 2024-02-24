@@ -310,13 +310,16 @@ export class CupImpl implements Cup
 
     // add row
     const randomClearField = Math.floor(Math.random() * this.widthInCells);
-    const firstBlockIndex = this.getCellIndexByCoords({x: 0, y: this.heightInCells - 1})
+    // const firstBlockIndex = this.getCellIndexByCoords({x: 0, y: this.heightInCells - 1})
     // add line to bottom
     for (let col = 0; col < this.widthInCells; col++) {
-      if (col !== randomClearField) {
-        const i = firstBlockIndex + col
-        this._state.fields[i].block = GenerateRandomColor()
-      }
+        this.setFieldByCoordinates(col, this.heightInCells - 1, {
+          block: (col == randomClearField) ? - 1 : GenerateRandomColor(),
+          // bonus: undefined
+        })
+        // const i = firstBlockIndex + col
+        // this._state.fields[i].block = GenerateRandomColor()
+        // this._state.fields[i].bonus = undefined
     }
   }
 
@@ -325,16 +328,13 @@ export class CupImpl implements Cup
    */
   private moveCupUp ()
   {
-    debugger
     // move cup up
-    for (let row = 0; row < this.heightInCells; row++)
+    for (let row = 0; row < this.heightInCells - 1; row++)
     {
-      // row start and end for this indexes
-      // const startIndex = row * this.widthInCells;
-      // const endIndex = startIndex +  this.widthInCells
       for (let col = 0; col < this.widthInCells; col++)
       {
-        const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
+        this.copyBlockByCoords({x: col, y: row + 1}, {x: col, y: row})
+        /*const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
 
         // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
         const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
@@ -349,9 +349,11 @@ export class CupImpl implements Cup
         if (this._state.fields[currentBlockIndex].bonus !== undefined) {
           this._state.fields[indexOfBlockAbove] = this._state.fields[currentBlockIndex]; // -1 it's mean that fiend if empty that we move them down
           this._state.fields[currentBlockIndex].bonus = undefined;
-        }
+        }*/
+
       }
     }
+
   }
 
   /**
@@ -378,17 +380,19 @@ export class CupImpl implements Cup
 
   private clearBottomLine()
   {
-    debugger
     const rowIndex = this.heightInCells - 1;
     for (let col = 0; col < this.widthInCells; col++)
     {
-      const blockIndex = this.getCellIndexByCoords({x: col, y: rowIndex})
-      this._state.fields[blockIndex].block = -1;
-
+      this.setFieldByCoordinates(col, rowIndex, {
+        block: -1
+      })
+      // const blockIndex = this.getCellIndexByCoords({x: col, y: rowIndex})
+      // this._state.fields[blockIndex].block = -1;
       //
-      if (this._state.fields[blockIndex].bonus) {
-        this._state.fields[blockIndex].bonus = undefined;
-      }
+      // //
+      // if (this._state.fields[blockIndex].bonus) {
+      //   this._state.fields[blockIndex].bonus = undefined;
+      // }
     }
   }
 
@@ -397,28 +401,26 @@ export class CupImpl implements Cup
    */
   private moveCupDown ()
   {
-    debugger
-    // move cup up
-    for (let row = this.heightInCells -1; row >= 0; row--)
-    {
-      for (let col = 0; col < this.widthInCells; col++)
-      {
-        const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
+    for (let row = this.heightInCells -1; row > 0; row--) {
+      for (let col = 0; col < this.widthInCells; col++) {
+        this.copyBlockByCoords({x: col, y: row -1}, {x: col, y: row})
 
-        // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
-        const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
-
-        // if there is a block we move them above
-        if (this._state.fields[indexOfBlockAbove].block > -1) {
-          this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
-          this._state.fields[indexOfBlockAbove].block = -1;
-        }
-
-        // move bonus fields
-        if (this._state.fields[indexOfBlockAbove]) {
-          this._state.fields[currentBlockIndex].bonus = this._state.fields[indexOfBlockAbove].bonus;
-          this._state.fields[indexOfBlockAbove].bonus = -1;
-        }
+        // const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
+        //
+        // // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
+        // const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
+        //
+        // // if there is a block we move them above
+        // if (this._state.fields[indexOfBlockAbove].block > -1) {
+        //   this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
+        //   this._state.fields[indexOfBlockAbove].block = -1;
+        // }
+        //
+        // // move bonus fields
+        // if (this._state.fields[indexOfBlockAbove]) {
+        //   this._state.fields[currentBlockIndex].bonus = this._state.fields[indexOfBlockAbove].bonus;
+        //   this._state.fields[indexOfBlockAbove].bonus = -1;
+        // }
       }
     }
   }
@@ -455,9 +457,6 @@ export class CupImpl implements Cup
       return;
     }
 
-    debugger
-
-
     // clear lines and add bonus
     const bonuses:Array<Bonus> = [];
     fullLines.forEach((fullLineIndex:number) => {
@@ -482,7 +481,6 @@ export class CupImpl implements Cup
     // fullLines.reverse().forEach((fullLineIndex:number) =>
     fullLines.forEach((fullLineIndex:number) =>
     {
-      debugger
       for (let row = fullLineIndex; row > 0; row--)
         // for (let row = fullLineIndex; row < this.heightInCells; row++)
       {
