@@ -272,8 +272,9 @@ export class CupImpl implements Cup
    * @param index
    */
   public clearBlock (index:number) {
-    this._state.fields[index].block = -1;
-    this._state.fields[index].bonus = undefined;
+    if (this._state.fields[index] !== undefined){
+      this.setFieldByIndex(index, {block: -1})
+    }
   }
 
   /**

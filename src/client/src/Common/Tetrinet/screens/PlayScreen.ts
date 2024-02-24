@@ -153,7 +153,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   // private playerBonuses: Array<Bonus> = [Bonus.add,Bonus.add,Bonus.add];
-  private playerBonuses: Array<Bonus> = [Bonus.clear, Bonus.quake, Bonus.bomb,
+  private playerBonuses: Array<Bonus> = [Bonus.nuke, Bonus.quake, Bonus.bomb,
     // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,Bonus.clearSpecials,Bonus.clear,Bonus.clear
   ];
 
@@ -875,6 +875,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       case Bonus.bomb: this.realiseBlockBombSpecial(); break;
       case Bonus.quake: this.realiseQuakeSpecial(); break;
       case Bonus.gravity: this.realiseGravitySpecial(); break;
+      case Bonus.switch: alert('switch not ready'); break;
+      case Bonus.nuke: this.realiseNukeSpecial(); break;
     }
   }
 
@@ -1247,5 +1249,19 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
         rowToSplit--
       }
+  }
+
+  /**
+   * Implementation of block quake bones
+   */
+  private realiseNukeSpecial ()
+  {
+    for (let row:number = 0; row < this._cup.getHeightInCells(); row++) {
+      for (let col: number = 0; col < this._cup.getWidthInCells(); col++) {
+        this._cup.setFieldByCoordinates(col, row, {block: -1})
+      }
+    }
+
+
   }
 }
