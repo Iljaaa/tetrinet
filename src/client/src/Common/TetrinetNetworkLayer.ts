@@ -19,11 +19,22 @@ import {PausedMessage} from "./Tetrinet/types/messages/PausedMessage";
 import {ResumedMessage} from "./Tetrinet/types/messages/ResumedMessage";
 import {CupsDataCollection} from "../Canvas";
 
+/**
+ *
+ */
 export type TetrinetEventListener = {
   onGameStateChange: (state:GameState) => void,
   onScoreChange: (score:number) => void,
   onPartyIdChange: (partyId:string) => void,
   onPlayerIdChange: (playerId:string) => void,
+}
+
+/**
+ *
+ */
+export type TetrinetNetworkLayerSocketEvents = {
+  onError: (state:GameState) => void,
+  OnClose: (score:number) => void,
 }
 
 /**
@@ -116,10 +127,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * Callback from game when lines was cleared
    * @param newScore
    */
-  onScoreChanged (newScore:number): void
-  {
-    console.log ('TetrinetNetworkLayer.onScoreChanged', newScore);
-
+  onScoreChanged (newScore:number): void {
     this._eventListener?.onScoreChange(newScore)
   }
 
@@ -258,25 +266,10 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
       const mineCup = data.cups[this.playerId]
       this.setCupState(mineCup.state);
-
-
-
-      // check maybe we are a winner
-      //const mineCupIndex = Object.keys(data.cups).find((key:string) => {
-      // return parseInt(key) === this.partyIndex
-      // return key === this.playerId
-      // })
-
-      // update our cup state
-      // if (mineCupIndex) {
-      //   const mineCup = data.cups[parseInt(mineCupIndex)]
-      //   this.setCupState(mineCup.state);
-      // }
     }
 
     // filter our cup out of our cup
     let ccc:CupsDataCollection = {}
-
     Object.keys(data.cups).forEach((key:string) => {
       if (key !== this.playerId){
         ccc[key] = data.cups[key]
@@ -312,7 +305,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
 
 
-
   /**
    * Join to party.
    * party type: party, duel
@@ -320,17 +312,29 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   public joinToParty (partyType:string)
   {
-    console.log ('onJoinToDuelClicked')
-    SocketSingleton.reOpenConnection(() => {
-      // send handshake and waiting our data
-      const request:StartRequest = {
-        type: RequestTypes.join,
-        partyType: partyType,
-        partyId: '',
-        playerId: '',
-      }
-      SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
-    })
+    console.log ('onJoinToDuelClicked', this._eventListener)
+
+    // close connection if it
+    SocketSingleton.getInstance()
+
+    //
+    SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(partyType), this.onConnectionClose)
+  }
+
+  /**
+   * When socket connection open
+   * @param partyType
+   */
+  private onJoinPartyConnectionOpen(partyType:string)
+  {
+    // send handshake and waiting our data
+    const request:StartRequest = {
+      type: RequestTypes.join,
+      partyType: partyType,
+      partyId: '',
+      playerId: '',
+    }
+    SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
   }
 
   /**
@@ -352,6 +356,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.prepareToGame(this);
   }
 
+  private onConnectionClose = () => {
+    console.log ('TetrinetNetworkLayer.onConnectionClose');
+    alert ('Connection lost!!!');
+  }
+
+  /**
+   * Pause the game
+   */
   public pause ()
   {
     // request data
@@ -365,6 +377,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     SocketSingleton.getInstance()?.sendData(request);
   }
 
+  /**
+   * Resume the game
+   */
   public resume ()
   {
 
@@ -398,6 +413,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
       //
       this._eventListener?.onGameStateChange(GameState.running)
-    })
+    }, () => {})
   }
 }

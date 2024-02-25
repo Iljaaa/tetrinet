@@ -44,7 +44,7 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
    */
   componentDidMount()
   {
-    // init graphic
+    // set listen events
     TetrinetSingleton.getInstance().setEventListener(this)
   }
 

@@ -14,32 +14,36 @@ export class SocketSingleton
   /**
    * This is almost open but we always create new socket
    */
-  public static reOpenConnection(onOpenCallback:()=>void)
+  public static reOpenConnection(onOpenCallback:()=>void, onCloseCallback:()=>void)
   {
     // close old connection
-    if (SocketSingleton.socketInstance) {
+    if (SocketSingleton.socketInstance)
+    {
+      // clear close callback
+      SocketSingleton.socketInstance.clearCloseCallback();
+
+      // open new connection
       SocketSingleton.socketInstance.close();
     }
 
     // create new instance
-    SocketSingleton.socketInstance = new Socket(onOpenCallback);
-
+    SocketSingleton.socketInstance = new Socket(onOpenCallback, onCloseCallback);
   }
 
   /**
    * Init socket connection
    */
-  public static openConnection(onOpenCallback:()=>void)
+  public static openConnection(onOpenCallback:()=>void, onCloseCallback:()=>void)
   {
     if (!SocketSingleton.socketInstance)
     {
       // create new instance
-      SocketSingleton.socketInstance = new Socket(onOpenCallback);
+      SocketSingleton.socketInstance = new Socket(onOpenCallback, onCloseCallback);
     }
   }
   
   /**
-   *
+   * Return socket instance
    */
   public static getInstance() {
     return SocketSingleton.socketInstance;

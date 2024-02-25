@@ -1,7 +1,7 @@
 import {SocketEventListener} from "./SocketEventListener";
 
 /**
- * todo: make singleton
+ * Wrap up around socket
  */
 export class Socket
 {
@@ -13,13 +13,17 @@ export class Socket
   
   /**
    * Callback when socket is open
-   * @private
    */
   private readonly onOpenCallback: (() => void) | undefined;
+
+  /**
+   * Callback when the connection close
+   */
+  private onCloseCallback: (() => void) | undefined;
   
   /**
-   * This is speciaal call back with
-   * setted in send data method
+   * This is special call back with
+   * set in send data method
    * and called in get message
    * @private
    */
@@ -30,12 +34,11 @@ export class Socket
    */
   private eventListener:SocketEventListener|undefined
   
-  
-  constructor(onOpenCallback: (() => void) | undefined)
+  constructor(onOpenCallback: (() => void), onCloseCallback: (() => void))
   {
-    
     // save callback
     this.onOpenCallback = onOpenCallback
+    this.onCloseCallback = onCloseCallback
     
     try {
       this.socket = new WebSocket(window.tetrinetConfig.socketUrl)
@@ -50,14 +53,6 @@ export class Socket
       console.log(e, 'e')
     }
   }
-
-  /**
-   * Request data from server
-   */
-  // requestData () {
-  //   const stringData = JSON.stringify({type: "watch"})
-  //   this.socket?.send(stringData)
-  // }
   
   /**
    * Set event listener
@@ -69,14 +64,9 @@ export class Socket
   /**
    * On socket open
    */
-  protected onOpen = () =>
-  {
-    console.log ('Socket.onOpen');
-    
+  protected onOpen = () => {
     // rise callback
-    if (this.onOpenCallback) {
-      this.onOpenCallback()
-    }
+    if (this.onOpenCallback) this.onOpenCallback();
   }
   
   /**
@@ -110,22 +100,26 @@ export class Socket
    * @protected
    */
   // protected onError (this:WebSocket, error:Event):any {
-  protected onError (this:WebSocket, error:Event):any {
+  protected onError = (error:Event):void => {
     console.log ('Socket.onError', error);
     alert('Socket error, restart application');
+
+    // clear close callback, am not sure about it
+    this.onCloseCallback = undefined
+
     // if (error.type === "error")
   }
   
-  protected onClose = (event:any) => {
-    console.log ('Socket.onClose', event);
-    alert ('connection lost or closed by server');
+  protected onClose = (event:any):void => {
+    console.log ('Socket.onClose', this.onCloseCallback, event);
+    if (this.onCloseCallback) this.onCloseCallback()
   }
   
   /**
    * Send some data to socket
    * @param data
    */
-  public sendData = (data:object) =>
+  sendData = (data:object) =>
   {
     console.log (data, 'Socket.sendData');
     if (!this.socket) return;
@@ -142,7 +136,7 @@ export class Socket
    * @param data
    * @param callback
    */
-  public sendDataAndWaitAnswer = (data:object, callback:(data:any)=>void) =>
+  sendDataAndWaitAnswer = (data:object, callback:(data:any)=>void) =>
   {
     if (!this.socket) return;
     
@@ -153,60 +147,14 @@ export class Socket
     this.socket.send(stringData);
   }
 
+  clearCloseCallback() {
+    this.onCloseCallback = undefined
+  }
+
   /**
    * Close connection
    */
-  public close ():void {
+  close ():void {
     if (this.socket) this.socket.close(1000);
   }
 }
-
-
-
-
-
-// let host = 'ws://127.0.0.1:10000/websocket';
-
-/*socket = new WebSocket(host);
-console.log(socket, 'socket')
-
-// here we need send welcome message
-
-socket.onopen = () => {
-  console.log ('Socket.onopen');
-};
-
-socket.onmessage = (message) => {
-  console.log (message.data, 'Socket.onMessage message data');
-  
-  
-  
-  let data = null;
-  try {
-    data = JSON.parse(message.data);
-  }
-  catch (er) {
-    console.warn (er, 'error on data parsing');
-  }
-  
-  console.log (data, 'data after parsing');
-  
-  //
-  if (data && data.type === "welcome") {
-    console.info ('this is welcome message and we need to save our id', data.id);
-  }
-  
-}
-
-socket.onerror = (it, ev) => {
-  console.log (it, ev, 'Socket.onError22222222');
-};
-
-socket.onclose = () => {
-  console.log ('Socket.onClose');
-}
-
-// setTimeout(function (){
-//   console.log ('Send test to socket');
-//   socket.send('test');
-// }, 1000)*/

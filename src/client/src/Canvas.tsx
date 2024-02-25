@@ -104,6 +104,8 @@ export class Canvas extends React.PureComponent
         // this.game.watchGame();
         TetrinetSingleton.getInstance().watchGame();
       })
+    }, () => {
+      console.log ('Socket closed');
     })
     
   }
