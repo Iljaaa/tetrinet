@@ -121,7 +121,7 @@ export class Socket
    */
   sendData = (data:object) =>
   {
-    console.log (data, 'Socket.sendData');
+    // console.log (data, 'Socket.sendData');
     if (!this.socket) return;
     
     // save callback

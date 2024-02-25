@@ -45,7 +45,7 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
   componentDidMount()
   {
     // set listen events
-    TetrinetSingleton.getInstance().setEventListener(this)
+    TetrinetSingleton.getInstance().setGameDataEventListener(this)
   }
 
   onGameStateChange(state: GameState): void {

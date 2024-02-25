@@ -1,5 +1,4 @@
 import React from 'react';
-import Modal from 'react-modal';
 
 import {Canvas} from "./Canvas";
 import {JoinButtons} from "./widgets/JoinButtons/JoinButtons";
@@ -7,20 +6,10 @@ import {Help} from "./widgets/Help/Help";
 
 import './App.css';
 import {StateRow} from "./widgets/StateRow/StateRow";
+import SocketsEventsAndModals from "./widgets/SocketEventsAndModals/SocketsEventsAndModals";
 
 function App()
 {
-
-  const customStyles = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-    },
-  };
 
   return (
     <div className="App">
@@ -55,27 +44,15 @@ function App()
               <li>extend block bomb</li>
               <li>duel cups size</li>
               <li>bug: when connection is open and you press join throw exception about lost connection</li>
+              <li>bug: check gravity special</li>
+              <li>move pause and resume button form canvas object</li>
+              <li>display cup index</li>
             </ul>
           </div>
 
-          <div>
+          <SocketsEventsAndModals />
 
-            <Modal
-              isOpen={false}
-              style={customStyles}
-              onRequestClose={() => {}}
-              contentLabel="Example Modal"
-            >
-              <div>I am a modal</div>
-              <form>
-                <input />
-                <button>tab navigation</button>
-                <button>stays</button>
-                <button>inside</button>
-                <button>the modal</button>
-              </form>
-            </Modal>
-          </div>
+
 
         </div>
       </div>
