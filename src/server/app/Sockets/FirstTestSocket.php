@@ -3,6 +3,7 @@
 namespace App\Sockets;
 
 use App\Common\Helper;
+use App\Common\Messages\BackToPartyMessage;
 use App\Common\Messages\JoinToPartyMessage;
 use App\Common\Messages\LetsPlayMessage;
 use App\Common\PoolOfParties;
@@ -155,6 +156,8 @@ class FirstTestSocket implements MessageComponentInterface
         switch ($messageType) {
             // case MessageType::start: $this->processStartParty($conn, $data); break;
             case MessageType::join: $this->processJoinToParty($conn, $data); break;
+            case MessageType::back: $this->processBackToParty($conn, $data); break;
+
             case MessageType::pause: $this->processPause($conn, $data); break;
             case MessageType::resume: $this->processResume($conn, $data); break;
             case MessageType::set: $this->processSet($conn, $data); break;
@@ -249,18 +252,11 @@ class FirstTestSocket implements MessageComponentInterface
         $onPoolReadyToMakeParty = function (array $players)
         {
             // create party
-            // $party = new Party();
             $party = $this->partiesPool->createParty();
             $this->partiesPool->addParty($party);
 
-            // $this->party = $party;
-
             // move players to party
-            // foreach ($this->duelPlayersPool as $p) $party->addPlayer($p);
             foreach ($players as $p) $party->addPlayer($p);
-
-            // clean up pull
-            // $this->duelPlayersPool = [];
 
             // run game
             // $this->party->setGameState(GameState::running);
@@ -269,17 +265,65 @@ class FirstTestSocket implements MessageComponentInterface
             // create message
             $m = new LetsPlayMessage($party);
             $party->sendMessageToAllPlayers($m);
-
-            // send to all players information that game starts
-//            $party->sendToAllPlayers([
-//                'type' => ResponseType::letsPlay,
-//                'party' => $partyResponse // this is party description
-//            ]);
         };
 
         // add to pool
         if ($pool === PartyType::duel) $this->playersPool->addToDuels($conn, $onPoolReadyToMakeParty);
         if ($pool === PartyType::party) $this->playersPool->addToParty($conn, $onPoolReadyToMakeParty);
+    }
+
+    /**
+     * @param ConnectionInterface $conn
+     * @param array $data
+     * @return void
+     */
+    private function processBackToParty(ConnectionInterface $conn, array $data)
+    {
+        $this->info(__METHOD__);
+
+        $playerId = $data['playerId'];
+        $partyId = $data['partyId'];
+        $this->info('back to', ['partyId' => $partyId, 'playerId' => $playerId]);
+
+        // response message
+        $m = new BackToPartyMessage();
+
+        $party = $this->partiesPool->getPartyById($partyId);
+        if (!$party){
+            $this->info('party not found');
+            $m->partyNotFound('Party not found');
+            $conn->send($m->getDataAsString());
+            return;
+        }
+
+        // find play in the party
+        $player = $party->findPlayerById($playerId);
+        if (!$player){
+            $this->info('Player not found in the party');
+            $m->partyNotFound('Player not found in the party');
+            $conn->send($m->getDataAsString());
+            return;
+        }
+
+        // change socket id
+        // $conn->socketId = $playerId;
+
+        $this->info('party found');
+
+        // todo: add log message
+        // $party->addChatMessage();
+
+        // return cups info
+        $m->setCupsResponseData($party->getCupsResponse());
+
+        //
+        // it it not working because player has new socket id
+        // and we do not have it in collection
+        //
+        //
+
+        $this->info('party found');
+        $party->sendMessageToAllPlayers($m);
     }
 
     /**
@@ -535,6 +579,7 @@ class FirstTestSocket implements MessageComponentInterface
 
     /**
      * This is process special block Switch
+     * todo: simplify switch cups
      * @param string $partyId
      * @param string $sourcePlayerId
      * @param string $targetPlayerId

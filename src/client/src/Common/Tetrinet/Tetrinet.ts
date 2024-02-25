@@ -5,6 +5,7 @@ import {Bonus} from "./types/Bonus";
 import {CupState} from "./types/CupState";
 import {CupsDataCollection} from "../../Canvas";
 import {GetBonusMessage} from "./types/messages/GetBonusMessage";
+import {Cup} from "./models/Cup";
 
 /**
  * @version 0.1.0
@@ -27,9 +28,10 @@ export class Tetrinet extends WebGlGame
   
   /**
    * Waiting opponents
+   * initCup: cup with start condition
    * after this game starts
    */
-  prepareToGame (eventListener: PlayScreenEventListener)
+  prepareToGame (eventListener: PlayScreenEventListener, initCup:Cup|null = null)
   {
     console.log ('Tetrinet.prepareToGame');
     // get current screen
@@ -50,7 +52,7 @@ export class Tetrinet extends WebGlGame
 
     // clear sup from previous game
     // todo: move it to start game
-    scr.cleanUpCup();
+    // scr.cleanUpCup();
 
     // start request
     window.requestAnimationFrame(this.update)

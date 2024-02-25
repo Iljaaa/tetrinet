@@ -3,15 +3,21 @@ import Modal from "react-modal";
 import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 import {TetrinetNetworkLayerSocketEvents} from "../../Common/TetrinetNetworkLayer";
 import {ClearGameDataInStorage, LoadGameDataFromStorage} from "../../process/store";
+import {BackModal} from "./BackModal";
+import {BackToPartyIsFail} from "./BackToPartyIsFail";
 
 type State = {
-  showBackToGameWindow: boolean
+  showBackToGameModal: boolean,
+  showBackToGameFailModal:boolean
+  failMessage: string
 }
 
 class SocketsEventsAndModals extends React.PureComponent<{}, State> implements TetrinetNetworkLayerSocketEvents
 {
   public state:State = {
-    showBackToGameWindow: false
+    showBackToGameModal: false,
+    showBackToGameFailModal: false,
+    failMessage: '',
   }
 
   componentDidMount() {
@@ -30,23 +36,53 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
     console.log ('SocketsEventsAndModals.onGraphicsLoaded');
 
     // check data in storage
+    // that was in store
+    // todo: check date
     const data = LoadGameDataFromStorage()
     console.log ('SocketsEventsAndModals.onGraphicsLoaded', data);
-    if (data) this.setState({showBackToGameWindow: true})
+
+    //
+    if (data) this.setState({showBackToGameModal: true})
   }
 
   /**
    * Try to back to the game
    */
   onBackToStoredGame = () => {
-    TetrinetSingleton.getInstance().backToGame();
+    const data = LoadGameDataFromStorage()
+    if (data && data.partyId && data.playerId){
+      TetrinetSingleton.getInstance().backToGame(data.partyId, data.playerId, this.whenBackToStoredGameFails);
+    }
+  }
+
+  /**
+   * When we can not back to stored game
+   * @param message
+   */
+  whenBackToStoredGameFails = (message:string) => {
+    console.log('SocketsEventsAndModals.whenBackToStoredGameFails', message)
+    this.setState({
+      showBackToGameModal: false,
+      showBackToGameFailModal: true,
+      failMessage: message,
+    })
+
   }
 
   /**
    * Cancel back to game
    */
   onCancelBackToStoredGame = () => {
-    this.setState({showBackToGameWindow: false})
+    this.setState({showBackToGameModal: false})
+    ClearGameDataInStorage()
+  }
+
+  onCloseBackFailModal = () => {
+    this.setState({
+      showBackToGameFailModal: false,
+      failMessage: ''
+    });
+
     ClearGameDataInStorage()
   }
 
@@ -66,38 +102,34 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
 
     return <div>
 
-        <Modal
-          isOpen={false}
-          style={customStyles}
-          onRequestClose={() => {
-          }}
-          contentLabel="Example Modal"
-        >
-          <div>I am a modal</div>
-          <form>
-            <input/>
-            <button>tab navigation</button>
-            <button>stays</button>
-            <button>inside</button>
-            <button>the modal</button>
-          </form>
-        </Modal>
+      <Modal
+        isOpen={false}
+        style={customStyles}
+        onRequestClose={() => {
+        }}
+        contentLabel="Example Modal"
+      >
+        <div>I am a modal</div>
+        <form>
+          <input/>
+          <button>tab navigation</button>
+          <button>stays</button>
+          <button>inside</button>
+          <button>the modal</button>
+        </form>
+      </Modal>
 
-        <Modal
-          isOpen={this.state.showBackToGameWindow}
-          style={customStyles}
-          onRequestClose={() => {
-            console.log ('Modal request close')
-          }}
-          contentLabel="Example Modal"
-        >
-          <div style={{color: "black"}}>We found not finished game in your store.</div>
-          <div style={{color: "black"}}>Do you want to back to this game?</div>
-          <div>
-            <button onClick={this.onBackToStoredGame}>Yes</button>
-            <button onClick={this.onCancelBackToStoredGame}>No</button>
-          </div>
-        </Modal>
+      <BackModal isOpen={this.state.showBackToGameModal}
+                 customStyles={customStyles}
+                 submit={this.onBackToStoredGame}
+                 cancel={this.onCancelBackToStoredGame} />
+
+
+      <BackToPartyIsFail isOpen={this.state.showBackToGameFailModal}
+                         customStyles={customStyles}
+                         message={this.state.failMessage}
+                         cancel={this.onCloseBackFailModal}/>
+
 
     </div>;
 

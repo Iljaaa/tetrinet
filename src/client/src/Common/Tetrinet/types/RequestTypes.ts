@@ -3,7 +3,8 @@
  */
 export enum RequestTypes {
     start = 'start',
-    join = 'join',
+    join = 'join', // find party game
+    back = 'back', // back to game
     set = 'set', // this is when cup updated
     pause = 'pause',
     resume = 'resume',

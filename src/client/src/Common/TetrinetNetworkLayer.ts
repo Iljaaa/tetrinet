@@ -19,6 +19,8 @@ import {PausedMessage} from "./Tetrinet/types/messages/PausedMessage";
 import {ResumedMessage} from "./Tetrinet/types/messages/ResumedMessage";
 import {CupsDataCollection} from "../Canvas";
 import {ClearGameDataInStorage, StoreGameDataInStorage} from "../process/store";
+import {BackRequest} from "./Tetrinet/types/requests/BackRequest";
+import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyResponse";
 
 /**
  * Game macro data changes
@@ -370,7 +372,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.playerId = data.yourPlayerId
 
     //
-    this._gameDataEventListener?.onPartyIdChange(GameState.running)
+    this._gameDataEventListener?.onGameStateChange(GameState.running)
+    this._gameDataEventListener?.onPlayerIdChange(this.playerId)
 
     // set listener when game starts
     SocketSingleton.getInstance()?.setListener(this);
@@ -381,16 +384,51 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   }
 
   /**
-   * Back to stored game
+   * Back to abbonaded game
    */
-  public backToGame () {
+  backToGame (partyId:string, playerId:string, failCallback: (message:string) => void) {
     console.log ('TetrinetNetworkLayer.backToGame')
-    SocketSingleton.reOpenConnection(() => this.onBackToGameConnectionOpen(), this.onConnectionClose)
+    SocketSingleton.reOpenConnection(
+      () => this.onBackToGameConnectionOpen(partyId, playerId, failCallback),
+      this.onConnectionClose
+    )
   }
 
-  private onBackToGameConnectionOpen() {
+  /**
+   * @param partyId
+   * @param playerId
+   * @param failCallback
+   */
+  private onBackToGameConnectionOpen(partyId:string, playerId:string, failCallback: (message:string) => void) {
     console.log ('TetrinetNetworkLayer.onBackToGameConnectionOpen')
-    alert ('this option not ready');
+    // send handshake and waiting our data
+    const request:BackRequest = {
+      type: RequestTypes.back,
+      partyId: partyId,
+      playerId: playerId,
+    }
+    SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, (data:BackToPartyResponse) => this.onBackResponse(data, failCallback))
+  }
+
+  /**
+   * We are back
+   * @private
+   */
+  private onBackResponse (data:BackToPartyResponse, failCallback: (message:string) => void){
+    console.log ('TetrinetNetworkLayer.onBackResponse', data);
+
+    debugger
+    // if it is fail
+    if (!data.success) {
+      failCallback(data.message)
+      return;
+    }
+
+    debugger
+
+    // found our cup and update it
+    // this.partyId = data.
+    this.prepareToGame(this, );
   }
 
   /**

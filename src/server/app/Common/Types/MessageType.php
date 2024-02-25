@@ -9,6 +9,7 @@ enum MessageType:string
 {
     case start = 'start';
     case join = 'join';
+    case back = 'back';
     case set = 'set'; // this is when cup updated
     case pause = 'pause';
     case resume = 'resume';

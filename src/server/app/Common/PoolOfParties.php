@@ -34,7 +34,7 @@ class PoolOfParties
 
     public function getPartyById(string $partyId): Party|null
     {
-        return $this->parties[$partyId];
+        return $this->parties[$partyId] ?? null;
     }
 
     public function addParty (Party $p)
