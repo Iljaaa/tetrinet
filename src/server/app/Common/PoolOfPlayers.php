@@ -63,7 +63,7 @@ class PoolOfPlayers
         Log::channel('socket')->info('connection added to pool', [
             'pool' => 'party',
             'socketId' => $conn->socketId,
-            'size' => count($this->duels)
+            'size' => count($this->party)
         ]);
 
         $partySize = 5;
@@ -71,9 +71,11 @@ class PoolOfPlayers
 
         if (count($this->party) >= $partySize)
         {
+            Log::channel('socket')->info('pool if full, we ready to create a game', ['size' => count($this->party)]);
+
             // take two
             while (count($party) < $partySize) {
-                $party[] = array_shift($this->duels);
+                $party[] = array_shift($this->party);
             }
 
             //
