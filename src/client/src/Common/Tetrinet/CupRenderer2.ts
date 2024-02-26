@@ -8,6 +8,7 @@ import {CupState} from "./types/CupState";
 import {GameOver} from "./textures/GameOver";
 import {WinnerTexture} from "./textures/WinnerTexture";
 import {Numbers} from "./textures/Numbers";
+import {CupWithFigure} from "./models/CupWithFigure";
 
 export enum CupSize {
   small16 = 'small16',
@@ -179,7 +180,7 @@ export class CupRenderer2
    * this method render cup
    * @param cup
    */
-  public renderCupWithFigure(cup:CupWithFigureImpl):void
+  public renderCupWithFigure(cup:CupWithFigure):void
   {
     let gl:WebGL2RenderingContext = this.graphic.getGl();
     

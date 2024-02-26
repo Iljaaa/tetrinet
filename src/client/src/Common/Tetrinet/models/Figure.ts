@@ -1,7 +1,7 @@
 import {Coords} from "../math/Coords";
 
 /**
- *
+ * todo: move color property to figure
  */
 export interface Figure
 {

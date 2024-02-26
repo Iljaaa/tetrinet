@@ -3,7 +3,7 @@ import {Tetrinet} from "../Tetrinet";
 import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 import {CupRenderer2, CupSize} from "../CupRenderer2";
 
-import {CapWithFigure} from "../models/CupWithFigure";
+import {CupWithFigure} from "../models/CupWithFigure";
 import {CupWithFigureImpl} from "../models/CupWithFigureImpl";
 import {GenerateNewFigure} from "../process/GenerateNewFigure";
 import {GenerateRandomColor} from "../process/GenerateRandomColor";
@@ -18,7 +18,7 @@ export class JustPlayScreen extends WebGlScreen
    * Cup object
    * @private
    */
-  private readonly _cup: CapWithFigure;
+  private readonly _cup: CupWithFigure;
   
   /**
    * Render
@@ -48,14 +48,16 @@ export class JustPlayScreen extends WebGlScreen
 
     // bind this to input listener
     this.game.getInput().setListener(this);
+
+    //
+    this.startNewGame ()
   }
 
   startNewGame ()
   {
     // create new figure
     const f = GenerateNewFigure(this._cup);
-    f.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y)
-    this._cup.setFigure(f, GenerateRandomColor());
+    this._cup.setFigureToDropPoint(f, GenerateRandomColor());
   }
   
   /**
@@ -65,6 +67,8 @@ export class JustPlayScreen extends WebGlScreen
   update (deltaTime:number):void
   {
     // todo: down timer
+
+    // this._cup.update
   }
   
   
@@ -81,7 +85,7 @@ export class JustPlayScreen extends WebGlScreen
     // render cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
-    this._cupRenderer?.renderCup(this._cup);
+    this._cupRenderer?.renderCupWithFigure(this._cup);
   }
 
 

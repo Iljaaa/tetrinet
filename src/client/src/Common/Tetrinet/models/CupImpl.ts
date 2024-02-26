@@ -156,11 +156,10 @@ export class CupImpl implements Cup
 
   /**
    * Get field info
-   * @param x
-   * @param y
+   * @param c
    */
-  getFieldByCoords(x: number, y:number):Field {
-    return this.getFieldByIndex(this.getCellIndex(x, y));
+  getFieldByCoords(c: Coords):Field {
+    return this.getFieldByIndex(this.getCellIndex(c.x, c.y));
   }
   /**
    * Get field info
@@ -523,6 +522,11 @@ export class CupImpl implements Cup
     }
 
     // return clearData;
+  }
+
+  clearBlockByIndex(cellIndex: number): void {
+    this._state.fields[cellIndex].block = -1
+    this._state.fields[cellIndex].bonus = undefined
   }
 
 }

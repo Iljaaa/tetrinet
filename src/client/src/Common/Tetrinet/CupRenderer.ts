@@ -1,5 +1,5 @@
 import {Cup} from "./models/Cup";
-import {CapWithFigure} from "./models/CupWithFigure";
+import {CupWithFigure} from "./models/CupWithFigure";
 import {Coords} from "./math/Coords";
 import {Figure} from "./models/Figure";
 import {Texture} from "../framework/Texture";
@@ -359,7 +359,7 @@ export class CupRenderer
    * Render cup with figure
    * @param c
    */
-  renderCupWithFigure (c: CapWithFigure)
+  renderCupWithFigure (c: CupWithFigure)
   {
     if (!this.gl || !this.program) return;
     

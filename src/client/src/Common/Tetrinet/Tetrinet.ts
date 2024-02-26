@@ -41,11 +41,13 @@ export class Tetrinet extends WebGlGame
   {
     let scr = this.getCurrentScreen();
 
-    if (!scr || !(scr instanceof JustPlayScreen))
-    {
-      this.setScreen(new JustPlayScreen(this))
+    if (!scr || !(scr instanceof JustPlayScreen)) {
+      scr = new JustPlayScreen(this)
+      this.setScreen(scr)
     }
 
+    // we start new game
+    (scr as JustPlayScreen).startNewGame();
 
     // start animation
     if (!this.isAnimationRequested) {

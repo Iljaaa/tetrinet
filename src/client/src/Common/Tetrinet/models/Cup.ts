@@ -57,7 +57,15 @@ export interface Cup
    * Check can we place this array of indexes into cup
    * @param newFields
    */
-  canPlace: (newFields:Array<number>) => boolean
+  canPlace (newFields:Array<number>): boolean
+
+  /**
+   * This method do:
+   * find full rows
+   * clear full rows
+   * move rows down
+   */
+  clearAndMoveLines():void
 
   /**
    * Get field value
@@ -75,16 +83,40 @@ export interface Cup
   getCellIndexByCoords(c:Coords):number
 
   /**
+   *
+   * @param c
+   */
+  getFieldByCoords (c:Coords):Field
+
+  /**
+   * Clear data in block
+   */
+  clearBlockByCoords (c:Coords):void
+
+  /**
+   * Clear data in block
+   */
+  clearBlockByIndex (cellIndex:number):void
+
+  /**
+   * Copy block from one place to another
+   * @param source
+   * @param target
+   */
+  copyBlockByCoords (source:Coords, target:Coords):void
+
+  /**
    * cup width
    */
-  getWidthInCells: () => number
+  getWidthInCells (): number
 
   /**
    * cup height
    */
-  getHeightInCells: () => number
+  getHeightInCells (): number
 
   /**
+   * @deprecated this must be in cup with bonus filed
    * @param filedIndex
    * @param bonusIndex
    */
@@ -96,12 +128,14 @@ export interface Cup
   // blowRandomField() => void
 
   /**
+   @deprecated that not should be here
    * Add random row below in cup
    * @param countLines Number of lines to add
    */
   addRandomRowBellow: (countLines:number) => void
 
   /**
+   * @deprecated this is not should be here
    * Remove rows from bottom of cup
    * @param countLines Number of lines to add
    */

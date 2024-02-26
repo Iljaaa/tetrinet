@@ -1,5 +1,5 @@
 import {Figure} from "./Figure";
-import {CapWithFigure} from "./CupWithFigure";
+import {CupWithFigure} from "./CupWithFigure";
 
 import {CupEventListener, CupImpl} from "./CupImpl";
 import {Coords} from "../math/Coords";
@@ -32,7 +32,7 @@ import {Coords} from "../math/Coords";
 //
 // }
 
-export class CupWithFigureImpl extends CupImpl implements CapWithFigure
+export class CupWithFigureImpl extends CupImpl implements CupWithFigure
 {
   /**
    * Current figure
@@ -46,7 +46,6 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
    */
   private _figureColor:number = 0
 
-  
   /**
    * Coords to drop new figure
    * @private
@@ -66,7 +65,8 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
     )
   }
   
-  setFigure(f:Figure, color:number) {
+  setFigureToDropPoint(f:Figure, color:number) {
+    f.setPosition(this.dropPoint.x, this.dropPoint.y)
     this._figure = f;
     this._figureColor = color
   }
@@ -77,10 +77,6 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
   
   getFigureColor(): number {
     return this._figureColor
-  }
-  
-  getDropPoint(): Coords {
-    return this.dropPoint;
   }
   
   moveFigureLeft(): boolean {
@@ -185,6 +181,9 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
   rotateCounterClockwise():boolean {
     if (!this._figure) return false;
     return this._figure.rotateCounterClockwise();
+  }
+
+  updateFigureDownTimer(): void {
   }
   
 

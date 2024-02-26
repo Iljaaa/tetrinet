@@ -27,6 +27,7 @@ import {Field} from "../models/Field";
 import {GetBonusMessage} from "../types/messages/GetBonusMessage";
 import {GetSwitchBonusMessage} from "../types/messages/GetSwitchBonusMessage";
 import {GenerateNewFigure} from "../process/GenerateNewFigure";
+import {CupWithFigure} from "../models/CupWithFigure";
 
 
 /**
@@ -101,7 +102,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * Cup object
    */
-  private readonly _cup: CupWithFigureImpl;
+  private readonly _cup: CupWithFigure;
 
   /**
    * this is opponent cup
@@ -247,11 +248,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // this._cupRenderer = new CupRenderer(this.game.getGLGraphics().getGl(), this._cup);
   // }
 
-  cleanUpCup ()
-  {
-    console.log('PlayScreen.cleanUpCup')
-    this._cup.cleanBeforeNewGame();
-  }
+  // cleanUpCup ()
+  // {
+  //   console.log('PlayScreen.cleanUpCup')
+  //   this._cup.cleanBeforeNewGame();
+  // }
 
   /**
    * It starts the game
@@ -273,8 +274,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // generate new figure in cup
     const f = GenerateNewFigure(this._cup);
-    f.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y)
-    this._cup.setFigure(f, this._nextFigureColor);
+    this._cup.setFigureToDropPoint(f, this._nextFigureColor);
     
     // first render
     // this._cupRenderer.renderCupWithFigure(this._cup)
@@ -641,7 +641,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   //
 
   /**
-   * todo: refactor to case
    * @param code
    */
   onKeyDown(code:string): void
@@ -946,7 +945,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (!this._nextFigure) return;
     
     // move figure to drop position
-    this._nextFigure.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y);
+    // this._nextFigure.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y);
     
     // check intersections with cup
     if (!this._cup.canPlace(this._nextFigure.getFields()))
@@ -963,7 +962,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     {
       
       // move next figure to drop point
-      this._cup.setFigure(this._nextFigure, this._nextFigureColor);
+      this._cup.setFigureToDropPoint(this._nextFigure, this._nextFigureColor);
       
       // generate next figure
       this._nextFigure = GenerateNewFigure(this._cup);
@@ -1002,15 +1001,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
       // clear 1 field
       let r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
-      this._cup.clearBlock(r)
+      this._cup.clearBlockByIndex(r)
 
       // clear 1 field
       r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
-      this._cup.clearBlock(r)
+      this._cup.clearBlockByIndex(r)
 
       // clear 1 field
       r = Math.floor(Math.random() * this._cup.getWidthInCells()) + startIndex
-      this._cup.clearBlock(r)
+      this._cup.clearBlockByIndex(r)
     }
 
     // rise update state callback
@@ -1126,7 +1125,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   private quakeOneRowToLeft = (row: number) =>
   {
-    let firstCell = this._cup.getFieldByCoords(0, row)
+    let firstCell = this._cup.getFieldByCoords({x: 0, y: row})
 
     for (let col:number = 0; col < this._cup.getWidthInCells(); col++)
     {
@@ -1142,7 +1141,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   private quakeOneRowToRight = (row: number)=>
   {
-    let lastCell = this._cup.getFieldByCoords(this._cup.getWidthInCells() - 1, row)
+    let lastCell = this._cup.getFieldByCoords({x: this._cup.getWidthInCells() - 1, y: row})
 
     for (let col:number = this._cup.getWidthInCells(); col >= 0; col--)
     {
@@ -1178,7 +1177,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
       while (rowToSplit >= 0)
       {
-        const splitCell = this._cup.getFieldByCoords(col, rowToSplit)
+        const splitCell = this._cup.getFieldByCoords({x: col, y: rowToSplit})
 
         // if block is busy we just go to next
         if (splitCell.block !== -1){
@@ -1188,10 +1187,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
         // search not empty blocks above
         rowToChange = rowToSplit - 1
-        let blockAbove = this._cup.getFieldByCoords(col, rowToChange)
+        let blockAbove = this._cup.getFieldByCoords({x: col, y: rowToChange})
         while (blockAbove.block === -1 && rowToChange > 0) {
           rowToChange--
-          blockAbove = this._cup.getFieldByCoords(col, rowToChange)
+          blockAbove = this._cup.getFieldByCoords({x: col, y: rowToChange})
         }
 
         //

@@ -2,15 +2,15 @@ import {Cup} from "./Cup";
 import {Figure} from "./Figure";
 import {Coords} from "../math/Coords";
 
-export interface CapWithFigure extends Cup
+export interface CupWithFigure extends Cup
 {
 
   /**
    * Place new drop figure on top of cup
    * @param f
-   * @param color color of figure
+   * @param color color of figure @deprecated
    */
-  setFigure(f:Figure, color:number): void
+  setFigureToDropPoint(f:Figure, color:number): void
   
   /**
    * Get figure
@@ -21,12 +21,11 @@ export interface CapWithFigure extends Cup
    * Color of figure
    */
   getFigureColor() : number
-  
+
   /**
-   * Get position where we should drop new figure
-   * it must be cup top point
+   * Update timer that figure must go down
    */
-  getDropPoint ():  Coords
+  updateFigureDownTimer (): void
   
   /**
    * Move figure right

@@ -1,10 +1,10 @@
-import {CapWithFigure} from "./CupWithFigure";
+import {CupWithFigure} from "./CupWithFigure";
 
 
 /**
  * This interface ads bonuses to cup
  */
-export interface CupWithFigureAndBonuses extends CapWithFigure
+export interface CupWithFigureAndBonuses extends CupWithFigure
 {
 
 }
