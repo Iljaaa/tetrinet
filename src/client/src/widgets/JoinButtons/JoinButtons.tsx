@@ -19,7 +19,7 @@ export const JoinButtons = () =>
         </div>
         <div>
             <button className={styles.JoinButton} onClick={() => {
-                alert ('this button may be will be working later ');
+                TetrinetSingleton.getInstance().justPlayTetris();
             }}>Just play tetris</button>
         </div>
     </div>

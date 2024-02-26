@@ -1,0 +1,147 @@
+import {WebGlScreen} from "../../framework/impl/WebGlScreen";
+import {Tetrinet} from "../Tetrinet";
+import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
+import {CupRenderer2, CupSize} from "../CupRenderer2";
+
+import {CapWithFigure} from "../models/CupWithFigure";
+import {CupWithFigureImpl} from "../models/CupWithFigureImpl";
+import {GenerateNewFigure} from "../process/GenerateNewFigure";
+import {GenerateRandomColor} from "../process/GenerateRandomColor";
+
+/**
+ * @vaersion 0.0.1
+ */
+export class JustPlayScreen extends WebGlScreen
+{
+  
+  /**
+   * Cup object
+   * @private
+   */
+  private readonly _cup: CapWithFigure;
+  
+  /**
+   * Render
+   * @private
+   */
+  private readonly _cupRenderer: CupRenderer2 | null = null;
+  
+  /**
+   * Timer for update cup data
+   * @private
+   */
+  // private requestDataTimer:number = 0;
+  
+  /**
+   * In this constructor we create cup
+   */
+  constructor(game:Tetrinet)
+  {
+    super(game)
+    console.log ('JustPlayScreen constructor');
+    
+    // create cup object
+    this._cup =  new CupWithFigureImpl();
+    
+    // init renderer
+    this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
+
+    // bind this to input listener
+    this.game.getInput().setListener(this);
+  }
+
+  startNewGame ()
+  {
+    // create new figure
+    const f = GenerateNewFigure(this._cup);
+    f.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y)
+    this._cup.setFigure(f, GenerateRandomColor());
+  }
+  
+  /**
+   * Update cup
+   * @param deltaTime
+   */
+  update (deltaTime:number):void
+  {
+    // todo: down timer
+  }
+  
+  
+  present(): void
+  {
+    const gl = this.game.getGLGraphics().getGl();
+
+    // Clear the screen.
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
+    // use texture program
+    WebGlProgramManager.sUseTextureProgram(gl);
+
+    // render cup
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
+    this._cupRenderer?.setCupSize(CupSize.normal32);
+    this._cupRenderer?.renderCup(this._cup);
+  }
+
+
+  /**
+   * @param code
+   */
+  onKeyDown(code:string): void
+  {
+    switch (code) {
+      case "KeyD": this.onRight(); break;
+      case "KeyA": this.onLeft(); break;
+      case "KeyQ": this.onRotateCounterClockwise(); break;
+      case "KeyE": this.onRotateClockwise(); break;
+      case "KeyS": this.onDown(); break;
+      case "Space": this.onDrop(); break;
+      // case "Backquote": this.sendBonusToMe(); break;
+      // case "Digit1": this.sendBonusToOpponent(1); break;
+      // case "Digit2": this.sendBonusToOpponent(2); break;
+      // case "Digit3": this.sendBonusToOpponent(3); break;
+      // case "Digit4": this.sendBonusToOpponent(4); break;
+      // case "Digit5": this.sendBonusToOpponent(5); break;
+      // case "Digit6": this.sendBonusToOpponent(6); break;
+      // case "Digit7": this.sendBonusToOpponent(7); break;
+      // case "Digit8": this.sendBonusToOpponent(8); break;
+      // case "Digit9": this.sendBonusToOpponent(9); break;
+    }
+  }
+
+  onKeyUp(code:string): void {
+
+  }
+
+  onRight(){
+    this._cup.moveFigureRight();
+  }
+
+  onLeft() {
+    this._cup.moveFigureLeft();
+  }
+
+  /**
+   * Down figure
+   */
+  onDown(){
+    this._cup.moveFigureDown();
+  }
+
+  /**
+   * Drop it almost as down but to the bottom
+   */
+  onDrop(){
+    this._cup.dropFigureDown();
+  }
+
+  onRotateClockwise (){
+    this._cup.rotateClockwise();
+  }
+
+  onRotateCounterClockwise (){
+    this._cup.rotateCounterClockwise();
+  }
+  
+}

@@ -9,18 +9,10 @@ import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 import {CupRenderer2, CupSize} from "../CupRenderer2";
 import {Figure} from "../models/Figure";
 
-import {ForwardHorse} from "../figures/ForwardHorse";
-import {BackHorse} from "../figures/BackHorse";
-import {Line} from "../figures/Line";
-import {ForwardFlash} from "../figures/ForwardFlash";
-import {BackFlash} from "../figures/BackFlash";
-import {Camel} from "../figures/Camel";
-import {Square} from "../figures/Square";
-
 import {Coords} from "../math/Coords";
 import {CupData} from "../models/CupData";
 import {CupEventListener, CupImpl} from "../models/CupImpl";
-import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
+import {GenerateRandomColor} from "../process/GenerateRandomColor";
 
 import {GameState} from "../types";
 import {CupState} from "../types/CupState";
@@ -34,9 +26,13 @@ import {NextBG} from "../textures/NextBG";
 import {Field} from "../models/Field";
 import {GetBonusMessage} from "../types/messages/GetBonusMessage";
 import {GetSwitchBonusMessage} from "../types/messages/GetSwitchBonusMessage";
+import {GenerateNewFigure} from "../process/GenerateNewFigure";
 
 
 /**
+ * @deprecated
+ * todo: for schore we shold use redux
+ * todo: and other function we should move to play screen
  * Listener of game events
  */
 export interface PlayScreenEventListener
@@ -122,7 +118,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private readonly _cupRenderer: CupRenderer2 | null = null;
   
   /**
-   *
+   * todo: move this to cup with figure
    * @private
    */
   private _nextFigure:Figure|null = null;
@@ -216,7 +212,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // this._nextFigureColor = GenerateRandomColor();
     
     // init renderer
-    this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup)
+    this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
     
     // in the background we use only texture
     this._block = new Vertices(false, true);
@@ -231,7 +227,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // bind this to input listener
     this.game.getInput().setListener(this);
-
   }
   
   /**
@@ -271,13 +266,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // todo: clear cup
     
     // next figure random color
-    this._nextFigure = this.generateNewFigure();
+    this._nextFigure = GenerateNewFigure(this._cup);
     
     // next figure random color
     this._nextFigureColor = GenerateRandomColor();
-    
+
     // generate new figure in cup
-    const f = this.generateNewFigure();
+    const f = GenerateNewFigure(this._cup);
     f.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y)
     this._cup.setFigure(f, this._nextFigureColor);
     
@@ -357,7 +352,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   updateCups (data:CupsDataCollection) {
     Object.keys(data).forEach((playerId:string) => {
-      if (!this._cups[playerId]) this._cups[playerId] = new CupImpl(null);
+      if (!this._cups[playerId]) this._cups[playerId] = new CupImpl();
       const cd = data[playerId]
       this._cups[playerId].setFields(cd.fields)
       this._cups[playerId].setState(cd.state)
@@ -651,48 +646,24 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onKeyDown(code:string): void
   {
-    // transfer events
-    if (code === "KeyD") {
-      this.onRight();
+    switch (code) {
+      case "KeyD": this.onRight(); break;
+      case "KeyA": this.onLeft(); break;
+      case "KeyQ": this.onRotateCounterClockwise(); break;
+      case "KeyE": this.onRotateClockwise(); break;
+      case "KeyS": this.onDown(); break;
+      case "Space": this.onDrop(); break;
+      case "Backquote": this.sendBonusToMe(); break;
+      case "Digit1": this.sendBonusToOpponent(1); break;
+      case "Digit2": this.sendBonusToOpponent(2); break;
+      case "Digit3": this.sendBonusToOpponent(3); break;
+      case "Digit4": this.sendBonusToOpponent(4); break;
+      case "Digit5": this.sendBonusToOpponent(5); break;
+      case "Digit6": this.sendBonusToOpponent(6); break;
+      case "Digit7": this.sendBonusToOpponent(7); break;
+      case "Digit8": this.sendBonusToOpponent(8); break;
+      case "Digit9": this.sendBonusToOpponent(9); break;
     }
-    
-    if (code === "KeyA") {
-      this.onLeft();
-    }
-    
-    if (code === "KeyQ") {
-      this.onRotateCounterClockwise();
-    }
-
-    if (code === "KeyE") {
-      this.onRotateClockwise();
-    }
-
-    if (code === "KeyS") {
-      this.onDown();
-    }
-
-    if (code === "Space") {
-      
-      // drop figure down
-      this.onDrop();
-    }
-
-    // me
-    if (code === "Backquote"){
-      this.sendBonusToMe();
-    }
-
-    // to oppenent
-    if (code === "Digit1") this.sendBonusToOpponent(1);
-    if (code === "Digit2") this.sendBonusToOpponent(2);
-    if (code === "Digit3") this.sendBonusToOpponent(3);
-    if (code === "Digit4") this.sendBonusToOpponent(4);
-    if (code === "Digit5") this.sendBonusToOpponent(5);
-    if (code === "Digit6") this.sendBonusToOpponent(6);
-    if (code === "Digit7") this.sendBonusToOpponent(7);
-    if (code === "Digit8") this.sendBonusToOpponent(8);
-    if (code === "Digit9") this.sendBonusToOpponent(9);
   }
   
   onKeyUp(code:string): void {
@@ -995,7 +966,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       this._cup.setFigure(this._nextFigure, this._nextFigureColor);
       
       // generate next figure
-      this._nextFigure = this.generateNewFigure();
+      this._nextFigure = GenerateNewFigure(this._cup);
       
       // next figure random color
       this._nextFigureColor = GenerateRandomColor();
@@ -1004,30 +975,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // call update callback
     this.listener?.onCupUpdated(this._state, this._cup.getData());
   }
-  
-  /**
-   * Generate new random figure
-   * @private
-   */
-  private generateNewFigure():Figure
-  {
-    // select new figure
-    const nextFigureIndex:number = Math.floor(Math.random() * 7);
-
-    let f:Figure;
-    switch (nextFigureIndex) {
-      case 0: f = new ForwardHorse(this._cup); break;
-      case 1: f = new BackHorse(this._cup); break;
-      case 2: f = new Line(this._cup); break;
-      case 3: f = new ForwardFlash(this._cup); break;
-      case 4: f = new BackFlash(this._cup); break;
-      case 5: f = new Camel(this._cup); break;
-      default: f = new Square(this._cup); break;
-    }
-    
-    return f;
-  }
-
 
   /**
    * Implementation of clear special blocks bonus

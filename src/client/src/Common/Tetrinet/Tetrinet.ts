@@ -6,12 +6,19 @@ import {CupState} from "./types/CupState";
 import {CupsDataCollection} from "../../Canvas";
 import {GetBonusMessage} from "./types/messages/GetBonusMessage";
 import {Cup} from "./models/Cup";
+import {JustPlayScreen} from "./screens/JustPlayScreen";
 
 /**
  * @version 0.1.0
  */
 export class Tetrinet extends WebGlGame
 {
+
+  /**
+   * Flag that window.requestAnimationFrame(this.update)
+   * already was called
+   */
+  private isAnimationRequested:boolean = false
   
   // if it comments al stop working
   constructor() {
@@ -25,7 +32,28 @@ export class Tetrinet extends WebGlGame
   // initGraphic(canvas:HTMLCanvasElement) {
   //   super.initGraphic(canvas);
   // }
-  
+
+  /**
+   * Just play tetris
+   * without opponents and external connection
+   */
+  justPlayTetris ()
+  {
+    let scr = this.getCurrentScreen();
+
+    if (!scr || !(scr instanceof JustPlayScreen))
+    {
+      this.setScreen(new JustPlayScreen(this))
+    }
+
+
+    // start animation
+    if (!this.isAnimationRequested) {
+      this.isAnimationRequested = true
+      window.requestAnimationFrame(this.update)
+    }
+  }
+
   /**
    * Waiting opponents
    * initCup: cup with start condition
@@ -55,7 +83,11 @@ export class Tetrinet extends WebGlGame
     // scr.cleanUpCup();
 
     // start request
-    window.requestAnimationFrame(this.update)
+    if (!this.isAnimationRequested) {
+      this.isAnimationRequested = true
+      window.requestAnimationFrame(this.update)
+    }
+
   }
   
   /**
@@ -124,7 +156,10 @@ export class Tetrinet extends WebGlGame
     this.setScreen(new WatchScreen(this))
 
     // start request
-    window.requestAnimationFrame(this.update)
+    if (!this.isAnimationRequested) {
+      this.isAnimationRequested = true
+      window.requestAnimationFrame(this.update)
+    }
   }
 
   setCupState (state:CupState){

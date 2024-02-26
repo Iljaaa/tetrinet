@@ -53,7 +53,7 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
    */
   private readonly dropPoint: Coords;
   
-  constructor(listener:CupEventListener)
+  constructor(listener?:CupEventListener)
   {
     super(listener);
     
@@ -64,16 +64,6 @@ export class CupWithFigureImpl extends CupImpl implements CapWithFigure
       // this.heightInCells - 1
         1
     )
-  }
-  
-  /**
-   * Start new game
-   * it called in on did mount block
-   */
-  start():void
-  {
-    // generate new figure
-    // this.generateAndPutNewFigure();
   }
   
   setFigure(f:Figure, color:number) {

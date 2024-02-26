@@ -49,6 +49,10 @@ interface KeysPlayerMap {
   [index: number]: string
 }
 
+
+/**
+ * Network layer is a bad idea all this fuctions we shold move to plat screen
+ */
 export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventListener, SocketEventListener
 {
   /**
@@ -103,7 +107,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
      * bind controller events
      * i'm not sure that initialization must be here
      */
-    // this.game.getInput().bind();
     this.getInput().bind();
 
     /**
@@ -338,7 +341,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   public joinToParty (partyType:string)
   {
-    console.log ('onJoinToDuelClicked')
+    console.log ('TetrinetNetworkLayer.onJoinToDuelClicked')
 
     // close connection if it
     SocketSingleton.getInstance()

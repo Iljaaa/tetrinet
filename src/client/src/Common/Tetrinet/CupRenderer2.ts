@@ -1,7 +1,6 @@
 import {CupWithFigureImpl} from "./models/CupWithFigureImpl";
 import {WebGlGraphics} from "../framework/impl/WebGlGraphics";
 import {Vertices} from "../framework/Vertices";
-import {CupImpl} from "./models/CupImpl";
 import {Coords} from "./math/Coords";
 import {Cup} from "./models/Cup";
 import {Figure} from "./models/Figure";
@@ -71,19 +70,13 @@ export class CupRenderer2
    */
   private _block: Vertices;
 
-  /**
-   * Left position on cup index
-   * @private
-   */
-  private _indexLeftPosition: number = 320
-
-  constructor(graphic:WebGlGraphics, cup:CupImpl) {
+  constructor(graphic:WebGlGraphics, cupWidthInCells:number, cupHeightInCell:number) {
     this.graphic = graphic;
     
     //
     this.cupSizeInCells = {
-      width: cup.getWidthInCells(),
-      height: cup.getHeightInCells()
+      width: cupWidthInCells,
+      height: cupHeightInCell
     }
     let cupWidth = this.cupSizeInCells.width * this.blockSize
     let cupHeight =this.cupSizeInCells.height * this.blockSize
@@ -180,8 +173,6 @@ export class CupRenderer2
         this.winnerTexture.texX, this.winnerTexture.texY, this.winnerTexture.texWidth, this.winnerTexture.texHeight
     ))
 
-    this._indexLeftPosition = 320;
-
   }
   
   /**
@@ -220,7 +211,7 @@ export class CupRenderer2
     this.presentCupBlocks(gl, cup);
 
     // render index
-    this.presentCupIndex(gl, cup);
+    this.presentCupIndex(gl);
 
     // this.presentSpecialBlocks();
 
@@ -382,7 +373,7 @@ export class CupRenderer2
    * @param gl
    * @private
    */
-  private presentCupIndex (gl:WebGL2RenderingContext, cup:Cup)
+  private presentCupIndex (gl:WebGL2RenderingContext)
   {
     // // let cupWidth = cup.getWidthInCells() * this.blockSize
     // let cupWidth = this.cupSizeInCells.width * this.blockSize

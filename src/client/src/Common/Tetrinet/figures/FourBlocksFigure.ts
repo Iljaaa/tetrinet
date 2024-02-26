@@ -19,11 +19,16 @@ export abstract class FourBlocksFigure
   protected center: Coords = new Coords(0, 0)
   
   /**
+   * @deprecated
    * Cup object
-   * @protected
    */
   protected _cap:Cup;
-  
+
+  /**
+   * todo: remove class from constructor and add it t all messages
+   * @param cap
+   * @protected
+   */
   protected constructor(cap:Cup) {
     this._cap = cap;
     //this.center = new Coords(this.center.x, center.y)

@@ -1,7 +1,7 @@
 import {Coords} from "../math/Coords";
 import {Cup} from "./Cup";
 import {CupData} from "./CupData";
-import {GenerateRandomColor} from "../../../process/GenerateRandomColor";
+import {GenerateRandomColor} from "../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
 import {Field} from "./Field";
 import {Bonus} from "../types/Bonus";
@@ -56,7 +56,7 @@ export class CupImpl implements Cup
    * @param widthInCells
    * @param heightInCells
    */
-  constructor(listener:CupEventListener|null, widthInCells:number = 10, heightInCells:number = 20)
+  constructor(listener?:CupEventListener, widthInCells:number = 10, heightInCells:number = 20)
   {
     if (listener) this.listener = listener
 

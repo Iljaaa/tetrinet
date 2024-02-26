@@ -4,14 +4,9 @@ import {Coords} from "../math/Coords";
 
 export interface CapWithFigure extends Cup
 {
-  
+
   /**
-   * Start new game
-   */
-  start(): void
-  
-  /**
-   * Set new drop figure
+   * Place new drop figure on top of cup
    * @param f
    * @param color color of figure
    */
@@ -31,7 +26,7 @@ export interface CapWithFigure extends Cup
    * Get position where we should drop new figure
    * it must be cup top point
    */
-  getDropPoint: () => Coords
+  getDropPoint ():  Coords
   
   /**
    * Move figure right
