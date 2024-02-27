@@ -1,8 +1,22 @@
-import {Sprite} from "../../framework/Sprite";
+/**
+ *
+ */
+export class NextBG
+{
 
-export class NextBG extends Sprite {
+  public static texX:number = 400;
+  public static texY:number = 480;
+  public static texWidth:number = 160;
+  public static texHeight:number = 160;
 
-  constructor() {
-    super(480, 480, 160, 160);
-  }
+  // constructor(texX: number, texY: number, texWidth: number, texHeight: number) {
+  //   this.texX = texX;
+  //   this.texY = texY;
+  //   this.texWidth = texWidth;
+  //   this.texHeight = texHeight;
+  // }
+  //
+  // constructor() {
+  //   super(480, 480, 160, 160);
+  // }
 }

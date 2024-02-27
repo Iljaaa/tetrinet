@@ -7,7 +7,6 @@ import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 
 // import {CupRenderer} from "./CupRenderer";
 import {CupRenderer2, CupSize} from "../CupRenderer2";
-import {Figure} from "../models/Figure";
 
 import {Coords} from "../math/Coords";
 import {CupData} from "../models/CupData";
@@ -118,12 +117,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private readonly _cupRenderer: CupRenderer2 | null = null;
   
-  /**
-   * todo: move this to cup with figure
-   * @private
-   */
-  private _nextFigure:Figure|null = null;
-  
   // /**
   //  * Color of next figure
   //  * @private
@@ -135,12 +128,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private nextFigurePosition:Coords = new Coords(370, 32);
-  
-  /**
-   * Timer for next down
-   * @private
-   */
-  private _downTimer:number = 0;
   
   /**
    * @private
@@ -264,10 +251,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     //   throw new Error('Cup render not initialised')
     // }
 
-    // todo: clear cup
     
     // next figure random color
-    this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
+    // this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
+    this._cup.generateNextFigure();
     
     // next figure random color
     // this._nextFigureColor = GenerateRandomColor();
@@ -529,80 +516,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private presentNextFigure(gl: WebGL2RenderingContext)
   {
-    if (!this._nextFigure) return;
+    const nextFigure = this._cup.getNextFigure();
+    if (!nextFigure) return
 
-    // move cup
+    // move position
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)
 
-    // draw next bg
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-      0, 0, 160, 160,
-      this.nextBG.texX, this.nextBG.texY, this.nextBG.texWidth, this.nextBG.texHeight
-    ))
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-
-
-    const fields:Array<Array<boolean>> = this._nextFigure.getPreviewFields();
-
-    const BLOCK_SIZE = 32;
-
-    // calculate number rows
-    const rows = fields.length
-
-    // calculate number cols
-    const cols = fields[0].length
-
-    // calculate left margin
-    const leftMargin = ((4 - cols) / 2) * BLOCK_SIZE + 16;
-
-    // calculate left margin
-    const bottomMargin = ((4 - rows) / 2) * BLOCK_SIZE + 16;
-
-    // for (let r = 0; r < rows; r++) {
-    fields.reverse().forEach((row:Array<boolean>, rowIndex:number) => {
-      row.forEach((col:boolean, colIndex:number) => {
-        if (col)
-        {
-          const left = (colIndex * BLOCK_SIZE) + leftMargin;
-          const bottom = (rowIndex * BLOCK_SIZE)  + bottomMargin;
-
-          // const spriteLeft = 320 + this._nextFigureColor * BLOCK_SIZE;
-          const color = this._nextFigure ? this._nextFigure.getColor() : 0;
-          const spriteLeft = 320 + (color * BLOCK_SIZE);
-
-          this._block.setVertices(Vertices.createTextureVerticesArray(
-              left, bottom, BLOCK_SIZE, BLOCK_SIZE,
-              spriteLeft, 0, BLOCK_SIZE, BLOCK_SIZE
-          ))
-
-          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-
-          // draw here
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        }
-
-      })
-    });
-
-    // for (let c = 0; c < cols; c++)
-    // {
     //
-    //   const bottom = (r * BLOCK_SIZE) + 320;
-    //   const left = (c * BLOCK_SIZE) + 320;
-    //
-    //   this._block.setVertices(Vertices.createTextureVerticesArray(
-    //     left, bottom, 32, 32,
-    //     352, 0, 32, 32
-    //   ))
-    //
-    //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    //
-    //   // draw here
-    //   gl.drawArrays(gl.TRIANGLES, 0, 6);
-    // }
+    this._cupRenderer?.renderNextFigure(gl, nextFigure)
   }
 
   private presentBonuses (gl: WebGL2RenderingContext){
@@ -745,7 +666,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     {
       
       // clear next the down step time
-      this._downTimer = 0;
+      // this._downTimer = 0;
     }
     
     // rerender cup
@@ -945,34 +866,24 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onFigureMovedToCup()
   {
-    if (!this._nextFigure) return;
+    // if new stage is game over that mens game over
     
-    // move figure to drop position
-    // this._nextFigure.setPosition(this._cup.getDropPoint().x, this._cup.getDropPoint().y);
-    
+
+    // if (!this._nextFigure) return;
+
     // check intersections with cup
-    if (!this._cup.canPlace(this._nextFigure.getFields()))
-    {
-      console.log ('game over');
-
-      // and if we can not post figure is all over
-      // this._state = GameState.over
-
-      // set cup state to game over
-      this._cup.setState(CupState.over);
-    }
-    else
-    {
-      
-      // move next figure to drop point
-      this._cup.setFigureToDropPoint(this._nextFigure);
-      
-      // generate next figure
-      this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
-
-      // next figure random color
-      // this._nextFigureColor = GenerateRandomColor();
-    }
+    // if (!this._cup.canPlace(this._nextFigure.getFields()))
+    // {
+    //
+    // }
+    // else
+    // {
+    //   // move next figure to drop point
+    //   this._cup.setFigureToDropPoint(this._nextFigure);
+    //
+    //   // generate next figure
+    //   this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
+    // }
     
     // call update callback
     this.listener?.onCupUpdated(this._state, this._cup.getData());

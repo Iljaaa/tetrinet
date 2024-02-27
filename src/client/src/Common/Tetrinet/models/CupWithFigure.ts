@@ -49,4 +49,14 @@ export interface CupWithFigure extends Cup
    * Rotate figure
    */
   rotateCounterClockwise (): boolean
+
+  /**
+   * This method generates new next figure
+   */
+  generateNextFigure(): void
+
+  /**
+   * Return next figure
+   */
+  getNextFigure():Figure|undefined
 }

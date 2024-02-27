@@ -8,6 +8,7 @@ import {GameOver} from "./textures/GameOver";
 import {WinnerTexture} from "./textures/WinnerTexture";
 import {Numbers} from "./textures/Numbers";
 import {CupWithFigure} from "./models/CupWithFigure";
+import {NextBG} from "./textures/NextBG";
 
 export enum CupSize {
   small16 = 'small16',
@@ -113,24 +114,6 @@ export class CupRenderer2
         0, 0, this.winnerTexture.texWidth, this.winnerTexture.texHeight
     ))
   }
-  
-  /*
-   * Set render position
-   * @param x
-   * @param y
-   */
-  // public setPosition(x:number, y:number){
-  //   this.position.x = x;
-  //   this.position.y = y;
-  // }
-  
-  /*
-   * Set block size
-   * @param blockSize
-   */
-  // public setBlockSize(blockSize:number) {
-  //   this.blockSize = blockSize
-  // }
 
   /**
    * Set cup size for render
@@ -367,7 +350,6 @@ export class CupRenderer2
     gl.drawArrays(gl.TRIANGLES, 0, this._gameOverVertices.getVerticesCount());
   }
 
-
   /**
    * Render _background
    * @param gl
@@ -415,4 +397,86 @@ export class CupRenderer2
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._winnerVertices.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, this._winnerVertices.getVerticesCount());
   }
+
+  /**
+   * Render next figure
+   * @param gl
+   * @param nextFigure
+   */
+  public renderNextFigure(gl: WebGL2RenderingContext, nextFigure:Figure)
+  {
+    // render background
+    this.renderNextFigureBackground(gl)
+
+    // render figure
+    this.renderFigureNextFigure(gl, nextFigure)
+  }
+
+  /**
+   *
+   * @param gl
+   * @private
+   */
+  private renderNextFigureBackground(gl: WebGL2RenderingContext)
+  {
+    // draw next bg
+    this._block.setVertices(Vertices.createTextureVerticesArray(
+      0, 0, 160, 160,
+      NextBG.texX, NextBG.texY, NextBG.texWidth, NextBG.texHeight
+    ))
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
+
+  /**
+   *
+   * @param gl
+   * @param nextFigure
+   * @private
+   */
+  private renderFigureNextFigure (gl: WebGL2RenderingContext, nextFigure:Figure)
+  {
+    const fields:Array<Array<boolean>> = nextFigure.getPreviewFields();
+
+    const BLOCK_SIZE = 32;
+
+    // calculate number rows
+    const rows = fields.length
+
+    // calculate number cols
+    const cols = fields[0].length
+
+    // calculate left margin
+    const leftMargin = ((4 - cols) / 2) * BLOCK_SIZE + 16;
+
+    // calculate left margin
+    const bottomMargin = ((4 - rows) / 2) * BLOCK_SIZE + 16;
+
+    // for (let r = 0; r < rows; r++) {
+    fields.reverse().forEach((row:Array<boolean>, rowIndex:number) => {
+      row.forEach((col:boolean, colIndex:number) => {
+        if (col)
+        {
+          const left = (colIndex * BLOCK_SIZE) + leftMargin;
+          const bottom = (rowIndex * BLOCK_SIZE)  + bottomMargin;
+
+          // const spriteLeft = 320 + this._nextFigureColor * BLOCK_SIZE;
+          const spriteLeft = 320 + (nextFigure.getColor() * BLOCK_SIZE);
+
+          this._block.setVertices(Vertices.createTextureVerticesArray(
+            left, bottom, BLOCK_SIZE, BLOCK_SIZE,
+            spriteLeft, 0, BLOCK_SIZE, BLOCK_SIZE
+          ))
+
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+
+          // draw here
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+
+      })
+    });
+  }
+
 }

@@ -3,6 +3,9 @@ import {CupWithFigure} from "./CupWithFigure";
 
 import {CupEventListener, CupImpl} from "./CupImpl";
 import {Coords} from "../math/Coords";
+import {GenerateNewFigure} from "../process/GenerateNewFigure";
+import {GenerateRandomColor} from "../process/GenerateRandomColor";
+import {CupState} from "../types/CupState";
 
 
 
@@ -35,6 +38,11 @@ import {Coords} from "../math/Coords";
 export class CupWithFigureImpl extends CupImpl implements CupWithFigure
 {
   /**
+   * @private
+   */
+  private _nextFigure: Figure | undefined;
+
+  /**
    * Current figure
    * @private
    */
@@ -63,6 +71,8 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
       // this.heightInCells - 1
         1
     )
+
+    this._nextFigure = GenerateNewFigure(this, GenerateRandomColor())
   }
   
   setFigureToDropPoint(f:Figure) {
@@ -141,7 +151,6 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    */
   private transferFigureToCupWithTail ():void
   {
-    debugger
     if (!this._figure) return;
     
     // move figure to the cup
@@ -156,11 +165,29 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     // clear full lines
     this.clearAndMoveLines();
 
+    // if we can place next figure to the cup the game continues
+    if (this._nextFigure && this.canPlace(this._nextFigure.getFields()))
+    {
+      // move next figure to drop point
+      this.setFigureToDropPoint(this._nextFigure);
+
+      // generate next figure
+      this._nextFigure = GenerateNewFigure(this, GenerateRandomColor());
+
+      // rise callback event
+      if (this.listener) this.listener.onFigureMovedToCup()
+
+      return;
+    }
+
+    // if we cannot place figure it is game over
+    console.log ('game over');
+
+    // set cup state to game over
+    this.setState(CupState.over);
+
     // rise callback event
     if (this.listener) this.listener.onFigureMovedToCup()
-
-    // clear figure
-    this._figure = null;
   }
   
   rotateClockwise():boolean {
@@ -188,7 +215,14 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     }
 
   }
-  
+
+  generateNextFigure(): void {
+    this._nextFigure = GenerateNewFigure(this, GenerateRandomColor())
+  }
+
+  getNextFigure(): Figure|undefined {
+    return this._nextFigure;
+  }
 
 
 }
