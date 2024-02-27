@@ -8,7 +8,6 @@ import {GenerateRandomColor} from "../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
 
 
-
 // export class FigureClass implements Figure
 // {
 //   private _fields:Array<number> = [];
@@ -151,16 +150,17 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    */
   private transferFigureToCupWithTail ():void
   {
+    console.log ('CupWithFigureImpl.transferFigureToCupWithTail', this._figure);
     if (!this._figure) return;
     
     // move figure to the cup
     this._figure.getFields().forEach((f:number) => {
-      // move figure
+      console.log(f, 'f')
       this._state.fields[f].block = this._figure ? this._figure.getColor() : 0
-      
-      // move color
-      // this.colors[f] = this._figureColor;
     })
+
+    // clean figure
+    this._figure = null
     
     // clear full lines
     this.clearAndMoveLines();
@@ -181,10 +181,14 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     }
 
     // if we cannot place figure it is game over
-    console.log ('game over');
+    console.log ('CupWithFigureImpl.gameOver');
 
     // set cup state to game over
     this.setState(CupState.over);
+
+    // clean up figure
+    debugger
+
 
     // rise callback event
     if (this.listener) this.listener.onFigureMovedToCup()
@@ -205,6 +209,8 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    */
   updateFigureDownTimer(deltaTime:number): void
   {
+    // nothing to update if cup is ofline
+    if (this._state.state !== CupState.online) return;
 
     // tick figure down timer
     this.downTimer += deltaTime

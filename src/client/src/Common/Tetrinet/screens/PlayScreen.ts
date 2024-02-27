@@ -722,7 +722,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private isControlOnline ():boolean {
-    return this._state === GameState.running
+    return this._state === GameState.running && this._cup.getState() === CupState.online
   }
 
   /**
@@ -867,7 +867,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   onFigureMovedToCup()
   {
     // if new stage is game over that mens game over
-    
+    if (this._cup.getState() === CupState.over){
+      debugger
+    }
 
     // if (!this._nextFigure) return;
 
