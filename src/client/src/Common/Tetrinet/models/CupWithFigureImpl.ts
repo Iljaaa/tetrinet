@@ -173,6 +173,7 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
 
       // generate next figure
       this._nextFigure = GenerateNewFigure(this, GenerateRandomColor());
+      this._nextFigure.setPosition(this.dropPoint.x, this.dropPoint.y)
 
       // rise callback event
       if (this.listener) this.listener.onFigureMovedToCup()
@@ -185,10 +186,6 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
 
     // set cup state to game over
     this.setState(CupState.over);
-
-    // clean up figure
-    debugger
-
 
     // rise callback event
     if (this.listener) this.listener.onFigureMovedToCup()

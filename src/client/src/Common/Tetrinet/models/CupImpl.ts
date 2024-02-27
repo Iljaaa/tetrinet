@@ -23,7 +23,6 @@ export type CupEventListener =
   onFigureMovedToCup: () => void,
 }
 
-
 /**
  */
 export class CupImpl implements Cup

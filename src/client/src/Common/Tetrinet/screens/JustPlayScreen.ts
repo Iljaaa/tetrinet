@@ -7,6 +7,8 @@ import {CupWithFigure} from "../models/CupWithFigure";
 import {CupWithFigureImpl} from "../models/CupWithFigureImpl";
 import {GenerateNewFigure} from "../process/GenerateNewFigure";
 import {GenerateRandomColor} from "../process/GenerateRandomColor";
+import {Coords} from "../math/Coords";
+import {CupState} from "../types/CupState";
 
 /**
  * @vaersion 0.0.1
@@ -25,7 +27,13 @@ export class JustPlayScreen extends WebGlScreen
    * @private
    */
   private readonly _cupRenderer: CupRenderer2 | null = null;
-  
+
+  /**
+   * Position of left bottom point of next figure
+   * @private
+   */
+  private nextFigurePosition:Coords = new Coords(370, 32);
+
   /**
    * Timer for update cup data
    * @private
@@ -55,9 +63,18 @@ export class JustPlayScreen extends WebGlScreen
 
   startNewGame ()
   {
+    //
+    this._cup.cleanBeforeNewGame();
+
+    //
+    this._cup.setState(CupState.online)
+
     // create new figure
     const f = GenerateNewFigure(this._cup, GenerateRandomColor());
     this._cup.setFigureToDropPoint(f);
+
+    // generate new next figure
+    this._cup.generateNextFigure()
   }
   
   /**
@@ -69,7 +86,6 @@ export class JustPlayScreen extends WebGlScreen
     // todo: get game state
 
     this._cup.updateFigureDownTimer(deltaTime);
-
   }
   
   
@@ -87,6 +103,27 @@ export class JustPlayScreen extends WebGlScreen
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
     this._cupRenderer?.renderCupWithFigure(this._cup);
+
+
+    // render next figure
+    this.presentNextFigure(gl);
+  }
+
+  /**
+   * Draw next figure
+   * @param gl
+   * @private
+   */
+  private presentNextFigure(gl: WebGL2RenderingContext)
+  {
+    const nextFigure = this._cup.getNextFigure();
+    if (!nextFigure) return
+
+    // move position
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)
+
+    //
+    this._cupRenderer?.renderNextFigure(gl, nextFigure)
   }
 
 

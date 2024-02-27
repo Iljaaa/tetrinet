@@ -247,11 +247,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   startNewGame ()
   {
-    // if (!this._cupRenderer){
-    //   throw new Error('Cup render not initialised')
-    // }
-
-    
     // next figure random color
     // this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
     this._cup.generateNextFigure();
@@ -429,11 +424,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._state === GameState.paused){
       this.presentPaused(gl);
     }
-
-    // game over present in a cup
-    // if (this._state === GameState.over){
-    //   this.presentGameOver(gl);
-    // }
   }
 
   /**
@@ -487,27 +477,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // draw here
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
-
-  /*
-   * Game over present
-   * @param gl
-   * @private
-   */
-  // private presentGameOver (gl: WebGL2RenderingContext)
-  // {
-  //   // move position of cup
-  //   WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y)
-  //
-  //   this._block.setVertices(Vertices.createTextureVerticesArray(
-  //       32, 450, 320, 64,
-  //       320, 192, 320, 64
-  //   ))
-  //
-  //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-  //
-  //   // draw here
-  //   gl.drawArrays(gl.TRIANGLES, 0, 6);
-  // }
 
   /**
    * Draw next figure

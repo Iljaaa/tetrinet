@@ -26,6 +26,11 @@ export interface Cup
   setFields (fields:Array<Field>): void
 
   /**
+   * Clear cup
+   */
+  cleanBeforeNewGame (): void
+
+  /**
    *
    * @param index
    */
@@ -44,6 +49,16 @@ export interface Cup
   setFieldByIndex (index:number, field:Field):void
 
   /**
+   * Convert cell index into coords
+   */
+  getCoordsByIndex(cellIndex:number):Coords
+
+  /**
+   * Convert coords to field index
+   */
+  getCellIndexByCoords(c:Coords):number
+
+  /**
    * Super fields array
    */
   // getBonusFields(): Array<number>
@@ -51,7 +66,7 @@ export interface Cup
   /**
    * Cup state, this is array of fields
    */
-  getData: () => CupData
+  getData (): CupData
 
   /**
    * Check can we place this array of indexes into cup
@@ -71,16 +86,6 @@ export interface Cup
    * Get field value
    */
   // getFieldValueByIndex(index:number):number
-
-  /**
-   * Convert cell index into coords
-   */
-  getCoordsByIndex(cellIndex:number):Coords
-
-  /**
-   * Convert coords to field index
-   */
-  getCellIndexByCoords(c:Coords):number
 
   /**
    *

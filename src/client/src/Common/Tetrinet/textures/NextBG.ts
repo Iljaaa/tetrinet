@@ -3,8 +3,7 @@
  */
 export class NextBG
 {
-
-  public static texX:number = 400;
+  public static texX:number = 480;
   public static texY:number = 480;
   public static texWidth:number = 160;
   public static texHeight:number = 160;
