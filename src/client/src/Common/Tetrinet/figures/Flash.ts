@@ -13,11 +13,12 @@ export abstract class Flash extends FourBlocksFigure implements Figure
   protected _vertical:boolean = false
   
   /**
-   * @param cap
+   * @param cup
+   * @param color
    */
-  constructor(cap:Cup)
+  constructor(cup:Cup, color:number)
   {
-    super(cap);
+    super(cup, color);
     
     // init start figure
     

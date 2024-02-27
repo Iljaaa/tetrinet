@@ -124,11 +124,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private _nextFigure:Figure|null = null;
   
-  /**
-   * Color of next figure
-   * @private
-   */
-  private _nextFigureColor: number = 0;
+  // /**
+  //  * Color of next figure
+  //  * @private
+  //  */
+  // private _nextFigureColor: number = 0;
   
   /**
    * Position of left bottom point of next figure
@@ -267,14 +267,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // todo: clear cup
     
     // next figure random color
-    this._nextFigure = GenerateNewFigure(this._cup);
+    this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
     
     // next figure random color
-    this._nextFigureColor = GenerateRandomColor();
+    // this._nextFigureColor = GenerateRandomColor();
 
     // generate new figure in cup
-    const f = GenerateNewFigure(this._cup);
-    this._cup.setFigureToDropPoint(f, this._nextFigureColor);
+    const f = GenerateNewFigure(this._cup, GenerateRandomColor());
+    this._cup.setFigureToDropPoint(f);
     
     // first render
     // this._cupRenderer.renderCupWithFigure(this._cup)
@@ -389,14 +389,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private _updateRunning(deltaTime:number)
   {
-    // tick figure down timer
-    this._downTimer += deltaTime
-    
-    // one sec
-    if (this._downTimer > 1000) {
-      this.onDown();
-      this._downTimer = 0;
-    }
+    // // tick figure down timer
+    // this._downTimer += deltaTime
+    //
+    // // one sec
+    // if (this._downTimer > 1000) {
+    //   this.onDown();
+    //   this._downTimer = 0;
+    // }
+    this._cup.updateFigureDownTimer(deltaTime);
   }
   
   present(): void
@@ -568,7 +569,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
           const left = (colIndex * BLOCK_SIZE) + leftMargin;
           const bottom = (rowIndex * BLOCK_SIZE)  + bottomMargin;
 
-          const spriteLeft = 320 + this._nextFigureColor * BLOCK_SIZE;
+          // const spriteLeft = 320 + this._nextFigureColor * BLOCK_SIZE;
+          const color = this._nextFigure ? this._nextFigure.getColor() : 0;
+          const spriteLeft = 320 + (color * BLOCK_SIZE);
 
           this._block.setVertices(Vertices.createTextureVerticesArray(
               left, bottom, BLOCK_SIZE, BLOCK_SIZE,
@@ -962,13 +965,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     {
       
       // move next figure to drop point
-      this._cup.setFigureToDropPoint(this._nextFigure, this._nextFigureColor);
+      this._cup.setFigureToDropPoint(this._nextFigure);
       
       // generate next figure
-      this._nextFigure = GenerateNewFigure(this._cup);
-      
+      this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
+
       // next figure random color
-      this._nextFigureColor = GenerateRandomColor();
+      // this._nextFigureColor = GenerateRandomColor();
     }
     
     // call update callback

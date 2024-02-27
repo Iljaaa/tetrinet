@@ -1,27 +1,24 @@
-import {Coords} from "../math/Coords";
 
 /**
- * todo: move color property to figure
+ *
  */
 export interface Figure
 {
-  
-  // constructor: () => Figure
-  
+
   /**
-   * Figure fields
+   * Figure fields inside cup
    */
   getFields: () => Array<number>
+
+  /**
+   * Figure color
+   */
+  getColor: () => number
   
   /**
-   *
+   * Array for field for preview
    */
   getPreviewFields: () => Array<Array<boolean>>
-  
-  /**
-   * Rotate center of figure
-   */
-  // getPosition: () => Coords
   
   /**
    * Move figure to position

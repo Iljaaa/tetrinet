@@ -11,10 +11,11 @@ export class Square extends FourBlocksFigure implements Figure
   
   /**
    * @param cap
+   * @param color
    */
-  constructor(cap:Cup)
+  constructor(cap:Cup, color:number)
   {
-    super(cap);
+    super(cap, color);
     
     this.setPosition(1, 1)
   }

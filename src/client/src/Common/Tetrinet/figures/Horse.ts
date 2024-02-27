@@ -12,11 +12,12 @@ export abstract class Horse extends FourBlocksFigure implements Figure
   protected _position:number = 0
   
   /**
-   * @param cap
+   * @param cup
+   * @param color
    */
-  constructor(cap:Cup)
+  constructor(cup:Cup, color:number)
   {
-    super(cap);
+    super(cup, color);
     
     // init start figure
     

@@ -19,11 +19,12 @@ export class Camel extends FourBlocksFigure implements Figure
   protected _state:CamelState = CamelState.bottom
   
   /**
-   * @param cap
+   * @param cup
+   * @param color
    */
-  constructor(cap:Cup)
+  constructor(cup:Cup, color:number)
   {
-    super(cap);
+    super(cup, color);
     
     // random position
     const enumValues = Object.keys(CamelState).map(n => Number.parseInt(n))

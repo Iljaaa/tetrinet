@@ -56,8 +56,8 @@ export class JustPlayScreen extends WebGlScreen
   startNewGame ()
   {
     // create new figure
-    const f = GenerateNewFigure(this._cup);
-    this._cup.setFigureToDropPoint(f, GenerateRandomColor());
+    const f = GenerateNewFigure(this._cup, GenerateRandomColor());
+    this._cup.setFigureToDropPoint(f);
   }
   
   /**
@@ -66,9 +66,10 @@ export class JustPlayScreen extends WebGlScreen
    */
   update (deltaTime:number):void
   {
-    // todo: down timer
+    // todo: get game state
 
-    // this._cup.update
+    this._cup.updateFigureDownTimer(deltaTime);
+
   }
   
   

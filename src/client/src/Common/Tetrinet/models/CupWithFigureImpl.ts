@@ -39,18 +39,18 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    * @private
    */
   private _figure:Figure|null = null
-  
-  /**
-   * Color of figure
-   * @private
-   */
-  private _figureColor:number = 0
 
   /**
    * Coords to drop new figure
    * @private
    */
   private readonly dropPoint: Coords;
+
+  /**
+   * Timer when figure goes down
+   * @private
+   */
+  private downTimer:number = 0
   
   constructor(listener?:CupEventListener)
   {
@@ -65,18 +65,13 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     )
   }
   
-  setFigureToDropPoint(f:Figure, color:number) {
+  setFigureToDropPoint(f:Figure) {
     f.setPosition(this.dropPoint.x, this.dropPoint.y)
     this._figure = f;
-    this._figureColor = color
   }
   
   getFigure(): Figure|null {
     return this._figure;
-  }
-  
-  getFigureColor(): number {
-    return this._figureColor
   }
   
   moveFigureLeft(): boolean {
@@ -146,31 +141,26 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    */
   private transferFigureToCupWithTail ():void
   {
+    debugger
     if (!this._figure) return;
     
     // move figure to the cup
     this._figure.getFields().forEach((f:number) => {
       // move figure
-      this._state.fields[f].block = this._figureColor;
+      this._state.fields[f].block = this._figure ? this._figure.getColor() : 0
       
       // move color
       // this.colors[f] = this._figureColor;
     })
     
     // clear full lines
-    // const clearData = this.clearAndMoveLines();
     this.clearAndMoveLines();
-
-    // rise callback about clear lines
-    // if (clearData.countLines > 0) this.listener.onLineCleared(clearData)
 
     // rise callback event
     if (this.listener) this.listener.onFigureMovedToCup()
-    
-    // if a new figure not putted it means....
-    // if (!this.generateAndPutNewFigure()) {
-    //   this.listener.onGameOver()
-    // }
+
+    // clear figure
+    this._figure = null;
   }
   
   rotateClockwise():boolean {
@@ -183,7 +173,20 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     return this._figure.rotateCounterClockwise();
   }
 
-  updateFigureDownTimer(): void {
+  /**
+   * Timer for down figure
+   */
+  updateFigureDownTimer(deltaTime:number): void
+  {
+
+    // tick figure down timer
+    this.downTimer += deltaTime
+
+    if (this.downTimer > 1000) {
+      this.moveFigureDown();
+      this.downTimer = 0;
+    }
+
   }
   
 

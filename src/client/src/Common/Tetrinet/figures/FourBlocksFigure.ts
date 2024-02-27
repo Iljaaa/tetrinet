@@ -17,7 +17,13 @@ export abstract class FourBlocksFigure
    * @protected
    */
   protected center: Coords = new Coords(0, 0)
-  
+
+  /**
+   * Figure color
+   * @private
+   */
+  private color:number;
+
   /**
    * @deprecated
    * Cup object
@@ -27,11 +33,13 @@ export abstract class FourBlocksFigure
   /**
    * todo: remove class from constructor and add it t all messages
    * @param cap
+   * @param color
    * @protected
    */
-  protected constructor(cap:Cup) {
+  protected constructor(cap:Cup, color:number) {
     this._cap = cap;
     //this.center = new Coords(this.center.x, center.y)
+    this.color = color;
   }
   
   /**
@@ -50,6 +58,11 @@ export abstract class FourBlocksFigure
   
   getFields(): Array<number> {
     return this._fields
+  }
+
+
+  getColor (): number {
+    return this.color;
   }
   
   /**

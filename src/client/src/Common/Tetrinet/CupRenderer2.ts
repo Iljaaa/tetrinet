@@ -1,4 +1,3 @@
-import {CupWithFigureImpl} from "./models/CupWithFigureImpl";
 import {WebGlGraphics} from "../framework/impl/WebGlGraphics";
 import {Vertices} from "../framework/Vertices";
 import {Coords} from "./math/Coords";
@@ -193,7 +192,7 @@ export class CupRenderer2
     
     // render figure
     const f = cup.getFigure()
-    if (f) this.renderFigure(gl, cup, f, cup.getFigureColor())
+    if (f) this.renderFigure(gl, cup, f, f.getColor())
   }
   
   /**
