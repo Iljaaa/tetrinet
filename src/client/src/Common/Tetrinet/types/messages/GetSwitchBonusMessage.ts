@@ -1,6 +1,6 @@
 import {Message} from "./Message";
 import {Bonus} from "../Bonus";
-import {CupsDataCollection} from "../../../../Canvas";
+import {CupData} from "../../models/CupData";
 
 /**
  * We receive bonus
@@ -8,6 +8,11 @@ import {CupsDataCollection} from "../../../../Canvas";
  */
 export interface GetSwitchBonusMessage extends Message
 {
+    /**
+     * With one bonus receive
+     */
+    bonus: Bonus
+
     /**
      * Player socket id who send a bonus
      * this field not use in logic
@@ -21,12 +26,7 @@ export interface GetSwitchBonusMessage extends Message
     target: string,
 
     /**
-     * With one bonus receive
+     * this is your new cup after switch
      */
-    bonus: Bonus,
-
-    /**
-     * Cups info
-     */
-    cups: CupsDataCollection
+    yourCup: CupData
 }

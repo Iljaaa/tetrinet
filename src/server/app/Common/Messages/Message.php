@@ -17,6 +17,12 @@ class Message
      */
     protected array $chat = [];
 
+//    public function setPartyData(Party $party): static
+//    {
+//        $this->setData();
+//        return $this;
+//    }
+
     /**
      * @param string $key
      * @param mixed $value
@@ -27,9 +33,14 @@ class Message
         return $this;
     }
 
-    protected function setPartyId (string $party)
+    /**
+     * @param string $party
+     * @return $this
+     */
+    protected function setPartyId (string $party):static
     {
         $this->data['partyId'] = $party;
+        return $this;
     }
 
     /**

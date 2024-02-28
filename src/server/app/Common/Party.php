@@ -116,7 +116,6 @@ class Party
      */
     public function sendToAllPlayers(array $data): void {
         foreach ($this->players as $index => $p) {
-            // if ($p->)
             $p->getConnection()->send(json_encode(array_merge($data, [
                 'yourIndex' => $index,
                 'partyId' => $this->partyId

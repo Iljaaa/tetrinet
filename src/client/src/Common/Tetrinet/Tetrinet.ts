@@ -142,11 +142,10 @@ export class Tetrinet extends WebGlGame
 
   /**
    * @param bonus
-   * @param minePlayerId
    * @param data
    */
-  realiseBonus(bonus:Bonus, minePlayerId:string, data:GetBonusMessage)  {
-    (this.getCurrentScreen() as PlayScreen)?.realiseBonus(bonus, minePlayerId, data)
+  realiseBonus(bonus:Bonus, data:GetBonusMessage)  {
+    (this.getCurrentScreen() as PlayScreen)?.realiseBonus(bonus, data)
   }
 
   /**

@@ -6,6 +6,7 @@ use App\Common\Helper;
 use App\Common\Messages\BackToPartyMessage;
 use App\Common\Messages\JoinToPartyMessage;
 use App\Common\Messages\LetsPlayMessage;
+use App\Common\Messages\SwitchCupsMessage;
 use App\Common\PoolOfParties;
 use App\Common\PoolOfPlayers;
 use App\Common\Types\BonusType;
@@ -27,16 +28,9 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private PoolOfPlayers $playersPool;
 
-    /*
-     * This is play party
-     * @var Party|null
-     */
-    // private Party|null $party = null;
-
     /**
      * This is pool of parties
      */
-    // private Party|null $party = null;
     private PoolOfParties $partiesPool;
 
     /**
@@ -590,15 +584,15 @@ class FirstTestSocket implements MessageComponentInterface
         $this->info(__METHOD__, ['partyId' => $partyId, 'sourcePlayerId' => $sourcePlayerId, 'targetPlayerId' => $targetPlayerId]);
         $party = $this->partiesPool->getPartyById($partyId);
         if (!$party) return;
-        $this->info("party: ".$party->partyId);
+        // $this->info("party: ".$party->partyId);
 
         $sourcePlayer = $party->getPlayerById($sourcePlayerId);
         if (!$sourcePlayer) return;
-        $this->info('source player: '.$sourcePlayer->getConnectionId());
+        // $this->info('source player: '.$sourcePlayer->getConnectionId());
 
         $targetPlayer = $party->getPlayerById($targetPlayerId);
         if (!$targetPlayer) return;
-        $this->info('target: '.$targetPlayer->getConnectionId());
+        // $this->info('target: '.$targetPlayer->getConnectionId());
 
         // split cups
         $targetPlayerCup = $targetPlayer->getCup();
@@ -606,19 +600,30 @@ class FirstTestSocket implements MessageComponentInterface
         $targetPlayer->setCup($sourcePlayer->getCup());
         $sourcePlayer->setCup($targetPlayerCup);
 
-        $this->info('end switch');
+        // todo: add chat message
+        // $party->addChatMessage();
+
+        $m = new SwitchCupsMessage($party);
+
+        // sens new cup to target player
+        $m->setSwitchData($targetPlayerId, $sourcePlayerId, $targetPlayer->getCup());
+        $targetPlayer->getConnection()->send($m->getDataAsString());
+
+        // sens new cup to target player
+        $m->setSwitchData($targetPlayerId, $sourcePlayerId, $sourcePlayer->getCup());
+        $sourcePlayer->getConnection()->send($m->getDataAsString());
 
         // send response to all
-        $party->sendToAllPlayers([
-            'type' => ResponseType::getBonus,
-            // 'responsible' => $partyIndex,
-            // 'responsibleId' => $conn->socketId
-            'source' => $sourcePlayerId,
-            'target' => $targetPlayer,
-            'bonus' => BonusType::switch,
-            'state' => $party->getGameState(),
-            'cups' => $party->getCupsResponse()
-        ]);
+//        $party->sendToAllPlayers([
+//            'type' => ResponseType::getBonus,
+//            // 'responsible' => $partyIndex,
+//            // 'responsibleId' => $conn->socketId
+//            'source' => $sourcePlayerId,
+//            'target' => $targetPlayer,
+//            'bonus' => BonusType::switch,
+//            'state' => $party->getGameState(),
+//            'cups' => $party->getCupsResponse()
+//        ]);
 
     }
 

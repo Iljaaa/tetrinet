@@ -44,9 +44,9 @@ function App()
               <li>extend block bomb</li>
               <li>duel cups size</li>
               <li>bug: when connection is open and you press join throw exception about lost connection</li>
-              <li>bug: check gravity special</li>
               <li>move pause and resume button form canvas object</li>
               <li>display cup index</li>
+              <li>bug: when figure drops reset timer</li>
             </ul>
           </div>
 

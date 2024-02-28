@@ -21,7 +21,6 @@ import {Paused, SearchForAGame} from "../textures";
 import {Cup} from "../models/Cup";
 import {CupsDataCollection} from "../../../Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
-import {NextBG} from "../textures/NextBG";
 import {Field} from "../models/Field";
 import {GetBonusMessage} from "../types/messages/GetBonusMessage";
 import {GetSwitchBonusMessage} from "../types/messages/GetSwitchBonusMessage";
@@ -138,8 +137,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Your bonunses
    * @private
    */
-  // private playerBonuses: Array<Bonus> = [Bonus.add,Bonus.add,Bonus.add];
-  private playerBonuses: Array<Bonus> = [Bonus.switch, Bonus.quake, Bonus.bomb,
+  private playerBonuses: Array<Bonus> = [
+    // Bonus.gravity, Bonus.gravity
+    Bonus.switch, Bonus.switch,
+    // Bonus.quake, Bonus.bomb,
     // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,Bonus.clearSpecials,Bonus.clear,Bonus.clear
   ];
 
@@ -171,7 +172,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private searchForTexture:SearchForAGame;
   private pausedTexture:Paused;
   private specialBG:SpecialBG;
-  private nextBG:NextBG;
 
   /**
    * In this constructor we create cup
@@ -184,14 +184,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cup =  new CupWithFigureImpl(this);
 
     // init cups collection
-    // this._opponentCup = new CupImpl();
     this._cups = {}
 
     // init textures
     this.searchForTexture = new SearchForAGame();
     this.pausedTexture = new Paused();
     this.specialBG = new SpecialBG();
-    this.nextBG = new NextBG();
 
     // generate next figure
     // this._nextFigure = this.generateNewFigure();
@@ -225,21 +223,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this.listener = listener;
     return this
   }
-  
-  /**
-   * Init render by canvas element
-   */
-  // init ()
-  // {
-  //   console.log ('PlayScreen.init');
-    // this._cupRenderer = new CupRenderer(this.game.getGLGraphics().getGl(), this._cup);
-  // }
-
-  // cleanUpCup ()
-  // {
-  //   console.log('PlayScreen.cleanUpCup')
-  //   this._cup.cleanBeforeNewGame();
-  // }
 
   /**
    * It starts the game
@@ -495,7 +478,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cupRenderer?.renderNextFigure(gl, nextFigure)
   }
 
-  private presentBonuses (gl: WebGL2RenderingContext){
+  private presentBonuses (gl: WebGL2RenderingContext)
+  {
 
     // move to position
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 685)
@@ -731,10 +715,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   /**
    * @param bonus
-   * @param minePlayerId
    * @param data
    */
-  realiseBonus(bonus:Bonus, minePlayerId?:string, data?:GetBonusMessage)
+  realiseBonus(bonus:Bonus, data?:GetBonusMessage)
   {
     // todo: add additional blocks
     switch (bonus) {
@@ -745,7 +728,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       case Bonus.bomb: this.realiseBlockBombSpecial(); break;
       case Bonus.quake: this.realiseQuakeSpecial(); break;
       case Bonus.gravity: this.realiseGravitySpecial(); break;
-      case Bonus.switch: this.realiseSwitch(minePlayerId as string, data as GetSwitchBonusMessage); break;
+      case Bonus.switch: this.realiseSwitch(data as GetSwitchBonusMessage); break;
       case Bonus.nuke: this.realiseNukeSpecial(); break;
     }
   }
@@ -837,24 +820,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   {
     // if new stage is game over that mens game over
     if (this._cup.getState() === CupState.over){
-      debugger
+      // debugger
     }
-
-    // if (!this._nextFigure) return;
-
-    // check intersections with cup
-    // if (!this._cup.canPlace(this._nextFigure.getFields()))
-    // {
-    //
-    // }
-    // else
-    // {
-    //   // move next figure to drop point
-    //   this._cup.setFigureToDropPoint(this._nextFigure);
-    //
-    //   // generate next figure
-    //   this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
-    // }
     
     // call update callback
     this.listener?.onCupUpdated(this._state, this._cup.getData());
@@ -1060,7 +1027,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       let rowToSplit = this._cup.getHeightInCells() - 1;
       let rowToChange = rowToSplit - 1
 
-      while (rowToSplit >= 0)
+      while (rowToSplit > 0)
       {
         const splitCell = this._cup.getFieldByCoords({x: col, y: rowToSplit})
 
@@ -1103,26 +1070,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * Implementation of block quake bones
    */
-  private realiseSwitch (minePlayerId:string, data:GetSwitchBonusMessage)
+  private realiseSwitch (data:GetSwitchBonusMessage)
   {
-    console.log(data.cups, 'data')
+    // update our cup
+    this._cup.setFields(data.yourCup.fields)
 
-    // fow to find our id
-
-    this._cup.setFields(data.cups[minePlayerId].fields)
-
-    // this.setCupState(data.cups[])
-
-    // filter opponent cups
-    let opponentsCups:CupsDataCollection = new class implements CupsDataCollection {
-      [index: string]: CupData;
-    };
-    Object.keys(data.cups).forEach((playerId:string) => {
-      if (playerId !== minePlayerId) {
-        opponentsCups[playerId] = (data.cups[playerId]);
-      }
-    })
-
-    this.updateCups(opponentsCups)
+    // send message about changed cup
+    this.listener?.onCupUpdated(this._state, this._cup.getData())
   }
 }
