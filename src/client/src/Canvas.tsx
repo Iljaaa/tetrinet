@@ -4,8 +4,6 @@ import {CupData} from "./Common/Tetrinet/models/CupData";
 import {SocketSingleton} from "./Common/SocketSingleton";
 import {TetrinetSingleton} from "./Common/TetrinetSingleton";
 
-
-
 /**
  * Collection of cups data received from server
  * after update
@@ -71,21 +69,21 @@ export class Canvas extends React.PureComponent
   /**
    * Pause game button clicked
    */
-  onPauseClicked = () =>
-  {
-    console.log ('onPauseClicked');
-    TetrinetSingleton.getInstance().pause();
-
-  }
+  // onPauseClicked = () =>
+  // {
+  //   console.log ('onPauseClicked');
+  //   TetrinetSingleton.getInstance().pause();
+  //
+  // }
 
   /**
    * Resume clicked
    */
-  onResumeClicked = () =>
-  {
-    console.log ('onResumeClicked');
-    TetrinetSingleton.getInstance().resume();
-  }
+  // onResumeClicked = () =>
+  // {
+  //   console.log ('onResumeClicked');
+  //   TetrinetSingleton.getInstance().resume();
+  // }
 
   onWatchClicked = () =>
   {
@@ -113,20 +111,20 @@ export class Canvas extends React.PureComponent
   render () {
     return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem"}}>
 
-      <div style={{display: "flex", alignItems: "center", marginBottom: "1rem", width: "100%"}}>
-        <div style={{display: "flex", alignItems: "center", flex: "1"}}>
-          <div>
-            <button onClick={this.onPlayClicked} disabled={true}>Play</button>
-          </div>
-          <div>
-            <button onClick={this.onPauseClicked}>Pause</button>
-            <button onClick={this.onResumeClicked}>Resume</button>
-          </div>
-          <div>
-            <button onClick={this.onWatchClicked} disabled={true}>Watch</button>
-          </div>
-        </div>
-      </div>
+      {/*<div style={{display: "flex", alignItems: "center", marginBottom: "1rem", width: "100%"}}>*/}
+      {/*  <div style={{display: "flex", alignItems: "center", flex: "1"}}>*/}
+      {/*    <div>*/}
+      {/*      <button onClick={this.onPlayClicked} disabled={true}>Play</button>*/}
+      {/*    </div>*/}
+      {/*    <div>*/}
+      {/*      <button onClick={this.onPauseClicked}>Pause</button>*/}
+      {/*      <button onClick={this.onResumeClicked}>Resume</button>*/}
+      {/*    </div>*/}
+      {/*    <div>*/}
+      {/*      <button onClick={this.onWatchClicked} disabled={true}>Watch</button>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
 
       <div>
         <canvas id="canvas" width={960} height={750} style={{border: "solid 2px orange"}} ref={this._canvas}/>

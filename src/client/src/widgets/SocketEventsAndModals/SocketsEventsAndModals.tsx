@@ -42,7 +42,7 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
     console.log ('SocketsEventsAndModals.onGraphicsLoaded', data);
 
     //
-    if (data) this.setState({showBackToGameModal: true})
+    // if (data) this.setState({showBackToGameModal: true})
   }
 
   /**

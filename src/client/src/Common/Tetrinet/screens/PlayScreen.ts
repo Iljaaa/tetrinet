@@ -13,7 +13,7 @@ import {CupData} from "../models/CupData";
 import {CupEventListener, CupImpl} from "../models/CupImpl";
 import {GenerateRandomColor} from "../process/GenerateRandomColor";
 
-import {GameState} from "../types";
+import {GameState, RequestTypes} from "../types";
 import {CupState} from "../types/CupState";
 import {Bonus} from "../types/Bonus";
 
@@ -26,6 +26,9 @@ import {GetBonusMessage} from "../types/messages/GetBonusMessage";
 import {GetSwitchBonusMessage} from "../types/messages/GetSwitchBonusMessage";
 import {GenerateNewFigure} from "../process/GenerateNewFigure";
 import {CupWithFigure} from "../models/CupWithFigure";
+import {PauseRequest, ResumeRequest} from "../types/requests";
+import {SocketSingleton} from "../../SocketSingleton";
+import {TetrinetSingleton} from "../../TetrinetSingleton";
 
 
 /**
@@ -251,6 +254,46 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // call first callback
     // I'm not sure that it need to be here
     this.listener?.onCupUpdated(this._state, this._cup.getData())
+  }
+
+  /**
+   * Pause or resume
+   */
+  pauseOrResume ()
+  {
+    if (this._state === GameState.running){
+      this.sendPauseRequest ()
+    }
+
+    if (this._state === GameState.paused){
+      this.sendResumeRequest()
+    }
+  }
+
+  private sendPauseRequest ()
+  {
+    // request data
+    const request:PauseRequest = {
+      type: RequestTypes.pause,
+      partyId: TetrinetSingleton.getInstance().getPartyId(),
+      playerId: TetrinetSingleton.getInstance().getPlayerId(),
+    }
+
+    // send data
+    SocketSingleton.getInstance()?.sendData(request);
+  }
+
+  private sendResumeRequest ()
+  {
+    // request data
+    const request:ResumeRequest = {
+      type: RequestTypes.resume,
+      partyId: TetrinetSingleton.getInstance().getPartyId(),
+      playerId: TetrinetSingleton.getInstance().getPlayerId(),
+    }
+
+    // send data
+    SocketSingleton.getInstance()?.sendData(request);
   }
 
   /**
@@ -522,7 +565,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onKeyDown(code:string): void
   {
+    console.log (code, 'code')
     switch (code) {
+      case "KeyP": this.pauseOrResume(); break;
       case "KeyD": this.onRight(); break;
       case "KeyA": this.onLeft(); break;
       case "KeyQ": this.onRotateCounterClockwise(); break;

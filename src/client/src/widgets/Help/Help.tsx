@@ -13,7 +13,8 @@ export const Help = () => {
             <b>S</b> - down<br/>
             <b>Space</b> - drop<br/>
             <b>`</b> - apply the bonus to yourself<br/>
-            <b>1-4</b> -apply bonus to opponent<br/>
+            <b>1-5</b> - apply bonus to opponent<br/>
+            <b>P</b> - pause<br/>
         </div>
         <div>
             <div className={styles.Title}>Bonus fields:</div>
@@ -21,19 +22,12 @@ export const Help = () => {
             <b>c</b> - Clear Line - Clears a line from the bottom of the field.<br/>
             <b>b</b> - Clear Special Blocks - Transforms all special blocks into regular blocks.<br/>
             <b>r</b> - Random Blocks Clear - Randomly clears blocks, often making a messier field<br/>
-            <b>o</b> - Block Bomb - Only has an effect if the target's field has a Block Bomb special on it.Causes any
-            blocks within a 3x3 radius of those specials to be scattered around their field
-            <b>q</b> - Blockquake - Shifts the blocks on each row, often making a messier field and giving an earthquake
-            effect.<br/>
-            <br/>
-            <div className={styles.Title}>In future:</div>
-            .<br/>
-            <b>g</b> - Block Gravity - Causes all blocks to pull down to the bottom of the field, and will remove any
-            lines cleared as a result.<br/>
+            <b>o</b> - Block Bomb - Only has an effect if the target's field has a Block Bomb special on it.Causes any blocks within a 3x3 radius of those specials to be scattered around their field
+            <b>q</b> - Blockquake - Shifts the blocks on each row, often making a messier field and giving an earthquake effect.<br/>
+            <b>g</b> - Block Gravity - Causes all blocks to pull down to the bottom of the field, and will remove any lines cleared as a result.<br/>
             <b>s</b> - Switch Fields - Switches your field with the target's field.<br/>
             <b>n</b> - Nuke Field - Clears the entire field.<br/>
-            // <b>i</b> - Immunity - Makes the target immune from being targetted by specials for X amount of seconds.
-            Default = 15 seconds<br/>
+            // <b>i</b> - Immunity - Makes the target immune from being targetted by specials for X amount of seconds. Default = 15 seconds<br/>
             // <b>v</b> - Clear Column - Clears a random column.<br/>
             // <b>m</b> - Mutate Pieces - Makes the target's X next pieces large and odd shaped, often forcing the
             target to make a messier field. Default = 3 next pieces<br/>

@@ -26,13 +26,11 @@ function App()
           <div style={{backgroundColor: "#ef7f57", padding: "4rem 2rem"}}>
             <h2>Road map:</h2>
             <ul>
-              <li>stop game when connection is lost</li>
+              <li>drop player when connection is lost</li>
               <li>stop game when focus is lost</li>
               <li>error on socket connect</li>
-              <li>party search a game</li>
               <li>watch</li>
               <li>client alert when connection lost</li>
-              <li>save lost connection into store</li>
               <li>pretty message that the we cannot connect to server</li>
               <li>There the bug: if you send bonus to not existing opponent, the bonus just disappear. We should first
                 check that opponent exists and only then send bonus
@@ -44,9 +42,9 @@ function App()
               <li>extend block bomb</li>
               <li>duel cups size</li>
               <li>bug: when connection is open and you press join throw exception about lost connection</li>
-              <li>move pause and resume button form canvas object</li>
               <li>display cup index</li>
               <li>bug: when figure drops reset timer</li>
+              <li>pause in just play</li>
             </ul>
           </div>
 

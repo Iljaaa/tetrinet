@@ -3,7 +3,7 @@ import {Assets} from "./Tetrinet/Assets";
 import sprite from "../sprite.png";
 import {WebGlProgramManager} from "./framework/impl/WebGlProgramManager";
 import {SocketSingleton} from "./SocketSingleton";
-import {PauseRequest, ResumeRequest, SetRequest, StartRequest} from "./Tetrinet/types/requests";
+import {SetRequest, StartRequest} from "./Tetrinet/types/requests";
 import {GameState, MessageTypes, RequestTypes} from "./Tetrinet/types";
 import {StartResponse} from "./Tetrinet/types/responses";
 import {ChatItem} from "./Tetrinet/types/ChatItem";
@@ -59,14 +59,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * Party id
    * we should use it here not from state
    */
-  private partyId: string = '';
+  private _partyId: string = '';
 
   /**
    * This is id of your socket
    * received when you start search party
    * @private
    */
-  private playerId:string = '';
+  private _playerId:string = '';
 
   /**
    * This is mapping keys to index inside party
@@ -141,6 +141,21 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     })
   }
 
+
+  /**
+   @deprecated all this layer must move to play screen
+   */
+  getPartyId(): string {
+    return this._partyId;
+  }
+
+  /**
+   * @deprecated all this layer must move to play screen
+   */
+  getPlayerId(): string {
+    return this._playerId;
+  }
+
   /**
    * Callback from game when lines was cleared
    * @param newScore
@@ -168,8 +183,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // send command
     const data:SendBonusRequest = {
       type: RequestTypes.sendBonus,
-      partyId: this.partyId,
-      playerId: this.playerId,
+      partyId: this._partyId,
+      playerId: this._playerId,
       target: targetPlayerId,
       bonus: bonus
     }
@@ -187,8 +202,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // just save game state
     const data:SetRequest = {
       type: RequestTypes.set,
-      partyId: this.partyId,
-      playerId: this.playerId,
+      partyId: this._partyId,
+      playerId: this._playerId,
       // state: state,
       cup: cupState
     }
@@ -227,10 +242,10 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     console.log ('TetrinetNetworkLayer.processLetsPlay', data);
 
     // save party id
-    this.partyId = data.partyId
+    this._partyId = data.partyId
 
     // call listener to display party id
-    this._gameDataEventListener?.onPartyIdChange(this.partyId)
+    this._gameDataEventListener?.onPartyIdChange(this._partyId)
 
     // clear mapping array
     this.partyIndexToPlayerId = {};
@@ -246,14 +261,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     Object.keys(data.party).forEach((p:string) => {
       const arrayKey = parseInt(p)
       const it = data.party[arrayKey]
-      if (it.socketId !== this.playerId) {
+      if (it.socketId !== this._playerId) {
         this.partyIndexToPlayerId[i] = it.socketId
         i++
       }
     })
 
     // store party and player id into storage
-    StoreGameDataInStorage(this.partyId, this.playerId)
+    StoreGameDataInStorage(this._partyId, this._playerId)
 
     // start game
     // this.game.playGame();
@@ -280,7 +295,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // filter our cup out of our cup
     let ccc:CupsDataCollection = {}
     Object.keys(data.cups).forEach((key:string) => {
-      if (key !== this.playerId){
+      if (key !== this._playerId){
         ccc[key] = data.cups[key]
       }
     })
@@ -323,7 +338,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.setGameOver();
 
     // update our cup state
-    const mineCup:CupData = data.cups[this.playerId]
+    const mineCup:CupData = data.cups[this._playerId]
     this.setCupState(mineCup.state);
 
     //
@@ -372,11 +387,11 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinResponse = (data:StartResponse) =>
   {
-    this.playerId = data.yourPlayerId
+    this._playerId = data.yourPlayerId
 
     //
     this._gameDataEventListener?.onGameStateChange(GameState.running)
-    this._gameDataEventListener?.onPlayerIdChange(this.playerId)
+    this._gameDataEventListener?.onPlayerIdChange(this._playerId)
 
     // set listener when game starts
     SocketSingleton.getInstance()?.setListener(this);
@@ -446,38 +461,38 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   /**
    * Pause the game
    */
-  public pause ()
-  {
-    // request data
-    const request:PauseRequest = {
-      type: RequestTypes.pause,
-      partyId: this.partyId,
-      playerId: this.playerId,
-    }
-
-    // send data
-    SocketSingleton.getInstance()?.sendData(request);
-  }
+  // public pause ()
+  // {
+  //   // request data
+  //   const request:PauseRequest = {
+  //     type: RequestTypes.pause,
+  //     partyId: this._partyId,
+  //     playerId: this._playerId,
+  //   }
+  //
+  //   // send data
+  //   SocketSingleton.getInstance()?.sendData(request);
+  // }
 
   /**
    * Resume the game
    */
-  public resume ()
-  {
-
-    // request data
-    const request:ResumeRequest = {
-      type: RequestTypes.resume,
-      partyId: this.partyId,
-      playerId: this.playerId,
-    }
-
-    // send data
-    SocketSingleton.getInstance()?.sendData(request);
-
-    // set game resume
-    // this.game.resumeGame(true);
-  }
+  // public resume ()
+  // {
+  //
+  //   // request data
+  //   const request:ResumeRequest = {
+  //     type: RequestTypes.resume,
+  //     partyId: this._partyId,
+  //     playerId: this._playerId,
+  //   }
+  //
+  //   // send data
+  //   SocketSingleton.getInstance()?.sendData(request);
+  //
+  //   // set game resume
+  //   // this.game.resumeGame(true);
+  // }
 
 
   public oldPlayMethod (){
