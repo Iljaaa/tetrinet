@@ -1,13 +1,12 @@
 import React from 'react';
 
-import {Canvas} from "./Canvas";
+import {Canvas} from "./widgets/Canvas/Canvas";
 import {JoinButtons} from "./widgets/JoinButtons/JoinButtons";
 import {Help} from "./widgets/Help/Help";
 
 import './App.css';
 import {StateRow} from "./widgets/StateRow/StateRow";
 import SocketsEventsAndModals from "./widgets/SocketEventsAndModals/SocketsEventsAndModals";
-import {InputNameModal} from "./widgets/InputNameModal/InputNameModal";
 
 function App()
 {
@@ -50,8 +49,6 @@ function App()
           </div>
 
           <SocketsEventsAndModals />
-
-          <InputNameModal isOpen={true} onCancel={()=>{}} onSubmit={()=>{}} />
 
         </div>
       </div>

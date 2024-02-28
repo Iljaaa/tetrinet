@@ -20,7 +20,7 @@ export const InputNameModal = (props:Props) => {
              onChange={(event:React.ChangeEvent<HTMLInputElement>) => setName(event.target.value)}></input>
     </div>
 
-    <div style={{marginTop: '1rem', textAlign: "center", transform: "translateX(-10px)"}}>
+    <div style={{marginTop: '1rem', textAlign: "center"}}>
       <Button onClick={props.onSubmit} style={{marginRight: "1.5rem"}}>Ok</Button>
       <Button onClick={props.onCancel}>Cancel</Button>
     </div>

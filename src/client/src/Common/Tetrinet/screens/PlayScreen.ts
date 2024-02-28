@@ -19,7 +19,7 @@ import {Bonus} from "../types/Bonus";
 
 import {Paused, SearchForAGame} from "../textures";
 import {Cup} from "../models/Cup";
-import {CupsDataCollection} from "../../../Canvas";
+import {CupsDataCollection} from "../../../widgets/Canvas/Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
 import {Field} from "../models/Field";
 import {GetBonusMessage} from "../types/messages/GetBonusMessage";

@@ -12,6 +12,7 @@ export class SocketSingleton
   private static socketInstance?:Socket
   
   /**
+   * @deprecate this method close and open new connection this is not correct
    * This is almost open but we always create new socket
    */
   public static reOpenConnection(onOpenCallback:()=>void, onCloseCallback:()=>void)
@@ -35,8 +36,7 @@ export class SocketSingleton
    */
   public static openConnection(onOpenCallback:()=>void, onCloseCallback:()=>void)
   {
-    if (!SocketSingleton.socketInstance)
-    {
+    if (!SocketSingleton.socketInstance) {
       // create new instance
       SocketSingleton.socketInstance = new Socket(onOpenCallback, onCloseCallback);
     }

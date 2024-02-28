@@ -1,8 +1,8 @@
 import React from "react";
 
-import {CupData} from "./Common/Tetrinet/models/CupData";
-import {SocketSingleton} from "./Common/SocketSingleton";
-import {TetrinetSingleton} from "./Common/TetrinetSingleton";
+import {CupData} from "../../Common/Tetrinet/models/CupData";
+import {SocketSingleton} from "../../Common/SocketSingleton";
+import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 
 /**
  * Collection of cups data received from server
@@ -35,9 +35,7 @@ export class Canvas extends React.PureComponent
      */
     this._canvas = React.createRef();
     
-    // create game
-    // this.game =  new PlayScreen();
-    // this.game = new Tetrinet()
+    // create game instance
     TetrinetSingleton.init();
   }
 
@@ -54,7 +52,7 @@ export class Canvas extends React.PureComponent
   {
     // unbind events
     // this.game.getInput().unBind();
-    TetrinetSingleton.getInstance().getInput().unBind();
+    // TetrinetSingleton.getInstance().getInput().unBind();
   }
   
   /**

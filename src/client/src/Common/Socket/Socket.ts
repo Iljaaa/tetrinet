@@ -1,4 +1,4 @@
-import {SocketEventListener} from "./SocketEventListener";
+import {SocketMessageEventListener} from "./SocketMessageEventListener";
 
 /**
  * Wrap up around socket
@@ -32,7 +32,7 @@ export class Socket
   /**
    * This is message event listener
    */
-  private eventListener:SocketEventListener|undefined
+  private eventListener:SocketMessageEventListener|undefined
   
   constructor(onOpenCallback: (() => void), onCloseCallback: (() => void))
   {
@@ -57,7 +57,7 @@ export class Socket
   /**
    * Set event listener
    */
-  setListener (listener:SocketEventListener){
+  setListener (listener:SocketMessageEventListener){
     this.eventListener = listener;
   }
   
@@ -79,10 +79,11 @@ export class Socket
     // parse data
     let data = event.data
     data = JSON.parse(data)
-    
-    // call special callback
-    if (this.afterSendDataCallback)
-    {
+
+    /**
+     * this is callback uses only after first message
+     */
+    if (this.afterSendDataCallback) {
       this.afterSendDataCallback(data)
       // clean up callback
       this.afterSendDataCallback = undefined;
@@ -99,12 +100,15 @@ export class Socket
    * @param error
    * @protected
    */
-  // protected onError (this:WebSocket, error:Event):any {
-  protected onError = (error:Event):void => {
+  protected onError = (error:Event):void =>
+  {
+    console.log(this.socket?.CLOSED, this.socket?.OPEN, 'Socket.OnError')
+
     console.log ('Socket.onError', error);
     alert('Socket error, restart application');
 
     // clear close callback, am not sure about it
+    // it here because when we cannot connect also rised on close event
     this.onCloseCallback = undefined
 
     // if (error.type === "error")

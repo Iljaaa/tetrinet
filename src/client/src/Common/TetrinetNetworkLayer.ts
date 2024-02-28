@@ -8,7 +8,7 @@ import {GameState, MessageTypes, RequestTypes} from "./Tetrinet/types";
 import {StartResponse} from "./Tetrinet/types/responses";
 import {ChatItem} from "./Tetrinet/types/ChatItem";
 import {PlayScreenEventListener} from "./Tetrinet/screens/PlayScreen";
-import {SocketEventListener} from "./Socket/SocketEventListener";
+import {SocketMessageEventListener} from "./Socket/SocketMessageEventListener";
 import {Bonus} from "./Tetrinet/types/Bonus";
 import {SendBonusRequest} from "./Tetrinet/types/requests/SendBonusRequest";
 import {CupData} from "./Tetrinet/models/CupData";
@@ -17,7 +17,7 @@ import {LetsPlayMessage} from "./Tetrinet/types/messages/LetsPlayMessage";
 import {GetBonusMessage} from "./Tetrinet/types/messages/GetBonusMessage";
 import {PausedMessage} from "./Tetrinet/types/messages/PausedMessage";
 import {ResumedMessage} from "./Tetrinet/types/messages/ResumedMessage";
-import {CupsDataCollection} from "../Canvas";
+import {CupsDataCollection} from "../widgets/Canvas/Canvas";
 import {ClearGameDataInStorage, StoreGameDataInStorage} from "../process/store";
 import {BackRequest} from "./Tetrinet/types/requests/BackRequest";
 import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyResponse";
@@ -53,7 +53,7 @@ interface KeysPlayerMap {
 /**
  * Network layer is a bad idea all this fuctions we shold move to plat screen
  */
-export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventListener, SocketEventListener
+export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventListener, SocketMessageEventListener
 {
   /**
    * Party id
@@ -358,8 +358,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   {
     console.log ('TetrinetNetworkLayer.onJoinToDuelClicked')
 
-    // close connection if it
-    SocketSingleton.getInstance()
+    window.addEventListener('blur', function() {
+      console.log('Окно браузера потеряло фокус');
+    });
 
     //
     SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(partyType), this.onConnectionClose)
@@ -371,6 +372,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinPartyConnectionOpen = (partyType:string) =>
   {
+    // after that connection
+
     // send handshake and waiting our data
     const request:StartRequest = {
       type: RequestTypes.join,

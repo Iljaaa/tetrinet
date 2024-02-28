@@ -3,7 +3,7 @@ import {PlayScreen, PlayScreenEventListener} from "./screens/PlayScreen";
 import {WatchScreen} from "./screens/WatchScreen";
 import {Bonus} from "./types/Bonus";
 import {CupState} from "./types/CupState";
-import {CupsDataCollection} from "../../Canvas";
+import {CupsDataCollection} from "../../widgets/Canvas/Canvas";
 import {GetBonusMessage} from "./types/messages/GetBonusMessage";
 import {Cup} from "./models/Cup";
 import {JustPlayScreen} from "./screens/JustPlayScreen";

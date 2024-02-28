@@ -5,8 +5,6 @@ import {Button} from "../../shared/ui/Button/Button";
 
 export const JoinButtons = () =>
 {
-
-
     return <div className={styles.JoinButtonsWrap}>
         <div>
             <Button onClick={() => {

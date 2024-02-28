@@ -4,7 +4,7 @@ import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 import {CupRenderer2} from "../CupRenderer2";
 
 import {CupImpl} from "../models/CupImpl";
-import {SocketEventListener} from "../../Socket/SocketEventListener";
+import {SocketMessageEventListener} from "../../Socket/SocketMessageEventListener";
 import {SocketSingleton} from "../../SocketSingleton";
 
 /*
@@ -16,7 +16,7 @@ import {SocketSingleton} from "../../SocketSingleton";
 /**
  * @vaersion 0.0.1
  */
-export class WatchScreen extends WebGlScreen implements SocketEventListener
+export class WatchScreen extends WebGlScreen implements SocketMessageEventListener
 {
   
   /**
