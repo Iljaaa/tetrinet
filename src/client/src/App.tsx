@@ -7,6 +7,7 @@ import {Help} from "./widgets/Help/Help";
 import './App.css';
 import {StateRow} from "./widgets/StateRow/StateRow";
 import SocketsEventsAndModals from "./widgets/SocketEventsAndModals/SocketsEventsAndModals";
+import {InputNameModal} from "./widgets/InputNameModal/InputNameModal";
 
 function App()
 {
@@ -50,7 +51,7 @@ function App()
 
           <SocketsEventsAndModals />
 
-
+          <InputNameModal isOpen={true} onCancel={()=>{}} onSubmit={()=>{}} />
 
         </div>
       </div>

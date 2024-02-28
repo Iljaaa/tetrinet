@@ -1,0 +1,16 @@
+.JoinButton {
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 24px;
+    background-color: whitesmoke;
+    box-shadow: #daa520 9px 9px 0 0;
+
+    &:hover {
+        background-color: silver;
+    }
+
+    &:active {
+        background-color: gray;
+        color: whitesmoke;
+    }
+}
