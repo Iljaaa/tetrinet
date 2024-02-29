@@ -229,18 +229,22 @@ class FirstTestSocket implements MessageComponentInterface
 
         // in witch pool we should add user
         $pool = PartyType::from($data['partyType'] ?? 'duel');
-        $this->info('connection added to '.$pool->value.' pool');
+        $playerName = trim($data['playerName']);
+        $this->info('get request to add in pull', ['pool' => $pool->value, 'socketId' => $conn->socketId, 'playerName' => $playerName]);
 
-        // create message
+        // create new player
+        $p = new Player($conn, $playerName);
+
+        // create handshake message
         $m = (new JoinToPartyMessage())
             ->setPartyType($pool)
-            ->setYourPlayerId($conn->socketId);
+            ->setYourPlayerId($p->getConnectionId());
 
         // send answer to handshake with connection id
-        $conn->send($m->getDataAsString());
+        $p->getConnection()->send($m->getDataAsString());
 
         /**
-         * @param ConnectionInterface[] $players
+         * @param Player[] $players
          * @return void
          */
         $onPoolReadyToMakeParty = function (array $players)
@@ -262,8 +266,8 @@ class FirstTestSocket implements MessageComponentInterface
         };
 
         // add to pool
-        if ($pool === PartyType::duel) $this->playersPool->addToDuels($conn, $onPoolReadyToMakeParty);
-        if ($pool === PartyType::party) $this->playersPool->addToParty($conn, $onPoolReadyToMakeParty);
+        if ($pool === PartyType::duel) $this->playersPool->addToDuels($p, $onPoolReadyToMakeParty);
+        if ($pool === PartyType::party) $this->playersPool->addToParty($p, $onPoolReadyToMakeParty);
     }
 
     /**

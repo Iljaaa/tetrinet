@@ -14,6 +14,7 @@ type State = {
 
 class SocketsEventsAndModals extends React.PureComponent<{}, State> implements TetrinetNetworkLayerSocketEvents
 {
+
   public state:State = {
     showBackToGameModal: false,
     showBackToGameFailModal: false,
@@ -23,6 +24,7 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
   componentDidMount() {
     TetrinetSingleton.getInstance().setSocketEventListener(this)
   }
+
 
   OnClose(): void {
     console.log ('SocketsEventsAndModals.onClose');
@@ -77,6 +79,9 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
     ClearGameDataInStorage()
   }
 
+  /**
+   *
+   */
   onCloseBackFailModal = () => {
     this.setState({
       showBackToGameFailModal: false,
@@ -129,7 +134,6 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
                          customStyles={customStyles}
                          message={this.state.failMessage}
                          cancel={this.onCloseBackFailModal}/>
-
 
     </div>;
 

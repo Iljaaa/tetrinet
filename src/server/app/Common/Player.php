@@ -16,6 +16,12 @@ class Player
     private ConnectionInterface $connetion;
 
     /**
+     * Player name
+     * @var string
+     */
+    private string $name;
+
+    /**
      * @var Cup
      */
     private Cup $cup;
@@ -26,9 +32,10 @@ class Player
      */
     public PlayerState $state;
 
-    public function __construct(ConnectionInterface $connection)
+    public function __construct(ConnectionInterface $connection, string $name)
     {
         $this->connetion = $connection;
+        $this->name = $name;
         $this->state = PlayerState::online;
         $this->cup = new Cup();
     }

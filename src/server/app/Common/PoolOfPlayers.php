@@ -12,27 +12,27 @@ class PoolOfPlayers
 {
     /**
      * Pull for duels
-     * @var ConnectionInterface[]
+     * @var Player[]
      */
     private array $duels = [];
 
     /**
      * Pool for parties
-     * @var ConnectionInterface[]
+     * @var Player[]
      */
     private array $party = [];
 
     /**
-     * @param ConnectionInterface $conn
+     * @param Player $p
      * @param callable $onPartyFull
      * @return void
      */
-    public function addToDuels(ConnectionInterface $conn, callable $onPartyFull): void
+    public function addToDuels(Player $p, callable $onPartyFull): void
     {
-        $this->duels[] = $conn;
+        $this->duels[] = $p;
         Log::channel('socket')->info('connection added to pool', [
             'pool' => 'duel',
-            'socketId' => $conn->socketId,
+            'socketId' => $p->getConnectionId(),
             'size' => count($this->duels)
         ]);
 
@@ -53,16 +53,16 @@ class PoolOfPlayers
 
 
     /**
-     * @param ConnectionInterface $conn
+     * @param Player $p
      * @param callable $onPartyFull
      * @return void
      */
-    public function addToParty(ConnectionInterface $conn, callable $onPartyFull): void
+    public function addToParty(Player $p, callable $onPartyFull): void
     {
-        $this->party[] = $conn;
+        $this->party[] = $p;
         Log::channel('socket')->info('connection added to pool', [
             'pool' => 'party',
-            'socketId' => $conn->socketId,
+            'socketId' => $p->getConnectionId(),
             'size' => count($this->party)
         ]);
 

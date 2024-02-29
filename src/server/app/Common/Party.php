@@ -64,11 +64,11 @@ class Party
 
     /**
      * Add player into party and return his index in
-     * @param ConnectionInterface $conn
+     * @param Player $p
      */
-    public function addPlayer (ConnectionInterface $conn): void
+    public function addPlayer (Player $p): void
     {
-        $this->players[$conn->socketId] = new Player($conn);
+        $this->players[$p->getConnectionId()] = $p;
         // return array_search($connection, $this->players);
     }
 

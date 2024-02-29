@@ -30,6 +30,11 @@ export type TetrinetEventListener = {
   onScoreChange: (score:number) => void,
   onPartyIdChange: (partyId:string) => void,
   onPlayerIdChange: (playerId:string) => void,
+
+  /**
+   * When player name is changed
+   */
+  onPlayerNameChang: (newPlayerName:string) => void,
 }
 
 /**
@@ -69,6 +74,11 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   private _playerId:string = '';
 
   /**
+   * This is player name for chat mostly
+   */
+  private _playerName:string = '';
+
+  /**
    * This is mapping keys to index inside party
    */
   private partyIndexToPlayerId:KeysPlayerMap = {};
@@ -84,9 +94,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   private _gameDataEventListener:TetrinetEventListener | undefined = undefined
 
   /**
-   *
+   * Listener of sockets events
    */
   private _socketEventListener:TetrinetNetworkLayerSocketEvents | undefined = undefined
+
+  /**
+   * We call this method when we need to get  player name
+   */
+  private _requestPlayerNameCallback?: (defaultPlayerName:string, onNameSubmit:(newPlayerName:string) => void) => void = undefined
 
   // if it comments al stop working
   constructor() {
@@ -99,6 +114,10 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
   setSocketEventListener(listener:TetrinetNetworkLayerSocketEvents){
       this._socketEventListener = listener
+  }
+
+  setRequestPlayerNameCallback (callback:(defaultPlayerName: string, onNameSubmit:(newPlayerName:string) => void) => void){
+    this._requestPlayerNameCallback = callback
   }
 
   public initGraphicAndLoadAssets (canvas:HTMLCanvasElement)
@@ -358,6 +377,29 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   {
     console.log ('TetrinetNetworkLayer.onJoinToDuelClicked')
 
+    // todo: here we need a redux
+
+    // if player name is empty we first require it, then continue to play
+    if (this._playerName === '' && this._requestPlayerNameCallback)
+    {
+      this._requestPlayerNameCallback(this._playerName, (newPlayerName:string) => {
+        this._playerName = newPlayerName;
+        this.connectToJoinParty(partyType);
+      });
+
+      //
+      return;
+    }
+
+    // if player name is set we just go to search
+    this.connectToJoinParty(partyType)
+
+  }
+
+  private connectToJoinParty (partyType:string)
+  {
+    // todo: remove in to some other place
+    // may be to there where controlls bind
     window.addEventListener('blur', function() {
       console.log('Окно браузера потеряло фокус');
     });
@@ -379,7 +421,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       type: RequestTypes.join,
       partyType: partyType,
       partyId: '',
-      playerId: '',
+      playerId: this._playerId,
+      playerName: this._playerName
     }
     SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
   }

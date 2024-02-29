@@ -2,6 +2,7 @@ import {Request} from "./Request";
 
 /**
  * Search game request
+ * in this request playerId and partyId is not necessary because
  */
 export interface StartRequest extends Request
 {
@@ -11,7 +12,7 @@ export interface StartRequest extends Request
   partyType: string,
 
   /**
-   * Player name will ve in future
+   * Player name
    */
-  // playerName: string
+  playerName: string
 }
