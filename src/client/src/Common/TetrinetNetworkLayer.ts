@@ -263,7 +263,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     if (data.chat) {
       if (data.chat.length !== this.chat.length) {
         this.chat = data.chat
-        debugger
         if (this._onChatChanged) this._onChatChanged(this.chat);
       }
     }

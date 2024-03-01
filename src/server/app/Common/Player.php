@@ -92,4 +92,12 @@ class Player
     {
         $this->state = PlayerState::offline;
     }
+
+    /**
+     * @return string
+     */
+    public function getName ():string
+    {
+        return $this->name;
+    }
 }

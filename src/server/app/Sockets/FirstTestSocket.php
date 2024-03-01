@@ -2,10 +2,13 @@
 
 namespace App\Sockets;
 
+use App\Common\Connection;
 use App\Common\Helper;
 use App\Common\Messages\BackToPartyMessage;
 use App\Common\Messages\JoinToPartyMessage;
 use App\Common\Messages\LetsPlayMessage;
+use App\Common\Messages\PausedMessage;
+use App\Common\Messages\ResumeMessage;
 use App\Common\Messages\SwitchCupsMessage;
 use App\Common\PoolOfParties;
 use App\Common\PoolOfPlayers;
@@ -338,19 +341,19 @@ class FirstTestSocket implements MessageComponentInterface
         $partyId = $data['partyId'] ?? '';
 
         // pause game
-        // $party = $this->party;
         $party = $this->partiesPool->getPartyById($partyId);
         $party->setPause();
-        // $this->party->setGameState(GameState::paused);
 
-        // todo: add log message
-        // todo: make message with chat
+        /** @var Player $player */
+        $player = $party->getPlayerById($conn->socketId);
+        $party->addChatMessage(sprintf('Player %s paused the game', $player->getName()));
 
-        // send data to all connections
-        $party->sendToAllPlayers([
-            'type' => ResponseType::paused,
-            'state' => $party->getGameState(),
-        ]);
+        $m = new PausedMessage($party);
+        $party->sendMessageToAllPlayers($m);
+//        $party->sendToAllPlayers([
+//            'type' => ResponseType::paused,
+//            'state' => $party->getGameState(),
+//        ]);
     }
 
     /**
@@ -364,22 +367,22 @@ class FirstTestSocket implements MessageComponentInterface
 
         $partyId = $data['partyId'] ?? '';
 
-        // pause game
-        // $party = $this->party;
+        // resume game
         $party = $this->partiesPool->getPartyById($partyId);
-
-        // back to running
-        // $this->party->setGameState(GameState::running);
-        // $party = $this->party;
         $party->setGameRunning();
 
-        // todo: add log message
+        /** @var Player $player */
+        $player = $party->getPlayerById($conn->socketId);
+        $party->addChatMessage(sprintf('Player %s resumed the game', $player->getName()));
+
 
         // send data to all connections
-        $party->sendToAllPlayers([
-            'type' => ResponseType::resumed,
-            'state' => $party->getGameState(),
-        ]);
+//        $party->sendToAllPlayers([
+//            'type' => ResponseType::resumed,
+//            'state' => $party->getGameState(),
+//        ]);
+        $m = new ResumeMessage($party);
+        $party->sendMessageToAllPlayers($m);
     }
 
     /**
