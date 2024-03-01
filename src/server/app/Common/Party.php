@@ -3,6 +3,7 @@
 namespace App\Common;
 
 use App\Common\Messages\Message;
+use App\Common\Messages\UpdateChatMessage;
 use App\Common\Types\PlayerState;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;
@@ -52,7 +53,7 @@ class Party
         $this->partyId = Helper::random();
 
         // add chat message
-        $this->chat[] = new ChatMessage('Party created', 'System');
+        $this->addChatMessage('Party created');
 
     }
 
@@ -131,7 +132,7 @@ class Party
     public function sendMessageToAllPlayers(Message $m): void
     {
         // set chat from party to message
-        $m->setChat($this->chat);
+        // $m->setChat($this->chat);
 
         $mString = $m->getDataAsString();
         foreach ($this->players as $p) {
@@ -262,6 +263,15 @@ class Party
     {
         if ($playerName == '') $playerName = 'System';
         $this->chat[] = new ChatMessage($message, $playerName, $playerId);
+    }
+
+    /**
+     * Send chat to all players
+     * @return void
+     */
+    public function sendChatToAllPlayers(): void
+    {
+        $this->sendMessageToAllPlayers(new UpdateChatMessage($this->partyId, $this->chat));
     }
 
     /*

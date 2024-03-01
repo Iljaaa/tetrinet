@@ -16,4 +16,9 @@ enum ResponseType:string
     case addLine = 'addLine';
 
     case getBonus = 'getBonus'; // when bonus received
+
+    /**
+     * When we send chat to all players
+     */
+    case chat = 'chat';
 }

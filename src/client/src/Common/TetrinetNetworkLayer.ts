@@ -259,15 +259,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   onMessageReceive(data: Message): void
   {
-    // process chat
-    if (data.chat) {
-      if (data.chat.length !== this.chat.length) {
-        this.chat = data.chat
-        if (this._onChatChanged) this._onChatChanged(this.chat);
-      }
-    }
-
-
     switch (data.type) {
       // party is created, it is time to play
       case MessageTypes.letsPlay: this.processLetsPlay(data as LetsPlayMessage); break;
@@ -278,6 +269,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       case MessageTypes.getBonus: this.processGetBonusMessage(data as GetBonusMessage); break;
       case MessageTypes.paused: this.processPause(data as PausedMessage); break;
       case MessageTypes.resumed: this.processResume(data as ResumedMessage); break;
+
+      // updated chat is comming
+      case MessageTypes.chat: this.processChat(data as ResumedMessage); break;
     }
   }
 
@@ -374,6 +368,18 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   private processResume(data:ResumedMessage) {
     this.resumeGame();
     this._gameDataEventListener?.onGameStateChange(GameState.running)
+  }
+
+  private processChat(data:ResumedMessage) {
+    console.log(data, 'TetrinetNetworkLayer')
+
+    // process chat
+    if (data.chat) {
+      if (data.chat.length !== this.chat.length) {
+        this.chat = data.chat
+        if (this._onChatChanged) this._onChatChanged(this.chat);
+      }
+    }
   }
 
   /**

@@ -268,6 +268,10 @@ class FirstTestSocket implements MessageComponentInterface
             // create message
             $m = new LetsPlayMessage($party);
             $party->sendMessageToAllPlayers($m);
+
+            // send chat message to all
+            $party->sendChatToAllPlayers();
+
         };
 
         // add to pool
@@ -348,8 +352,11 @@ class FirstTestSocket implements MessageComponentInterface
         $player = $party->getPlayerById($conn->socketId);
         $party->addChatMessage(sprintf('Player %s paused the game', $player->getName()));
 
-        $m = new PausedMessage($party);
-        $party->sendMessageToAllPlayers($m);
+        //
+        $party->sendMessageToAllPlayers(new PausedMessage($party));
+
+        // send chat
+        $party->sendChatToAllPlayers();
 //        $party->sendToAllPlayers([
 //            'type' => ResponseType::paused,
 //            'state' => $party->getGameState(),
@@ -381,8 +388,10 @@ class FirstTestSocket implements MessageComponentInterface
 //            'type' => ResponseType::resumed,
 //            'state' => $party->getGameState(),
 //        ]);
-        $m = new ResumeMessage($party);
-        $party->sendMessageToAllPlayers($m);
+        $party->sendMessageToAllPlayers(new ResumeMessage($party));
+
+        // send chat
+        $party->sendChatToAllPlayers();
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace App\Common\Messages;
 
 use app\Common\ChatMessage;
-use App\Common\Party;
+// use App\Common\Party;
 
 class Message
 {
@@ -15,8 +15,8 @@ class Message
     /**
      * this is chat
      * @var array
-     */
-    protected array $chat = [];
+     *
+    // protected array $chat = [];
 
 //    public function setPartyData(Party $party): static
 //    {
@@ -45,12 +45,12 @@ class Message
     }
 
     /**
-     * @param ChatMessage[] $chatItems
+     * @param UpdateChatMessage[] $chatItems
      * @return Message
-     */
+     *
     public function setChat(array $chatItems): static {
         return $this->setData('chat', array_map( fn (ChatMessage $c) => $c->asArray(), $chatItems));
-    }
+    }*/
 
     /*
      * @return void

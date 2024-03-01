@@ -6,5 +6,10 @@ export enum MessageTypes {
   paused = 'paused',
   resumed = 'resumed',
   getBonus = 'getBonus',
+
+  /**
+   * Here comes updated chat
+   */
+  chat = 'chat',
 }
 
