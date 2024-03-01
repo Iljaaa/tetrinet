@@ -160,42 +160,8 @@ class FirstTestSocket implements MessageComponentInterface
             case MessageType::set: $this->processSet($conn, $data); break;
             // case MessageType::addLine: $this->processAddLine($conn, $data); break;
             case MessageType::sendBonus: $this->processSendBonus($conn, $data); break;
+            case MessageType::chatMessage: $this->processChatMessage($conn, $data); break;
         }
-
-        // deprecated method
-//        if ($data['type'] == 'play' && !empty($data['cup']))
-//        {
-//            $this->info("type:play");
-//            // $this->info("save", $data['cup']);
-//
-//            // add connection to the party
-//            $this->party[] = $conn;
-//
-//            // store cup into redis
-//            // todo here we need to clear cup
-//            Redis::set('cup', json_encode($data['cup']));
-//
-//            // todo: generate and return id in the party
-//            $conn->send(json_encode([
-//                'response' => 'Thanx save'
-//            ]));
-//        }
-
-        // we start watching
-//        if ($data['type'] == 'watch')
-//        {
-//            $this->info("type:watch");
-//
-//            // add connection to the party
-//            $this->party[] = $conn;
-//
-//            $data = json_decode(Redis::get('cup'), true);
-//            $this->info("watch", $data ?? []);
-//
-//            $conn->send(json_encode([
-//                'cup' => $data
-//            ]));
-//        }
     }
 
     /*
@@ -348,14 +314,13 @@ class FirstTestSocket implements MessageComponentInterface
         $party = $this->partiesPool->getPartyById($partyId);
         $party->setPause();
 
-        /** @var Player $player */
-        $player = $party->getPlayerById($conn->socketId);
-        $party->addChatMessage(sprintf('Player %s paused the game', $player->getName()));
-
         //
         $party->sendMessageToAllPlayers(new PausedMessage($party));
 
-        // send chat
+        // send chat message
+        /** @var Player $player */
+        $player = $party->getPlayerById($conn->socketId);
+        $party->addChatMessage(sprintf('Player %s paused the game', $player->getName()));
         $party->sendChatToAllPlayers();
 //        $party->sendToAllPlayers([
 //            'type' => ResponseType::paused,
@@ -378,11 +343,6 @@ class FirstTestSocket implements MessageComponentInterface
         $party = $this->partiesPool->getPartyById($partyId);
         $party->setGameRunning();
 
-        /** @var Player $player */
-        $player = $party->getPlayerById($conn->socketId);
-        $party->addChatMessage(sprintf('Player %s resumed the game', $player->getName()));
-
-
         // send data to all connections
 //        $party->sendToAllPlayers([
 //            'type' => ResponseType::resumed,
@@ -390,7 +350,10 @@ class FirstTestSocket implements MessageComponentInterface
 //        ]);
         $party->sendMessageToAllPlayers(new ResumeMessage($party));
 
-        // send chat
+        // send chat message
+        /** @var Player $player */
+        $player = $party->getPlayerById($conn->socketId);
+        $party->addChatMessage(sprintf('Player %s resumed the game', $player->getName()));
         $party->sendChatToAllPlayers();
     }
 
@@ -416,7 +379,6 @@ class FirstTestSocket implements MessageComponentInterface
             return;
         }
 
-
         // pause game
         // $party = $this->party;
         $party = $this->partiesPool->getPartyById($partyId);
@@ -433,15 +395,19 @@ class FirstTestSocket implements MessageComponentInterface
             // $this->party->setGameState(GameState::over);
             $party->setGameOver();
 
-            $party->addChatMessage('End of the game');
 
             // mar winner
+            $winner = null;
             foreach ($party->getPlayers() as $p) {
                 if ($p->getCup()->state == CupState::online) {
-                    $p->getCup()->setCupAsWinner();
+                    $winner = $p;
+                    $winner->getCup()->setCupAsWinner();
                     break;
                 }
             }
+
+            $party->addChatMessage(sprintf('End of the game, winner: %s', $winner->getName()));
+            $party->sendChatToAllPlayers();
         }
 
         //
@@ -534,6 +500,7 @@ class FirstTestSocket implements MessageComponentInterface
          * Target player id
          */
         $target = $data['target'];
+        $playerId = $data['playerId'];
 
 //        $sourceSocketId = $data['sourceSocketId'];
 //        $targetSocketId = $data['targetSocketId'];
@@ -542,8 +509,7 @@ class FirstTestSocket implements MessageComponentInterface
 
         // special situation split cup bonus
         if ($bonus == BonusType::switch) {
-            $playerId = $data['playerId'];
-            $this->info('process swith', ['data' => $data]);
+            $this->info('process switch', ['data' => $data]);
             $this->processSwitchSpecial($partyId, $playerId, $target);
             return;
         }
@@ -556,14 +522,10 @@ class FirstTestSocket implements MessageComponentInterface
         // $party = $this->party;
         $party = $this->partiesPool->getPartyById($partyId);
 
+        $player = $party->findPlayerById($playerId);
         $opponent = $party->findPlayerById($target);
 
         $this->info("send bonus", [
-//            'partyIndex' => $partyIndex,
-//            'source' => $source,
-//            'connectionSocketId' => $conn->socketId,
-//            'sourceSocketId' => $sourceSocketId,
-//            'targetSocketId' => $targetSocketId,
             'opponent' => $opponent->getConnectionId(),
             'target' => $target,
             'bonus' => $bonus,
@@ -579,11 +541,15 @@ class FirstTestSocket implements MessageComponentInterface
                 'bonus' => $bonus->value
             ]));
         }
+
+        // add message
+        // todo: make correct bonus names
+        $party->addChatMessage(sprintf('Player %s sent %s to %s', $player->getName(), $bonus->value, $opponent->getName()));
+        $party->sendChatToAllPlayers();
     }
 
     /**
      * This is process special block Switch
-     * todo: simplify switch cups
      * @param string $partyId
      * @param string $sourcePlayerId
      * @param string $targetPlayerId
@@ -610,9 +576,6 @@ class FirstTestSocket implements MessageComponentInterface
         $targetPlayer->setCup($sourcePlayer->getCup());
         $sourcePlayer->setCup($targetPlayerCup);
 
-        // todo: add chat message
-        // $party->addChatMessage();
-
         $m = new SwitchCupsMessage($party);
 
         // sens new cup to target player
@@ -635,6 +598,40 @@ class FirstTestSocket implements MessageComponentInterface
 //            'cups' => $party->getCupsResponse()
 //        ]);
 
+        // send message to chat
+        $party->addChatMessage(sprintf('Player %s switch cup with %s', $sourcePlayer->getName(), $targetPlayer->getName()));
+        $party->sendChatToAllPlayers();
+    }
+
+    /**
+     * Process chat message
+     * @return void
+     */
+    private function processChatMessage(ConnectionInterface $conn, array $data): void
+    {
+        // party
+        $partyId = $data['partyId'] ?? '';
+        if (!$partyId) return;
+        $party = $this->partiesPool->getPartyById($partyId);
+        if (!$party) return;
+
+
+        // player
+        $playerId = $data['playerId'] ?? '';
+        if (!$playerId) return;
+        $player = $party->findPlayerById($playerId);
+        if (!$player) return;
+
+        $this->info('new chat message', [
+            'partyId' => $partyId,
+            'playerId' => $playerId
+        ]);
+
+        $message = $data['message'] ?? '';
+
+        // add message
+        $party->addChatMessage($message, $player->getName(), $playerId);
+        $party->sendChatToAllPlayers();
     }
 
     /**

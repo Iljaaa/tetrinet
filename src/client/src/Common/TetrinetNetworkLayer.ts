@@ -21,6 +21,7 @@ import {CupsDataCollection} from "../widgets/Canvas/Canvas";
 import {ClearGameDataInStorage, StoreGameDataInStorage} from "../process/store";
 import {BackRequest} from "./Tetrinet/types/requests/BackRequest";
 import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyResponse";
+import {ChatMessageRequest} from "./Tetrinet/types/requests/ChatMessageRequest";
 
 /**
  * Game macro data changes
@@ -370,6 +371,11 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this._gameDataEventListener?.onGameStateChange(GameState.running)
   }
 
+  /**
+   * Receive chat message
+   * @param data
+   * @private
+   */
   private processChat(data:ResumedMessage) {
     console.log(data, 'TetrinetNetworkLayer')
 
@@ -618,5 +624,18 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     if (window.localStorage) {
       window.localStorage.setItem('playerName', playerName)
     }
+  }
+
+
+  public sendChatMessage (message:string){
+    // send command
+    const data:ChatMessageRequest = {
+      type: RequestTypes.chatMessage,
+      partyId: this._partyId,
+      playerId: this._playerId,
+      message: message
+    }
+
+    SocketSingleton.getInstance()?.sendData(data)
   }
 }

@@ -4,13 +4,15 @@ import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 import {ChatMessage} from "../../Common/Tetrinet/types/ChatMessage";
 
 type State = {
-  chat: Array<ChatMessage>
+  chat: Array<ChatMessage>,
+  message: string
 }
 
 export class Chat extends React.PureComponent<{}, State>
 {
   public state:State = {
-    chat: []
+    chat: [],
+    message: ''
   }
 
   componentDidMount() {
@@ -19,19 +21,28 @@ export class Chat extends React.PureComponent<{}, State>
   }
 
   onChatChange = (chat:Array<ChatMessage>) => {
-    console.log ('Chat.onChatChange', chat);
     this.setState({chat: chat})
+  }
+
+  sendMessage = () => {
+    if (this.state.message !== '') {
+      TetrinetSingleton.getInstance().sendChatMessage(this.state.message);
+      this.setState({message: ''})
+    }
   }
 
   render ()
   {
-    console.log(this.state.chat, 'this.state.chat')
     return <Container variant={"gray"}>
       <h2>Chat</h2>
       <div>
         {this.state.chat.reverse().map((c:ChatMessage, index:number) => {
           return <div key={`chat_item_${index}`}><strong>{c.playerName}</strong>: {c.message} <i style={{fontSize:"80%"}}>{c.date}</i></div>
         })}
+      </div>
+      <div style={{margin: "1rem 0 0 0", display: "flex", alignItems: "center"}}>
+        <input type="text" value={this.state.message} onChange={(event:React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})} />
+        <button onClick={this.sendMessage} >send</button>
       </div>
     </Container>
   }

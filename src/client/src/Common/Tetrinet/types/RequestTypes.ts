@@ -10,4 +10,5 @@ export enum RequestTypes {
     resume = 'resume',
     addLine = 'addLine', // this request not used, we use only super blocks
     sendBonus = 'sendBonus',
+    chatMessage = 'chatMessage',
 }
