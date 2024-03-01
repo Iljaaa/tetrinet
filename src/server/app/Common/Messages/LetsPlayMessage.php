@@ -23,9 +23,6 @@ class LetsPlayMessage extends Message
         ];
 
         $this->setPartyInfo($partyResponse);
-
-        //
-        $this->setChat($party);
     }
 
     /**

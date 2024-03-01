@@ -2,6 +2,7 @@
 
 namespace App\Common\Messages;
 
+use app\Common\ChatMessage;
 use App\Common\Party;
 
 class Message
@@ -44,11 +45,11 @@ class Message
     }
 
     /**
-     * @param Party $party
+     * @param ChatMessage[] $chatItems
      * @return Message
      */
-    public function setChat(Party $party): static {
-        return $this->setData('chat', $party->getChat());
+    public function setChat(array $chatItems): static {
+        return $this->setData('chat', array_map( fn (ChatMessage $c) => $c->asArray(), $chatItems));
     }
 
     /*

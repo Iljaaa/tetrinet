@@ -1,5 +1,5 @@
 import {MessageTypes} from "../MessageTypes";
-import {ChatItem} from "../ChatItem";
+import {ChatMessage} from "../ChatMessage";
 
 /**
  * Data format for messages from server
@@ -12,5 +12,5 @@ export type Message =
     /**
      * Log items request
      */
-    log?: ChatItem[]
+    chat?: ChatMessage[]
 }

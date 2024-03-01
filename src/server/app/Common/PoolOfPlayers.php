@@ -97,7 +97,7 @@ class PoolOfPlayers
         // if ($index > -1) {
             // Log::channel('socket')->info('connection found in duel pull', ['index' => $index, 'size' => count($this->duelPlayersPool)]);
             // filter from pool out connection
-        $this->duels = array_filter($this->duels, fn (ConnectionInterface $c) =>  $c->socketId != $conn->socketId);
+        $this->duels = array_filter($this->duels, fn (Player $p) =>  $p->getConnectionId() != $conn->socketId);
         // }
 
         // looking for connection in players pool
@@ -105,7 +105,7 @@ class PoolOfPlayers
         // if ($index > -1) {
             // Log::channel('socket')->info('connection found in party pull', ['index' => $index, 'size' => count($this->duelPlayersPool)]);
             // filter from pool out connection
-        $this->party = array_filter($this->party, fn (ConnectionInterface $c) =>  $c->socketId != $conn->socketId);
+        $this->party = array_filter($this->party, fn (Player $p) =>  $p->getConnectionId() != $conn->socketId);
         //}
 
         Log::channel('socket')->info('size', ['duel' => count($this->duels), 'party' => count($this->party)]);

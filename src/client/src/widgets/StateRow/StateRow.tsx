@@ -101,7 +101,7 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
     this.setState({score: score})
   }
 
-  onPlayerNameChang(newPlayerName: string): void {
+  onPlayerNameChange(newPlayerName: string): void {
     this.setState({playerName: newPlayerName})
   }
 

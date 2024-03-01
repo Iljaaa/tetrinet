@@ -2,8 +2,6 @@
 
 namespace app\Common;
 
-use Faker\Core\DateTime;
-
 class ChatMessage
 {
     /**
@@ -17,19 +15,26 @@ class ChatMessage
     private string $playerId = '';
 
     /**
-     * @var DateTime
+     * @var string
      */
-    private DateTime $date;
+    private string $playerName = '';
+
+    /**
+     * @var \DateTime
+     */
+    private \DateTime $date;
 
     /**
      * @param string $message
      * @param string $playerId
+     * @param string $playerName
      */
-    public function __construct(string $message, string $playerId)
+    public function __construct(string $message, string $playerName, string $playerId = '')
     {
         $this->message = $message;
         $this->playerId = $playerId;
-        $this->date = new DateTime();
+        $this->playerName = $playerName;
+        $this->date = new \DateTime();
     }
 
     /**
@@ -40,7 +45,8 @@ class ChatMessage
         return [
             'message' => $this->message,
             'playerId' => $this->playerId,
-            'date' => $this->date
+            'playerName' => $this->playerName,
+            'date' => $this->date->format('Y-m-d\TH:i:s')
         ];
     }
 

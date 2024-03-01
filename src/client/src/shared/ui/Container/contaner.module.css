@@ -1,0 +1,16 @@
+
+.Container {
+    padding: 2rem;
+    background-color: #008080;
+    &.gray {
+        background-color: rgb(222, 217, 198);
+        color: black;
+    }
+
+    &.orange {
+        background-color: rgb(239, 127, 87);
+        color: white;
+    }
+
+}
+

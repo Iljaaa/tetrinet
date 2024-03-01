@@ -251,6 +251,8 @@ class FirstTestSocket implements MessageComponentInterface
         {
             // create party
             $party = $this->partiesPool->createParty();
+
+            //
             $this->partiesPool->addParty($party);
 
             // move players to party
@@ -342,6 +344,7 @@ class FirstTestSocket implements MessageComponentInterface
         // $this->party->setGameState(GameState::paused);
 
         // todo: add log message
+        // todo: make message with chat
 
         // send data to all connections
         $party->sendToAllPlayers([
@@ -386,14 +389,6 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private function processSet (ConnectionInterface $conn, array $data): void
     {
-        // player index in party
-//        if (!isset($data['partyIndex']) || $data['partyIndex'] == '') {
-//            $this->info("Party index is not set, we ignore this set");
-//            return;
-//        }
-//        $partyIndex = (int) $data['partyIndex'];
-//        $this->info("partiIndex", ['partyIndex' => $partyIndex]);
-
         $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
         $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';
         $this->info("set", ['partyId' => $partyId, 'playerId' => $playerId]);
@@ -409,11 +404,6 @@ class FirstTestSocket implements MessageComponentInterface
             return;
         }
 
-        // global game state
-//        $state = GameState::from($data['state']) ; // play, pause, game over, ets
-//        $this->info("gameState", [$state]);
-
-        // $partyId = $data['partyId'] ?? '';
 
         // pause game
         // $party = $this->party;
@@ -430,6 +420,8 @@ class FirstTestSocket implements MessageComponentInterface
         {
             // $this->party->setGameState(GameState::over);
             $party->setGameOver();
+
+            $party->addChatMessage('End of the game');
 
             // mar winner
             foreach ($party->getPlayers() as $p) {
@@ -449,6 +441,7 @@ class FirstTestSocket implements MessageComponentInterface
 //        $this->info("response", ['cupsData' => $cupsData]);
 
         // $this->info("response", ['cups' => $cupsResponse]);
+        // todo: make message with chat!!!!
         // send data to all players
         $party->sendToAllPlayers([
             'type' => ResponseType::afterSet,
@@ -565,6 +558,7 @@ class FirstTestSocket implements MessageComponentInterface
         ]);
 
         // send command to opponent
+        // todo: think about chat may be we should create stand alone message
         if ($opponent) {
             $opponent->getConnection()->send(json_encode([
                 'type' => ResponseType::getBonus,

@@ -52,7 +52,7 @@ class Party
         $this->partyId = Helper::random();
 
         // add chat message
-        $this->chat[] = new ChatMessage('Party created.', 'Admin');
+        $this->chat[] = new ChatMessage('Party created', 'System');
 
     }
 
@@ -128,7 +128,11 @@ class Party
      * @param Message $m
      * @return void
      */
-    public function sendMessageToAllPlayers(Message $m): void {
+    public function sendMessageToAllPlayers(Message $m): void
+    {
+        // set chat from party to message
+        $m->setChat($this->chat);
+
         $mString = $m->getDataAsString();
         foreach ($this->players as $p) {
             $p->getConnection()->send($mString);
@@ -248,21 +252,32 @@ class Party
         }, $this->players);
     }
 
-
     /**
-     * @return array
+     * @param string $message
+     * @param string $playerName
+     * @param string $playerId
+     * @return void
      */
-    public function getChat (): array
+    public function addChatMessage (string $message, string $playerName = '', string $playerId = ''): void
     {
-        return $this->chat;
+        if ($playerName == '') $playerName = 'System';
+        $this->chat[] = new ChatMessage($message, $playerName, $playerId);
     }
 
-    /**
+    /*
      * @return array
      */
-    public function getChatAssArray(): array
-    {
-        return array_map(fn (ChatMessage $m) => $m->asArray(), $this->chat);
-    }
+//    public function getChat (): array
+//    {
+//        return $this->chat;
+//    }
+
+    /*
+     * @return array
+     */
+//    public function getChatAssArray(): array
+//    {
+//        return array_map(fn (ChatMessage $m) => $m->asArray(), $this->chat);
+//    }
 
 }

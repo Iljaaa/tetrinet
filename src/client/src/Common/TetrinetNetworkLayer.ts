@@ -6,7 +6,7 @@ import {SocketSingleton} from "./SocketSingleton";
 import {SetRequest, StartRequest} from "./Tetrinet/types/requests";
 import {GameState, MessageTypes, RequestTypes} from "./Tetrinet/types";
 import {StartResponse} from "./Tetrinet/types/responses";
-import {ChatItem} from "./Tetrinet/types/ChatItem";
+import {ChatMessage} from "./Tetrinet/types/ChatMessage";
 import {PlayScreenEventListener} from "./Tetrinet/screens/PlayScreen";
 import {SocketMessageEventListener} from "./Socket/SocketMessageEventListener";
 import {Bonus} from "./Tetrinet/types/Bonus";
@@ -34,7 +34,7 @@ export type TetrinetEventListener = {
   /**
    * When player name is changed
    */
-  onPlayerNameChang: (newPlayerName:string) => void,
+  onPlayerNameChange: (newPlayerName:string) => void,
 }
 
 /**
@@ -86,7 +86,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   /**
    * Chat and log
    */
-  private chat:Array<ChatItem> = [];
+  private chat:Array<ChatMessage> = [];
 
   /**
    * Listener of tetrinet events
@@ -99,9 +99,18 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   private _socketEventListener:TetrinetNetworkLayerSocketEvents | undefined = undefined
 
   /**
+   * Call back method works when chat is updates
+   * @private
+   */
+  private _onChatChanged?: (items:ChatMessage[]) => void = undefined
+
+
+  /**
    * We call this method when we need to get  player name
    */
   private _requestPlayerNameCallback?: (defaultPlayerName:string, onNameSubmit:(newPlayerName:string) => void) => void = undefined
+
+
 
   // if it comments al stop working
   constructor() {
@@ -114,6 +123,13 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
   setSocketEventListener(listener:TetrinetNetworkLayerSocketEvents){
       this._socketEventListener = listener
+  }
+
+  /**
+   *
+   */
+  setChatChangeListener (f:(chatItems:Array<ChatMessage>) => void) {
+    this._onChatChanged = f;
   }
 
   setRequestPlayerNameCallback (callback:(defaultPlayerName: string, onNameSubmit:(newPlayerName:string) => void) => void){
@@ -133,6 +149,12 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
      */
     // this.game.initGraphic(this._canvas.current as HTMLCanvasElement)
     this.initGraphic(canvas)
+
+    /**
+     * load player name from sore
+     */
+    this.loadPlayerName();
+    this._gameDataEventListener?.onPlayerNameChange(this._playerName)
 
     // load asset
     // start loading assets
@@ -237,7 +259,15 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   onMessageReceive(data: Message): void
   {
-    // console.log (data, 'TetrinetNetworkLayer.onMessageReceive');
+    // process chat
+    if (data.chat) {
+      if (data.chat.length !== this.chat.length) {
+        this.chat = data.chat
+        debugger
+        if (this._onChatChanged) this._onChatChanged(this.chat);
+      }
+    }
+
 
     switch (data.type) {
       // party is created, it is time to play
@@ -382,8 +412,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // if player name is empty we first require it, then continue to play
     if (this._playerName === '' && this._requestPlayerNameCallback)
     {
-      this._requestPlayerNameCallback(this._playerName, (newPlayerName:string) => {
+      this._requestPlayerNameCallback(this._playerName, (newPlayerName:string) =>
+      {
+        //
         this._playerName = newPlayerName;
+
+        // store player name to store
+        this.storePlayerName(this._playerName)
+
         this.connectToJoinParty(partyType);
       });
 
@@ -540,7 +576,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   //   // this.game.resumeGame(true);
   // }
 
-
   public oldPlayMethod (){
     // open socket connection
     // this.socket = new Socket();
@@ -557,5 +592,26 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       //
       this._gameDataEventListener?.onGameStateChange(GameState.running)
     }, () => {})
+  }
+
+  /**
+   * Load username from store
+   * @private
+   */
+  private loadPlayerName (){
+    if (window.localStorage){
+      const playerName = window.localStorage.getItem('playerName')
+      if (playerName) this._playerName = playerName;
+    }
+  }
+  /**
+   * Load username from store
+   * @private
+   */
+  private storePlayerName (playerName:string)
+  {
+    if (window.localStorage) {
+      window.localStorage.setItem('playerName', playerName)
+    }
   }
 }
