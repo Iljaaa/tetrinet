@@ -26,7 +26,7 @@ export class Tetrinet extends WebGlGame
    */
   protected _gameDataEventListener:TetrinetEventListener | undefined = undefined
   
-  // if it comments al stop working
+  // if it comments all stop working
   constructor() {
     super();
   }

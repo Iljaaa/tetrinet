@@ -19,6 +19,7 @@ import {BackRequest} from "./Tetrinet/types/requests/BackRequest";
 import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyResponse";
 import {ChatMessageRequest} from "./Tetrinet/types/requests/ChatMessageRequest";
 import {ReceiveChatMessage} from "./Tetrinet/types/messages/ReceiveChatMessage";
+import {PlayerNameHelper} from "./PlayerNameHelper";
 
 /**
  * Game macro data changes
@@ -28,11 +29,6 @@ export type TetrinetEventListener = {
   onScoreChange: (score:number) => void,
   onPartyIdChange: (partyId:string) => void,
   onPlayerIdChange: (playerId:string) => void,
-
-  /**
-   * When player name is changed
-   */
-  onPlayerNameChange: (newPlayerName:string) => void,
 }
 
 /**
@@ -52,7 +48,6 @@ interface KeysPlayerMap {
   [index: number]: string
 }
 
-
 /**
  * Network layer is a bad idea all this fuctions we shold move to plat screen
  */
@@ -71,10 +66,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private _playerId:string = '';
 
-  /**
-   * This is player name for chat mostly
-   */
-  private _playerName:string = '';
 
   /**
    * This is mapping keys to index inside party
@@ -97,11 +88,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private _onChatChanged?: (items:ChatMessage[]) => void = undefined
 
-  /**
-   * We call this method when we need to get  player name
-   */
-  private _requestPlayerNameCallback?: (defaultPlayerName:string, onNameSubmit:(newPlayerName:string) => void) => void = undefined
-
   // if it comments al stop working
   constructor() {
     super();
@@ -118,10 +104,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this._onChatChanged = f;
   }
 
-  setRequestPlayerNameCallback (callback:(defaultPlayerName: string, onNameSubmit:(newPlayerName:string) => void) => void){
-    this._requestPlayerNameCallback = callback
-  }
-
   public initGraphicAndLoadAssets (canvas:HTMLCanvasElement)
   {
     /**
@@ -136,11 +118,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // this.game.initGraphic(this._canvas.current as HTMLCanvasElement)
     this.initGraphic(canvas)
 
-    /**
-     * load player name from sore
-     */
-    this.loadPlayerName();
-    this._gameDataEventListener?.onPlayerNameChange(this._playerName)
+    // init player name here, nut it must be somewhere else
+    // todo: move it to onDocumentReady to some one component
+    PlayerNameHelper.initPlayerName();
 
     // load asset
     // start loading assets
@@ -374,28 +354,33 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   {
     console.log ('TetrinetNetworkLayer.onJoinToDuelClicked')
 
-    // todo: here we need a redux
+    /**
+     * This is not simple code
+     * it load player name if it was not load
+     */
+    PlayerNameHelper.requestPlayerName(() => {
+      // after load player name
+      this.connectToJoinParty(partyType)
+    });
 
     // if player name is empty we first require it, then continue to play
-    if (this._playerName === '' && this._requestPlayerNameCallback)
-    {
-      this._requestPlayerNameCallback(this._playerName, (newPlayerName:string) =>
-      {
-        //
-        this._playerName = newPlayerName;
+    // if (this._playerName === '' && this._requestPlayerNameCallback)
+    // {
+    //   this._requestPlayerNameCallback(this._playerName, (newPlayerName:string) =>
+    //   {
+    //     //
+    //     this._playerName = newPlayerName;
+    //
+    //     // store player name to store
+    //     this.storePlayerName(this._playerName)
+    //
+    //     this.connectToJoinParty(partyType);
+    //   });
+    //
+    //   //
+    //   return;
+    // }
 
-        // store player name to store
-        this.storePlayerName(this._playerName)
-
-        this.connectToJoinParty(partyType);
-      });
-
-      //
-      return;
-    }
-
-    // if player name is set we just go to search
-    this.connectToJoinParty(partyType)
 
   }
 
@@ -417,15 +402,13 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinPartyConnectionOpen = (partyType:string) =>
   {
-    // after that connection
-
     // send handshake and waiting our data
     const request:StartRequest = {
       type: RequestTypes.join,
       partyType: partyType,
       partyId: '',
       playerId: this._playerId,
-      playerName: this._playerName
+      playerName: PlayerNameHelper.getPlayerName() // this._playerName
     }
     SocketSingleton.getInstance()?.sendDataAndWaitAnswer(request, this.onJoinResponse)
   }
@@ -523,28 +506,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       //
       this._gameDataEventListener?.onGameStateChange(GameState.running)
     }, () => {})
-  }
-
-  /**
-   * Load username from store
-   * @private
-   */
-  private loadPlayerName (){
-    if (window.localStorage){
-      const playerName = window.localStorage.getItem('playerName')
-      if (playerName) this._playerName = playerName;
-    }
-  }
-
-  /**
-   * Load username from store
-   * @private
-   */
-  private storePlayerName (playerName:string)
-  {
-    if (window.localStorage) {
-      window.localStorage.setItem('playerName', playerName)
-    }
   }
 
   public sendChatMessage (message:string){

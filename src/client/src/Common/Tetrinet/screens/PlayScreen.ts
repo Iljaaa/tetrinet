@@ -136,6 +136,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private readonly _cups: CupsCollection
 
   /**
+   * This is player name for draw in the cup
+   */
+  // private _playerName:string = '';
+
+  /**
    * Render
    * @private
    */
@@ -176,12 +181,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private _block: Vertices;
 
   /**
-   * Red square for experiment with vertices
-   * @private
-   */
-  // private redSquare:Vertices;
-
-  /**
    * Position of player cup
    */
   private mainCupPosition = {
@@ -218,7 +217,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // generate next figure
     // this._nextFigure = this.generateNewFigure();
-    
+
     // next figure random color
     // this._nextFigureColor = GenerateRandomColor();
     
@@ -232,10 +231,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       0, 0, 200, 200
     ))
 
-    // test red square
-    // this.redSquare = new Vertices(true, false);
-    // this.redSquare.setVertices(Vertices.createColorVerticesArray(0, 0, 100, 100, 255,0,0,1))
-    
     // bind this to input listener
     this.game.getInput().setListener(this);
   }
@@ -248,6 +243,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this.listener = listener;
     return this
   }
+
+  /**
+   * Set player name
+   * @param playerName
+   */
+  // setPlayerName (playerName:string){
+  //   this._playerName = playerName
+  // }
 
   /**
    * It starts the game

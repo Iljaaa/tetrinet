@@ -3,6 +3,7 @@ import {GameState} from "../../Common/Tetrinet/types";
 import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 import {TetrinetEventListener} from "../../Common/TetrinetNetworkLayer";
 import {InputNameModal} from "../InputNameModal/InputNameModal";
+import {PlayerNameHelper} from "../../Common/PlayerNameHelper";
 
 type State =
   {
@@ -42,20 +43,14 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
 {
 
   /**
-   * When player name editing ends
-   * @private
-   */
-  private onPlayerNameSubmitCallback?: (newPlayerName:string) => void
-
-  /**
    * State
-   * todo: remove state from here
    */
   public state:State = {
     partyId: "",
     playerId: "",
     score: 0,
     playerName: '',
+    // todo: move edit player name modal to stand alone component
     showRequestPlayerNameModal: false
   }
 
@@ -67,13 +62,20 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
     // set listen events
     TetrinetSingleton.getInstance().setGameDataEventListener(this)
 
+    // write listener to change
+    PlayerNameHelper.setPlayerNameChangeListener(this.onPlayerNameChange)
+
     // we will edit player name
-    TetrinetSingleton.getInstance().setRequestPlayerNameCallback(this.onRequestNewPlayerName)
+    PlayerNameHelper.setRequestPlayerNameCallback(this.onRequestNewPlayerName)
+    // TetrinetSingleton.getInstance().setRequestPlayerNameCallback(this.onRequestNewPlayerName)
   }
 
-  onRequestNewPlayerName = (playerName:string, nameIsSetCallback: (newPlayerName:string) => void) =>
+  /**
+   * On this callback we open edit username modal
+   * @param playerName
+   */
+  onRequestNewPlayerName = (playerName:string) =>
   {
-    this.onPlayerNameSubmitCallback = nameIsSetCallback
     this.setState({
       playerName: playerName,
       showRequestPlayerNameModal: true
@@ -81,8 +83,13 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
   }
 
   onPlayerNameSubmit = () => {
-    if (this.onPlayerNameSubmitCallback) this.onPlayerNameSubmitCallback(this.state.playerName)
+    // if (this.onPlayerNameSubmitCallback) this.onPlayerNameSubmitCallback(this.state.playerName)
+    // close modal
     this.setState({showRequestPlayerNameModal: false})
+
+    //
+    PlayerNameHelper.setPlayerName(this.state.playerName)
+
   }
 
   onGameStateChange(state: GameState): void {
@@ -101,7 +108,7 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
     this.setState({score: score})
   }
 
-  onPlayerNameChange(newPlayerName: string): void {
+  onPlayerNameChange = (newPlayerName: string): void => {
     this.setState({playerName: newPlayerName})
   }
 
