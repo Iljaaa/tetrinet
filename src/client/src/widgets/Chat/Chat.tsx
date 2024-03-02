@@ -34,15 +34,19 @@ export class Chat extends React.PureComponent<{}, State>
   render ()
   {
     return <Container variant={"gray"}>
-      <h2>Chat</h2>
-      <div>
-        {this.state.chat.reverse().map((c:ChatMessage, index:number) => {
-          return <div key={`chat_item_${index}`}><strong>{c.playerName}</strong>: {c.message} <i style={{fontSize:"80%"}}>{c.date}</i></div>
-        })}
-      </div>
-      <div style={{margin: "1rem 0 0 0", display: "flex", alignItems: "center"}}>
-        <input type="text" value={this.state.message} onChange={(event:React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})} />
-        <button onClick={this.sendMessage} >send</button>
+      <div style={{padding: '0 2rem'}}>
+        <h2>Chat</h2>
+        <div>
+          {this.state.chat.reverse().map((c: ChatMessage, index: number) => {
+            return <div key={`chat_item_${index}`}><strong>{c.playerName}</strong>: {c.message} <i
+              style={{fontSize: "80%"}}>{c.date}</i></div>
+          })}
+        </div>
+        <div style={{margin: "1rem 0 0 0", display: "flex", alignItems: "center"}}>
+          <input type="text" value={this.state.message}
+                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})}/>
+          <button onClick={this.sendMessage}>send</button>
+        </div>
       </div>
     </Container>
   }

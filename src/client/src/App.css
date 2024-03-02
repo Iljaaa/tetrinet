@@ -5,22 +5,11 @@
   align-items: center;
 }
 
-.container {
-  max-width: 1024px;
-}
-
-.App-header {
-  padding: 20px 0;
-  font-size: 44px;
-  font-weight: bold;
-}
-
 .App-body {
   /*background-color: #5fb9ba;*/
   background-color: #008080;
   border-radius: .25rem;
   box-shadow: silver 0px 0px 5px 0;
-  margin-bottom: 2.5rem;
 }
 
 .App-link {

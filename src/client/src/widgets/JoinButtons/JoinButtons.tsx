@@ -2,10 +2,11 @@
 import styles from "./JoinButtons.module.css"
 import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 import {Button} from "../../shared/ui/Button/Button";
+import {Container} from "../../shared/ui/Container/Container";
 
 export const JoinButtons = () =>
 {
-    return <div className={styles.JoinButtonsWrap}>
+    return <Container className={styles.JoinButtonsWrap}>
         <div>
             <Button onClick={() => {
                 TetrinetSingleton.getInstance().joinToParty('duel')
@@ -21,5 +22,5 @@ export const JoinButtons = () =>
                 TetrinetSingleton.getInstance().justPlayTetris();
             }}>Just play tetris</Button>
         </div>
-    </div>
+    </Container>
 }
