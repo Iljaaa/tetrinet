@@ -13,13 +13,12 @@ import {CupData} from "./Tetrinet/models/CupData";
 import {AddLineMessage, Message, SetMessage} from "./Tetrinet/types/messages";
 import {LetsPlayMessage} from "./Tetrinet/types/messages/LetsPlayMessage";
 import {GetBonusMessage} from "./Tetrinet/types/messages/GetBonusMessage";
-import {PausedMessage} from "./Tetrinet/types/messages/PausedMessage";
-import {ResumedMessage} from "./Tetrinet/types/messages/ResumedMessage";
 import {CupsDataCollection} from "../widgets/Canvas/Canvas";
 import {ClearGameDataInStorage, StoreGameDataInStorage} from "../process/store";
 import {BackRequest} from "./Tetrinet/types/requests/BackRequest";
 import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyResponse";
 import {ChatMessageRequest} from "./Tetrinet/types/requests/ChatMessageRequest";
+import {ReceiveChatMessage} from "./Tetrinet/types/messages/ReceiveChatMessage";
 
 /**
  * Game macro data changes
@@ -88,11 +87,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   private chat:Array<ChatMessage> = [];
 
   /**
-   * Listener of tetrinet events
-   */
-  private _gameDataEventListener:TetrinetEventListener | undefined = undefined
-
-  /**
    * Listener of sockets events
    */
   private _socketEventListener:TetrinetNetworkLayerSocketEvents | undefined = undefined
@@ -108,15 +102,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private _requestPlayerNameCallback?: (defaultPlayerName:string, onNameSubmit:(newPlayerName:string) => void) => void = undefined
 
-
-
   // if it comments al stop working
   constructor() {
     super();
-  }
-
-  setGameDataEventListener(listener: TetrinetEventListener) {
-    this._gameDataEventListener = listener
   }
 
   setSocketEventListener(listener:TetrinetNetworkLayerSocketEvents){
@@ -179,7 +167,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       this._socketEventListener?.onGraphicsLoaded();
     })
   }
-
 
   /**
    @deprecated all this layer must move to play screen
@@ -251,11 +238,11 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       // we receive add line command
       case MessageTypes.addLine: this.processAddLine(data as AddLineMessage); break;
       case MessageTypes.getBonus: this.processGetBonusMessage(data as GetBonusMessage); break;
-      case MessageTypes.paused: this.processPause(data as PausedMessage); break;
-      case MessageTypes.resumed: this.processResume(data as ResumedMessage); break;
+      case MessageTypes.paused: this.processSetPause(); break;
+      case MessageTypes.resumed: this.processResumeGame(); break;
 
       // updated chat is comming
-      case MessageTypes.chat: this.processChat(data as ResumedMessage); break;
+      case MessageTypes.chat: this.processChat(data as ReceiveChatMessage); break;
     }
   }
 
@@ -340,26 +327,12 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.addRowsToCup(data.linesCount);
   }
 
-  private processGetBonusMessage (data:GetBonusMessage) {
-    this.realiseBonus(data.bonus, data);
-  }
-
-  private processPause(data:PausedMessage) {
-    this.pauseGame()
-    this._gameDataEventListener?.onGameStateChange(GameState.paused)
-  }
-
-  private processResume(data:ResumedMessage) {
-    this.resumeGame();
-    this._gameDataEventListener?.onGameStateChange(GameState.running)
-  }
-
   /**
    * Receive chat message
    * @param data
    * @private
    */
-  private processChat(data:ResumedMessage) {
+  private processChat(data:ReceiveChatMessage) {
     console.log(data, 'TetrinetNetworkLayer')
 
     // process chat
@@ -534,42 +507,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     alert ('Connection lost!!!');
   }
 
-  /**
-   * Pause the game
-   */
-  // public pause ()
-  // {
-  //   // request data
-  //   const request:PauseRequest = {
-  //     type: RequestTypes.pause,
-  //     partyId: this._partyId,
-  //     playerId: this._playerId,
-  //   }
-  //
-  //   // send data
-  //   SocketSingleton.getInstance()?.sendData(request);
-  // }
-
-  /**
-   * Resume the game
-   */
-  // public resume ()
-  // {
-  //
-  //   // request data
-  //   const request:ResumeRequest = {
-  //     type: RequestTypes.resume,
-  //     partyId: this._partyId,
-  //     playerId: this._playerId,
-  //   }
-  //
-  //   // send data
-  //   SocketSingleton.getInstance()?.sendData(request);
-  //
-  //   // set game resume
-  //   // this.game.resumeGame(true);
-  // }
-
   public oldPlayMethod (){
     // open socket connection
     // this.socket = new Socket();
@@ -598,6 +535,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       if (playerName) this._playerName = playerName;
     }
   }
+
   /**
    * Load username from store
    * @private

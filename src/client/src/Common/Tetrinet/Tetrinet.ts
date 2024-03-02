@@ -1,12 +1,13 @@
 import {WebGlGame} from "../framework/impl/WebGlGame";
 import {PlayScreen, PlayScreenEventListener} from "./screens/PlayScreen";
 import {WatchScreen} from "./screens/WatchScreen";
-import {Bonus} from "./types/Bonus";
 import {CupState} from "./types/CupState";
 import {CupsDataCollection} from "../../widgets/Canvas/Canvas";
 import {GetBonusMessage} from "./types/messages/GetBonusMessage";
 import {Cup} from "./models/Cup";
 import {JustPlayScreen} from "./screens/JustPlayScreen";
+import {TetrinetEventListener} from "../TetrinetNetworkLayer";
+import {GameState} from "./types";
 
 /**
  * @version 0.1.0
@@ -19,19 +20,24 @@ export class Tetrinet extends WebGlGame
    * already was called
    */
   private isAnimationRequested:boolean = false
+
+  /**
+   * Listener of tetrinet events
+   */
+  protected _gameDataEventListener:TetrinetEventListener | undefined = undefined
   
   // if it comments al stop working
   constructor() {
     super();
   }
-  
+
   /**
-   * Through init graphics method
-   * @param canvas
+   * Listener of game events
+   * @param listener
    */
-  // initGraphic(canvas:HTMLCanvasElement) {
-  //   super.initGraphic(canvas);
-  // }
+  setGameDataEventListener(listener: TetrinetEventListener) {
+    this._gameDataEventListener = listener
+  }
 
   /**
    * Just play tetris
@@ -96,40 +102,41 @@ export class Tetrinet extends WebGlGame
    * Play game
    * the game starts automatically when we receive the message from socket
    */
-  playGame()
-  {
-    // we get current screen
-    // and if it is not a play screen create new one
-    // let currentScreen:PlayScreen = new PlayScreen(this);
-
-    // init screen
-    // currentScreen.init()
-    
-    // bind event listener
-    // currentScreen.setGameEventListener(eventListener)
-    
+  playGame() {
     // start game
     (this.getCurrentScreen() as PlayScreen)?.startNewGame()
   }
   
   /**
-   * Pause game
+   * After receive pause message from server
    */
-  pauseGame() {
+  protected processSetPause()
+  {
+    // pause game
     (this.getCurrentScreen() as PlayScreen)?.pause();
+
+    //
+    this._gameDataEventListener?.onGameStateChange(GameState.paused)
   }
 
   /**
    * Resume paused game
    */
-  resumeGame(){
+  processResumeGame()
+  {
+    //
     (this.getCurrentScreen() as PlayScreen)?.resume();
+
+    //
+    this._gameDataEventListener?.onGameStateChange(GameState.running)
   }
 
   /**
    * Set game over
    */
-  setGameOver() {
+  setGameOver()
+  {
+    // throw game over in the cup
     (this.getCurrentScreen() as PlayScreen)?.gameOver();
   }
 
@@ -141,11 +148,11 @@ export class Tetrinet extends WebGlGame
   }
 
   /**
-   * @param bonus
+   * Process bonus from request
    * @param data
    */
-  realiseBonus(bonus:Bonus, data:GetBonusMessage)  {
-    (this.getCurrentScreen() as PlayScreen)?.realiseBonus(bonus, data)
+  protected processGetBonusMessage(data:GetBonusMessage) {
+    (this.getCurrentScreen() as PlayScreen)?.realiseBonus(data.bonus, data)
   }
 
   /**
@@ -167,14 +174,6 @@ export class Tetrinet extends WebGlGame
     (this.getCurrentScreen() as PlayScreen)?.setCupState(state)
   }
 
-  /*
-   * this method update opponent cup
-   * @param cup
-   */
-  // setOpponentCup (cup:CupData) {
-  //   (this.getCurrentScreen() as PlayScreen)?.setOpponentCup(cup)
-  // }
-
   /**
    * this method update opponent cup
    * @param data
@@ -182,13 +181,5 @@ export class Tetrinet extends WebGlGame
   updateCups (data:CupsDataCollection) {
     (this.getCurrentScreen() as PlayScreen)?.updateCups(data)
   }
-  
-  /**
-   * Set event listener to screen
-   * @param eventListener
-   */
-  // setGameEventListener(eventListener: PlayScreenEventListener) {
-  //   let s:PlayScreen|null = this.getCurrentScreen() as PlayScreen
-  //   s?.setGameEventListener(eventListener)
-  // }
+
 }
