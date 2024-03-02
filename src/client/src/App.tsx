@@ -28,10 +28,7 @@ function App()
             <Container>
               <h2>Road map:</h2>
               <ul>
-                <li>chat</li>
                 <li>refactor get message from network layer to play game screen</li>
-                <li>make possibility to write in chat</li>
-                <li>make chat as stand alone request</li>
                 <li>refactor ConnectionInterface to other interface to resolve this warning: Warning:(100, 102) Property 'socketId' not found in \Ratchet\ConnectionInterface</li>
                 <li>drop player when connection is lost</li>
                 <li>stop game when focus is lost</li>
@@ -50,6 +47,8 @@ function App()
                 <li>pause in just play mode</li>
                 <li>player name</li>
                 <li>buttons event on input player name</li>
+                <li>bug in chat: when we type in chat figures moving, we need manipulate with focus</li>
+                <li>send in chat with enter</li>
               </ul>
               <h2>Back log</h2>
               <ul>

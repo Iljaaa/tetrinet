@@ -9,8 +9,6 @@ import {StartResponse} from "./Tetrinet/types/responses";
 import {ChatMessage} from "./Tetrinet/types/ChatMessage";
 import {PlayScreenEventListener} from "./Tetrinet/screens/PlayScreen";
 import {SocketMessageEventListener} from "./Socket/SocketMessageEventListener";
-import {Bonus} from "./Tetrinet/types/Bonus";
-import {SendBonusRequest} from "./Tetrinet/types/requests/SendBonusRequest";
 import {CupData} from "./Tetrinet/models/CupData";
 import {AddLineMessage, Message, SetMessage} from "./Tetrinet/types/messages";
 import {LetsPlayMessage} from "./Tetrinet/types/messages/LetsPlayMessage";
@@ -105,7 +103,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private _onChatChanged?: (items:ChatMessage[]) => void = undefined
 
-
   /**
    * We call this method when we need to get  player name
    */
@@ -199,6 +196,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   }
 
   /**
+   * get player is by index, and index it key that player push
+   * @param playerIndex
+   */
+  getPlayerIdByIndexInParty (playerIndex:number): string{
+    return this.partyIndexToPlayerId[playerIndex];
+  }
+
+  /**
    * Callback from game when lines was cleared
    * @param newScore
    */
@@ -211,28 +216,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * @param bonus
    * @param opponentIndex
    */
-  onSendBonusToOpponent (bonus:Bonus, opponentIndex:number)
-  {
-    console.log('TetrinetNetworkLayer.onSendBonusToOpponent', bonus, opponentIndex)
-
-    // try to fine opponent socket id in the party
-    const targetPlayerId = this.partyIndexToPlayerId[opponentIndex]
-    console.log('targetPlayerId', targetPlayerId)
-
-    // when opponent not found
-    if (!targetPlayerId) return;
-
-    // send command
-    const data:SendBonusRequest = {
-      type: RequestTypes.sendBonus,
-      partyId: this._partyId,
-      playerId: this._playerId,
-      target: targetPlayerId,
-      bonus: bonus
-    }
-
-    SocketSingleton.getInstance()?.sendData(data)
-  }
 
   /**
    * This is callback method when something happen in cup
@@ -625,7 +608,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       window.localStorage.setItem('playerName', playerName)
     }
   }
-
 
   public sendChatMessage (message:string){
     // send command

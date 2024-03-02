@@ -29,6 +29,7 @@ import {CupWithFigure} from "../models/CupWithFigure";
 import {PauseRequest, ResumeRequest} from "../types/requests";
 import {SocketSingleton} from "../../SocketSingleton";
 import {TetrinetSingleton} from "../../TetrinetSingleton";
+import {SendBonusRequest} from "../types/requests/SendBonusRequest";
 
 
 /**
@@ -53,7 +54,7 @@ export interface PlayScreenEventListener
   /**
    * Send bonus to some one
    */
-  onSendBonusToOpponent: (bonus:Bonus, opponentIndex:number) => void,
+  // onSendBonusToOpponent: (bonus:Bonus, opponentIndex:number) => void,
   
   /**
    * Summary event risen when cup data changed
@@ -63,7 +64,28 @@ export interface PlayScreenEventListener
 
 /**
  * Cups collection
- */
+ */  // onSendBonusToOpponent (bonus:Bonus, opponentIndex:number)
+  // {
+  //   console.log('TetrinetNetworkLayer.onSendBonusToOpponent', bonus, opponentIndex)
+  //
+  //   // try to fine opponent socket id in the party
+  //   const targetPlayerId = this.partyIndexToPlayerId[opponentIndex]
+  //   console.log('targetPlayerId', targetPlayerId)
+  //
+  //   // when opponent not found
+  //   if (!targetPlayerId) return;
+  //
+  //   // send command
+  //   const data:SendBonusRequest = {
+  //     type: RequestTypes.sendBonus,
+  //     partyId: this._partyId,
+  //     playerId: this._playerId,
+  //     target: targetPlayerId,
+  //     bonus: bonus
+  //   }
+  //
+  //   SocketSingleton.getInstance()?.sendData(data)
+  // }
 export interface CupsCollection {
   [index: string]: Cup
 }
@@ -754,7 +776,28 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     console.log ('PlayScreen.sendBonusToOpponent', firstBonus);
 
     // rise event
-    this.listener?.onSendBonusToOpponent(firstBonus, indexOfOpponent)
+    // this.listener?.onSendBonusToOpponent(firstBonus, indexOfOpponent)
+
+    // try to fine opponent socket id in the party
+    // const targetPlayerId = this.partyIndexToPlayerId[opponentIndex]
+    const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
+    console.log('targetPlayerId', targetPlayerId)
+
+    // when opponent not found
+    if (!targetPlayerId) return;
+
+    // send command
+    const data:SendBonusRequest = {
+      type: RequestTypes.sendBonus,
+      // partyId: this._partyId,
+      // playerId: this._playerId,
+      partyId: TetrinetSingleton.getInstance().getPartyId(),
+      playerId: TetrinetSingleton.getInstance().getPlayerId(),
+      target: targetPlayerId,
+      bonus: firstBonus
+    }
+
+    SocketSingleton.getInstance()?.sendData(data)
 
   }
 
