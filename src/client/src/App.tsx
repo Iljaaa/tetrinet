@@ -29,8 +29,6 @@ function App()
             <Container>
               <h2>Road map:</h2>
               <ul>
-                <li>refactor get message from network layer to play game screen</li>
-                <li>refactor ConnectionInterface to other interface to resolve this warning: Warning:(100, 102) Property 'socketId' not found in \Ratchet\ConnectionInterface</li>
                 <li>drop player when connection is lost</li>
                 <li>stop game when focus is lost</li>
                 <li>error on socket connect</li>
@@ -54,6 +52,7 @@ function App()
               <h2>Back log</h2>
               <ul>
                 <li>watch</li>
+                <li>make party</li>
               </ul>
             </Container>
           </div>

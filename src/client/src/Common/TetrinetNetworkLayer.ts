@@ -66,7 +66,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private _playerId:string = '';
 
-
   /**
    * This is mapping keys to index inside party
    */
