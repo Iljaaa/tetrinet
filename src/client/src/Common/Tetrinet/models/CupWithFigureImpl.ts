@@ -155,8 +155,13 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     
     // move figure to the cup
     this._figure.getFields().forEach((f:number) => {
-      console.log(f, 'f')
-      this._state.fields[f].block = this._figure ? this._figure.getColor() : 0
+      const b = this._state.fields[f]
+      if (!b){
+        alert ('block not found, it means something go wrong');
+        debugger
+        return
+      }
+      b.block = this._figure ? this._figure.getColor() : 0
     })
 
     // clean figure

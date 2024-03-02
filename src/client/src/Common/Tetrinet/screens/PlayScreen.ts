@@ -754,6 +754,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private sendBonusToMe ()
   {
     if (this.playerBonuses.length === 0) return;
+    if (this._state !== GameState.running) return;
+
+    // check our cup state
+    if (this._cup.getState() !== CupState.online) return;
 
     const firstBonus:Bonus|undefined = this.playerBonuses.shift();
     if (firstBonus === undefined) return;
@@ -766,12 +770,22 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   /**
    * We send surprise to opponent
-   * todo: strange bug, because we do not
    * @private
    */
   private sendBonusToOpponent (indexOfOpponent:number)
   {
     if (this.playerBonuses.length === 0) return;
+    if (this._state !== GameState.running) return;
+
+    // check is opponent live
+    const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
+    if (!targetPlayerId) return;
+
+    // check target cup and state
+    const targetCup = this._cups[targetPlayerId]
+    if (!targetCup) return;
+    if (targetCup.getState() !== CupState.online) return;
+
 
     const firstBonus:Bonus|undefined = this.playerBonuses.shift();
     if (firstBonus === undefined) return;
@@ -783,11 +797,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // try to fine opponent socket id in the party
     // const targetPlayerId = this.partyIndexToPlayerId[opponentIndex]
-    const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
-    console.log('targetPlayerId', targetPlayerId)
+    // const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
 
-    // when opponent not found
-    if (!targetPlayerId) return;
 
     // send command
     const data:SendBonusRequest = {

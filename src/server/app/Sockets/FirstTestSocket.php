@@ -3,13 +3,16 @@
 namespace App\Sockets;
 
 use App\Common\Connection;
+use App\Common\GameState;
 use App\Common\Helper;
+use App\Common\Messages\AfterSetMessage;
 use App\Common\Messages\BackToPartyMessage;
 use App\Common\Messages\JoinToPartyMessage;
 use App\Common\Messages\LetsPlayMessage;
 use App\Common\Messages\PausedMessage;
 use App\Common\Messages\ResumeMessage;
 use App\Common\Messages\SwitchCupsMessage;
+use App\Common\Party;
 use App\Common\PoolOfParties;
 use App\Common\PoolOfPlayers;
 use App\Common\Types\BonusType;
@@ -386,6 +389,32 @@ class FirstTestSocket implements MessageComponentInterface
         // save cup info
         $party->updateCupByPlayerId($playerId, $data['cup']);
 
+        // try to determine game over
+        $this->determineGameOverInSet($party);
+
+//        $cupsResponse = $party->getCupsResponse();
+//        $party->sendToAllPlayers([
+//            'type' => ResponseType::afterSet,
+//            // 'responsible' => $partyIndex,
+//            // 'responsibleId' => $conn->socketId
+//            'state' => $party->getGameState(),
+//            'cups' => $cupsResponse
+//        ]);
+
+        $party->sendMessageToAllPlayers(new AfterSetMessage($party));
+    }
+
+    /**
+     * check and set game over
+     * @param Party $party
+     * @return void
+     */
+    private function determineGameOverInSet(Party $party): void
+    {
+        if ($party->getGameState() != GameState::running){
+            return;
+        }
+
         // check game over
         $activeCups = array_filter($party->getPlayers(), fn(Player $p) => $p->getCup()->state == CupState::online);
 
@@ -394,7 +423,6 @@ class FirstTestSocket implements MessageComponentInterface
         {
             // $this->party->setGameState(GameState::over);
             $party->setGameOver();
-
 
             // mar winner
             $winner = null;
@@ -410,26 +438,7 @@ class FirstTestSocket implements MessageComponentInterface
             $party->sendChatToAllPlayers();
         }
 
-        //
-        $cupsResponse = $party->getCupsResponse();
-        // $this->info("response", ['cupsResponse' => $cupsResponse]);
-
-        // preparing cup data
-//        $cupsData = array_map(fn (Player $p) => $p->getCup()->createResponseData(), $this->party->getPlayers());
-//        $this->info("response", ['cupsData' => $cupsData]);
-
-        // $this->info("response", ['cups' => $cupsResponse]);
-        // todo: make message with chat!!!!
-        // send data to all players
-        $party->sendToAllPlayers([
-            'type' => ResponseType::afterSet,
-            // 'responsible' => $partyIndex,
-            // 'responsibleId' => $conn->socketId
-            'state' => $party->getGameState(),
-            'cups' => $cupsResponse
-        ]);
     }
-
     /*
      * @deprecated
      * @param ConnectionInterface $conn
