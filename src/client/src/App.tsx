@@ -22,7 +22,10 @@ function App()
           <div><JoinButtons/></div>
           <hr style={{background: "#53adae", height: "1px", border: "none"}}/>
           <div><StateRow/></div>
-          <div><Canvas/></div>
+          <div>
+            <Canvas/>
+            <canvas id="textureCanvas" style={{border: 'solid 2px red'}}></canvas>
+          </div>
           <div><Chat/></div>
           <div><Help/></div>
           <div>
@@ -48,6 +51,7 @@ function App()
                 <li>buttons event on input player name</li>
                 <li>bug in chat: when we type in chat figures moving, we need manipulate with focus</li>
                 <li>send in chat with enter</li>
+                <li>made work example with http://delphic.me.uk/tutorials/webgl-text</li>
               </ul>
               <h2>Back log</h2>
               <ul>
