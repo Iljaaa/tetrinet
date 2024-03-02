@@ -26,7 +26,9 @@ export const Todo = () => {
         <li>buttons event on input player name</li>
         <li>bug in chat: when we type in chat figures moving, we need manipulate with focus</li>
         <li>send in chat with enter</li>
+        <li>bug: when session is clear and you find game and  when you input name game does not start</li>
         <li>made work example with http://delphic.me.uk/tutorials/webgl-text</li>
+        <li>feed back modal</li>
       </ul>
       <h2>Back log</h2>
       <ul>
