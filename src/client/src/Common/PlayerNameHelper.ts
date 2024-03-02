@@ -41,6 +41,7 @@ export class PlayerNameHelper
   {
     // load player name
     PlayerNameHelper._playerName = LoadPlayerName();
+    console.log('PlayerNameHelper.initPlayerName', PlayerNameHelper._playerName, PlayerNameHelper._playerNameChangeListener)
 
     //
     if (PlayerNameHelper._playerNameChangeListener) {
@@ -61,8 +62,8 @@ export class PlayerNameHelper
     }
 
     // if player name empty we request window for input
-    if (this._requestPlayerNameCallback) {
-      this._requestPlayerNameCallback(this._playerName, (newPlayerName:string) =>
+    if (PlayerNameHelper._requestPlayerNameCallback) {
+      PlayerNameHelper._requestPlayerNameCallback(this._playerName, (newPlayerName:string) =>
       {
         // save player name
         this.setPlayerName(newPlayerName)
@@ -82,6 +83,16 @@ export class PlayerNameHelper
     //
     if (PlayerNameHelper._playerNameChangeListener) {
       PlayerNameHelper._playerNameChangeListener (PlayerNameHelper._playerName);
+    }
+  }
+
+  public static editPlayerName ()
+  {
+    if (PlayerNameHelper._requestPlayerNameCallback) {
+      PlayerNameHelper._requestPlayerNameCallback(this._playerName, (newPlayerName: string) => {
+        // save player name
+        this.setPlayerName(newPlayerName)
+      });
     }
   }
 

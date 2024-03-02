@@ -119,8 +119,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.initGraphic(canvas)
 
     // init player name here, nut it must be somewhere else
-    // todo: move it to onDocumentReady to some one component
-    PlayerNameHelper.initPlayerName();
+    // PlayerNameHelper.initPlayerName();
 
     // load asset
     // start loading assets

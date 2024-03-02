@@ -9,6 +9,7 @@ import {StateRow} from "./widgets/StateRow/StateRow";
 import SocketsEventsAndModals from "./widgets/SocketEventsAndModals/SocketsEventsAndModals";
 import {Chat} from "./widgets/Chat/Chat";
 import {Container} from "./shared/ui/Container/Container";
+import {PlayerNameModal} from "./widgets/PlayerNameModal/PlayerNameModal";
 
 function App()
 {
@@ -57,10 +58,11 @@ function App()
             </Container>
           </div>
 
+          <SocketsEventsAndModals/>
+          <PlayerNameModal />
 
-        <SocketsEventsAndModals/>
 
-      </div>
+        </div>
     </div>
 </div>
 )
