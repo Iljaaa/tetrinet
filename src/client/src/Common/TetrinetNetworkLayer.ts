@@ -7,7 +7,7 @@ import {SetRequest, StartRequest} from "./Tetrinet/types/requests";
 import {GameState, MessageTypes, RequestTypes} from "./Tetrinet/types";
 import {StartResponse} from "./Tetrinet/types/responses";
 import {ChatMessage} from "./Tetrinet/types/ChatMessage";
-import {PlayScreenEventListener} from "./Tetrinet/screens/PlayScreen";
+import {PlayScreen, PlayScreenEventListener} from "./Tetrinet/screens/PlayScreen";
 import {SocketMessageEventListener} from "./Socket/SocketMessageEventListener";
 import {CupData} from "./Tetrinet/models/CupData";
 import {AddLineMessage, Message, SetMessage} from "./Tetrinet/types/messages";
@@ -351,6 +351,27 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   public joinToParty (partyType:string)
   {
     console.log ('TetrinetNetworkLayer.onJoinToDuelClicked')
+
+    //
+    // Here we check if game already online
+    //
+    let s = this.getCurrentScreen()
+    if (s)
+    {
+      // if it play cup
+      if (s instanceof PlayScreen) {
+        if (s.getGameState() === GameState.running || s.getGameState() === GameState.paused) {
+          alert ('Game is still running, do you wanna leave?');
+          return;
+        }
+      }
+      else {
+        debugger
+        alert ('It is not play cup');
+      }
+
+
+    }
 
     /**
      * This is not simple code

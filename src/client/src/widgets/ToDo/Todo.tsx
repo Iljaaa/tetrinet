@@ -11,14 +11,10 @@ export const Todo = () => {
         <li>stop game when focus is lost</li>
         <li>error on socket connect</li>
         <li>client alert when connection lost</li>
-        <li>There the bug: if you send bonus to not existing opponent, the bonus just disappear. We should first
-          check that opponent exists and only then send bonus
-        </li>
         <li>When one play lost connection and second click pause server has error</li>
-        <li>bug: If any player game is over you still can throw him a special block</li>
         <li>extend block bomb</li>
         <li>duel cups size</li>
-        <li>bug: when connection is open and you press join throw exception about lost connection</li>
+        <li>bug: when connection is open and you press join previous game leaved</li>
         <li>display cup index</li>
         <li>bug: when figure drops timer is not reset</li>
         <li>pause in just play mode</li>
@@ -29,6 +25,7 @@ export const Todo = () => {
         <li>bug: when session is clear and you find game and  when you input name game does not start</li>
         <li>made work example with http://delphic.me.uk/tutorials/webgl-text</li>
         <li>feed back modal</li>
+        <li>modal about searching new game</li>
       </ul>
       <h2>Back log</h2>
       <ul>

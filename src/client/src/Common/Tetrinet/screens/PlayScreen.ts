@@ -379,6 +379,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
 
   /**
+   * @return CupState
+   */
+  // getCupState():CupState {
+  //   return this._cup.getState()
+  // }
+
+  getGameState(): GameState {
+    return this._state;
+  }
+
+  /**
    * Update cups,
    * here already filtered opponent cup
    * @param data
