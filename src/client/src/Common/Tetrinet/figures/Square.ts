@@ -35,7 +35,7 @@ export class Square extends FourBlocksFigure implements Figure
     
     // move coords to fields
     this._fields = coords.map((c:Coords) => {
-      return this._cap.getCellIndexByCoords(c)
+      return this._cap.getCellIndexByCoords(c.x, c.y)
     })
   }
   

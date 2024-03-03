@@ -223,7 +223,7 @@ export abstract class FourBlocksFigure
       }
 
       // cell index in field coords
-      const createIndexByCoords = this._cap.getCellIndexByCoords(c)
+      const createIndexByCoords = this._cap.getCellIndexByCoords(c.x, c.y)
 
       // check in fields
       let b = this._cap.getFieldByIndex(createIndexByCoords)

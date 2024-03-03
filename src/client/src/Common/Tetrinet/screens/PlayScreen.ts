@@ -154,7 +154,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private playerBonuses: Array<Bonus> = [
-    // Bonus.gravity, Bonus.gravity
+    Bonus.gravity, Bonus.gravity,
     Bonus.switch, Bonus.switch,
     // Bonus.quake, Bonus.bomb,
     // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,Bonus.clearSpecials,Bonus.clear,Bonus.clear
@@ -962,7 +962,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // let centerOfBlowIndex = this._cup.getCellIndex(centerOfBlow.x, centerOfBlow.y)
 
     // clear center block
-    this._cup.clearBlockByCoords(centerOfBlow)
+    this._cup.clearBlockByCoords(centerOfBlow.x, centerOfBlow.y)
 
     // let pos:Coords = {x:0, y: 0}
     // let newPosition:Coords = {x:0, y: 0}
@@ -970,50 +970,50 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // above
     let pos = {x: centerOfBlow.x, y: centerOfBlow.y - 1}
     let newPosition = {x: pos.x, y: pos.y - 2}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
+    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // right top
     pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y - 1}
     newPosition = {x: pos.x + 1, y: pos.y - 1}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
+    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // right
     pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y}
     newPosition = {x: pos.x + 2, y: pos.y}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
+    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // right bottom
     pos = {x: centerOfBlow.x + 1,y: centerOfBlow.y + 1}
     newPosition = {x: pos.x + 2, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
+    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // bellow
     pos = {x: centerOfBlow.x, y: centerOfBlow.y + 1}
     newPosition = {x: pos.x, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
+    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left bottom
     pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y + 1}
     newPosition = {x: pos.x - 2, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
+    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left
     pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y}
     newPosition = {x: pos.x - 2, y: pos.y}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
+    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left top
     pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y - 1}
     newPosition = {x: pos.x - 1,y: pos.y - 1}
-    this._cup.copyBlockByCoords(pos, newPosition)
-    this._cup.clearBlockByCoords(pos)
+    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
 
 
     // rise update state callback
@@ -1025,7 +1025,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * Implementation of block quake bones
    */
-  private realiseQuakeSpecial (sendState: boolean = true)
+  private realiseQuakeSpecial ()
   {
     const methods = [
       this.quakeOneRowToRight,
@@ -1038,14 +1038,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
 
     // rise update state callback
-    if (sendState && this.listener) {
-      this.listener.onCupUpdated(this._state, this._cup.getData())
-    }
+    this.listener?.onCupUpdated(this._state, this._cup.getData())
   }
 
   private quakeOneRowToLeft = (row: number) =>
   {
-    let firstCell = this._cup.getFieldByCoords({x: 0, y: row})
+    let firstCell = this._cup.getFieldByCoords(0, row)
 
     for (let col:number = 0; col < this._cup.getWidthInCells(); col++)
     {
@@ -1054,14 +1052,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       }
       else {
         // move right cell to left
-        this._cup.copyBlockByCoords({x: col + 1, y: row}, {x: col, y:row});
+        this._cup.copyBlockByCoords(col + 1, row, col, row);
       }
     }
   }
 
   private quakeOneRowToRight = (row: number)=>
   {
-    let lastCell = this._cup.getFieldByCoords({x: this._cup.getWidthInCells() - 1, y: row})
+    let lastCell = this._cup.getFieldByCoords(this._cup.getWidthInCells() - 1, row)
 
     for (let col:number = this._cup.getWidthInCells(); col >= 0; col--)
     {
@@ -1070,7 +1068,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       }
       else {
         // move left cell to right
-        this._cup.copyBlockByCoords({x: col - 1, y: row}, {x: col, y:row});
+        this._cup.copyBlockByCoords(col - 1, row, col, row);
       }
     }
   }
@@ -1087,6 +1085,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // clear full lines
     this._cup.clearAndMoveLines();
+
+    // send message about changed cup
+    this.listener?.onCupUpdated(this._state, this._cup.getData())
   }
 
   private gravityOneColl (col:number)
@@ -1097,7 +1098,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
       while (rowToSplit > 0)
       {
-        const splitCell = this._cup.getFieldByCoords({x: col, y: rowToSplit})
+        const splitCell = this._cup.getFieldByCoords(col, rowToSplit)
 
         // if block is busy we just go to next
         if (splitCell.block !== -1){
@@ -1107,16 +1108,16 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
         // search not empty blocks above
         rowToChange = rowToSplit - 1
-        let blockAbove = this._cup.getFieldByCoords({x: col, y: rowToChange})
+        let blockAbove = this._cup.getFieldByCoords(col, rowToChange)
         while (blockAbove.block === -1 && rowToChange > 0) {
           rowToChange--
-          blockAbove = this._cup.getFieldByCoords({x: col, y: rowToChange})
+          blockAbove = this._cup.getFieldByCoords(col, rowToChange)
         }
 
         //
         if (blockAbove.block !== -1){
-          this._cup.copyBlockByCoords({x: col, y: rowToChange}, {x: col, y: rowToSplit});
-          this._cup.clearBlockByCoords({x: col, y: rowToChange})
+          this._cup.copyBlockByCoords(col, rowToChange, col, rowToSplit);
+          this._cup.clearBlockByCoords(col, rowToChange)
         }
 
         rowToSplit--
@@ -1130,9 +1131,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   {
     for (let row:number = 0; row < this._cup.getHeightInCells(); row++) {
       for (let col: number = 0; col < this._cup.getWidthInCells(); col++) {
-        this._cup.setFieldByCoordinates(col, row, {block: -1})
+        this._cup.clearBlockByCoords(col, row)
       }
     }
+
+    // rise update state callback
+    this.listener?.onCupUpdated(this._state, this._cup.getData())
   }
 
   /**

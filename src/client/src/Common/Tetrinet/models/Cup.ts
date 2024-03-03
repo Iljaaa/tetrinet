@@ -56,7 +56,7 @@ export interface Cup
   /**
    * Convert coords to field index
    */
-  getCellIndexByCoords(c:Coords):number
+  getCellIndexByCoords(x: number, y:number):number
 
   /**
    * Super fields array
@@ -83,20 +83,15 @@ export interface Cup
   clearAndMoveLines():void
 
   /**
-   * Get field value
+   * @param x
+   * @param y
    */
-  // getFieldValueByIndex(index:number):number
-
-  /**
-   *
-   * @param c
-   */
-  getFieldByCoords (c:Coords):Field
+  getFieldByCoords (x: number, y:number):Field
 
   /**
    * Clear data in block
    */
-  clearBlockByCoords (c:Coords):void
+  clearBlockByCoords (x:number, y:number):void
 
   /**
    * Clear data in block
@@ -105,10 +100,12 @@ export interface Cup
 
   /**
    * Copy block from one place to another
-   * @param source
-   * @param target
+   * @param sourceX
+   * @param sourceY
+   * @param targetX
+   * @param targetY
    */
-  copyBlockByCoords (source:Coords, target:Coords):void
+  copyBlockByCoords (sourceX:number, sourceY:number, targetX:number, targetY:number):void
 
   /**
    * cup width

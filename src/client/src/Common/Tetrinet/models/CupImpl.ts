@@ -154,10 +154,11 @@ export class CupImpl implements Cup
 
   /**
    * Get field info
-   * @param c
+   * @param x
+   * @param y
    */
-  getFieldByCoords(c: Coords):Field {
-    return this.getFieldByIndex(this.getCellIndex(c.x, c.y));
+  getFieldByCoords(x: number, y: number):Field {
+    return this.getFieldByIndex(this.getCellIndex(x, y));
   }
   /**
    * Get field info
@@ -218,11 +219,11 @@ export class CupImpl implements Cup
   }
 
   /**
-   * @param c
+   * @param x
+   * @param y
    */
-  getCellIndexByCoords(c: Coords): number {
-      // return c.y * this.widthInCells + c.x
-      return this.getCellIndex(c.x, c.y)
+  getCellIndexByCoords(x:number, y:number): number {
+      return this.getCellIndex(x, y)
   }
 
   /**
@@ -241,27 +242,29 @@ export class CupImpl implements Cup
 
   /**
    * Move block if it possible
-   * @param sourcePosition
-   * @param destPosition
    * @private
+   * @param sourceX
+   * @param sourceY
+   * @param destX
+   * @param destY
    */
-  copyBlockByCoords (sourcePosition:Coords, destPosition:Coords)
+  copyBlockByCoords (sourceX:number, sourceY:number, destX:number, destY:number)
   {
     // move block
-    if (destPosition.x < 0) return;
-    if (destPosition.x > this.widthInCells - 1) return;
-    if (destPosition.y < 0) return;
-    if (destPosition.y > this.heightInCells -1) return;
+    if (destX < 0) return;
+    if (destX > this.widthInCells - 1) return;
+    if (destY < 0) return;
+    if (destY > this.heightInCells -1) return;
 
-    const sourceIndex = this.getCellIndexByCoords(sourcePosition)
-    const destIndex = this.getCellIndexByCoords(destPosition)
+    const sourceIndex = this.getCellIndexByCoords(sourceX, sourceY)
+    const destIndex = this.getCellIndexByCoords(destX, destY)
 
     this._state.fields[destIndex] = {...this._state.fields[sourceIndex]}
     // this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
   }
 
-  public clearBlockByCoords (position:Coords) {
-    this.clearBlock(this.getCellIndex(position.x, position.y))
+  public clearBlockByCoords (x: number, y: number) {
+    this.clearBlock(this.getCellIndex(x, y))
   }
 
   /**
@@ -312,7 +315,7 @@ export class CupImpl implements Cup
     // add line to bottom
     for (let col = 0; col < this.widthInCells; col++) {
         this.setFieldByCoordinates(col, this.heightInCells - 1, {
-          block: (col == randomClearField) ? - 1 : GenerateRandomColor(),
+          block: (col === randomClearField) ? - 1 : GenerateRandomColor(),
           // bonus: undefined
         })
         // const i = firstBlockIndex + col
@@ -331,7 +334,7 @@ export class CupImpl implements Cup
     {
       for (let col = 0; col < this.widthInCells; col++)
       {
-        this.copyBlockByCoords({x: col, y: row + 1}, {x: col, y: row})
+        this.copyBlockByCoords(col, row + 1, col, row)
         /*const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
 
         // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
@@ -401,7 +404,7 @@ export class CupImpl implements Cup
   {
     for (let row = this.heightInCells -1; row > 0; row--) {
       for (let col = 0; col < this.widthInCells; col++) {
-        this.copyBlockByCoords({x: col, y: row -1}, {x: col, y: row})
+        this.copyBlockByCoords(col, row -1, col, row)
 
         // const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
         //
@@ -463,7 +466,7 @@ export class CupImpl implements Cup
     const bonuses:Array<Bonus> = [];
     fullLines.forEach((fullLineIndex:number) => {
       for (let i = 0; i < this.widthInCells; i++) {
-        let index = this.getCellIndexByCoords({x: i, y: fullLineIndex})
+        let index = this.getCellIndexByCoords(i, fullLineIndex)
 
         // if there is bonus
         let b = this._state.fields[index].bonus
@@ -483,7 +486,7 @@ export class CupImpl implements Cup
       for (let row = fullLineIndex; row > 0; row--) {
         for (let col = 0; col < this.widthInCells; col++) {
           // copy block above
-          this.copyBlockByCoords({x: col, y: row - 1}, {x:col, y:row})
+          this.copyBlockByCoords(col, row - 1, col, row)
 
           // clear block above
           // this.clearBlockByCoords({x: col, y: row - 1})
