@@ -154,10 +154,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private playerBonuses: Array<Bonus> = [
-    Bonus.gravity, Bonus.gravity,
-    Bonus.switch, Bonus.switch,
+    // Bonus.gravity, Bonus.gravity,
+    // Bonus.switch, Bonus.switch,
     // Bonus.quake, Bonus.bomb,
-    // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,Bonus.clearSpecials,Bonus.clear,Bonus.clear
+    // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,
+    Bonus.clearSpecials, // Bonus.clear,Bonus.clear
   ];
 
   /**
@@ -900,8 +901,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private realiseClearSpecial (sendState: boolean = true)
   {
-    //
-    this.playerBonuses = [];
+    const fields = this._cup.getFields();
+    fields.forEach((f:Field) => f.bonus = undefined);
 
     // rise update state callback
     if (sendState && this.listener) {

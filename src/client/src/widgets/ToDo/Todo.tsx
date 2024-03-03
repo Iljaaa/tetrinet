@@ -26,8 +26,6 @@ export const Todo = () => {
         <li>made work example with http://delphic.me.uk/tutorials/webgl-text</li>
         <li>feed back modal</li>
         <li>modal about searching new game</li>
-        <li>'b' clear blocs with play not in the cap</li>
-        <li>'g' сработало но я не увидел обновление стакана</li>
       </ul>
       <h2>Back log</h2>
       <ul>
