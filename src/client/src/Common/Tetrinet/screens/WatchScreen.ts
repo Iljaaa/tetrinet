@@ -94,10 +94,6 @@ export class WatchScreen extends WebGlScreen implements SocketMessageEventListen
    * This is method from socket event listener
    */
   onMessageReceive(data:any): void {
-    console.log('WatchScreen.onMessageReceive')
-    console.log('data', data)
-    console.log('data.cup', data.cup)
-    // console.log('data.cup.cup', data.cup.cup)
     if (data && data.cup && data.cup && data.cup.cup && data.cup.cup.fields) {
       this._cup.setFields(data.cup.cup.fields)
     }

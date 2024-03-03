@@ -150,7 +150,6 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    */
   private transferFigureToCupWithTail ():void
   {
-    console.log ('CupWithFigureImpl.transferFigureToCupWithTail', this._figure);
     if (!this._figure) return;
     
     // move figure to the cup
@@ -185,9 +184,6 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
 
       return;
     }
-
-    // if we cannot place figure it is game over
-    console.log ('CupWithFigureImpl.gameOver');
 
     // set cup state to game over
     this.setState(CupState.over);

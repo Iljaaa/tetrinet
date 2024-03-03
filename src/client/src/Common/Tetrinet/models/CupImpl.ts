@@ -63,7 +63,6 @@ export class CupImpl implements Cup
     this.heightInCells = heightInCells
 
     // init field with start value
-    // console.log ('CapClass.constructor');
     this.cleanBeforeNewGame();
   }
 

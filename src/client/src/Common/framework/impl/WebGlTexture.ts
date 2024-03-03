@@ -49,7 +49,6 @@ export class WebGlTexture implements Texture
   bind(gl:WebGL2RenderingContext): void
   {
     const textureId = gl.createTexture()
-    // console.log (textureId, 'textureId');
     gl.bindTexture(gl.TEXTURE_2D, textureId)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image)
     

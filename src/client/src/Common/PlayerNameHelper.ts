@@ -41,7 +41,6 @@ export class PlayerNameHelper
   {
     // load player name
     PlayerNameHelper._playerName = LoadPlayerName();
-    console.log('PlayerNameHelper.initPlayerName', PlayerNameHelper._playerName, PlayerNameHelper._playerNameChangeListener)
 
     //
     if (PlayerNameHelper._playerNameChangeListener) {

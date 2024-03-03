@@ -64,25 +64,6 @@ export class Canvas extends React.PureComponent
     TetrinetSingleton.getInstance().oldPlayMethod();
   }
 
-  /**
-   * Pause game button clicked
-   */
-  // onPauseClicked = () =>
-  // {
-  //   console.log ('onPauseClicked');
-  //   TetrinetSingleton.getInstance().pause();
-  //
-  // }
-
-  /**
-   * Resume clicked
-   */
-  // onResumeClicked = () =>
-  // {
-  //   console.log ('onResumeClicked');
-  //   TetrinetSingleton.getInstance().resume();
-  // }
-
   onWatchClicked = () =>
   {
     console.log ('onWatchClicked');
@@ -101,7 +82,7 @@ export class Canvas extends React.PureComponent
         TetrinetSingleton.getInstance().watchGame();
       })
     }, () => {
-      console.log ('Socket closed');
+      alert ('Socket closed');
     })
     
   }

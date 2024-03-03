@@ -69,7 +69,6 @@ export class Tetrinet extends WebGlGame
    */
   prepareToGame (eventListener: PlayScreenEventListener, initCup:Cup|null = null)
   {
-    console.log ('Tetrinet.prepareToGame');
     // get current screen
     let scr = this.getCurrentScreen() as PlayScreen;
 

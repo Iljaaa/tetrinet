@@ -66,11 +66,9 @@ export interface PlayScreenEventListener
  * Cups collection
  */  // onSendBonusToOpponent (bonus:Bonus, opponentIndex:number)
   // {
-  //   console.log('TetrinetNetworkLayer.onSendBonusToOpponent', bonus, opponentIndex)
   //
   //   // try to fine opponent socket id in the party
   //   const targetPlayerId = this.partyIndexToPlayerId[opponentIndex]
-  //   console.log('targetPlayerId', targetPlayerId)
   //
   //   // when opponent not found
   //   if (!targetPlayerId) return;
@@ -520,8 +518,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private presentPaused (gl: WebGL2RenderingContext)
   {
-    console.log('PlayScreen.presentPaused')
-
     // move position to left
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y)
 
@@ -601,7 +597,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onKeyDown(code:string): void
   {
-    console.log (code, 'code')
     switch (code) {
       case "KeyP": this.pauseOrResume(); break;
       case "KeyD": this.onRight(); break;
@@ -800,16 +795,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     const firstBonus:Bonus|undefined = this.playerBonuses.shift();
     if (firstBonus === undefined) return;
-
-    console.log ('PlayScreen.sendBonusToOpponent', firstBonus);
-
-    // rise event
-    // this.listener?.onSendBonusToOpponent(firstBonus, indexOfOpponent)
-
-    // try to fine opponent socket id in the party
-    // const targetPlayerId = this.partyIndexToPlayerId[opponentIndex]
-    // const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
-
 
     // send command
     const data:SendBonusRequest = {

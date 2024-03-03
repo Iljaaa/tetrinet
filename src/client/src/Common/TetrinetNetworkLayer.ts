@@ -187,8 +187,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   onCupUpdated(state:GameState, cupState:CupData): void
   {
-    console.log('TetrinetNetworkLayer.onCupUpdated', state, cupState);
-
     // just save game state
     const data:SetRequest = {
       type: RequestTypes.set,
@@ -230,8 +228,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private processLetsPlay (data:LetsPlayMessage)
   {
-    console.log ('TetrinetNetworkLayer.processLetsPlay', data);
-
     // save party id
     this._partyId = data.partyId
 
@@ -275,9 +271,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private processAfterSet (data:SetMessage)
   {
-    // cups without our cup
-    console.log ('TetrinetNetworkLayer.processAfterSet', data.cups);
-
     // is this is game over
     if (data.state === GameState.over) {
       this.processGameOverAfterSet(data);
@@ -310,9 +303,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * @param data
    * @private
    */
-  private processChat(data:ReceiveChatMessage) {
-    console.log(data, 'TetrinetNetworkLayer')
-
+  private processChat(data:ReceiveChatMessage)
+  {
     // process chat
     if (data.chat) {
       if (data.chat.length !== this.chat.length) {
@@ -350,8 +342,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   public joinToParty (partyType:string)
   {
-    console.log ('TetrinetNetworkLayer.onJoinToDuelClicked')
-
     //
     // Here we check if game already online
     //
@@ -456,7 +446,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * Back to abbonaded game
    */
   backToGame (partyId:string, playerId:string, failCallback: (message:string) => void) {
-    console.log ('TetrinetNetworkLayer.backToGame')
     SocketSingleton.reOpenConnection(
       () => this.onBackToGameConnectionOpen(partyId, playerId, failCallback),
       this.onConnectionClose
@@ -468,8 +457,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * @param playerId
    * @param failCallback
    */
-  private onBackToGameConnectionOpen(partyId:string, playerId:string, failCallback: (message:string) => void) {
-    console.log ('TetrinetNetworkLayer.onBackToGameConnectionOpen')
+  private onBackToGameConnectionOpen(partyId:string, playerId:string, failCallback: (message:string) => void)
+  {
     // send handshake and waiting our data
     const request:BackRequest = {
       type: RequestTypes.back,
@@ -483,8 +472,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * We are back
    * @private
    */
-  private onBackResponse (data:BackToPartyResponse, failCallback: (message:string) => void){
-    console.log ('TetrinetNetworkLayer.onBackResponse', data);
+  private onBackResponse (data:BackToPartyResponse, failCallback: (message:string) => void)
+  {
 
     debugger
     // if it is fail
@@ -505,7 +494,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * When socket close connection
    */
   private onConnectionClose = () => {
-    console.log ('TetrinetNetworkLayer.onConnectionClose');
     alert ('Connection lost!!!');
   }
 

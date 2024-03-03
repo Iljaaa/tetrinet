@@ -42,7 +42,6 @@ export class Socket
     
     try {
       this.socket = new WebSocket(window.tetrinetConfig.socketUrl)
-      // console.log(this.socket, 'socked')
       
       this.socket.onopen = this.onOpen;
       this.socket.onmessage = this.onMessage;
@@ -50,7 +49,7 @@ export class Socket
       this.socket.onclose = this.onClose;
     }
     catch (e) {
-      console.log(e, 'e')
+      console.error(e, 'Socket open exception')
     }
   }
   
@@ -104,7 +103,7 @@ export class Socket
   {
     console.log(this.socket?.CLOSED, this.socket?.OPEN, 'Socket.OnError')
 
-    console.log ('Socket.onError', error);
+    console.error (error);
     alert('Socket error, restart application');
 
     // clear close callback, am not sure about it
@@ -114,8 +113,9 @@ export class Socket
     // if (error.type === "error")
   }
   
-  protected onClose = (event:any):void => {
-    console.log ('Socket.onClose', this.onCloseCallback, event);
+  protected onClose = (event:any):void =>
+  {
+    console.log ('Socket.onClose');
     if (this.onCloseCallback) this.onCloseCallback()
   }
   
@@ -125,7 +125,6 @@ export class Socket
    */
   sendData = (data:object) =>
   {
-    // console.log (data, 'Socket.sendData');
     if (!this.socket) return;
     
     // save callback

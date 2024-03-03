@@ -52,8 +52,7 @@ export class CupRenderer
    */
   constructor(gl:WebGL2RenderingContext, cup:Cup)
   {
-    console.log('CapRenderer.constructor')
-    
+
     this.gl = gl;
     
     // calculate cup size in pixels
@@ -690,8 +689,6 @@ export class CupRenderer
       //
       // const cell = cellIndex % c.getWidthInCells();
       // const left = cell * BLOCK_SIZE_PX;
-      
-      // console.log(cellIndex, left, bottom, row, c.getHeightInCells())
       
       // move
       gl.uniform2fv(this.translationLocation, [left, bottom]);

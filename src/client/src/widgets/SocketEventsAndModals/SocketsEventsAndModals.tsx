@@ -38,13 +38,10 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
     console.log ('SocketsEventsAndModals.onGraphicsLoaded');
 
     // check data in storage
-    // that was in store
     // todo: check date
     const data = LoadGameDataFromStorage()
     console.log ('SocketsEventsAndModals.onGraphicsLoaded', data);
 
-    //
-    // if (data) this.setState({showBackToGameModal: true})
   }
 
   /**
@@ -61,8 +58,8 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
    * When we can not back to stored game
    * @param message
    */
-  whenBackToStoredGameFails = (message:string) => {
-    console.log('SocketsEventsAndModals.whenBackToStoredGameFails', message)
+  whenBackToStoredGameFails = (message:string) =>
+  {
     this.setState({
       showBackToGameModal: false,
       showBackToGameFailModal: true,

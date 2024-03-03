@@ -157,7 +157,6 @@ export class WebGlProgramManager
     if (!vertShader) throw new Error("vertShader was not created");
     // gl.shaderSource(vertShader, vertCode)
     // gl.compileShader(vertShader)
-    // console.log(gl.getShaderInfoLog(vertShader))
     
     // Fragment shader source code.
     var fragCode =
@@ -177,7 +176,6 @@ export class WebGlProgramManager
     if (!fragShader) throw new Error("fragCode was not created");
     // gl.shaderSource(fragShader, fragCode)
     // gl.compileShader(fragShader)
-    // console.log(gl.getShaderInfoLog(fragShader))
     
     // Tell webGL to use both my shaders.
     // let shaderProgram = gl.createProgram()

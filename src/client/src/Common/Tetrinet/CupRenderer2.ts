@@ -341,8 +341,6 @@ export class CupRenderer2
    */
   private presentGameOver (gl: WebGL2RenderingContext)
   {
-    console.log('CupRenderer2.presentGameOver')
-
     // move cup
     // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
 
@@ -389,11 +387,6 @@ export class CupRenderer2
    */
   private presentWinner (gl: WebGL2RenderingContext)
   {
-    console.log('CupRenderer2.presentWinner')
-
-    // move cup
-    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
-
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._winnerVertices.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, this._winnerVertices.getVerticesCount());
   }

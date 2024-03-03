@@ -12,7 +12,7 @@ export const BackToPartyIsFail = (props:Props) => <Modal
   isOpen={props.isOpen}
   style={props.customStyles}
   onRequestClose={() => {
-    console.log('Modal request close')
+    alert ('Modal request close')
   }}
   contentLabel="Example Modal"
 >
