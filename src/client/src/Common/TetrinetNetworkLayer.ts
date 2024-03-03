@@ -372,25 +372,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       this.connectToJoinParty(partyType)
     });
 
-    // if player name is empty we first require it, then continue to play
-    // if (this._playerName === '' && this._requestPlayerNameCallback)
-    // {
-    //   this._requestPlayerNameCallback(this._playerName, (newPlayerName:string) =>
-    //   {
-    //     //
-    //     this._playerName = newPlayerName;
-    //
-    //     // store player name to store
-    //     this.storePlayerName(this._playerName)
-    //
-    //     this.connectToJoinParty(partyType);
-    //   });
-    //
-    //   //
-    //   return;
-    // }
-
-
   }
 
   private connectToJoinParty (partyType:string)
@@ -428,6 +409,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinResponse = (data:StartResponse) =>
   {
+    console.log ('party found !!!!');
+
     this._playerId = data.yourPlayerId
 
     //

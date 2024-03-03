@@ -2,7 +2,8 @@
  * Game states
  */
 export enum GameState {
-    ready = 'ready',
+    waiting = 'waiting', // we waiting user reaction
+    ready = 'ready', // game found, final countdown
     running = 'running',
     paused = 'paused',
     over = 'over',

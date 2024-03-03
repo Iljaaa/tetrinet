@@ -180,7 +180,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private textsHeight = 100;
 
-  private searchForTexture:SearchForAGame;
   private pausedTexture:Paused;
   private specialBG:SpecialBG;
 
@@ -198,7 +197,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cups = {}
 
     // init textures
-    this.searchForTexture = new SearchForAGame();
     this.pausedTexture = new Paused();
     this.specialBG = new SpecialBG();
 
@@ -453,6 +451,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._state === GameState.ready){
       this.presentReady(gl);
     }
+
     if (this._state === GameState.paused){
       this.presentPaused(gl);
     }
@@ -474,7 +473,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._block.setVertices(Vertices.createTextureVerticesArray(
         0, this.textsHeight, 320, 64,
         // 320, 256, 192, 64
-        this.searchForTexture.texX, this.searchForTexture.texY, this.searchForTexture.texWidth, this.searchForTexture.texHeight
+        SearchForAGame.texX, SearchForAGame.texY, SearchForAGame.texWidth, SearchForAGame.texHeight
     ))
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)

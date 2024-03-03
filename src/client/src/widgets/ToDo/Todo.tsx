@@ -16,7 +16,6 @@ export const Todo = () => {
         <li>duel cups size</li>
         <li>bug: when connection is open and you press join previous game leaved</li>
         <li>display cup index</li>
-        <li>bug: when figure drops timer is not reset</li>
         <li>pause in just play mode</li>
         <li>player name</li>
         <li>buttons event on input player name</li>
