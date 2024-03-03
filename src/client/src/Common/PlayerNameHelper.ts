@@ -1,5 +1,4 @@
-import {LoadPlayerName} from "./Tetrinet/process/LoadPlayerName";
-import {StorePlayerName} from "./Tetrinet/process/StorePlayerName";
+import {LoadPlayerName, StorePlayerName} from "../process/store";
 
 /**
  * This method centralize player name

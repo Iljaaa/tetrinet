@@ -2,8 +2,6 @@
 
 namespace App\Sockets;
 
-use App\Common\Connection;
-use App\Common\GameState;
 use App\Common\Helper;
 use App\Common\Messages\AfterSetMessage;
 use App\Common\Messages\BackToPartyMessage;
@@ -13,12 +11,13 @@ use App\Common\Messages\PausedMessage;
 use App\Common\Messages\ResumeMessage;
 use App\Common\Messages\SwitchCupsMessage;
 use App\Common\Party;
+use App\Common\Player;
 use App\Common\PoolOfParties;
 use App\Common\PoolOfPlayers;
 use App\Common\Types\BonusType;
 use App\Common\Types\CupState;
+use App\Common\Types\GameState;
 use App\Common\Types\MessageType;
-use App\Common\Player;
 use App\Common\Types\PartyType;
 use App\Common\Types\ResponseType;
 use Illuminate\Support\Facades\Log;
@@ -323,7 +322,7 @@ class FirstTestSocket implements MessageComponentInterface
         // send chat message
         /** @var Player $player */
         $player = $party->getPlayerById($conn->socketId);
-        $party->addChatMessage(sprintf('Player %s paused the game', $player->getName()));
+        $party->addChatMessage(sprintf('Player __%s__ paused the game', $player->getName()));
         $party->sendChatToAllPlayers();
 //        $party->sendToAllPlayers([
 //            'type' => ResponseType::paused,
@@ -356,7 +355,7 @@ class FirstTestSocket implements MessageComponentInterface
         // send chat message
         /** @var Player $player */
         $player = $party->getPlayerById($conn->socketId);
-        $party->addChatMessage(sprintf('Player %s resumed the game', $player->getName()));
+        $party->addChatMessage(sprintf('Player __%s__ resumed the game', $player->getName()));
         $party->sendChatToAllPlayers();
     }
 
@@ -434,7 +433,7 @@ class FirstTestSocket implements MessageComponentInterface
                 }
             }
 
-            $party->addChatMessage(sprintf('End of the game, winner: %s', $winner->getName()));
+            $party->addChatMessage(sprintf('End of the game, winner: __%s__', $winner->getName()));
             $party->sendChatToAllPlayers();
         }
 
@@ -552,8 +551,7 @@ class FirstTestSocket implements MessageComponentInterface
         }
 
         // add message
-        // todo: make correct bonus names
-        $party->addChatMessage(sprintf('Player %s sent %s to %s', $player->getName(), $bonus->value, $opponent->getName()));
+        $party->addChatMessage(sprintf('Player __%s__ sent __%s__ to __%s__', $player->getName(),  Helper::GetNiceBlockName($bonus), $opponent->getName()));
         $party->sendChatToAllPlayers();
     }
 
@@ -608,7 +606,7 @@ class FirstTestSocket implements MessageComponentInterface
 //        ]);
 
         // send message to chat
-        $party->addChatMessage(sprintf('Player %s switch cup with %s', $sourcePlayer->getName(), $targetPlayer->getName()));
+        $party->addChatMessage(sprintf('Player __%s__ switch cup with __%s__', $sourcePlayer->getName(), $targetPlayer->getName()));
         $party->sendChatToAllPlayers();
     }
 

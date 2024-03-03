@@ -2,6 +2,7 @@ import React from "react";
 import {Container} from "../../shared/ui/Container/Container";
 import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 import {ChatMessage} from "../../Common/Tetrinet/types/ChatMessage";
+import {MarkDown} from "../../process/MarkDown";
 
 type State = {
   chat: Array<ChatMessage>,
@@ -38,8 +39,9 @@ export class Chat extends React.PureComponent<{}, State>
         <h2>Chat</h2>
         <div>
           {this.state.chat.reverse().map((c: ChatMessage, index: number) => {
-            return <div key={`chat_item_${index}`}><strong>{c.playerName}</strong>: {c.message} <i
-              style={{fontSize: "80%"}}>{c.date}</i></div>
+            return <div key={`chat_item_${index}`}><strong>{c.playerName}</strong>:
+              <span dangerouslySetInnerHTML={{__html: MarkDown(c.message)}} />
+              &nbsp;<i style={{fontSize: "80%"}}>{c.date}</i></div>
           })}
         </div>
         <div style={{margin: "1rem 0 0 0", display: "flex", alignItems: "center"}}>

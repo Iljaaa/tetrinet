@@ -4,6 +4,7 @@ namespace App\Common;
 
 use App\Common\Messages\Message;
 use App\Common\Messages\UpdateChatMessage;
+use App\Common\Types\GameState;
 use App\Common\Types\PlayerState;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;

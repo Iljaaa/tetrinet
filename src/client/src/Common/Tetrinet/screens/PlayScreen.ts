@@ -788,7 +788,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   realiseBonus(bonus:Bonus, data?:GetBonusMessage)
   {
-    // todo: add additional blocks
     switch (bonus) {
       case Bonus.add: this.addRows(1); break;
       case Bonus.clear: this.clearRows(1); break;

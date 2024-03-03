@@ -1,3 +1,5 @@
 export {StoreGameDataInStorage} from "./StoreGameDataInStorage"
 export {ClearGameDataInStorage} from "./ClearGameDataInStorage"
 export {LoadGameDataFromStorage} from "./LoadGameDataFromStorage"
+export {LoadPlayerName} from "./LoadPlayerName"
+export {StorePlayerName} from "./StorePlayerName"
