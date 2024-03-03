@@ -256,7 +256,7 @@ export class CupImpl implements Cup
     const sourceIndex = this.getCellIndexByCoords(sourcePosition)
     const destIndex = this.getCellIndexByCoords(destPosition)
 
-    this._state.fields[destIndex] = this._state.fields[sourceIndex]
+    this._state.fields[destIndex] = {...this._state.fields[sourceIndex]}
     // this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
   }
 
@@ -431,6 +431,8 @@ export class CupImpl implements Cup
   // public clearAndMoveLines(callCallback:boolean = true):{countLines: number, bonuses: number[]}
   public clearAndMoveLines(callCallback:boolean = true):void
   {
+    console.log ('CupImpl.clearAndMoveLines');
+
     // we find full lines
     const fullLines:Array<number> = [];
     for (let row = 0; row < this.heightInCells; row++)
@@ -450,10 +452,12 @@ export class CupImpl implements Cup
       // if we have full line
       if (fullLine) fullLines.push(row)
     }
+
     if (fullLines.length === 0) {
-      // return {countLines: 0, bonuses: []};
       return;
     }
+
+    console.log ('full lines', fullLines);
 
     // clear lines and add bonus
     const bonuses:Array<Bonus> = [];
@@ -463,56 +467,29 @@ export class CupImpl implements Cup
 
         // if there is bonus
         let b = this._state.fields[index].bonus
-        if (b !== undefined)
-        {
+        if (b !== undefined) {
           // add to return array
           bonuses.push(b)
         }
 
-        //
-        this._state.fields[index].block = -1
+        // this._state.fields[index].block = -1
+        this.clearBlock(index)
       }
     })
 
     // move blocks to cleared lines
     // from top to bottom
-    // fullLines.reverse().forEach((fullLineIndex:number) =>
-    fullLines.forEach((fullLineIndex:number) =>
-    {
-      for (let row = fullLineIndex; row > 0; row--)
-        // for (let row = fullLineIndex; row < this.heightInCells; row++)
-      {
-
-        for (let col = 0; col < this.widthInCells; col++)
-        {
-          //
-          // const currentBlockIndex = this.getCellIndexByCoords({x: col, y: row})
-          //
-          // // const indexOfBlockAbove = this.getCellIndexByCoords({x: col, y: row + 1})
-          // const indexOfBlockAbove = currentBlockIndex - this.widthInCells;
-          //
-          // // if there is a block we move them
-          // if (this._state.fields[indexOfBlockAbove].block > -1){
-          //   this._state.fields[currentBlockIndex] = this._state.fields[indexOfBlockAbove];
-          //   this._state.fields[indexOfBlockAbove].block = -1; // -1 it's mean that fiend if empty that we move them down
-          // }
-
+    fullLines.forEach((fullLineIndex:number) => {
+      for (let row = fullLineIndex; row > 0; row--) {
+        for (let col = 0; col < this.widthInCells; col++) {
           // copy block above
           this.copyBlockByCoords({x: col, y: row - 1}, {x:col, y:row})
 
           // clear block above
           // this.clearBlockByCoords({x: col, y: row - 1})
-
-          // if there is a bonus
-          // if (this._state.fields[indexOfBlockAbove].bonus) {
-          //   this._state.fields[currentBlockIndex].bonus = this._state.fields[indexOfBlockAbove].bonus;
-          //   this._state.fields[indexOfBlockAbove].bonus = undefined;
-          // }
         }
       }
     })
-
-    // const clearData = {countLines: fullLines.length, bonuses: bonuses}
 
     // rise callback about clear lines
     if (fullLines.length > 0 && this.listener && callCallback) {

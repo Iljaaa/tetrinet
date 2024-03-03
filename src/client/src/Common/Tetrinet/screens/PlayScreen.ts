@@ -130,25 +130,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * for temp test
    * @private
    */
-  // private readonly _opponentCup: CupImpl
   private readonly _cups: CupsCollection
-
-  /**
-   * This is player name for draw in the cup
-   */
-  // private _playerName:string = '';
 
   /**
    * Render
    * @private
    */
   private readonly _cupRenderer: CupRenderer2 | null = null;
-  
-  // /**
-  //  * Color of next figure
-  //  * @private
-  //  */
-  // private _nextFigureColor: number = 0;
   
   /**
    * Position of left bottom point of next figure
@@ -376,13 +364,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cup.setState(state)
   }
 
-  /**
-   * @return CupState
-   */
-  // getCupState():CupState {
-  //   return this._cup.getState()
-  // }
-
   getGameState(): GameState {
     return this._state;
   }
@@ -400,16 +381,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       this._cups[playerId].setState(cd.state)
     })
   }
-
-  /*
-   * Set opponent cup
-   * @param o
-   */
-  // setOpponentCup (o:CupData) {
-    //
-    // this._opponentCup.setFields(o.fields)
-    // this._opponentCup.setState(o.state)
-  // }
   
   /**
    * Update cup
@@ -852,7 +823,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // add special block
     for (let i = 0; i < data.countLines; i++) {
-
       this.addSpecialBlock()
     }
 

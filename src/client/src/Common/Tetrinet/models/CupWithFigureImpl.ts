@@ -150,11 +150,16 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    */
   private transferFigureToCupWithTail ():void
   {
+    console.log('CupWithFigureImpl.transferFigureToCupWithTail')
     if (!this._figure) return;
     
     // move figure to the cup
-    this._figure.getFields().forEach((f:number) => {
+    const figureFields = this._figure.getFields()
+    console.log('figureFields', figureFields)
+    figureFields.forEach((f:number) =>
+    {
       const b = this._state.fields[f]
+      console.log('fb', f, b)
       if (!b){
         alert ('block not found, it means something go wrong');
         debugger
