@@ -665,7 +665,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // if figure does not have not moved we need to create a new one
     if (!this._cup.dropFigureDown())
     {
-      
       // clear next the down step time
       // this._downTimer = 0;
     }

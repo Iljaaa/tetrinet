@@ -133,10 +133,13 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     
     //
     if (!hasMoved) {
-      // if not move figere in to cup
       this.transferFigureToCupWithTail();
     }
-    
+
+    // clear drop timer
+    this.downTimer = 0
+
+
     return hasMoved;
   }
   
