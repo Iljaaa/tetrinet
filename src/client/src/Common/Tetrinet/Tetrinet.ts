@@ -178,7 +178,11 @@ export class Tetrinet extends WebGlGame
    * @param data
    */
   updateCups (data:CupsDataCollection) {
-    (this.getCurrentScreen() as PlayScreen)?.updateCups(data)
+    const s =  this.getCurrentScreen()
+    if (s && s instanceof PlayScreen) {
+      s.updateCups(data)
+    }
+
   }
 
 }

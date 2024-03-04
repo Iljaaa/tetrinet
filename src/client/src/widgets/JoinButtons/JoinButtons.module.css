@@ -1,13 +1,25 @@
 
-.JoinButtonsWrap {
+.ButtonsWrap {
+    padding: 0 2rem;
+    height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.SearchButtonsWrap {
+    justify-self: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1.5rem 0 1.5rem 0;
 
     > div {
         margin: 0 1rem;
     }
+}
 
-
+.LookingForAGame {
+    display: flex;
+    align-items: center;
+    width: 100%;
 }

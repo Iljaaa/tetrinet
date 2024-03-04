@@ -25,6 +25,10 @@ import {PlayerNameHelper} from "./PlayerNameHelper";
  * Game macro data changes
  */
 export type TetrinetEventListener = {
+  /**
+   * todo" remove it from this callback, because it only for debug
+   * @param state
+   */
   onGameStateChange: (state:GameState) => void,
   onScoreChange: (score:number) => void,
   onPartyIdChange: (partyId:string) => void,
@@ -87,6 +91,12 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private _onChatChanged?: (items:ChatMessage[]) => void = undefined
 
+  /**
+   * this callback for buttons search
+   *
+   */
+  private _onStateChangeForButton?:(gameState:GameState) => void = undefined
+
   // if it comments al stop working
   constructor() {
     super();
@@ -101,6 +111,13 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   setChatChangeListener (f:(chatItems:Array<ChatMessage>) => void) {
     this._onChatChanged = f;
+  }
+
+  /**
+   *
+   */
+  setOnGameStateChangeForButtons (f:(gameState:GameState) => void){
+    this._onStateChangeForButton = f;
   }
 
   public initGraphicAndLoadAssets (canvas:HTMLCanvasElement)
@@ -175,12 +192,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   onScoreChanged (newScore:number): void {
     this._gameDataEventListener?.onScoreChange(newScore)
   }
-
-  /**
-   * Send a request with gift
-   * @param bonus
-   * @param opponentIndex
-   */
 
   /**
    * This is callback method when something happen in cup
@@ -261,8 +272,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // this.game.playGame();
     this.playGame();
 
-    //
+    // call different callbacks
     this._gameDataEventListener?.onGameStateChange(GameState.running)
+    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.running)
   }
 
   /**
@@ -329,11 +341,11 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
     //
     this._gameDataEventListener?.onGameStateChange(GameState.over)
+    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.over);
 
     // clear game state in store
     ClearGameDataInStorage()
   }
-
 
   /**
    * Join to party.
@@ -382,7 +394,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       console.log('Окно браузера потеряло фокус');
     });
 
-    //
     SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(partyType), this.onConnectionClose)
   }
 
@@ -409,13 +420,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinResponse = (data:StartResponse) =>
   {
-    console.log ('party found !!!!');
 
     this._playerId = data.yourPlayerId
-
-    //
-    this._gameDataEventListener?.onGameStateChange(GameState.running)
-    this._gameDataEventListener?.onPlayerIdChange(this._playerId)
 
     // set listener when game starts
     SocketSingleton.getInstance()?.setListener(this);
@@ -423,6 +429,49 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // when socket open prepare to game
     // this.game.prepareToGame(this);
     this.prepareToGame(this);
+
+    //
+    this._gameDataEventListener?.onGameStateChange(GameState.searching)
+    this._gameDataEventListener?.onPlayerIdChange(this._playerId)
+
+    //
+    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)
+  }
+
+  /**
+   * Cancel search game
+   */
+  public cancelSearch ()
+  {
+    // close socket
+    SocketSingleton.close();
+
+    //
+    this._gameDataEventListener?.onGameStateChange(GameState.waiting)
+    this._gameDataEventListener?.onPlayerIdChange('')
+
+    //
+    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
+
+  }
+
+  /**
+   * Quit game
+   */
+  public quitGame ()
+  {
+    // close socket
+    SocketSingleton.close();
+
+    this.setGameOver()
+
+    //
+    this._gameDataEventListener?.onGameStateChange(GameState.waiting)
+    this._gameDataEventListener?.onPlayerIdChange('')
+
+    //
+    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
+
   }
 
   /**

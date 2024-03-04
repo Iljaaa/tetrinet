@@ -8,9 +8,10 @@ namespace App\Common\Types;
  */
 enum GameState : string
 {
+    case waiting = 'waiting'; // we are waiting user reaction
+    case searching = 'searching'; // searching the game
     case ready = 'ready';
     case running = 'running';
     case paused = 'paused';
-
     case over = 'over'; // when all cups are over
 }

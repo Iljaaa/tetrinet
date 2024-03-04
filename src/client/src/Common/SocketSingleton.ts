@@ -17,15 +17,8 @@ export class SocketSingleton
    */
   public static reOpenConnection(onOpenCallback:()=>void, onCloseCallback:()=>void)
   {
-    // close old connection
-    if (SocketSingleton.socketInstance)
-    {
-      // clear close callback
-      SocketSingleton.socketInstance.clearCloseCallback();
-
-      // open new connection
-      SocketSingleton.socketInstance.close();
-    }
+    // before we try to close socket
+    SocketSingleton.close()
 
     // create new instance
     SocketSingleton.socketInstance = new Socket(onOpenCallback, onCloseCallback);
@@ -47,5 +40,22 @@ export class SocketSingleton
    */
   public static getInstance() {
     return SocketSingleton.socketInstance;
+  }
+
+  /**
+   * Close callback
+   */
+  public static close ()
+  {
+    // close old connection
+    if (SocketSingleton.socketInstance)
+    {
+      // clear close callback
+      SocketSingleton.socketInstance.clearCloseCallback();
+
+      // open new connection
+      SocketSingleton.socketInstance.close();
+    }
+
   }
 }
