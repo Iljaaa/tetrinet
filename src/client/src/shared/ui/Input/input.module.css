@@ -1,0 +1,13 @@
+
+.FormInput {
+    border: solid 1px black;
+    font-size: 1rem;
+    padding: .75rem 1rem;
+    box-shadow: #daa520 9px 9px 0 0;
+    width: 90%;
+    margin-bottom: 1rem;
+    &:disabled {
+        color: darkgray;
+        background: gray;
+    }
+}

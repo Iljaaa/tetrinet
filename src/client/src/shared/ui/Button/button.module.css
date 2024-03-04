@@ -4,6 +4,7 @@
     font-size: 24px;
     background-color: whitesmoke;
     box-shadow: #daa520 9px 9px 0 0;
+    color: black;
 
     &:hover {
         background-color: silver;
@@ -12,5 +13,13 @@
     &:active {
         background-color: gray;
         color: whitesmoke;
+    }
+
+    &:disabled {
+        background-color: gray;
+        color: darkgray;
+        &:hover {
+            color: darkgray;
+        }
     }
 }

@@ -19,7 +19,7 @@ export const MyModal = (props:Props) => {
         transform: 'translate(-50%, -50%)',
         backgroundColor: "#008080",
         padding: "1rem 2rem 2rem 2rem"
-      },
+      }
     }}
     onRequestClose={() => {
       console.log ('Modal request close')
