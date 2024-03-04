@@ -29,12 +29,6 @@ export class JustPlayScreen extends WebGlScreen
   private readonly _cupRenderer: CupRenderer2 | null = null;
 
   /**
-   * Position of left bottom point of next figure
-   * @private
-   */
-  private nextFigurePosition:Coords = new Coords(370, 32);
-
-  /**
    * Timer for update cup data
    * @private
    */
@@ -100,12 +94,13 @@ export class JustPlayScreen extends WebGlScreen
     WebGlProgramManager.sUseTextureProgram(gl);
 
     // render cup
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 232, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
     this._cupRenderer?.renderCupWithFigure(this._cup);
 
 
     // render next figure
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 570, 32)
     this.presentNextFigure(gl);
   }
 
@@ -118,9 +113,6 @@ export class JustPlayScreen extends WebGlScreen
   {
     const nextFigure = this._cup.getNextFigure();
     if (!nextFigure) return
-
-    // move position
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)
 
     //
     this._cupRenderer?.renderNextFigure(gl, nextFigure)

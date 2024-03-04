@@ -24,7 +24,9 @@ export const Todo = () => {
         <li>bug: when session is clear and you find game and  when you input name game does not start</li>
         <li>made work example with http://delphic.me.uk/tutorials/webgl-text</li>
         <li>feed back modal</li>
-        <li>modal about searching new game</li>
+        <li>there bug: if we first just play tetris and then click find game </li>
+        <li>nice help</li>
+        <li>remove special blocks from just play cup</li>
       </ul>
       <h2>Back log</h2>
       <ul>
