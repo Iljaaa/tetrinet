@@ -25,6 +25,19 @@ export class Chat extends React.PureComponent<{}, State>
     this.setState({chat: chat})
   }
 
+  /**
+   * When focus on input message
+   * w
+   */
+  onMessageInputFocus = () =>
+  {
+    TetrinetSingleton.getInstance().disableInput()
+  }
+
+  onMessageInputBlur = () => {
+    TetrinetSingleton.getInstance().enableInput()
+  }
+
   sendMessage = () => {
     if (this.state.message !== '') {
       TetrinetSingleton.getInstance().sendChatMessage(this.state.message);
@@ -46,7 +59,10 @@ export class Chat extends React.PureComponent<{}, State>
         </div>
         <div style={{margin: "1rem 0 0 0", display: "flex", alignItems: "center"}}>
           <input type="text" value={this.state.message}
-                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})}/>
+                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})}
+                 onFocus={this.onMessageInputFocus}
+                 onBlur={this.onMessageInputBlur}
+          />
           <button onClick={this.sendMessage}>send</button>
         </div>
       </div>

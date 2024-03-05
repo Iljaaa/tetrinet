@@ -7,7 +7,6 @@ import {CupWithFigure} from "../models/CupWithFigure";
 import {CupWithFigureImpl} from "../models/CupWithFigureImpl";
 import {GenerateNewFigure} from "../process/GenerateNewFigure";
 import {GenerateRandomColor} from "../process/GenerateRandomColor";
-import {Coords} from "../math/Coords";
 import {CupState} from "../types/CupState";
 
 /**

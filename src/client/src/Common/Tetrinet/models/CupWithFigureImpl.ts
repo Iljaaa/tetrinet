@@ -153,16 +153,13 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    */
   private transferFigureToCupWithTail ():void
   {
-    console.log('CupWithFigureImpl.transferFigureToCupWithTail')
     if (!this._figure) return;
     
     // move figure to the cup
     const figureFields = this._figure.getFields()
-    console.log('figureFields', figureFields)
     figureFields.forEach((f:number) =>
     {
       const b = this._state.fields[f]
-      console.log('fb', f, b)
       if (!b){
         alert ('block not found, it means something go wrong');
         debugger
@@ -215,7 +212,7 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    */
   updateFigureDownTimer(deltaTime:number): void
   {
-    // nothing to update if cup is ofline
+    // nothing to update if cup is offline
     if (this._state.state !== CupState.online) return;
 
     // tick figure down timer

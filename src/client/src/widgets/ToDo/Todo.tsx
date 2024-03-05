@@ -11,15 +11,12 @@ export const Todo = () => {
         <li>stop game when focus is lost</li>
         <li>error on socket connect</li>
         <li>client alert when connection lost</li>
-        <li>When one play lost connection and second click pause server has error</li>
         <li>extend block bomb</li>
         <li>duel cups size</li>
         <li>bug: when connection is open and you press join previous game leaved</li>
         <li>display cup index</li>
         <li>pause in just play mode</li>
-        <li>player name</li>
         <li>buttons event on input player name</li>
-        <li>bug in chat: when we type in chat figures moving, we need manipulate with focus</li>
         <li>send in chat with enter</li>
         <li>bug: when session is clear and you find game and  when you input name game does not start</li>
         <li>made work example with http://delphic.me.uk/tutorials/webgl-text</li>
@@ -27,6 +24,7 @@ export const Todo = () => {
         <li>there bug: if we first just play tetris and then click find game </li>
         <li>nice help</li>
         <li>remove special blocks from just play cup</li>
+        <li>bug: if figure to long and it upper than cup, it drw some strange</li>
       </ul>
       <h2>Back log</h2>
       <ul>

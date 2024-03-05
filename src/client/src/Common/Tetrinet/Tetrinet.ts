@@ -8,6 +8,7 @@ import {Cup} from "./models/Cup";
 import {JustPlayScreen} from "./screens/JustPlayScreen";
 import {TetrinetEventListener} from "../TetrinetNetworkLayer";
 import {GameState} from "./types";
+import {WebInput, WebInputEventListener} from "../framework/impl/WebInput";
 
 /**
  * @version 0.1.0
@@ -184,5 +185,20 @@ export class Tetrinet extends WebGlGame
     }
 
   }
+
+  enableInput ()
+  {
+    // bind this to input listener
+    const s = this.getCurrentScreen()
+    // this is shit
+    if (s && (s instanceof PlayScreen || s instanceof JustPlayScreen)) {
+      this.getInput().setListener(s);
+    }
+  }
+
+  disableInput (){
+    this.getInput().clearListener()
+  }
+
 
 }

@@ -103,6 +103,11 @@ const CupsPosition:CupsPositionInterface = {
   4: {x: 768, y: 384},
 }
 
+export enum DisplayTypes {
+  deadMatch = 'deadMatch',
+  duel = 'duel'
+}
+
 /**
  * @vaersion 0.0.1
  */
@@ -217,7 +222,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     ))
 
     // bind this to input listener
-    this.game.getInput().setListener(this);
+    // this.game.getInput().setListener(this);
   }
   
   /**
@@ -556,6 +561,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     })
+
+  }
+
+  private presentDuelCups (){
+
+  }
+
+  private presentDeadMatchCups (){
 
   }
   

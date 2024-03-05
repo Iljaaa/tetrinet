@@ -19,6 +19,7 @@ export class Canvas extends React.PureComponent
    * @private
    */
   private readonly _canvas: React.RefObject<HTMLCanvasElement>;
+  private _wrapRef: React.RefObject<HTMLDivElement>;
   
   /**
    * Game object
@@ -34,7 +35,9 @@ export class Canvas extends React.PureComponent
      * Ref on canvas
      */
     this._canvas = React.createRef();
-    
+
+    this._wrapRef = React.createRef();
+
     // create game instance
     TetrinetSingleton.init();
   }
@@ -46,6 +49,9 @@ export class Canvas extends React.PureComponent
   {
     // init graphic
     TetrinetSingleton.getInstance().initGraphicAndLoadAssets(this._canvas.current as HTMLCanvasElement);
+
+    this._wrapRef.current?.addEventListener('blur', this.onWrapBlurByRef);
+    this._wrapRef.current?.addEventListener('focus', this.onWrapFocusByRef);
   }
   
   componentWillUnmount()
@@ -53,6 +59,22 @@ export class Canvas extends React.PureComponent
     // unbind events
     // this.game.getInput().unBind();
     // TetrinetSingleton.getInstance().getInput().unBind();
+  }
+
+  onWrapFocus = () => {
+    console.log('Canvas.onWrapFocus')
+  }
+
+  onWrapBlur = () => {
+    console.log('Canvas.onWrapBlur')
+  }
+
+  onWrapFocusByRef = () => {
+    console.log('Canvas.onWrapFocusByRef')
+  }
+
+  onWrapBlurByRef = () => {
+    console.log('Canvas.onWrapBlurByRef')
   }
   
   /**
@@ -72,7 +94,6 @@ export class Canvas extends React.PureComponent
     // this.socket = new Socket();
     SocketSingleton.openConnection(() =>
     {
-      // todo: make special object
       const request = {type: "watch"}
 
       // send start party
@@ -87,8 +108,13 @@ export class Canvas extends React.PureComponent
     
   }
 
+
+
   render () {
-    return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem"}}>
+    return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem", border: "solid 2px navy"}}
+                onBlur={this.onWrapBlur}
+                onFocus={this.onWrapFocus}
+                ref={this._wrapRef}>
 
       {/*<div style={{display: "flex", alignItems: "center", marginBottom: "1rem", width: "100%"}}>*/}
       {/*  <div style={{display: "flex", alignItems: "center", flex: "1"}}>*/}

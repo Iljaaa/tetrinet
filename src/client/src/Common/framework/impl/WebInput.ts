@@ -15,7 +15,7 @@ export class WebInput
   /**
    * @private
    */
-  private listener: WebInputEventListener|null = null;
+  private listener?:WebInputEventListener;
   
   bind():void
   {
@@ -32,6 +32,10 @@ export class WebInput
   
   public setListener(listener:WebInputEventListener){
     this.listener = listener
+  }
+
+  public clearListener (){
+    this.listener = undefined
   }
   
   /**
