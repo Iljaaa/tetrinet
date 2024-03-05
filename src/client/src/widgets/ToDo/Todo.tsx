@@ -8,7 +8,6 @@ export const Todo = () => {
       <h2>Road map:</h2>
       <ul>
         <li>drop player when connection is lost</li>
-        <li>stop game when focus is lost</li>
         <li>error on socket connect</li>
         <li>client alert when connection lost</li>
         <li>extend block bomb</li>
@@ -25,6 +24,7 @@ export const Todo = () => {
         <li>nice help</li>
         <li>remove special blocks from just play cup</li>
         <li>bug: if figure to long and it upper than cup, it drw some strange</li>
+        <li>pauses limit</li>
       </ul>
       <h2>Back log</h2>
       <ul>

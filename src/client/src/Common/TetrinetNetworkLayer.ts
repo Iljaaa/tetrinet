@@ -388,11 +388,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
   private connectToJoinParty (partyType:string)
   {
-    // todo: remove in to some other place
-    // may be to there where controlls bind
-    window.addEventListener('blur', function() {
-      console.log('Окно браузера потеряло фокус');
-    });
+
 
     SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(partyType), this.onConnectionClose)
   }

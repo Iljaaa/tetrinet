@@ -67,7 +67,6 @@ class FirstTestSocket implements MessageComponentInterface
         // $connection->app = App::findById('YOUR_APP_ID');
         $app = \BeyondCode\LaravelWebSockets\Apps\App::findById("app_id");
         $conn->app = $app;
-
     }
 
     /**
@@ -85,6 +84,8 @@ class FirstTestSocket implements MessageComponentInterface
         $party = $this->partiesPool->findPartyByPlayerId($conn->socketId);
         if ($party)
         {
+            // todo: not set pause just throw hin out of game
+
             // set party on pause
             $party->setPause();
             $party->sendToAllPlayers([
@@ -311,9 +312,11 @@ class FirstTestSocket implements MessageComponentInterface
         $this->info(__METHOD__);
 
         $partyId = $data['partyId'] ?? '';
+        if (!$partyId) return;
 
         // pause game
         $party = $this->partiesPool->getPartyById($partyId);
+        if (!$party) return;
         $party->setPause();
 
         //
@@ -322,7 +325,11 @@ class FirstTestSocket implements MessageComponentInterface
         // send chat message
         /** @var Player $player */
         $player = $party->getPlayerById($conn->socketId);
-        $party->addChatMessage(sprintf('Player __%s__ paused the game', $player->getName()));
+        $intent = $data['intent'] ?? '';
+        $s = ($intent)
+            ? sprintf('Player __%s__ paused the game. because: %s', $player->getName(), $intent)
+            : sprintf('Player __%s__ paused the game', $player->getName());
+        $party->addChatMessage($s);
         $party->sendChatToAllPlayers();
 //        $party->sendToAllPlayers([
 //            'type' => ResponseType::paused,
@@ -355,7 +362,11 @@ class FirstTestSocket implements MessageComponentInterface
         // send chat message
         /** @var Player $player */
         $player = $party->getPlayerById($conn->socketId);
-        $party->addChatMessage(sprintf('Player __%s__ resumed the game', $player->getName()));
+        $intent = $data['intent'] ?? '';
+        $s = ($intent)
+            ? sprintf('Player __%s__ resumed the game because: %s', $player->getName(), $intent)
+            : sprintf('Player __%s__ resumed the game', $player->getName());
+        $party->addChatMessage($s);
         $party->sendChatToAllPlayers();
     }
 

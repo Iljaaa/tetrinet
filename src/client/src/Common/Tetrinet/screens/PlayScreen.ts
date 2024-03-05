@@ -222,8 +222,29 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     ))
 
     // bind this to input listener
-    // this.game.getInput().setListener(this);
+    this.game.getInput().setListener(this);
+
+    // check lost and get window focus
+    window.addEventListener('blur', this.onWindowBlur);
+    // window.addEventListener('focus', this.onWindowFocus);
   }
+
+  destroy() {
+    window.removeEventListener('blur', this.onWindowBlur);
+    // window.removeEventListener('focus', this.onWindowFocus);
+  }
+
+  private onWindowBlur = () => {
+    if (this._state === GameState.running) {
+      this.sendPauseRequest('Window lost focus')
+    }
+  }
+
+  // private onWindowFocus = () => {
+  //   if (this._state === GameState.paused) {
+  //     this.sendResumeRequest('Focus resumed to window')
+  //   }
+  // }
   
   /**
    * Set event listener
@@ -285,7 +306,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
   }
 
-  private sendPauseRequest ()
+  /**
+   * Send pause request
+   * @param intent
+   */
+  private sendPauseRequest (intent?:string)
   {
     // request data
     const request:PauseRequest = {
@@ -294,18 +319,26 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       playerId: TetrinetSingleton.getInstance().getPlayerId(),
     }
 
+    if (intent) request.intent = intent
+
     // send data
     SocketSingleton.getInstance()?.sendData(request);
   }
 
-  private sendResumeRequest ()
+  /**
+   * Send resume request
+   */
+  private sendResumeRequest (intent?:string)
   {
+    console.log('onResumeRequest')
     // request data
     const request:ResumeRequest = {
       type: RequestTypes.resume,
       partyId: TetrinetSingleton.getInstance().getPartyId(),
       playerId: TetrinetSingleton.getInstance().getPlayerId(),
     }
+
+    if (intent) request.intent = intent
 
     // send data
     SocketSingleton.getInstance()?.sendData(request);
@@ -561,14 +594,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     })
-
-  }
-
-  private presentDuelCups (){
-
-  }
-
-  private presentDeadMatchCups (){
 
   }
   

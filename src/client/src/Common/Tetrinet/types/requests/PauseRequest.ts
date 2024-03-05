@@ -5,4 +5,5 @@ import {Request} from "./Request";
  */
 export interface PauseRequest extends Request {
     // initiatorId: string
+  intent?:string
 }
