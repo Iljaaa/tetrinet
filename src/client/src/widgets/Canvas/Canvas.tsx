@@ -93,24 +93,9 @@ export class Canvas extends React.PureComponent
 
   render () {
     return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem"}}>
-
-      {/*<div style={{display: "flex", alignItems: "center", marginBottom: "1rem", width: "100%"}}>*/}
-      {/*  <div style={{display: "flex", alignItems: "center", flex: "1"}}>*/}
-      {/*    <div>*/}
-      {/*      <button onClick={this.onPlayClicked} disabled={true}>Play</button>*/}
-      {/*    </div>*/}
-      {/*    <div>*/}
-      {/*      <button onClick={this.onPauseClicked}>Pause</button>*/}
-      {/*      <button onClick={this.onResumeClicked}>Resume</button>*/}
-      {/*    </div>*/}
-      {/*    <div>*/}
-      {/*      <button onClick={this.onWatchClicked} disabled={true}>Watch</button>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
-
       <div>
         <canvas id="canvas" width={960} height={750} style={{border: "solid 2px orange"}} ref={this._canvas}/>
+        <canvas id="textureCanvas"></canvas>
       </div>
     </div>
   }
