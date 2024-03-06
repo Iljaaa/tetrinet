@@ -10,7 +10,6 @@ export const Todo = () => {
         <li>drop player when connection is lost</li>
         <li>leave game event and lost connection</li>
         <li>extend block bomb</li>
-        <li>duel cups size</li>
         <li>bug: when connection is open and you press join previous game leaved</li>
         <li>display cup index</li>
         <li>pause in just play mode</li>
