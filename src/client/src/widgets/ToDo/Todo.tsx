@@ -12,7 +12,6 @@ export const Todo = () => {
         <li>bug: when connection is open and you press join previous game leaved</li>
         <li>display cup index</li>
         <li>pause in just play mode</li>
-        <li>send in chat with enter</li>
         <li>feed back modal</li>
         <li>there bug: if we first just play tetris and then click find game </li>
         <li>nice help</li>
@@ -21,6 +20,7 @@ export const Todo = () => {
         <li>pauses limit</li>
         <li>set nice player name</li>
         <li>nice message when player leave a game and when connection lost</li>
+        <li>nice view for chat</li>
       </ul>
       <h2>Back log</h2>
       <ul>
