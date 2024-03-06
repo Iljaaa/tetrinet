@@ -8,6 +8,7 @@ export const Todo = () => {
       <h2>Todo:</h2>
       <ul>
         <li>drop player when connection is lost</li>
+        <li>leave game event and lost connection</li>
         <li>extend block bomb</li>
         <li>duel cups size</li>
         <li>bug: when connection is open and you press join previous game leaved</li>
@@ -20,7 +21,7 @@ export const Todo = () => {
         <li>remove special blocks from just play cup</li>
         <li>bug: if figure to long and it upper than cup, it drw some strange</li>
         <li>pauses limit</li>
-        <li>nic e player name</li>
+        <li>set nice player name</li>
       </ul>
       <h2>Back log</h2>
       <ul>

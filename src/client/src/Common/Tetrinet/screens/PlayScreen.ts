@@ -103,6 +103,9 @@ const CupsPosition:CupsPositionInterface = {
   4: {x: 768, y: 384},
 }
 
+/**
+ * todo: move it to cup renderer
+ */
 export enum DisplayTypes {
   deadMatch = 'deadMatch',
   duel = 'duel'
@@ -185,13 +188,23 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private textsHeight = 100;
 
+  /**
+   * todo: refactor textures to static objects
+   * @private
+   */
   private pausedTexture:Paused;
   private specialBG:SpecialBG;
 
   /**
+   * Callback about change game state
+   * @private
+   */
+  private _onStateChangeCallback?: (newGameState:GameState) => void
+
+  /**
    * In this constructor we create cup
    */
-  constructor(game:Tetrinet)
+  constructor(game:Tetrinet, onChangeGameStateCallback: (newGameState:GameState) => void)
   {
     super(game)
     
@@ -204,12 +217,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // init textures
     this.pausedTexture = new Paused();
     this.specialBG = new SpecialBG();
-
-    // generate next figure
-    // this._nextFigure = this.generateNewFigure();
-
-    // next figure random color
-    // this._nextFigureColor = GenerateRandomColor();
     
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
@@ -220,6 +227,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       200, 200, 32, 32,
       0, 0, 200, 200
     ))
+
+    // save game status change callback
+    this._onStateChangeCallback = onChangeGameStateCallback
 
     // bind this to input listener
     this.game.getInput().setListener(this);
@@ -285,7 +295,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     console.log('PlayScreen.start')
     
     // finally set run status
-    this._state = GameState.running
+    this.setGameRunning()
     
     // call first callback
     // I'm not sure that it need to be here
@@ -350,6 +360,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   pause (){
     if (this._state !== GameState.running) return;
     this._state = GameState.paused
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
   /**
@@ -359,10 +370,27 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // is game not on the pause
     if (this._state !== GameState.paused) return;
     this._state = GameState.running
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
   gameOver() {
     this._state = GameState.over;
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
+  }
+
+  setGameRunning() {
+    this._state = GameState.running
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
+  }
+
+  setGameSearching(){
+    this._state = GameState.searching
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
+  }
+
+  setGameWaiting(){
+    this._state = GameState.waiting
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
   /**

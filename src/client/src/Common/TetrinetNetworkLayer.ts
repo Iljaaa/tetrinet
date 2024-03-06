@@ -91,12 +91,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private _onChatChanged?: (items:ChatMessage[]) => void = undefined
 
-  /**
-   * this callback for buttons search
-   *
-   */
-  private _onStateChangeForButton?:(gameState:GameState) => void = undefined
-
   // if it comments al stop working
   constructor() {
     super();
@@ -117,12 +111,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this._onChatChanged = f;
   }
 
-  /**
-   *
-   */
-  setOnGameStateChangeForButtons (f:(gameState:GameState) => void){
-    this._onStateChangeForButton = f;
-  }
+
 
   public initGraphicAndLoadAssets (canvas:HTMLCanvasElement)
   {
@@ -219,7 +208,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * it is here because we need to get event that party starts
    * @param data
    */
-  onMessageReceive(data: Message): void
+  onMessageReceive = (data: Message): void =>
   {
     switch (data.type) {
       // party is created, it is time to play
@@ -277,8 +266,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.playGame();
 
     // call different callbacks
-    this._gameDataEventListener?.onGameStateChange(GameState.running)
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.running)
+    // this._gameDataEventListener?.onGameStateChange(GameState.running)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.running)
   }
 
   /**
@@ -344,8 +333,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.setCupState(mineCup.state);
 
     //
-    this._gameDataEventListener?.onGameStateChange(GameState.over)
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.over);
+    // this._gameDataEventListener?.onGameStateChange(GameState.over)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.over);
+    (this.getCurrentScreen() as PlayScreen).gameOver()
 
     // clear game state in store
     ClearGameDataInStorage()
@@ -427,7 +417,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinResponse = (data:StartResponse) =>
   {
-
+    //
     this._playerId = data.yourPlayerId
 
     // set listener when game starts
@@ -438,14 +428,17 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.prepareToGame(this);
 
     //
-    this._gameDataEventListener?.onGameStateChange(GameState.searching)
-    this._gameDataEventListener?.onPlayerIdChange(this._playerId)
 
-    //
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)
+    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
+
+    // this._gameDataEventListener?.onGameStateChange(GameState.searching)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)
+    (this.getCurrentScreen() as PlayScreen).setGameSearching()
+    debugger
   }
 
   /**
+   * @deprecated
    * todo: call callback
    * When socket close connection
    */
@@ -461,13 +454,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // close socket
     SocketSingleton.close();
 
-    //
-    this._gameDataEventListener?.onGameStateChange(GameState.waiting)
-    this._gameDataEventListener?.onPlayerIdChange('')
+    // clear player id
+    this._playerId = '';
+    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
 
     //
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
-
+    // this._gameDataEventListener?.onGameStateChange(GameState.waiting)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
+    (this.getCurrentScreen() as PlayScreen).setGameWaiting()
   }
 
   /**
@@ -480,13 +474,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
     this.setGameOver()
 
-    //
-    this._gameDataEventListener?.onGameStateChange(GameState.waiting)
-    this._gameDataEventListener?.onPlayerIdChange('')
+    // clear player id
+    this._playerId = '';
+    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
 
     //
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
-
+    // this._gameDataEventListener?.onGameStateChange(GameState.waiting)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
+    (this.getCurrentScreen() as PlayScreen).setGameWaiting()
   }
 
   /**
@@ -550,7 +545,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       this.playGame();
 
       //
-      this._gameDataEventListener?.onGameStateChange(GameState.running)
+      // this._gameDataEventListener?.onGameStateChange(GameState.running)
     }, () => {})
   }
 

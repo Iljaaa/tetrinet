@@ -8,7 +8,6 @@ import {Cup} from "./models/Cup";
 import {JustPlayScreen} from "./screens/JustPlayScreen";
 import {TetrinetEventListener} from "../TetrinetNetworkLayer";
 import {GameState} from "./types";
-import {WebInput, WebInputEventListener} from "../framework/impl/WebInput";
 
 /**
  * @version 0.1.0
@@ -23,9 +22,15 @@ export class Tetrinet extends WebGlGame
   private isAnimationRequested:boolean = false
 
   /**
+   * @deprecated
    * Listener of tetrinet events
    */
   protected _gameDataEventListener:TetrinetEventListener | undefined = undefined
+
+  /**
+   * this callback for buttons search
+   */
+  protected _onStateChangeForButton?:(gameState:GameState) => void
   
   // if it comments all stop working
   constructor() {
@@ -38,6 +43,13 @@ export class Tetrinet extends WebGlGame
    */
   setGameDataEventListener(listener: TetrinetEventListener) {
     this._gameDataEventListener = listener
+  }
+
+  /**
+   *
+   */
+  setOnGameStateChangeForButtons (f:(gameState:GameState) => void){
+    this._onStateChangeForButton = f;
   }
 
   /**
@@ -77,7 +89,12 @@ export class Tetrinet extends WebGlGame
     {
       // we get current screen
       // and if it is not a play screen create new one
-      scr = new PlayScreen(this);
+      scr = new PlayScreen(this, (newGameSate:GameState) =>
+      {
+        // trow trough change status event
+        this._gameDataEventListener?.onGameStateChange(newGameSate)
+        if (this._onStateChangeForButton) this._onStateChangeForButton(newGameSate)
+      });
 
       // bind event listener
       scr.setGameEventListener(eventListener)
@@ -116,7 +133,7 @@ export class Tetrinet extends WebGlGame
     (this.getCurrentScreen() as PlayScreen)?.pause();
 
     //
-    this._gameDataEventListener?.onGameStateChange(GameState.paused)
+    // this._gameDataEventListener?.onGameStateChange(GameState.paused)
   }
 
   /**
@@ -128,7 +145,7 @@ export class Tetrinet extends WebGlGame
     (this.getCurrentScreen() as PlayScreen)?.resume();
 
     //
-    this._gameDataEventListener?.onGameStateChange(GameState.running)
+    // this._gameDataEventListener?.onGameStateChange(GameState.running)
   }
 
   /**
