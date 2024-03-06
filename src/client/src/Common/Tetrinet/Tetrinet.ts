@@ -8,6 +8,7 @@ import {Cup} from "./models/Cup";
 import {JustPlayScreen} from "./screens/JustPlayScreen";
 import {TetrinetEventListener} from "../TetrinetNetworkLayer";
 import {GameState} from "./types";
+import {GamePartyType} from "./types/GamePartyType";
 
 /**
  * @version 0.1.0
@@ -80,7 +81,7 @@ export class Tetrinet extends WebGlGame
    * initCup: cup with start condition
    * after this game starts
    */
-  prepareToGame (eventListener: PlayScreenEventListener, initCup:Cup|null = null)
+  prepareToGame (eventListener: PlayScreenEventListener, partyType:GamePartyType, initCup:Cup|null = null)
   {
     // get current screen
     let scr = this.getCurrentScreen() as PlayScreen;
@@ -102,6 +103,8 @@ export class Tetrinet extends WebGlGame
       // write as current
       this.setScreen(scr);
     }
+
+    scr.setPartyType(partyType)
 
     // clear sup from previous game
     // todo: move it to start game

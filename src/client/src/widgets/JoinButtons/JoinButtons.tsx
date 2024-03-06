@@ -5,7 +5,7 @@ import {PureComponent} from "react";
 import {GameState} from "../../Common/Tetrinet/types";
 
 import styles from "./JoinButtons.module.css"
-import Modal from "react-modal";
+import {GamePartyType} from "../../Common/Tetrinet/types/GamePartyType";
 
 type State = {
     gameState: GameState,
@@ -48,12 +48,12 @@ const SearchGameButtons = () =>
     return <div className={styles.SearchButtonsWrap}>
         <div>
             <Button onClick={() => {
-                TetrinetSingleton.getInstance().joinToParty('duel')
+                TetrinetSingleton.getInstance().joinToParty(GamePartyType.duel)
             }}>Find a duel</Button>
         </div>
         <div>
             <Button onClick={() => {
-                TetrinetSingleton.getInstance().joinToParty('party')
+                TetrinetSingleton.getInstance().joinToParty(GamePartyType.party)
             }}>Find a deathmatch</Button>
         </div>
         <div>

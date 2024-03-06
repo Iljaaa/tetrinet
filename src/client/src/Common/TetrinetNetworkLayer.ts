@@ -19,6 +19,7 @@ import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyRespons
 import {ChatMessageRequest} from "./Tetrinet/types/requests/ChatMessageRequest";
 import {ReceiveChatMessage} from "./Tetrinet/types/messages/ReceiveChatMessage";
 import {PlayerNameHelper} from "./PlayerNameHelper";
+import {GamePartyType} from "./Tetrinet/types/GamePartyType";
 
 /**
  * Game macro data changes
@@ -110,8 +111,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   setChatChangeListener (f:(chatItems:Array<ChatMessage>) => void) {
     this._onChatChanged = f;
   }
-
-
 
   public initGraphicAndLoadAssets (canvas:HTMLCanvasElement)
   {
@@ -344,11 +343,11 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   /**
    * Join to party.
    * party type: party, duel
-   * @param partyType
+   * @param gamePartyType
    */
-  public joinToParty (partyType:string)
+  public joinToParty (gamePartyType:GamePartyType)
   {
-    console.log ('TetrinetNetworkLayer.joinToParty', partyType);
+    console.log ('TetrinetNetworkLayer.joinToParty', gamePartyType);
 
     //
     // Here we check if game already online
@@ -375,24 +374,24 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     PlayerNameHelper.requestPlayerName(() =>
     {
       // after load player name
-      this.connectToJoinParty(partyType)
+      this.connectToJoinParty(gamePartyType)
     });
 
   }
 
-  private connectToJoinParty (partyType:string)
+  private connectToJoinParty (gamePartyType:GamePartyType)
   {
-    console.log ('TetrinetNetworkLayer.connectToJoinParty', partyType);
-    SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(partyType), this._socketEventListener?.onErrorOnOpen)
+    console.log ('TetrinetNetworkLayer.connectToJoinParty', gamePartyType);
+    SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(gamePartyType), this._socketEventListener?.onErrorOnOpen)
   }
 
   /**
    * When socket connection open
-   * @param partyType
+   * @param gamePartyType
    */
-  private onJoinPartyConnectionOpen = (partyType:string) =>
+  private onJoinPartyConnectionOpen = (gamePartyType:GamePartyType) =>
   {
-    console.log ('TetrinetNetworkLayer.onJoinPartyConnectionOpen', partyType);
+    console.log ('TetrinetNetworkLayer.onJoinPartyConnectionOpen', gamePartyType);
 
     // when connection os open we can subscribe to sockets event
     if (this._socketEventListener?.onClose) {
@@ -403,7 +402,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // send handshake and waiting our data
     const request:StartRequest = {
       type: RequestTypes.join,
-      partyType: partyType,
+      partyType: gamePartyType,
       partyId: '',
       playerId: this._playerId,
       playerName: PlayerNameHelper.getPlayerName() // this._playerName
@@ -425,7 +424,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
     // when socket open prepare to game
     // this.game.prepareToGame(this);
-    this.prepareToGame(this);
+    this.prepareToGame(this, data.partyType);
 
     //
 
@@ -434,7 +433,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // this._gameDataEventListener?.onGameStateChange(GameState.searching)
     // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)
     (this.getCurrentScreen() as PlayScreen).setGameSearching()
-    debugger
   }
 
   /**
@@ -516,19 +514,17 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onBackResponse (data:BackToPartyResponse, failCallback: (message:string) => void)
   {
-
-    debugger
     // if it is fail
     if (!data.success) {
       failCallback(data.message)
       return;
     }
 
-    debugger
 
     // found our cup and update it
+    // todo: this is wrong party type
     // this.partyId = data.
-    this.prepareToGame(this, );
+    this.prepareToGame(this, GamePartyType.duel);
   }
 
   public oldPlayMethod (){
@@ -538,7 +534,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     {
       // prepare
       // this.game.prepareToGame(this)
-      this.prepareToGame(this)
+      this.prepareToGame(this, GamePartyType.duel)
 
       // when socket open we start game
       // this.game.playGame();

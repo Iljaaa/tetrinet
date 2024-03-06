@@ -30,6 +30,7 @@ import {PauseRequest, ResumeRequest} from "../types/requests";
 import {SocketSingleton} from "../../SocketSingleton";
 import {TetrinetSingleton} from "../../TetrinetSingleton";
 import {SendBonusRequest} from "../types/requests/SendBonusRequest";
+import {GamePartyType} from "../types/GamePartyType";
 
 
 /**
@@ -103,13 +104,6 @@ const CupsPosition:CupsPositionInterface = {
   4: {x: 768, y: 384},
 }
 
-/**
- * todo: move it to cup renderer
- */
-export enum DisplayTypes {
-  deadMatch = 'deadMatch',
-  duel = 'duel'
-}
 
 /**
  * @vaersion 0.0.1
@@ -122,6 +116,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private _state:GameState = GameState.ready;
+
+  /**
+   * Party type
+   * @private
+   */
+  private _partyType:GamePartyType = GamePartyType.duel;
 
   /**
    * Current game score
@@ -263,6 +263,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   public setGameEventListener (listener:PlayScreenEventListener):PlayScreen{
     this.listener = listener;
     return this
+  }
+
+  setPartyType(value: GamePartyType) {
+    this._partyType = value;
   }
 
   /**
@@ -496,9 +500,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cupRenderer?.renderCupWithFigure(this._cup);
     
     // render opponents cups
+    this._cupRenderer?.setCupSize((this._partyType === GamePartyType.party) ? CupSize.small16 : CupSize.middle24)
     Object.keys(this._cups).forEach((playerId:string, index:number) => {
       if (this._cups[playerId]) {
-        this._cupRenderer?.setCupSize(CupSize.small16)
         WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
         // todo: move position out of the screen
         // this._cupRenderer?.setPosition(400 + (400 * index), 32);
