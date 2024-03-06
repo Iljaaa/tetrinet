@@ -1,4 +1,4 @@
-import {SocketMessageEventListener} from "./SocketMessageEventListener";
+import {Message} from "../Tetrinet/types/messages";
 
 /**
  * Wrap up around socket
@@ -37,9 +37,8 @@ export class Socket
   
   /**
    * This is message event listener
-   * todo: refactor on callback message
    */
-  private messageEventListener:SocketMessageEventListener|undefined
+  private messageReceiveCallback?: (data:Message) => void
 
   /**
    *
@@ -67,10 +66,10 @@ export class Socket
   }
 
   /**
-   * Set event listener
+   * Set message receive callback
    */
-  setMessageListener (listener:SocketMessageEventListener){
-    this.messageEventListener = listener;
+  setMessageReceiveCallback (callback:(message:Message) => void){
+    this.messageReceiveCallback = callback;
   }
 
   setOnCloseCallback(value: () => void) {
@@ -110,13 +109,12 @@ export class Socket
     }
     
     // call event listener
-    if (this.messageEventListener) {
-      this.messageEventListener.onMessageReceive(data)
+    if (this.messageReceiveCallback) {
+      this.messageReceiveCallback(data)
     }
   }
   
   /**
-   * Todo: add to callback
    * @param error
    * @protected
    */

@@ -8,7 +8,6 @@ import {GameState, MessageTypes, RequestTypes} from "./Tetrinet/types";
 import {StartResponse} from "./Tetrinet/types/responses";
 import {ChatMessage} from "./Tetrinet/types/ChatMessage";
 import {PlayScreen, PlayScreenEventListener} from "./Tetrinet/screens/PlayScreen";
-import {SocketMessageEventListener} from "./Socket/SocketMessageEventListener";
 import {CupData} from "./Tetrinet/models/CupData";
 import {AddLineMessage, Message, SetMessage} from "./Tetrinet/types/messages";
 import {LetsPlayMessage} from "./Tetrinet/types/messages/LetsPlayMessage";
@@ -56,7 +55,7 @@ interface KeysPlayerMap {
 /**
  * Network layer is a bad idea all this fuctions we shold move to plat screen
  */
-export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventListener, SocketMessageEventListener
+export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventListener
 {
   /**
    * Party id
@@ -432,7 +431,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this._playerId = data.yourPlayerId
 
     // set listener when game starts
-    SocketSingleton.getInstance()?.setMessageListener(this);
+    SocketSingleton.getInstance()?.setMessageReceiveCallback(this.onMessageReceive);
 
     // when socket open prepare to game
     // this.game.prepareToGame(this);
