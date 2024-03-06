@@ -39,9 +39,10 @@ export type TetrinetEventListener = {
  * Socket events
  */
 export type TetrinetNetworkLayerSocketEvents = {
-  onError: () => void,
-  OnClose: () => void,
-  onGraphicsLoaded: () => void
+  // onError: () => void,
+  // onGraphicsLoaded: () => void
+  onErrorOnOpen: () => void,
+  onClose: () => void,
 }
 
 /**
@@ -102,6 +103,10 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     super();
   }
 
+  /**
+   * This is listener of sockets events
+   * @param listener
+   */
   setSocketEventListener(listener:TetrinetNetworkLayerSocketEvents){
       this._socketEventListener = listener
   }
@@ -159,7 +164,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
 
       // call listener method
-      this._socketEventListener?.onGraphicsLoaded();
+      // this._socketEventListener?.onGraphicsLoaded();
     })
   }
 
@@ -234,7 +239,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   }
 
   /**
-   * Part created and we get from server
+   * Party created and we get from server
    * signal to start the game
    */
   private processLetsPlay (data:LetsPlayMessage)
@@ -354,6 +359,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   public joinToParty (partyType:string)
   {
+    console.log ('TetrinetNetworkLayer.joinToParty', partyType);
+
     //
     // Here we check if game already online
     //
@@ -368,18 +375,16 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
         }
       }
       else {
-        debugger
-        alert ('It is not play cup');
+        alert ('fixme: It is not play cup');
       }
-
-
     }
 
     /**
      * This is not simple code
      * it load player name if it was not load
      */
-    PlayerNameHelper.requestPlayerName(() => {
+    PlayerNameHelper.requestPlayerName(() =>
+    {
       // after load player name
       this.connectToJoinParty(partyType)
     });
@@ -388,9 +393,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
   private connectToJoinParty (partyType:string)
   {
-
-
-    SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(partyType), this.onConnectionClose)
+    console.log ('TetrinetNetworkLayer.connectToJoinParty', partyType);
+    SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(partyType), this._socketEventListener?.onErrorOnOpen)
   }
 
   /**
@@ -399,6 +403,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinPartyConnectionOpen = (partyType:string) =>
   {
+    console.log ('TetrinetNetworkLayer.onJoinPartyConnectionOpen', partyType);
+
+    // when connection os open we can subscribe to sockets event
+    if (this._socketEventListener?.onClose) {
+      SocketSingleton.getInstance()?.setOnCloseCallback(this._socketEventListener.onClose)
+    }
+
+
     // send handshake and waiting our data
     const request:StartRequest = {
       type: RequestTypes.join,
@@ -420,7 +432,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this._playerId = data.yourPlayerId
 
     // set listener when game starts
-    SocketSingleton.getInstance()?.setListener(this);
+    SocketSingleton.getInstance()?.setMessageListener(this);
 
     // when socket open prepare to game
     // this.game.prepareToGame(this);
@@ -432,6 +444,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
     //
     if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)
+  }
+
+  /**
+   * todo: call callback
+   * When socket close connection
+   */
+  private onConnectionClose = () => {
+    alert ('Connection lost!!!');
   }
 
   /**
@@ -515,14 +535,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // found our cup and update it
     // this.partyId = data.
     this.prepareToGame(this, );
-  }
-
-  /**
-   * todo: call callback
-   * When socket close connection
-   */
-  private onConnectionClose = () => {
-    alert ('Connection lost!!!');
   }
 
   public oldPlayMethod (){

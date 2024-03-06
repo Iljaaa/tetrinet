@@ -51,7 +51,7 @@ class FeedbackModal extends React.PureComponent<Props, State>
   }
 
   render (){
-    return <MyModal isOpen={true}>
+    return <MyModal isOpen={false}>
       <div style={{fontSize: "2rem", width: "500px"}}>
         {(this.props.variant === 'issue') ? 'Issue report' : 'Feedback'}
       </div>

@@ -5,11 +5,16 @@ import {TetrinetNetworkLayerSocketEvents} from "../../Common/TetrinetNetworkLaye
 import {ClearGameDataInStorage, LoadGameDataFromStorage} from "../../process/store";
 import {BackModal} from "./BackModal";
 import {BackToPartyIsFail} from "./BackToPartyIsFail";
+import {ConnectionLostModal} from "./ConnectionLostModal";
+import {FailToConnectModal} from "./FailToConnectModal";
 
 type State = {
   showBackToGameModal: boolean,
   showBackToGameFailModal:boolean
   failMessage: string
+
+  showConnectionLost: boolean,
+  showFailToConnect: boolean,
 }
 
 class SocketsEventsAndModals extends React.PureComponent<{}, State> implements TetrinetNetworkLayerSocketEvents
@@ -19,30 +24,28 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
     showBackToGameModal: false,
     showBackToGameFailModal: false,
     failMessage: '',
+
+    showConnectionLost: false,
+    showFailToConnect: false
   }
 
-  componentDidMount() {
+  componentDidMount()
+  {
+    // throw the events
     TetrinetSingleton.getInstance().setSocketEventListener(this)
+
+    // write to event of first open error
+    // SocketSingleton.getInstance()?.setOnOpenError(this.onOpenError);
   }
 
-
-  OnClose(): void {
-    console.log ('SocketsEventsAndModals.onClose');
+  onClose = (): void  => {
+    this.setState({showConnectionLost: true})
   }
 
-  onError(): void {
-    console.log ('SocketsEventsAndModals.onError');
+  onErrorOnOpen = (): void => {
+    this.setState({showFailToConnect: true})
   }
 
-  onGraphicsLoaded(): void {
-    console.log ('SocketsEventsAndModals.onGraphicsLoaded');
-
-    // check data in storage
-    // todo: check date
-    const data = LoadGameDataFromStorage()
-    console.log ('SocketsEventsAndModals.onGraphicsLoaded', data);
-
-  }
 
   /**
    * Try to back to the game
@@ -126,11 +129,13 @@ class SocketsEventsAndModals extends React.PureComponent<{}, State> implements T
                  submit={this.onBackToStoredGame}
                  cancel={this.onCancelBackToStoredGame} />
 
-
       <BackToPartyIsFail isOpen={this.state.showBackToGameFailModal}
                          customStyles={customStyles}
                          message={this.state.failMessage}
                          cancel={this.onCloseBackFailModal}/>
+
+      {(this.state.showConnectionLost) && <ConnectionLostModal onClose={() => this.setState({showConnectionLost: false})} />}
+      {(this.state.showFailToConnect) && <FailToConnectModal onClose={() => this.setState({showFailToConnect: false})} />}
 
     </div>;
 

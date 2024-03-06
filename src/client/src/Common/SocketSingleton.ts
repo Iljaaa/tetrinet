@@ -15,13 +15,13 @@ export class SocketSingleton
    * @deprecate this method close and open new connection this is not correct
    * This is almost open but we always create new socket
    */
-  public static reOpenConnection(onOpenCallback:()=>void, onCloseCallback:()=>void)
+  public static reOpenConnection(onOpenCallback:()=>void, onOpenErrorCallback?:()=>void)
   {
     // before we try to close socket
     SocketSingleton.close()
 
     // create new instance
-    SocketSingleton.socketInstance = new Socket(onOpenCallback, onCloseCallback);
+    SocketSingleton.socketInstance = new Socket(onOpenCallback, onOpenErrorCallback);
   }
 
   /**

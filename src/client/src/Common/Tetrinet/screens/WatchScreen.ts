@@ -52,7 +52,7 @@ export class WatchScreen extends WebGlScreen implements SocketMessageEventListen
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
     
     // bind to socket events
-    SocketSingleton.getInstance()?.setListener(this);
+    SocketSingleton.getInstance()?.setMessageListener(this);
     
   }
   
