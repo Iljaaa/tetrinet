@@ -164,7 +164,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private playerBonuses: Array<Bonus> = [
     // Bonus.gravity, Bonus.gravity,
     // Bonus.switch, Bonus.switch,
-    // Bonus.quake, Bonus.bomb,
+    // Bonus.quake,
+    Bonus.bomb,
+    Bonus.bomb,
+    Bonus.bomb,
     // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,
     Bonus.clearSpecials, // Bonus.clear,Bonus.clear
   ];
@@ -1011,76 +1014,213 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private realiseBlockBombSpecial (sendState: boolean = true)
   {
+    // collect fields with bomb
+    const fieldsIndexedWithBomb:Array<number> = []
+
+    this._cup.getFields().forEach((f:Field, index:number) => {
+      if (f.bonus === Bonus.bomb) fieldsIndexedWithBomb.push(index)
+    })
+
+    if (fieldsIndexedWithBomb.length === 0) return;
+
+    // random files
+    const randomIndex = fieldsIndexedWithBomb[Math.floor(Math.random() * fieldsIndexedWithBomb.length)];
+
     // get random cell
-    let centerOfBlow:Coords = {
-      x: Math.floor(Math.random() * this._cup.getHeightInCells()),
-      y: Math.floor(Math.random() * this._cup.getWidthInCells())
-    }
+    let cob:Coords = this._cup.getCoordsByIndex(randomIndex)
 
-    // centerOfBlow = {y: 17, x: 6}
 
-    // if it is the bottom line
-    // let ifItIsATopLine = (centerOfBlow.y <= 0);
-    // let ifItIsABottomLine = (centerOfBlow.y >= this._cup.getHeightInCells() - 1);
-    // let ifItIsOnRightAge = (centerOfBlow.x >= this._cup.getWidthInCells() - 1);
-    // let ifItIsOnLeftEdge = (centerOfBlow.x <= 0);
-
-    //
-    // let centerOfBlowIndex = (centerOfBlow.y * this._cup.getWidthInCells()) + centerOfBlow.x
     // let centerOfBlowIndex = this._cup.getCellIndex(centerOfBlow.x, centerOfBlow.y)
 
     // clear center block
-    this._cup.clearBlockByCoords(centerOfBlow.x, centerOfBlow.y)
+    this._cup.clearBlockByCoords(cob.x, cob.y)
 
     // let pos:Coords = {x:0, y: 0}
     // let newPosition:Coords = {x:0, y: 0}
 
     // above
-    let pos = {x: centerOfBlow.x, y: centerOfBlow.y - 1}
-    let newPosition = {x: pos.x, y: pos.y - 2}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    let pos = {x: cob.x, y: cob.y - 1}
+    let coords = [
+      new Coords(cob.x, cob.y - 2),
+      new Coords(cob.x, cob.y - 3),
+      new Coords(cob.x, cob.y - 4),
+      new Coords(cob.x-1, cob.y - 2),
+      new Coords(cob.x-1, cob.y - 3),
+      new Coords(cob.x-1, cob.y - 4),
+      new Coords(cob.x+1, cob.y - 2),
+      new Coords(cob.x+1, cob.y - 3),
+      new Coords(cob.x+1, cob.y - 4),
+    ];
+    // random files
+    let randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
+
+    // above above
+    pos = {x: cob.x, y: cob.y - 2}
+    coords = [
+      new Coords(cob.x, cob.y - 3),
+      new Coords(cob.x-1, cob.y - 3),
+      new Coords(cob.x+1, cob.y - 3),
+      new Coords(cob.x, cob.y - 4),
+      new Coords(cob.x-1, cob.y - 4),
+      new Coords(cob.x+1, cob.y - 4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // right top
-    pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y - 1}
-    newPosition = {x: pos.x + 1, y: pos.y - 1}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x + 1, y: cob.y - 1}
+    coords = [
+      new Coords(cob.x+2, cob.y-2),
+      new Coords(cob.x+2, cob.y-3),
+      new Coords(cob.x+3, cob.y-2),
+      new Coords(cob.x+3, cob.y-3),
+      new Coords(cob.x+3, cob.y-4),
+      new Coords(cob.x+4, cob.y-3),
+      new Coords(cob.x+4, cob.y-4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // right
-    pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y}
-    newPosition = {x: pos.x + 2, y: pos.y}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x + 1, y: cob.y}
+    coords = [
+      new Coords(cob.x+2, cob.y),
+      new Coords(cob.x+3, cob.y),
+      new Coords(cob.x+4, cob.y),
+      new Coords(cob.x+2, cob.y-1),
+      new Coords(cob.x+3, cob.y-1),
+      new Coords(cob.x+4, cob.y-1),
+      new Coords(cob.x+2, cob.y+1),
+      new Coords(cob.x+3, cob.y+1),
+      new Coords(cob.x+4, cob.y+1),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
-    // right bottom
-    pos = {x: centerOfBlow.x + 1,y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x + 2, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    // right right
+    pos = {x: cob.x + 2, y: cob.y}
+    coords = [
+      new Coords(cob.x+3, cob.y),
+      new Coords(cob.x+3, cob.y-1),
+      new Coords(cob.x+3, cob.y+1),
+      new Coords(cob.x+4, cob.y),
+      new Coords(cob.x+4, cob.y-1),
+      new Coords(cob.x+4, cob.y+1),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
+
+    // // right bottom
+    pos = {x: cob.x + 1,y: cob.y + 1}
+    coords = [
+      new Coords(cob.x+2, cob.y+2),
+      new Coords(cob.x+2, cob.y+3),
+      new Coords(cob.x+3, cob.y+2),
+      new Coords(cob.x+3, cob.y+3),
+      new Coords(cob.x+3, cob.y+4),
+      new Coords(cob.x+4, cob.y+3),
+      new Coords(cob.x+4, cob.y+4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // bellow
-    pos = {x: centerOfBlow.x, y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x, y: cob.y + 1}
+    coords = [
+      new Coords(cob.x, cob.y + 2),
+      new Coords(cob.x, cob.y + 3),
+      new Coords(cob.x, cob.y + 4),
+      new Coords(cob.x-1, cob.y + 2),
+      new Coords(cob.x-1, cob.y + 3),
+      new Coords(cob.x-1, cob.y + 4),
+      new Coords(cob.x+1, cob.y + 2),
+      new Coords(cob.x+1, cob.y + 3),
+      new Coords(cob.x+1, cob.y + 4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
+
+    // below below
+    pos = {x: cob.x, y: cob.y + 2}
+    coords = [
+      new Coords(cob.x, cob.y + 3),
+      new Coords(cob.x-1, cob.y + 3),
+      new Coords(cob.x+1, cob.y + 3),
+      new Coords(cob.x, cob.y + 4),
+      new Coords(cob.x-1, cob.y + 4),
+      new Coords(cob.x+1, cob.y + 4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left bottom
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x - 2, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x - 1, y: cob.y + 1}
+    coords = [
+      new Coords(cob.x-2, cob.y+2),
+      new Coords(cob.x-2, cob.y+3),
+      new Coords(cob.x-3, cob.y+2),
+      new Coords(cob.x-3, cob.y+3),
+      new Coords(cob.x-3, cob.y+4),
+      new Coords(cob.x-4, cob.y+3),
+      new Coords(cob.x-4, cob.y+4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y}
-    newPosition = {x: pos.x - 2, y: pos.y}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x - 1, y: cob.y}
+    coords = [
+      new Coords(cob.x-2, cob.y),
+      new Coords(cob.x-3, cob.y),
+      new Coords(cob.x-4, cob.y),
+      new Coords(cob.x-2, cob.y-1),
+      new Coords(cob.x-3, cob.y-1),
+      new Coords(cob.x-4, cob.y-1),
+      new Coords(cob.x-2, cob.y+1),
+      new Coords(cob.x-3, cob.y+1),
+      new Coords(cob.x-4, cob.y+1),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
+
+    // left left
+    pos = {x: cob.x - 2, y: cob.y}
+    coords = [
+      new Coords(cob.x-3, cob.y),
+      new Coords(cob.x-3, cob.y+1),
+      new Coords(cob.x-3, cob.y-1),
+      new Coords(cob.x-4, cob.y),
+      new Coords(cob.x-4, cob.y+1),
+      new Coords(cob.x-4, cob.y-1),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left top
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y - 1}
-    newPosition = {x: pos.x - 1,y: pos.y - 1}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x - 1, y: cob.y - 1}
+    coords = [
+      new Coords(cob.x-2, cob.y-2),
+      new Coords(cob.x-2, cob.y-3),
+      new Coords(cob.x-3, cob.y-2),
+      new Coords(cob.x-3, cob.y-3),
+      new Coords(cob.x-3, cob.y-4),
+      new Coords(cob.x-4, cob.y-3),
+      new Coords(cob.x-4, cob.y-4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
 
