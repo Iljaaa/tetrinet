@@ -2,7 +2,6 @@ import React from "react";
 import {GameState} from "../../Common/Tetrinet/types";
 import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 import {TetrinetEventListener} from "../../Common/TetrinetNetworkLayer";
-import {PlayerNameHelper} from "../../Common/PlayerNameHelper";
 
 type State =
   {
