@@ -3,11 +3,10 @@ import {Button} from "../../shared/ui/Button/Button";
 import {MyModal} from "../../shared/ui/MyModal/MyModal";
 
 type Props = {
-  isOpen: boolean
-  onClose?: () => void
+  onClose: () => void
 }
 
-export const ConnectionLostModal = (props:Props) => <MyModal isOpen={props.isOpen}>
+export const ConnectionLostModal = (props:Props) => <MyModal isOpen={true}>
   <div style={{fontSize: "2rem", textAlign: "center"}}>
     The connection<br />to the server<br />was lost.
   </div>

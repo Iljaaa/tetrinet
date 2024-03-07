@@ -10,6 +10,7 @@ enum MessageType:string
     case start = 'start';
     case join = 'join';
     case back = 'back';
+    case leave = 'leave'; // player leave a game
     case set = 'set'; // this is when cup updated
     case pause = 'pause';
     case resume = 'resume';

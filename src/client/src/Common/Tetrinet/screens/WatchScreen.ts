@@ -4,7 +4,6 @@ import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 import {CupRenderer2} from "../CupRenderer2";
 
 import {CupImpl} from "../models/CupImpl";
-import {SocketMessageEventListener} from "../../Socket/SocketMessageEventListener";
 import {SocketSingleton} from "../../SocketSingleton";
 
 /*
@@ -16,7 +15,7 @@ import {SocketSingleton} from "../../SocketSingleton";
 /**
  * @vaersion 0.0.1
  */
-export class WatchScreen extends WebGlScreen implements SocketMessageEventListener
+export class WatchScreen extends WebGlScreen
 {
   
   /**
@@ -52,7 +51,7 @@ export class WatchScreen extends WebGlScreen implements SocketMessageEventListen
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
     
     // bind to socket events
-    SocketSingleton.getInstance()?.setListener(this);
+    SocketSingleton.getInstance()?.setMessageReceiveCallback(this.onMessageReceive);
     
   }
   

@@ -90,8 +90,25 @@ export class CupImpl implements Cup
       // people.push(person);
     }
 
-    this._state.fields[100].block = 1;
-    this._state.fields[102].block = 1;
+    // this._state.fields[100].block = 1;
+
+
+    this._state.fields[95].block = 2;
+    this._state.fields[104].block = 1;
+    this._state.fields[105].block = 1 ;
+    this._state.fields[106].block = 1;
+    this._state.fields[113].block = 2;
+    this._state.fields[114].block = 1;
+
+    this._state.fields[115].block = 0;
+    this._state.fields[115].bonus = Bonus.bomb;
+
+    this._state.fields[116].block = 1;
+    this._state.fields[117].block = 2;
+    this._state.fields[124].block = 1;
+    this._state.fields[125].block = 1;
+    this._state.fields[126].block = 1;
+    this._state.fields[135].block = 2;
     // this._state.fields[103].block = 0;
 
     this._state.fields[150].block = 1;
@@ -122,6 +139,7 @@ export class CupImpl implements Cup
     this._state.fields[180].block = 1;
     this._state.fields[181].block = 1;
     this._state.fields[182].block = 1;
+    this._state.fields[182].bonus = Bonus.bomb;
     this._state.fields[184].block = 1;
     this._state.fields[185].block = 1;
     this._state.fields[186].block = 1;
@@ -136,6 +154,7 @@ export class CupImpl implements Cup
     this._state.fields[194].block = 1;
     this._state.fields[196].block = 1;
     this._state.fields[197].block = 1;
+    this._state.fields[197].bonus = Bonus.bomb;
     this._state.fields[198].block = 1;
     this._state.fields[199].block = 1;
   }

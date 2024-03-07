@@ -82,27 +82,32 @@ class FirstTestSocket implements MessageComponentInterface
 
         // when connection closed we mark party as paused
         $party = $this->partiesPool->findPartyByPlayerId($conn->socketId);
-        if ($party)
-        {
-            // todo: not set pause just throw hin out of game
+        if (!$party) return;
 
-            // set party on pause
-            $party->setPause();
-            $party->sendToAllPlayers([
-                'type' => ResponseType::paused,
-                'initiator' => $conn->socketId,
-                'state' => $party->getGameState()
-            ]);
+        $player = $party->getPlayerById($conn->socketId);
+        if (!$player) return;
 
-            // todo: add log
+//        // set party on pause
+//        $party->setPause();
+//        $party->sendToAllPlayers([
+//            'type' => ResponseType::paused,
+//            'initiator' => $conn->socketId,
+//            'state' => $party->getGameState()
+//        ]);
 
-            // mark in party that user lost connection
-            $party->onConnectionClose($conn, function () use ($party)
-            {
-                // this is new method
-                $this->partiesPool->terminatePartyByPartyId($party->partyId);
-            });
+        // player may be offline if he leave game before
+        if (!$player->isOffLine()) {
+            $party->addChatMessage(sprintf('Connection with the user __%s__ was a loss', $player->getName()));
+            $party->sendChatToAllPlayers();
         }
+
+        // mark in party that user lost connection
+        $party->onConnectionClose($conn, function () use ($party)
+        {
+            // this is new method
+            $this->partiesPool->terminatePartyByPartyId($party->partyId);
+        });
+
     }
 
     /**
@@ -157,6 +162,7 @@ class FirstTestSocket implements MessageComponentInterface
             // case MessageType::start: $this->processStartParty($conn, $data); break;
             case MessageType::join: $this->processJoinToParty($conn, $data); break;
             case MessageType::back: $this->processBackToParty($conn, $data); break;
+            case MessageType::leave: $this->processLeaveToParty($conn, $data); break;
 
             case MessageType::pause: $this->processPause($conn, $data); break;
             case MessageType::resume: $this->processResume($conn, $data); break;
@@ -307,6 +313,33 @@ class FirstTestSocket implements MessageComponentInterface
      * @param array $data
      * @return void
      */
+    private function processLeaveToParty(ConnectionInterface $conn, array $data)
+    {
+        $this->info(__METHOD__);
+
+        $playerId = $data['playerId'] ?? '';
+        $partyId = $data['partyId'] ?? '';
+        $this->info('leave', ['partyId' => $partyId, 'playerId' => $playerId]);
+
+        $party = $this->partiesPool->getPartyById($partyId);
+        if (!$party) return;
+
+        // find player in the party
+        $player = $party->findPlayerById($playerId);
+        if (!$player) return;
+
+        // mark player as offline
+        $player->setOffline();
+
+        $party->addChatMessage(sprintf('Player __%s__ leave the game', $player->getName()));
+        $party->sendChatToAllPlayers();
+    }
+
+    /**
+     * @param ConnectionInterface $conn
+     * @param array $data
+     * @return void
+     */
     private function processPause(ConnectionInterface $conn, array $data): void
     {
         $this->info(__METHOD__);
@@ -327,7 +360,7 @@ class FirstTestSocket implements MessageComponentInterface
         $player = $party->getPlayerById($conn->socketId);
         $intent = $data['intent'] ?? '';
         $s = ($intent)
-            ? sprintf('Player __%s__ paused the game. because: %s', $player->getName(), $intent)
+            ? sprintf('Player __%s__ paused the game, because: %s', $player->getName(), $intent)
             : sprintf('Player __%s__ paused the game', $player->getName());
         $party->addChatMessage($s);
         $party->sendChatToAllPlayers();

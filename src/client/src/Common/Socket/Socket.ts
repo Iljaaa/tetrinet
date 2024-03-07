@@ -1,4 +1,4 @@
-import {SocketMessageEventListener} from "./SocketMessageEventListener";
+import {Message} from "../Tetrinet/types/messages";
 
 /**
  * Wrap up around socket
@@ -17,9 +17,15 @@ export class Socket
   private readonly onOpenCallback: (() => void) | undefined;
 
   /**
+   * Error appears error on open
+   * @private
+   */
+  private _onOpenErrorCallback?: () => void
+
+  /**
    * Callback when the connection close
    */
-  private onCloseCallback: (() => void) | undefined;
+  private _onCloseCallback?: () => void
   
   /**
    * This is special call back with
@@ -32,13 +38,18 @@ export class Socket
   /**
    * This is message event listener
    */
-  private eventListener:SocketMessageEventListener|undefined
-  
-  constructor(onOpenCallback: (() => void), onCloseCallback: (() => void))
+  private messageReceiveCallback?: (data:Message) => void
+
+  /**
+   *
+   * @param onOpenCallback
+   * @param onOpenError
+   */
+  constructor(onOpenCallback: (() => void), onOpenError?: (() => void))
   {
     // save callback
     this.onOpenCallback = onOpenCallback
-    this.onCloseCallback = onCloseCallback
+    this._onOpenErrorCallback = onOpenError
     
     try {
       this.socket = new WebSocket(window.tetrinetConfig.socketUrl)
@@ -50,22 +61,31 @@ export class Socket
     }
     catch (e) {
       console.error(e, 'Socket open exception')
+
     }
   }
-  
+
   /**
-   * Set event listener
+   * Set message receive callback
    */
-  setListener (listener:SocketMessageEventListener){
-    this.eventListener = listener;
+  setMessageReceiveCallback (callback:(message:Message) => void){
+    this.messageReceiveCallback = callback;
   }
-  
+
+  setOnCloseCallback(value: () => void) {
+    this._onCloseCallback = value;
+  }
+
   /**
    * On socket open
    */
-  protected onOpen = () => {
+  protected onOpen = () =>
+  {
     // rise callback
     if (this.onOpenCallback) this.onOpenCallback();
+
+    // clear error on open
+    if (this._onOpenErrorCallback) this._onOpenErrorCallback = undefined
   }
   
   /**
@@ -89,34 +109,35 @@ export class Socket
     }
     
     // call event listener
-    if (this.eventListener) {
-      this.eventListener.onMessageReceive(data)
+    if (this.messageReceiveCallback) {
+      this.messageReceiveCallback(data)
     }
   }
   
   /**
-   * Todo: add to callback
    * @param error
    * @protected
    */
   protected onError = (error:Event):void =>
   {
-    console.log(this.socket?.CLOSED, this.socket?.OPEN, 'Socket.OnError')
-
+    console.log(this.socket?.CLOSED, this.socket?.OPEN, 'Socket.OnError', this._onOpenErrorCallback)
     console.error (error);
-    alert('Socket error, restart application');
 
     // clear close callback, am not sure about it
     // it here because when we cannot connect also rised on close event
-    this.onCloseCallback = undefined
+    // this.onCloseCallback = undefined
 
-    // if (error.type === "error")
+    //
+    if (this._onOpenErrorCallback) this._onOpenErrorCallback()
   }
-  
-  protected onClose = (event:any):void =>
+
+  /**
+   * @param event
+   */
+  private onClose = (event:any):void =>
   {
-    console.log ('Socket.onClose');
-    if (this.onCloseCallback) this.onCloseCallback()
+    console.log ('Socket.onClose', this._onCloseCallback);
+    if (this._onCloseCallback) this._onCloseCallback()
   }
   
   /**
@@ -150,8 +171,11 @@ export class Socket
     this.socket.send(stringData);
   }
 
+  /**
+   * Clear close callback
+   */
   clearCloseCallback() {
-    this.onCloseCallback = undefined
+    this._onCloseCallback = undefined
   }
 
   /**

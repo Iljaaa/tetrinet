@@ -1,5 +1,5 @@
 import {Message} from "./Message";
-import {PartyType} from "../PartyType";
+import {GamePartyType} from "../GamePartyType";
 
 /**
  * This is lets play message for party
@@ -14,7 +14,7 @@ export interface LetsPlayMessage extends Message
     /**
      * This is party type
      */
-    partyType: PartyType,
+    partyType: GamePartyType,
 
     /**
      * It is your index in party,

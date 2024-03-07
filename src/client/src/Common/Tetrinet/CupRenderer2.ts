@@ -124,6 +124,9 @@ export class CupRenderer2
     if (size === CupSize.small16) {
       this.blockSize = 16;
     }
+    else if (size === CupSize.middle24){
+      this.blockSize = 24;
+    }
     else {
       this.blockSize = 32;
     }

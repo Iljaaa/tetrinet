@@ -15,10 +15,21 @@ export class Chat extends React.PureComponent<{}, State>
     chat: [],
     message: ''
   }
+  private _inputRef: React.RefObject<HTMLInputElement>;
+
+  constructor(props: {}, context: any) {
+    super(props, context);
+    this._inputRef = React.createRef()
+  }
 
   componentDidMount() {
     // we subscribe to events
     TetrinetSingleton.getInstance().setChatChangeListener(this.onChatChange)
+  }
+
+
+  componentWillUnmount() {
+    this._inputRef.current?.removeEventListener('keyup', this.onInputKeyUp);
   }
 
   onChatChange = (chat:Array<ChatMessage>) => {
@@ -29,13 +40,19 @@ export class Chat extends React.PureComponent<{}, State>
    * When focus on input message
    * w
    */
-  onMessageInputFocus = () =>
-  {
+  onMessageInputFocus = () => {
     TetrinetSingleton.getInstance().disableInput()
+    this._inputRef.current?.addEventListener('keyup', this.onInputKeyUp);
   }
 
   onMessageInputBlur = () => {
     TetrinetSingleton.getInstance().enableInput()
+    this._inputRef.current?.removeEventListener('keyup', this.onInputKeyUp);
+  }
+
+  onInputKeyUp = (event:KeyboardEvent):void => {
+    console.log (event.key, 'onInputKeyUp');
+    if (event.key === 'Enter') this.sendMessage()
   }
 
   sendMessage = () => {
@@ -62,6 +79,7 @@ export class Chat extends React.PureComponent<{}, State>
                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})}
                  onFocus={this.onMessageInputFocus}
                  onBlur={this.onMessageInputBlur}
+                 ref={this._inputRef}
           />
           <button onClick={this.sendMessage}>send</button>
         </div>

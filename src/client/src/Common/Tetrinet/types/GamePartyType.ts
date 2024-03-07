@@ -1,6 +1,6 @@
 
 
-export enum PartyType {
+export enum GamePartyType {
   duel = 'duel',
   party = 'party'
 }

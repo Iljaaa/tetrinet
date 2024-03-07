@@ -30,6 +30,7 @@ import {PauseRequest, ResumeRequest} from "../types/requests";
 import {SocketSingleton} from "../../SocketSingleton";
 import {TetrinetSingleton} from "../../TetrinetSingleton";
 import {SendBonusRequest} from "../types/requests/SendBonusRequest";
+import {GamePartyType} from "../types/GamePartyType";
 
 
 /**
@@ -103,10 +104,6 @@ const CupsPosition:CupsPositionInterface = {
   4: {x: 768, y: 384},
 }
 
-export enum DisplayTypes {
-  deadMatch = 'deadMatch',
-  duel = 'duel'
-}
 
 /**
  * @vaersion 0.0.1
@@ -119,6 +116,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private _state:GameState = GameState.ready;
+
+  /**
+   * Party type
+   * @private
+   */
+  private _partyType:GamePartyType = GamePartyType.duel;
 
   /**
    * Current game score
@@ -161,7 +164,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private playerBonuses: Array<Bonus> = [
     // Bonus.gravity, Bonus.gravity,
     // Bonus.switch, Bonus.switch,
-    // Bonus.quake, Bonus.bomb,
+    // Bonus.quake,
+    Bonus.bomb,
+    Bonus.bomb,
+    Bonus.bomb,
     // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,
     Bonus.clearSpecials, // Bonus.clear,Bonus.clear
   ];
@@ -185,13 +191,23 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private textsHeight = 100;
 
+  /**
+   * todo: refactor textures to static objects
+   * @private
+   */
   private pausedTexture:Paused;
   private specialBG:SpecialBG;
 
   /**
+   * Callback about change game state
+   * @private
+   */
+  private _onStateChangeCallback?: (newGameState:GameState) => void
+
+  /**
    * In this constructor we create cup
    */
-  constructor(game:Tetrinet)
+  constructor(game:Tetrinet, onChangeGameStateCallback: (newGameState:GameState) => void)
   {
     super(game)
     
@@ -204,12 +220,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // init textures
     this.pausedTexture = new Paused();
     this.specialBG = new SpecialBG();
-
-    // generate next figure
-    // this._nextFigure = this.generateNewFigure();
-
-    // next figure random color
-    // this._nextFigureColor = GenerateRandomColor();
     
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
@@ -220,6 +230,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       200, 200, 32, 32,
       0, 0, 200, 200
     ))
+
+    // save game status change callback
+    this._onStateChangeCallback = onChangeGameStateCallback
 
     // bind this to input listener
     this.game.getInput().setListener(this);
@@ -236,7 +249,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   private onWindowBlur = () => {
     if (this._state === GameState.running) {
-      this.sendPauseRequest('Window lost focus')
+      this.sendPauseRequest('window lost focus')
     }
   }
 
@@ -253,6 +266,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   public setGameEventListener (listener:PlayScreenEventListener):PlayScreen{
     this.listener = listener;
     return this
+  }
+
+  setPartyType(value: GamePartyType) {
+    this._partyType = value;
   }
 
   /**
@@ -285,7 +302,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     console.log('PlayScreen.start')
     
     // finally set run status
-    this._state = GameState.running
+    this.setGameRunning()
     
     // call first callback
     // I'm not sure that it need to be here
@@ -350,6 +367,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   pause (){
     if (this._state !== GameState.running) return;
     this._state = GameState.paused
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
   /**
@@ -359,10 +377,27 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // is game not on the pause
     if (this._state !== GameState.paused) return;
     this._state = GameState.running
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
   gameOver() {
     this._state = GameState.over;
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
+  }
+
+  setGameRunning() {
+    this._state = GameState.running
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
+  }
+
+  setGameSearching(){
+    this._state = GameState.searching
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
+  }
+
+  setGameWaiting(){
+    this._state = GameState.waiting
+    if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
   /**
@@ -468,9 +503,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cupRenderer?.renderCupWithFigure(this._cup);
     
     // render opponents cups
+    this._cupRenderer?.setCupSize((this._partyType === GamePartyType.party) ? CupSize.small16 : CupSize.middle24)
     Object.keys(this._cups).forEach((playerId:string, index:number) => {
       if (this._cups[playerId]) {
-        this._cupRenderer?.setCupSize(CupSize.small16)
         WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
         // todo: move position out of the screen
         // this._cupRenderer?.setPosition(400 + (400 * index), 32);
@@ -979,76 +1014,213 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private realiseBlockBombSpecial (sendState: boolean = true)
   {
+    // collect fields with bomb
+    const fieldsIndexedWithBomb:Array<number> = []
+
+    this._cup.getFields().forEach((f:Field, index:number) => {
+      if (f.bonus === Bonus.bomb) fieldsIndexedWithBomb.push(index)
+    })
+
+    if (fieldsIndexedWithBomb.length === 0) return;
+
+    // random files
+    const randomIndex = fieldsIndexedWithBomb[Math.floor(Math.random() * fieldsIndexedWithBomb.length)];
+
     // get random cell
-    let centerOfBlow:Coords = {
-      x: Math.floor(Math.random() * this._cup.getHeightInCells()),
-      y: Math.floor(Math.random() * this._cup.getWidthInCells())
-    }
+    let cob:Coords = this._cup.getCoordsByIndex(randomIndex)
 
-    // centerOfBlow = {y: 17, x: 6}
 
-    // if it is the bottom line
-    // let ifItIsATopLine = (centerOfBlow.y <= 0);
-    // let ifItIsABottomLine = (centerOfBlow.y >= this._cup.getHeightInCells() - 1);
-    // let ifItIsOnRightAge = (centerOfBlow.x >= this._cup.getWidthInCells() - 1);
-    // let ifItIsOnLeftEdge = (centerOfBlow.x <= 0);
-
-    //
-    // let centerOfBlowIndex = (centerOfBlow.y * this._cup.getWidthInCells()) + centerOfBlow.x
     // let centerOfBlowIndex = this._cup.getCellIndex(centerOfBlow.x, centerOfBlow.y)
 
     // clear center block
-    this._cup.clearBlockByCoords(centerOfBlow.x, centerOfBlow.y)
+    this._cup.clearBlockByCoords(cob.x, cob.y)
 
     // let pos:Coords = {x:0, y: 0}
     // let newPosition:Coords = {x:0, y: 0}
 
     // above
-    let pos = {x: centerOfBlow.x, y: centerOfBlow.y - 1}
-    let newPosition = {x: pos.x, y: pos.y - 2}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    let pos = {x: cob.x, y: cob.y - 1}
+    let coords = [
+      new Coords(cob.x, cob.y - 2),
+      new Coords(cob.x, cob.y - 3),
+      new Coords(cob.x, cob.y - 4),
+      new Coords(cob.x-1, cob.y - 2),
+      new Coords(cob.x-1, cob.y - 3),
+      new Coords(cob.x-1, cob.y - 4),
+      new Coords(cob.x+1, cob.y - 2),
+      new Coords(cob.x+1, cob.y - 3),
+      new Coords(cob.x+1, cob.y - 4),
+    ];
+    // random files
+    let randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
+
+    // above above
+    pos = {x: cob.x, y: cob.y - 2}
+    coords = [
+      new Coords(cob.x, cob.y - 3),
+      new Coords(cob.x-1, cob.y - 3),
+      new Coords(cob.x+1, cob.y - 3),
+      new Coords(cob.x, cob.y - 4),
+      new Coords(cob.x-1, cob.y - 4),
+      new Coords(cob.x+1, cob.y - 4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // right top
-    pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y - 1}
-    newPosition = {x: pos.x + 1, y: pos.y - 1}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x + 1, y: cob.y - 1}
+    coords = [
+      new Coords(cob.x+2, cob.y-2),
+      new Coords(cob.x+2, cob.y-3),
+      new Coords(cob.x+3, cob.y-2),
+      new Coords(cob.x+3, cob.y-3),
+      new Coords(cob.x+3, cob.y-4),
+      new Coords(cob.x+4, cob.y-3),
+      new Coords(cob.x+4, cob.y-4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // right
-    pos = {x: centerOfBlow.x + 1, y: centerOfBlow.y}
-    newPosition = {x: pos.x + 2, y: pos.y}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x + 1, y: cob.y}
+    coords = [
+      new Coords(cob.x+2, cob.y),
+      new Coords(cob.x+3, cob.y),
+      new Coords(cob.x+4, cob.y),
+      new Coords(cob.x+2, cob.y-1),
+      new Coords(cob.x+3, cob.y-1),
+      new Coords(cob.x+4, cob.y-1),
+      new Coords(cob.x+2, cob.y+1),
+      new Coords(cob.x+3, cob.y+1),
+      new Coords(cob.x+4, cob.y+1),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
-    // right bottom
-    pos = {x: centerOfBlow.x + 1,y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x + 2, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    // right right
+    pos = {x: cob.x + 2, y: cob.y}
+    coords = [
+      new Coords(cob.x+3, cob.y),
+      new Coords(cob.x+3, cob.y-1),
+      new Coords(cob.x+3, cob.y+1),
+      new Coords(cob.x+4, cob.y),
+      new Coords(cob.x+4, cob.y-1),
+      new Coords(cob.x+4, cob.y+1),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
+
+    // // right bottom
+    pos = {x: cob.x + 1,y: cob.y + 1}
+    coords = [
+      new Coords(cob.x+2, cob.y+2),
+      new Coords(cob.x+2, cob.y+3),
+      new Coords(cob.x+3, cob.y+2),
+      new Coords(cob.x+3, cob.y+3),
+      new Coords(cob.x+3, cob.y+4),
+      new Coords(cob.x+4, cob.y+3),
+      new Coords(cob.x+4, cob.y+4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // bellow
-    pos = {x: centerOfBlow.x, y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x, y: cob.y + 1}
+    coords = [
+      new Coords(cob.x, cob.y + 2),
+      new Coords(cob.x, cob.y + 3),
+      new Coords(cob.x, cob.y + 4),
+      new Coords(cob.x-1, cob.y + 2),
+      new Coords(cob.x-1, cob.y + 3),
+      new Coords(cob.x-1, cob.y + 4),
+      new Coords(cob.x+1, cob.y + 2),
+      new Coords(cob.x+1, cob.y + 3),
+      new Coords(cob.x+1, cob.y + 4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
+
+    // below below
+    pos = {x: cob.x, y: cob.y + 2}
+    coords = [
+      new Coords(cob.x, cob.y + 3),
+      new Coords(cob.x-1, cob.y + 3),
+      new Coords(cob.x+1, cob.y + 3),
+      new Coords(cob.x, cob.y + 4),
+      new Coords(cob.x-1, cob.y + 4),
+      new Coords(cob.x+1, cob.y + 4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left bottom
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y + 1}
-    newPosition = {x: pos.x - 2, y: pos.y + 2}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x - 1, y: cob.y + 1}
+    coords = [
+      new Coords(cob.x-2, cob.y+2),
+      new Coords(cob.x-2, cob.y+3),
+      new Coords(cob.x-3, cob.y+2),
+      new Coords(cob.x-3, cob.y+3),
+      new Coords(cob.x-3, cob.y+4),
+      new Coords(cob.x-4, cob.y+3),
+      new Coords(cob.x-4, cob.y+4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y}
-    newPosition = {x: pos.x - 2, y: pos.y}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x - 1, y: cob.y}
+    coords = [
+      new Coords(cob.x-2, cob.y),
+      new Coords(cob.x-3, cob.y),
+      new Coords(cob.x-4, cob.y),
+      new Coords(cob.x-2, cob.y-1),
+      new Coords(cob.x-3, cob.y-1),
+      new Coords(cob.x-4, cob.y-1),
+      new Coords(cob.x-2, cob.y+1),
+      new Coords(cob.x-3, cob.y+1),
+      new Coords(cob.x-4, cob.y+1),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
+    this._cup.clearBlockByCoords(pos.x, pos.y)
+
+    // left left
+    pos = {x: cob.x - 2, y: cob.y}
+    coords = [
+      new Coords(cob.x-3, cob.y),
+      new Coords(cob.x-3, cob.y+1),
+      new Coords(cob.x-3, cob.y-1),
+      new Coords(cob.x-4, cob.y),
+      new Coords(cob.x-4, cob.y+1),
+      new Coords(cob.x-4, cob.y-1),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
     // left top
-    pos = {x: centerOfBlow.x - 1, y: centerOfBlow.y - 1}
-    newPosition = {x: pos.x - 1,y: pos.y - 1}
-    this._cup.copyBlockByCoords(pos.x, pos.y, newPosition.x, newPosition.y)
+    pos = {x: cob.x - 1, y: cob.y - 1}
+    coords = [
+      new Coords(cob.x-2, cob.y-2),
+      new Coords(cob.x-2, cob.y-3),
+      new Coords(cob.x-3, cob.y-2),
+      new Coords(cob.x-3, cob.y-3),
+      new Coords(cob.x-3, cob.y-4),
+      new Coords(cob.x-4, cob.y-3),
+      new Coords(cob.x-4, cob.y-4),
+    ];
+    randomPos = coords[Math.floor(Math.random() * coords.length)];
+    this._cup.copyBlockByCoords(pos.x, pos.y, randomPos.x, randomPos.y)
     this._cup.clearBlockByCoords(pos.x, pos.y)
 
 
@@ -1108,7 +1280,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       }
     }
   }
-
 
   /**
    * Implementation of block quake bones

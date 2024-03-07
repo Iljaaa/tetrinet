@@ -236,7 +236,7 @@ class Party
         }
 
         // is all players offline we party should be terminated
-        $onLinePlayers = array_filter($this->players, fn(Player $p) => $p->state == PlayerState::online);
+        $onLinePlayers = array_filter($this->players, fn(Player $p) => $p->isOnLine());
         Log::channel('socket')->info('after filter', ['count($onLinePlayers)' => count($onLinePlayers)]);
         if (count($onLinePlayers) == 0) {
             $onTerminate();

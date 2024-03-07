@@ -85,6 +85,24 @@ class Player
     }
 
     /**
+     * Is player inline
+     * @return bool
+     */
+    public function isOnLine (): bool
+    {
+        return $this->state == PlayerState::online;
+    }
+
+    /**
+     * Is player inline
+     * @return bool
+     */
+    public function isOffLine (): bool
+    {
+        return $this->state == PlayerState::offline;
+    }
+
+    /**
      * Set status offline
      * @return void
      */

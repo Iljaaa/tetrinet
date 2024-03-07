@@ -8,7 +8,6 @@ import {GameState, MessageTypes, RequestTypes} from "./Tetrinet/types";
 import {StartResponse} from "./Tetrinet/types/responses";
 import {ChatMessage} from "./Tetrinet/types/ChatMessage";
 import {PlayScreen, PlayScreenEventListener} from "./Tetrinet/screens/PlayScreen";
-import {SocketMessageEventListener} from "./Socket/SocketMessageEventListener";
 import {CupData} from "./Tetrinet/models/CupData";
 import {AddLineMessage, Message, SetMessage} from "./Tetrinet/types/messages";
 import {LetsPlayMessage} from "./Tetrinet/types/messages/LetsPlayMessage";
@@ -20,6 +19,8 @@ import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyRespons
 import {ChatMessageRequest} from "./Tetrinet/types/requests/ChatMessageRequest";
 import {ReceiveChatMessage} from "./Tetrinet/types/messages/ReceiveChatMessage";
 import {PlayerNameHelper} from "./PlayerNameHelper";
+import {GamePartyType} from "./Tetrinet/types/GamePartyType";
+import {LeaveRequest} from "./Tetrinet/types/requests/LeaveRequest";
 
 /**
  * Game macro data changes
@@ -39,9 +40,10 @@ export type TetrinetEventListener = {
  * Socket events
  */
 export type TetrinetNetworkLayerSocketEvents = {
-  onError: () => void,
-  OnClose: () => void,
-  onGraphicsLoaded: () => void
+  // onError: () => void,
+  // onGraphicsLoaded: () => void
+  onErrorOnOpen: () => void,
+  onClose: () => void,
 }
 
 /**
@@ -55,7 +57,7 @@ interface KeysPlayerMap {
 /**
  * Network layer is a bad idea all this fuctions we shold move to plat screen
  */
-export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventListener, SocketMessageEventListener
+export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventListener
 {
   /**
    * Party id
@@ -91,17 +93,15 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private _onChatChanged?: (items:ChatMessage[]) => void = undefined
 
-  /**
-   * this callback for buttons search
-   *
-   */
-  private _onStateChangeForButton?:(gameState:GameState) => void = undefined
-
   // if it comments al stop working
   constructor() {
     super();
   }
 
+  /**
+   * This is listener of sockets events
+   * @param listener
+   */
   setSocketEventListener(listener:TetrinetNetworkLayerSocketEvents){
       this._socketEventListener = listener
   }
@@ -111,13 +111,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   setChatChangeListener (f:(chatItems:Array<ChatMessage>) => void) {
     this._onChatChanged = f;
-  }
-
-  /**
-   *
-   */
-  setOnGameStateChangeForButtons (f:(gameState:GameState) => void){
-    this._onStateChangeForButton = f;
   }
 
   public initGraphicAndLoadAssets (canvas:HTMLCanvasElement)
@@ -159,7 +152,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
 
       // call listener method
-      this._socketEventListener?.onGraphicsLoaded();
+      // this._socketEventListener?.onGraphicsLoaded();
     })
   }
 
@@ -215,7 +208,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * it is here because we need to get event that party starts
    * @param data
    */
-  onMessageReceive(data: Message): void
+  onMessageReceive = (data: Message): void =>
   {
     switch (data.type) {
       // party is created, it is time to play
@@ -234,7 +227,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   }
 
   /**
-   * Part created and we get from server
+   * Party created and we get from server
    * signal to start the game
    */
   private processLetsPlay (data:LetsPlayMessage)
@@ -273,8 +266,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.playGame();
 
     // call different callbacks
-    this._gameDataEventListener?.onGameStateChange(GameState.running)
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.running)
+    // this._gameDataEventListener?.onGameStateChange(GameState.running)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.running)
   }
 
   /**
@@ -340,8 +333,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.setCupState(mineCup.state);
 
     //
-    this._gameDataEventListener?.onGameStateChange(GameState.over)
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.over);
+    // this._gameDataEventListener?.onGameStateChange(GameState.over)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.over);
+    (this.getCurrentScreen() as PlayScreen).gameOver()
 
     // clear game state in store
     ClearGameDataInStorage()
@@ -350,10 +344,12 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   /**
    * Join to party.
    * party type: party, duel
-   * @param partyType
+   * @param gamePartyType
    */
-  public joinToParty (partyType:string)
+  public joinToParty (gamePartyType:GamePartyType)
   {
+    console.log ('TetrinetNetworkLayer.joinToParty', gamePartyType);
+
     //
     // Here we check if game already online
     //
@@ -368,41 +364,46 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
         }
       }
       else {
-        debugger
-        alert ('It is not play cup');
+        alert ('fixme: It is not play cup');
       }
-
-
     }
 
     /**
      * This is not simple code
      * it load player name if it was not load
      */
-    PlayerNameHelper.requestPlayerName(() => {
+    PlayerNameHelper.requestPlayerName(() =>
+    {
       // after load player name
-      this.connectToJoinParty(partyType)
+      this.connectToJoinParty(gamePartyType)
     });
 
   }
 
-  private connectToJoinParty (partyType:string)
+  private connectToJoinParty (gamePartyType:GamePartyType)
   {
-
-
-    SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(partyType), this.onConnectionClose)
+    console.log ('TetrinetNetworkLayer.connectToJoinParty', gamePartyType);
+    SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(gamePartyType), this._socketEventListener?.onErrorOnOpen)
   }
 
   /**
    * When socket connection open
-   * @param partyType
+   * @param gamePartyType
    */
-  private onJoinPartyConnectionOpen = (partyType:string) =>
+  private onJoinPartyConnectionOpen = (gamePartyType:GamePartyType) =>
   {
+    console.log ('TetrinetNetworkLayer.onJoinPartyConnectionOpen', gamePartyType);
+
+    // when connection os open we can subscribe to sockets event
+    if (this._socketEventListener?.onClose) {
+      SocketSingleton.getInstance()?.setOnCloseCallback(this._socketEventListener.onClose)
+    }
+
+
     // send handshake and waiting our data
     const request:StartRequest = {
       type: RequestTypes.join,
-      partyType: partyType,
+      partyType: gamePartyType,
       partyId: '',
       playerId: this._playerId,
       playerName: PlayerNameHelper.getPlayerName() // this._playerName
@@ -416,22 +417,32 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinResponse = (data:StartResponse) =>
   {
-
+    //
     this._playerId = data.yourPlayerId
 
     // set listener when game starts
-    SocketSingleton.getInstance()?.setListener(this);
+    SocketSingleton.getInstance()?.setMessageReceiveCallback(this.onMessageReceive);
 
     // when socket open prepare to game
     // this.game.prepareToGame(this);
-    this.prepareToGame(this);
+    this.prepareToGame(this, data.partyType);
 
     //
-    this._gameDataEventListener?.onGameStateChange(GameState.searching)
-    this._gameDataEventListener?.onPlayerIdChange(this._playerId)
 
-    //
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)
+    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
+
+    // this._gameDataEventListener?.onGameStateChange(GameState.searching)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)
+    (this.getCurrentScreen() as PlayScreen).setGameSearching()
+  }
+
+  /**
+   * @deprecated
+   * todo: call callback
+   * When socket close connection
+   */
+  private onConnectionClose = () => {
+    alert ('Connection lost!!!');
   }
 
   /**
@@ -442,13 +453,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // close socket
     SocketSingleton.close();
 
-    //
-    this._gameDataEventListener?.onGameStateChange(GameState.waiting)
-    this._gameDataEventListener?.onPlayerIdChange('')
+    // clear player id
+    this._playerId = '';
+    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
 
     //
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
-
+    // this._gameDataEventListener?.onGameStateChange(GameState.waiting)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
+    (this.getCurrentScreen() as PlayScreen).setGameWaiting()
   }
 
   /**
@@ -456,18 +468,30 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   public quitGame ()
   {
+    debugger
     // close socket
+
+    // this.setGameOver()
+    const data:LeaveRequest = {
+      type: RequestTypes.leave,
+      partyId: this._partyId,
+      playerId: this._playerId
+    }
+
+    // send leave message
+    SocketSingleton.getInstance()?.sendData(data)
+
+    // close connection
     SocketSingleton.close();
 
-    this.setGameOver()
+    // clear player id
+    this._playerId = '';
+    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
 
-    //
-    this._gameDataEventListener?.onGameStateChange(GameState.waiting)
-    this._gameDataEventListener?.onPlayerIdChange('')
-
-    //
-    if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
-
+    // back to waiting state
+    // this._gameDataEventListener?.onGameStateChange(GameState.waiting)
+    // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
+    (this.getCurrentScreen() as PlayScreen).setGameWaiting()
   }
 
   /**
@@ -502,27 +526,17 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onBackResponse (data:BackToPartyResponse, failCallback: (message:string) => void)
   {
-
-    debugger
     // if it is fail
     if (!data.success) {
       failCallback(data.message)
       return;
     }
 
-    debugger
 
     // found our cup and update it
+    // todo: this is wrong party type
     // this.partyId = data.
-    this.prepareToGame(this, );
-  }
-
-  /**
-   * todo: call callback
-   * When socket close connection
-   */
-  private onConnectionClose = () => {
-    alert ('Connection lost!!!');
+    this.prepareToGame(this, GamePartyType.duel);
   }
 
   public oldPlayMethod (){
@@ -532,14 +546,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     {
       // prepare
       // this.game.prepareToGame(this)
-      this.prepareToGame(this)
+      this.prepareToGame(this, GamePartyType.duel)
 
       // when socket open we start game
       // this.game.playGame();
       this.playGame();
 
       //
-      this._gameDataEventListener?.onGameStateChange(GameState.running)
+      // this._gameDataEventListener?.onGameStateChange(GameState.running)
     }, () => {})
   }
 
