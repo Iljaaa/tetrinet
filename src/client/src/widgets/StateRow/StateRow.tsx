@@ -25,11 +25,6 @@ type State =
      * this is your socket id
      */
     playerId: string,
-
-    /**
-     * Display player name
-     */
-    playerName: string
   }
 
 
@@ -43,15 +38,8 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
     partyId: "",
     playerId: "",
     score: 0,
-    playerName: ''
   }
 
-  constructor(props: {}, context: any) {
-    super(props, context);
-
-    // write listener to change
-    PlayerNameHelper.setPlayerNameChangeListener(this.onPlayerNameChange)
-  }
 
   /**
    *
@@ -63,9 +51,6 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
   }
 
 
-  onPlayerNameChange = (newPlayerName: string): void => {
-    this.setState({playerName: newPlayerName})
-  }
 
   onGameStateChange(state: GameState): void {
     this.setState({currentGameState: state})
@@ -88,12 +73,6 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
     return <div style={{padding: "0 0 .75rem 2rem"}}>
       <div style={{display: "flex", alignItems: "center"}}>
         <div>score <b>{this.state.score}</b></div>
-        <div style={{margin: "0 0 0 1rem"}}>
-          name: <b>{PlayerNameHelper.getPlayerName()}</b>
-          &nbsp;
-          <span style={{color: "blue", textDecoration: 'underline', cursor: "pointer"}}
-                onClick={() => PlayerNameHelper.editPlayerName()}>edit</span>
-        </div>
         <div style={{margin: "0 0 0 1rem"}}>state: <b>{this.state.currentGameState}</b></div>
         <div style={{margin: "0 0 0 1rem"}}>partyId: <b>{this.state.partyId}</b></div>
         <div style={{margin: "0 0 0 1rem"}}>playerId: <b>{this.state.playerId}</b></div>

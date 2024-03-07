@@ -6,3 +6,33 @@
     width: 100%;
     display: flex;
 }
+
+.HeaderWrapper {
+    display: flex;
+    align-items: center;
+}
+
+.UserBlock {
+    color: black;
+    .UserName {
+        background: #ded9c6;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        padding: .5rem 1rem;
+    }
+
+    .UserNameEditBlock {
+        text-align: right;
+        > div {
+            display: inline-block;
+            background: #ded9c6;
+            padding: 0 1rem .2rem 1rem;
+            color: #ef7f57;
+            cursor: pointer;
+            &:hover {
+                color: navy;
+            }
+        }
+    }
+}
