@@ -3,6 +3,10 @@ import {Container} from "../../shared/ui/Container/Container";
 import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 import {ChatMessage} from "../../Common/Tetrinet/types/ChatMessage";
 import {MarkDown} from "../../process/MarkDown";
+import {Input} from "../../shared/ui/Input/Input";
+import {Button} from "../../shared/ui/Button/Button";
+
+import styles from "./Chat.module.css"
 
 type State = {
   chat: Array<ChatMessage>,
@@ -67,22 +71,26 @@ export class Chat extends React.PureComponent<{}, State>
     return <Container variant={"gray"}>
       <div style={{padding: '0 2rem'}}>
         <h2>Chat</h2>
-        <div>
+        <div style={{display: "flex", alignItems: "center"}}>
+          <div>
+            <Input type="text" value={this.state.message}
+                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})}
+                   onFocus={this.onMessageInputFocus}
+                   onBlur={this.onMessageInputBlur}
+                   ref={this._inputRef} style={{width: "400px", marginRight: "2rem"}}/>
+          </div>
+          <div>
+            <Button onClick={this.sendMessage} variant={"small"}>send</Button>
+          </div>
+        </div>
+        {this.state.chat.length > 0 && <div className={styles.ChtOutputWrap}>
           {this.state.chat.reverse().map((c: ChatMessage, index: number) => {
             return <div key={`chat_item_${index}`}><strong>{c.playerName}</strong>:
-              <span dangerouslySetInnerHTML={{__html: MarkDown(c.message)}} />
+              <span dangerouslySetInnerHTML={{__html: MarkDown(c.message)}}/>
               &nbsp;<i style={{fontSize: "80%"}}>{c.date}</i></div>
           })}
         </div>
-        <div style={{margin: "1rem 0 0 0", display: "flex", alignItems: "center"}}>
-          <input type="text" value={this.state.message}
-                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})}
-                 onFocus={this.onMessageInputFocus}
-                 onBlur={this.onMessageInputBlur}
-                 ref={this._inputRef}
-          />
-          <button onClick={this.sendMessage}>send</button>
-        </div>
+        }
       </div>
     </Container>
   }

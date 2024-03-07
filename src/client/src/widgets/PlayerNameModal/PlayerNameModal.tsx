@@ -4,6 +4,7 @@ import {MyModal} from "../../shared/ui/MyModal/MyModal";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
 import {PlayerNameHelper} from "../../Common/PlayerNameHelper";
+import {Input} from "../../shared/ui/Input/Input";
 
 type Props = {
   // onSubmit: () => void
@@ -60,11 +61,11 @@ export class PlayerNameModal extends React.PureComponent<Props, State>
     return <MyModal isOpen={this.state.isOpen}>
       <div style={{fontSize: "2rem", textAlign: "center"}}>Enter your name</div>
       <div style={{margin: "2rem 0", display: "flex", justifyContent: "center"}}>
-        <input type="text"
+        <Input type="text"
                style={{width: "250px", fontSize: "2rem", textAlign: "center", padding: ".5rem"}}
                maxLength={100}
                value={this.state.inputName}
-               onChange={(event:React.ChangeEvent<HTMLInputElement>) => this.setState({inputName: event.target.value})}></input>
+               onChange={(event:React.ChangeEvent<HTMLInputElement>) => this.setState({inputName: event.target.value})}></Input>
       </div>
 
       <div style={{marginTop: '1rem', textAlign: "center"}}>

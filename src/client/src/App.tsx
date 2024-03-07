@@ -31,6 +31,7 @@ function App()
 
       </div>
       <Footer />
+
       <SocketsEventsAndModals/>
       <PlayerNameModal />
       <FeedbackModal isOpen={true} onClose={() => {}} variant={'feedback'} />

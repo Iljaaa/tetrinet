@@ -17,9 +17,9 @@ export const Todo = () => {
         <li>pauses limit</li>
         <li>set nice player name</li>
         <li>nice message when player leave a game and when connection lost</li>
-        <li>nice view for chat</li>
         <li>when some one live or lost connection check end of the game</li>
         <li>when some one live or lost connection write on cup suck information???</li>
+        <li>rebalance special blocks</li>
       </ul>
       <h2>Back log</h2>
       <ul>
