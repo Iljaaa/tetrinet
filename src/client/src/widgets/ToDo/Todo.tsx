@@ -11,12 +11,11 @@ export const Todo = () => {
         <li>pause in just play mode</li>
         <li>there bug: if we first just play tetris and then click find game </li>
         <li>remove special blocks from just play cup</li>
-        <li>bug: if figure to long and it upper than cup, it drw some strange</li>
+        <li>bug: if figure to long and it upper than cup, it draw some strange</li>
         <li>pauses limit</li>
         <li>when some one live or lost connection check end of the game</li>
         <li>when some one live or lost connection write on cup suck information???</li>
         <li>nice preview of cup until game is searching</li>
-        <li>hide bot token</li>
       </ul>
       <h2>Back log</h2>
       <ul>

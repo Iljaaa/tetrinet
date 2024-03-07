@@ -37,13 +37,16 @@ class FeedbackController
      */
     private function sendMessageToTelegram(string $variant, string $name, string $email, string $message): void
     {
+        $botToken = env('TELEGRAM_BOT_TOKEN');
+        $chatId = env('TELEGRAM_BOT_CHAT_ID');
+
         $m = "New feedback: ".$variant.
             "\r\nfrom: ".$name.
             "\r\nemail: ".$email.
             "\r\n\r\nmessage:\r\n".$message;
 
         $params = [
-            'chat_id' => -4120351548,
+            'chat_id' => $chatId,
             'text' => $m
         ];
 
@@ -54,7 +57,7 @@ class FeedbackController
             }
         }
 
-        $url = 'https://api.telegram.org/bot204492982:AAHcHfaoD3DuKmu0n3fz6T6RbwBgPNfDiXI/sendMessage?'.http_build_query($params);
+        $url = 'https://api.telegram.org/bot204492982:'.$botToken.'/sendMessage?'.http_build_query($params);
 
         $handle = curl_init($url);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
