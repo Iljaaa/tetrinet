@@ -20,6 +20,7 @@ export const Todo = () => {
         <li>when some one live or lost connection check end of the game</li>
         <li>when some one live or lost connection write on cup suck information???</li>
         <li>rebalance special blocks</li>
+        <li>nice preview of cup until game is serching</li>
       </ul>
       <h2>Back log</h2>
       <ul>

@@ -15,4 +15,8 @@
     &:focus {
         border-color: black;
     }
+
+    &.invalid {
+        background-color: #f8a688;
+    }
 }

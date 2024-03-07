@@ -12,7 +12,6 @@ import {PlayerNameModal} from "./widgets/PlayerNameModal/PlayerNameModal";
 import {Header} from "./widgets/Header/Header";
 import {Todo} from "./widgets/ToDo/Todo";
 import {Footer} from "./widgets/Footer/Footer";
-import {default as FeedbackModal} from "./widgets/FeedbackModal/FeedbackModal";
 
 function App()
 {
@@ -34,7 +33,6 @@ function App()
 
       <SocketsEventsAndModals/>
       <PlayerNameModal />
-      <FeedbackModal isOpen={true} onClose={() => {}} variant={'feedback'} />
 </div>
 )
   ;

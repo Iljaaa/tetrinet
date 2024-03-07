@@ -3,21 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FeedbackRequest;
+use App\Models\Feedback;
 use Illuminate\Http\JsonResponse;
 
 class FeedbackController
 {
     public function feedback(FeedbackRequest $request): JsonResponse
     {
-        dd (123);
+        $this->sendMessageToTelegram($request->variant, $request->name ?? '', $request->email ?? '', $request->message ?? '');
+
+        // save to db
+        $f = new Feedback();
+        $f->variant = $request->variant;
+        $f->name = $request->name;
+        $f->email = $request->email;
+        $f->message = $request->message;
+        $f->save();
+
+        // send to telegram
+
+        return response()->json([
+            'success' => true
+        ]);
 
     }
 
-    private function sendMessageToTelegram()
+    /**
+     * @param string $variant
+     * @param string $name
+     * @param string $email
+     * @param string $message
+     * @return void
+     */
+    private function sendMessageToTelegram(string $variant, string $name, string $email, string $message): void
     {
+        $m = "New feedback: ".$variant.
+            "\r\nfrom: ".$name.
+            "\r\nemail: ".$email.
+            "\r\n\r\nmessage:\r\n".$message;
+
         $params = [
             'chat_id' => -4120351548,
-            'text' => 'aaa'
+            'text' => $m
         ];
 
         foreach ($params as $key => &$val) {
