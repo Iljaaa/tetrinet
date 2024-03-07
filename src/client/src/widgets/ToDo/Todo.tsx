@@ -15,7 +15,6 @@ export const Todo = () => {
         <li>pauses limit</li>
         <li>when some one live or lost connection check end of the game</li>
         <li>when some one live or lost connection write on cup suck information???</li>
-        <li>rebalance special blocks</li>
         <li>nice preview of cup until game is searching</li>
         <li>hide bot token</li>
       </ul>
