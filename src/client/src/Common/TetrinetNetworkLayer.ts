@@ -20,6 +20,7 @@ import {ChatMessageRequest} from "./Tetrinet/types/requests/ChatMessageRequest";
 import {ReceiveChatMessage} from "./Tetrinet/types/messages/ReceiveChatMessage";
 import {PlayerNameHelper} from "./PlayerNameHelper";
 import {GamePartyType} from "./Tetrinet/types/GamePartyType";
+import {LeaveRequest} from "./Tetrinet/types/requests/LeaveRequest";
 
 /**
  * Game macro data changes
@@ -467,16 +468,27 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   public quitGame ()
   {
+    debugger
     // close socket
-    SocketSingleton.close();
 
-    this.setGameOver()
+    // this.setGameOver()
+    const data:LeaveRequest = {
+      type: RequestTypes.leave,
+      partyId: this._partyId,
+      playerId: this._playerId
+    }
+
+    // send leave message
+    SocketSingleton.getInstance()?.sendData(data)
+
+    // close connection
+    SocketSingleton.close();
 
     // clear player id
     this._playerId = '';
     this._gameDataEventListener?.onPlayerIdChange(this._playerId);
 
-    //
+    // back to waiting state
     // this._gameDataEventListener?.onGameStateChange(GameState.waiting)
     // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.waiting)
     (this.getCurrentScreen() as PlayScreen).setGameWaiting()

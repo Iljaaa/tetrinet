@@ -249,7 +249,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   private onWindowBlur = () => {
     if (this._state === GameState.running) {
-      this.sendPauseRequest('Window lost focus')
+      this.sendPauseRequest('window lost focus')
     }
   }
 
@@ -1280,7 +1280,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       }
     }
   }
-
 
   /**
    * Implementation of block quake bones
