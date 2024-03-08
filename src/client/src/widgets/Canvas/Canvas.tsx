@@ -95,7 +95,7 @@ export class Canvas extends React.PureComponent
     return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem"}}>
       <div>
         <canvas id="canvas" width={960} height={750} style={{border: "solid 2px orange"}} ref={this._canvas}/>
-        <canvas id="textureCanvas"></canvas>
+        {/*<canvas id="textureCanvas"></canvas>*/}
       </div>
     </div>
   }

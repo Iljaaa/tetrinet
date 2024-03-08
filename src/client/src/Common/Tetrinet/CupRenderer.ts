@@ -2,8 +2,6 @@ import {Cup} from "./models/Cup";
 import {CupWithFigure} from "./models/CupWithFigure";
 import {Coords} from "./math/Coords";
 import {Figure} from "./models/Figure";
-import {Texture} from "../framework/Texture";
-import {Assets} from "./Assets";
 
 const BLOCK_SIZE_PX = 32;
 
@@ -41,14 +39,13 @@ export class CupRenderer
   private textureBuffer: WebGLBuffer | null;
   private postionBuffer: WebGLBuffer | null;
   private positionAttributeLocation: GLint;
-  private _aaaaat: WebGLTexture | null;
+  // private _aaaaat: WebGLTexture | null;
   
   /**
    * todo: again canvas get here content
    * todo: split on two classes, first will be render cup second figure
    * @param gl
    * @param cup
-   * @param texture
    */
   constructor(gl:WebGL2RenderingContext, cup:Cup)
   {
@@ -143,17 +140,17 @@ export class CupRenderer
     ]), gl.STATIC_DRAW);
 
     // Create a texture.
-    this._aaaaat = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this._aaaaat);
-
-    // Set the parameters so we can render any size image.
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    
-    // Upload the image into the texture.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, Assets.sprite.getImage());
+    // this._aaaaat = gl.createTexture();
+    // gl.bindTexture(gl.TEXTURE_2D, this._aaaaat);
+    //
+    // // Set the parameters so we can render any size image.
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    //
+    // // Upload the image into the texture.
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, Assets.sprite.getImage());
     
     
     

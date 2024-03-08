@@ -78,6 +78,7 @@ export class WebGlProgramManager
   }
   
   /**
+   * @deprecated we do not use mixed programm only textures
    * Write into texture program image size
    */
   public static setUpIntoMixedProgramImageSize (gl:WebGL2RenderingContext, width:number, height:number):void

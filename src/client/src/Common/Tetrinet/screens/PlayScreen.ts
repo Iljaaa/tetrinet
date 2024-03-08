@@ -31,6 +31,7 @@ import {SocketSingleton} from "../../SocketSingleton";
 import {TetrinetSingleton} from "../../TetrinetSingleton";
 import {SendBonusRequest} from "../types/requests/SendBonusRequest";
 import {GamePartyType} from "../types/GamePartyType";
+import {Assets} from "../Assets";
 
 
 /**
@@ -220,7 +221,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // init textures
     this.pausedTexture = new Paused();
     this.specialBG = new SpecialBG();
-    
+
+    // init texture programm
+    const gl = this.game.getGLGraphics().getGl();
+    WebGlProgramManager.sUseTextureProgram(gl);
+
+    // init texture
+    Assets.sprite.init(gl)
+
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
     
@@ -496,8 +504,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // use texture program
     // todo: this is not necessary here
     // todo: it may br in constructor
-    WebGlProgramManager.sUseTextureProgram(gl);
-    
+    // WebGlProgramManager.sUseTextureProgram(gl);
+
+    Assets.sprite.bind(gl)
+    // gl.activeTexture(0)
+
+    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
+
+
     // render cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);

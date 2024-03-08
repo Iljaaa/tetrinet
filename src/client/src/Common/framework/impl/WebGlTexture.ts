@@ -1,7 +1,8 @@
 import {Texture} from "../Texture";
 
 /**
- * @version 0.0.1
+ * this is texture with was loaded by url
+ * @version 0.0.2
  */
 export class WebGlTexture implements Texture
 {
@@ -53,8 +54,16 @@ export class WebGlTexture implements Texture
     }
   }
   
-  getImage(): HTMLImageElement {
-    return this.image;
+  // getImage(): HTMLImageElement {
+  //   return this.image;
+  // }
+
+  getHeight(): number {
+    return this.image.height;
+  }
+
+  getWidth(): number {
+    return this.image.width;
   }
   
   /**

@@ -10,6 +10,7 @@ import {GenerateRandomColor} from "../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
 import {Assets} from "../Assets";
 import {Vertices} from "../../framework/Vertices";
+import {Experimental} from "../textures/Experimental";
 
 /**
  * @vaersion 0.0.1
@@ -42,7 +43,10 @@ export class JustPlayScreen extends WebGlScreen
    */
   private _block: Vertices;
   private canvasTexture: WebGLTexture | null = null;
-  
+
+
+  private _experimentalTexture:Experimental;
+
   /**
    * In this constructor we create cup
    */
@@ -71,6 +75,10 @@ export class JustPlayScreen extends WebGlScreen
     Assets.sprite.init(gl)
 
     this.initExperimentalTexture (gl)
+
+    // init experimantal texture
+    this._experimentalTexture = new Experimental(1, 300, 150);
+    this._experimentalTexture.init(gl);
 
     //
     this.startNewGame ()
@@ -141,7 +149,7 @@ export class JustPlayScreen extends WebGlScreen
     Assets.sprite.bind(gl)
     // gl.activeTexture(0)
 
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
+    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
 
     // render cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 232, 32);
@@ -177,8 +185,9 @@ export class JustPlayScreen extends WebGlScreen
    */
   private presentExperiment (gl: WebGL2RenderingContext)
   {
-    gl.activeTexture(1)
-    gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
+    // gl.activeTexture(1)
+    // gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
+    this._experimentalTexture.bind(gl)
     WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
 
 
@@ -198,7 +207,12 @@ export class JustPlayScreen extends WebGlScreen
 
   protected initExperimentalTexture (gl: WebGL2RenderingContext)
   {
-    let canvas:HTMLCanvasElement|null = document.getElementById('textureCanvas') as HTMLCanvasElement;
+    // let canvas:HTMLCanvasElement|null = document.getElementById('textureCanvas') as HTMLCanvasElement;
+
+
+    let canvas:HTMLCanvasElement = document.createElement('canvas');
+    canvas.width = 300
+    canvas.height = 150
     let ctx = canvas.getContext('2d');
     if (!ctx) return;
 
