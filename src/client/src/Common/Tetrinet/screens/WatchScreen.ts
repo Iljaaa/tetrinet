@@ -82,7 +82,9 @@ export class WatchScreen extends WebGlScreen
       // WebGlProgramManager._startUseTextureProgram(gl, this.textureProgram)
     // }
     
-    // use texture program
+    // use texture programo
+    // todo: this is not necessary here
+    // todo: it may br in constructor
     WebGlProgramManager.sUseTextureProgram(gl);
     
     // render cup

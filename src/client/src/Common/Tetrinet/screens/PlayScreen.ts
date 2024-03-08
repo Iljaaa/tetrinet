@@ -494,6 +494,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     gl.clear(gl.COLOR_BUFFER_BIT)
     
     // use texture program
+    // todo: this is not necessary here
+    // todo: it may br in constructor
     WebGlProgramManager.sUseTextureProgram(gl);
     
     // render cup

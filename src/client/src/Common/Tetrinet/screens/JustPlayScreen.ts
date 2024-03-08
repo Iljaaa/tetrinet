@@ -42,6 +42,7 @@ export class JustPlayScreen extends WebGlScreen
    * @private
    */
   private _block: Vertices;
+  private canvasTexture: WebGLTexture | null = null;
   
   /**
    * In this constructor we create cup
@@ -62,6 +63,15 @@ export class JustPlayScreen extends WebGlScreen
 
     // bind this to input listener
     this.game.getInput().setListener(this);
+
+    // init texture programm
+    const gl = this.game.getGLGraphics().getGl();
+    WebGlProgramManager.sUseTextureProgram(gl);
+
+    // init texture
+    Assets.sprite.bind(gl)
+
+    this.initExperimentalTexture (gl)
 
     //
     this.startNewGame ()
@@ -105,11 +115,32 @@ export class JustPlayScreen extends WebGlScreen
     // const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(WebGlProgramManager.textureProgram, "translation");
     // gl.uniform2f(textureSizeLocation, x, y)
 
-    // use texture program
-    WebGlProgramManager.sUseTextureProgram(gl);
+    // const textureProgramm = WebGlProgramManager.getTextureProgram(gl)
+    // gl.useProgram(textureProgramm)
 
-    Assets.sprite.bind(gl)
-    gl.activeTexture(gl.TEXTURE0)
+    //
+    // // Tell webGL to read 2 floats from the vertex array for each vertex
+    // // and store them in my vec2 shader variable I've named "coordinates"
+    // // We need to tell it that each vertex takes 24 bytes now (6 floats)
+    // const coordAttributeLocation  = gl.getAttribLocation(textureProgramm, "coordinates")
+    // gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 16, 0)
+    // gl.enableVertexAttribArray(coordAttributeLocation)
+    //
+    // // Tell webGL to read 2 floats from the vertex array for each vertex
+    // // and store them in my vec2 shader variable I've named "texPos"
+    // const textilsAttributeLocation = gl.getAttribLocation(textureProgramm, "textilsPos")
+    // gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 16, 8)
+    // gl.enableVertexAttribArray(textilsAttributeLocation)
+    //
+    // // Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    // const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(textureProgramm, "canvasSize");
+    // gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
+    //
+    // // use texture program
+    // WebGlProgramManager.sUseTextureProgram(gl);
+
+    Assets.sprite.bindsm(gl)
+    // gl.activeTexture(0)
 
     WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
 
@@ -147,38 +178,15 @@ export class JustPlayScreen extends WebGlScreen
    */
   private presentExperiment (gl: WebGL2RenderingContext)
   {
-    let canvas:HTMLCanvasElement|null = document.getElementById('textureCanvas') as HTMLCanvasElement;
-    let ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.fillStyle = "#333333"; 	// This determines the text colour, it can take a hex value or rgba value (e.g. rgba(255,0,0,0.5))
-    ctx.textAlign = "center";	// This determines the alignment of text, e.g. left, center, right
-    ctx.textBaseline = "middle";	// This determines the baseline of the text, e.g. top, middle, bottom
-    ctx.font = "12px monospace";
-    ctx.fillText("HTML5 Rocks!", canvas.width/2, canvas.height/2);
-    ctx.fillRect(0, 0, 100, 100)
-
-    let canvasTexture = gl.createTexture();
-
-    // this is vertical flip
-    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
     gl.activeTexture(1)
-    gl.bindTexture(gl.TEXTURE_2D, canvasTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); // This is the important line!
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    // gl.generateMipmap(gl.TEXTURE_2D);
-    gl.activeTexture(1)
-
-
+    gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
     WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
 
 
     this._block.setVertices(Vertices.createTextureVerticesArray(
-      0, 100, 320, 150,
+      0, 100, 300, 150,
       // 320, 256, 192, 64
-      100, 100, 300, 150
+      0, 0, 300, 150
     ))
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
@@ -186,9 +194,38 @@ export class JustPlayScreen extends WebGlScreen
     // draw here
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    //gl.bindTexture(gl.TEXTURE_2D, null);
   }
 
+  protected initExperimentalTexture (gl: WebGL2RenderingContext)
+  {
+    let canvas:HTMLCanvasElement|null = document.getElementById('textureCanvas') as HTMLCanvasElement;
+    let ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.fillStyle = "back"; 	// This determines the text colour, it can take a hex value or rgba value (e.g. rgba(255,0,0,0.5))
+    ctx.textAlign = "center";	// This determines the alignment of text, e.g. left, center, right
+    ctx.textBaseline = "middle";	// This determines the baseline of the text, e.g. top, middle, bottom
+    ctx.font = "16px monospace";
+    ctx.fillText("HTML5 Rocks!", canvas.width/2, canvas.height/2);
+    ctx.fillRect(0, 0, 100, 100)
+
+    this.canvasTexture = gl.createTexture();
+
+    // this is vertical flip
+    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+    gl.activeTexture(1)
+    // gl.activeTexture(0)
+    gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); // This is the important line!
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    gl.activeTexture(1)
+    // gl.generateMipmap(gl.TEXTURE_2D);
+    // gl.activeTexture(gl.TEXTURE1)
+  }
 
   /**
    * @param code
