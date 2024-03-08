@@ -12,14 +12,28 @@ export class WebGlTexture implements Texture
   private url:string|undefined;
   
   /**
+   */
+  private readonly image: HTMLImageElement;
+
+  /**
+   * This is index of texture
    * @private
    */
-  private image: HTMLImageElement;
-  textureId: WebGLTexture | null = null;
+  private readonly textureIndex: number;
 
-  
-  constructor()
+  /**
+   * Inited texture
+   * @private
+   */
+  private textureId: WebGLTexture | null = null;
+
+
+  /**
+   * @param textureIndex
+   */
+  constructor(textureIndex:number)
   {
+    this.textureIndex = textureIndex;
     this.image = new Image();
   }
   
@@ -47,14 +61,17 @@ export class WebGlTexture implements Texture
    * Bind texurei into gl
    * @param gl
    */
-  bind(gl:WebGL2RenderingContext): void
+  init(gl:WebGL2RenderingContext): void
   {
-    this.textureId = gl.createTexture()
+    if (this.textureId === null) {
+      this.textureId = gl.createTexture()
+    }
+
     console.log(this.textureId, 'this.textureId')
 
     // now it not do anything, but when we will be use different textures
     // gl.activeTexture(gl.TEXTURE0)
-    gl.activeTexture(0)
+    gl.activeTexture(this.textureIndex)
     gl.bindTexture(gl.TEXTURE_2D, this.textureId)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image)
     
@@ -63,7 +80,7 @@ export class WebGlTexture implements Texture
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 
     // gl.activeTexture(gl.TEXTURE0)
-    gl.activeTexture(0)
+    gl.activeTexture(this.textureIndex)
 
   }
 
@@ -71,21 +88,24 @@ export class WebGlTexture implements Texture
    * Bind texurei into gl
    * @param gl
    */
-  bindsm(gl:WebGL2RenderingContext): void
+  bind(gl:WebGL2RenderingContext): void
   {
+    if (!this.textureId){
+      throw new Error('Texture was not init')
+    }
 
     // now it not do anything, but when we will be use different textures
     // gl.activeTexture(gl.TEXTURE0)
-    gl.activeTexture(0)
+    gl.activeTexture(this.textureIndex)
     gl.bindTexture(gl.TEXTURE_2D, this.textureId)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image)
-
-    // Tell gl that when draw images scaled up, smooth it.
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image)
+    //
+    // // Tell gl that when draw images scaled up, smooth it.
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 
     // gl.activeTexture(gl.TEXTURE0)
-    gl.activeTexture(0)
+    // gl.activeTexture(0)
 
   }
 

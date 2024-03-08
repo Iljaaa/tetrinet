@@ -10,7 +10,6 @@ import {GenerateRandomColor} from "../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
 import {Assets} from "../Assets";
 import {Vertices} from "../../framework/Vertices";
-import {SearchForAGame} from "../textures";
 
 /**
  * @vaersion 0.0.1
@@ -69,7 +68,7 @@ export class JustPlayScreen extends WebGlScreen
     WebGlProgramManager.sUseTextureProgram(gl);
 
     // init texture
-    Assets.sprite.bind(gl)
+    Assets.sprite.init(gl)
 
     this.initExperimentalTexture (gl)
 
@@ -139,7 +138,7 @@ export class JustPlayScreen extends WebGlScreen
     // // use texture program
     // WebGlProgramManager.sUseTextureProgram(gl);
 
-    Assets.sprite.bindsm(gl)
+    Assets.sprite.bind(gl)
     // gl.activeTexture(0)
 
     WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);

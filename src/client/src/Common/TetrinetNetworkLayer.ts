@@ -143,7 +143,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       const gl:WebGL2RenderingContext|null = this.getGLGraphics().getGl();
 
       // bind this texture
-      Assets.sprite.bind(gl)
+      // Assets.sprite.bind(gl)
 
       // bind texture in mixed program
       WebGlProgramManager.setUpIntoMixedProgramImageSize(gl, Assets.sprite.getImage().width, Assets.sprite.getImage().height);
