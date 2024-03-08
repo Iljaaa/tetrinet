@@ -1,18 +1,21 @@
 .JoinButton {
-    border: none;
+    border: solid 1px darkgray;
     padding: 1rem 3rem;
     font-size: 24px;
-    background-color: whitesmoke;
+    background-color: white;
     box-shadow: #daa520 9px 9px 0 0;
     color: black;
 
     &:hover {
-        background-color: silver;
+        background-color: whitesmoke;
+        border-color: black;
     }
 
     &:active {
         background-color: gray;
         color: whitesmoke;
+        transform: translate(2px, 2px);
+        box-shadow: #daa520 7px 7px 0 0;
     }
 
     &:disabled {
@@ -21,5 +24,11 @@
         &:hover {
             color: darkgray;
         }
+    }
+
+    &.small {
+        font-size: 16px;
+        padding: 0 2rem;
+        height: 44px;
     }
 }

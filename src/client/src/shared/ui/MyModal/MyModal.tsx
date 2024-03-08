@@ -18,7 +18,8 @@ export const MyModal = (props:Props) => {
         marginRight: '-50%',
         transform: 'translate(-50%, -50%)',
         backgroundColor: "#008080",
-        padding: "1rem 2rem 2rem 2rem"
+        padding: "2rem 2rem 2rem 2rem",
+        boxShadow: "rgb(218 165 32 / 38%) 15px 15px 0px 0px"
       }
     }}
     onRequestClose={() => {
