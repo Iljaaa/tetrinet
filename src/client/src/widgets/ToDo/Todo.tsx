@@ -16,6 +16,9 @@ export const Todo = () => {
         <li>when some one live or lost connection check end of the game</li>
         <li>when some one live or lost connection write on cup suck information???</li>
         <li>nice preview of cup until game is searching</li>
+        <li>before game starts do not display next figure</li>
+        <li>big paused message</li>
+        <li>big message search</li>
       </ul>
       <h2>Back log</h2>
       <ul>
