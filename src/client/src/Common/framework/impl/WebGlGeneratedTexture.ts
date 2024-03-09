@@ -1,4 +1,3 @@
-import {Texture} from "../Texture";
 
 /**
  * this is texture with generate by static canvas
@@ -67,8 +66,9 @@ export class WebGlGeneratedTexture
   }
   
   /**
-   * Bind texurei into gl
+   * Bind texture into gl
    * @param gl
+   * @param textureIndex
    */
   init(gl:WebGL2RenderingContext, textureIndex:number): void
   {

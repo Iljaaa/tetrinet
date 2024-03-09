@@ -88,7 +88,7 @@ export class WatchScreen extends WebGlScreen
     WebGlProgramManager.sUseTextureProgram(gl);
     
     // render cup
-    this._cupRenderer?.renderCup(this._cup);
+    // this._cupRenderer?.renderCup(this._cup);
   }
   
   /**

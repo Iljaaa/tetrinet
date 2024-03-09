@@ -33,7 +33,6 @@ import {SendBonusRequest} from "../types/requests/SendBonusRequest";
 import {GamePartyType} from "../types/GamePartyType";
 import {Assets} from "../Assets";
 import {OpponentsHelper} from "../../heplers/OpponentsHelper";
-import {Experimental} from "../textures/Experimental";
 import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 
 
@@ -314,6 +313,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // generate text texture
     const gl = this.game.getGLGraphics().getGl();
+    // render players name on texture
+    this.textTexture.renderPlayers(OpponentsHelper.getOpponentsArray())
     this.textTexture.init(gl, gl.TEXTURE1);
 
     // next figure random color
@@ -533,30 +534,41 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     Assets.sprite.bind(gl)
     WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
 
-
     // render cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
     // this._cupRenderer?.setPosition(32, 32)
-    this._cupRenderer?.renderCupWithFigure(this._cup);
-    
-    // render opponents cups
-    this._cupRenderer?.setCupSize((this._partyType === GamePartyType.party) ? CupSize.small16 : CupSize.middle24)
-    Object.keys(this._cups).forEach((playerId:string, index:number) => {
-      if (this._cups[playerId]) {
-        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
-        // todo: move position out of the screen
-        // this._cupRenderer?.setPosition(400 + (400 * index), 32);
-        this._cupRenderer?.renderCup(this._cups[playerId]);
-      }
-    })
+    this._cupRenderer?.renderCupWithFigure(this._cup, this.textTexture);
 
-    
+    // bind texture
+    Assets.sprite.bind(gl)
+    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
+
     // render next figure
     this.presentNextFigure(gl);
 
     // render bonus fields
-    this.presentBonuses(gl)
+    this.presentUserBonuses(gl)
+    
+    // render opponents cups
+    this._cupRenderer?.setCupSize((this._partyType === GamePartyType.party) ? CupSize.small16 : CupSize.middle24)
+    Object.keys(this._cups).forEach((playerId:string, index:number) => {
+      if (this._cups[playerId])
+      {
+        // set cup position
+        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
+
+        //
+        this._cupRenderer?.renderCup(this._cups[playerId], this.textTexture);
+
+        // text height position
+        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y - this.textTexture.playerLineHeight + 8);
+
+
+        // render player name
+        this._cupRenderer?.renderCupIndex(index, this.textTexture);
+      }
+    })
 
     // present interface
     if (this._state === GameState.ready){
@@ -613,7 +625,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // todo: move bind position before draw texts
     this.textTexture.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
+    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, this.textTexture.getWidth(), this.textTexture.getHeight());
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
     this._block.setVertices(Vertices.createTextureVerticesArray(
       30, this.textsTopPosition, 260, 64,
@@ -641,7 +653,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cupRenderer?.renderNextFigure(gl, nextFigure)
   }
 
-  private presentBonuses (gl: WebGL2RenderingContext)
+  /**
+   * Render user bonuses
+   * @param gl
+   * @private
+   */
+  private presentUserBonuses (gl: WebGL2RenderingContext)
   {
 
     // move to position
@@ -676,32 +693,32 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   }
 
-  private presentExperiment (gl: WebGL2RenderingContext)
-  {
-    // gl.activeTexture(1)
-    // gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
-    this.textTexture.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
-
-    // move to start
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
-
-
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-      30, this.textsTopPosition, 260, 64,
-      20, 0, 260, 64
-    ))
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-    // this._block.setVertices(Vertices.createTextureVerticesArray(
-    //   0, 300, 300, 64,
-    //   0, 0, 300, 64
-    // ))
-    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    // gl.drawArrays(gl.TRIANGLES, 0, 6);
-  }
+  // private presentExperiment (gl: WebGL2RenderingContext)
+  // {
+  //   // gl.activeTexture(1)
+  //   // gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
+  //   this.textTexture.bind(gl)
+  //   WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
+  //
+  //   // move to start
+  //   WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
+  //
+  //
+  //   this._block.setVertices(Vertices.createTextureVerticesArray(
+  //     30, this.textsTopPosition, 260, 64,
+  //     20, 0, 260, 64
+  //   ))
+  //
+  //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+  //   gl.drawArrays(gl.TRIANGLES, 0, 6);
+  //
+  //   // this._block.setVertices(Vertices.createTextureVerticesArray(
+  //   //   0, 300, 300, 64,
+  //   //   0, 0, 300, 64
+  //   // ))
+  //   // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+  //   // gl.drawArrays(gl.TRIANGLES, 0, 6);
+  // }
   
   //
   // key events
@@ -751,7 +768,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // rerender cup
     // maybe it must be inside cause upper
     if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup)
+      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
     }
     
   }
@@ -770,7 +787,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // rerender cup
     // maybe it must be inside cause upper
     if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup)
+      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
     }
   }
   
@@ -792,7 +809,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // rerender cup
     // maybe it must be inside cause upper
     if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup)
+      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
     }
   }
   
@@ -815,7 +832,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // rerender cup
     // maybe it must be inside cause upper
     if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup)
+      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
     }
   }
   
@@ -835,7 +852,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // rerender cup
     // maybe it must be inside cause upper
     if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup)
+      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
     }
   }
   
@@ -856,7 +873,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // rerender cup
     // maybe it must be inside cause upper
     if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup)
+      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
     }
   }
 

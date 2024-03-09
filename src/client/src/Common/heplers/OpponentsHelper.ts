@@ -5,7 +5,7 @@ import {PlayerId} from "../Tetrinet/types/PlayerId";
  * Map keys 1-9
  * with player id
  */
-interface KeysPlayerMap {
+export interface PlayersCollection {
   [index: number]: {
     playerId:PlayerId,
     name:string
@@ -21,7 +21,7 @@ export class OpponentsHelper {
   /**
    * This is mapping keys to index inside party
    */
-  private static party:KeysPlayerMap = {};
+  private static party:PlayersCollection = {};
 
   /**
    *
@@ -56,14 +56,27 @@ export class OpponentsHelper {
     })
   }
 
-
   /**
    * get player is by index, and index it key that player push
    * @param playerIndex
    */
-  static getPlayerIdByIndexInParty (playerIndex:number): PlayerId
-  {
+  static getPlayerIdByIndexInParty (playerIndex:number): PlayerId {
     return OpponentsHelper.party[playerIndex]?.playerId;
+  }
+
+  /**
+   *
+   */
+  static getOpponentsArray ():Array<{index:number, name:string}>
+  {
+    return Object.keys(OpponentsHelper.party).map((i:string) => {
+      const index = parseInt(i)
+      const p = OpponentsHelper.party[index]
+      return {
+        index: index,
+        name: p.name
+      }
+    });
   }
 
 }
