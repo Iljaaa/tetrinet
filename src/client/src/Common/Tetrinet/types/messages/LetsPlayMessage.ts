@@ -1,5 +1,6 @@
 import {Message} from "./Message";
 import {GamePartyType} from "../GamePartyType";
+import {PlayerId} from "../PlayerId";
 
 /**
  * This is lets play message for party
@@ -25,5 +26,8 @@ export interface LetsPlayMessage extends Message
     /**
      * Description of your party
      */
-    party: Array<{socketId: string}>,
+    party: Array<{
+        playerId: PlayerId,
+        name: string
+    }>,
 }

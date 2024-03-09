@@ -2,7 +2,7 @@ import React from "react";
 import {Container} from "../../shared/ui/Container/Container";
 
 import styles from "./Header.module.css"
-import {PlayerNameHelper} from "../../Common/PlayerNameHelper";
+import {PlayerNameHelper} from "../../Common/heplers/PlayerNameHelper";
 
 type State =
 {

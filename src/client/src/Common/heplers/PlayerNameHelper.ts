@@ -1,7 +1,7 @@
-import {LoadPlayerName, StorePlayerName} from "../process/store";
+import {LoadPlayerName, StorePlayerName} from "../../process/store";
 
 /**
- * This method centralize player name
+ * This method centralize manage the player name
  */
 export class PlayerNameHelper
 {

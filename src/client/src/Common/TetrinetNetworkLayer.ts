@@ -18,9 +18,11 @@ import {BackRequest} from "./Tetrinet/types/requests/BackRequest";
 import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyResponse";
 import {ChatMessageRequest} from "./Tetrinet/types/requests/ChatMessageRequest";
 import {ReceiveChatMessage} from "./Tetrinet/types/messages/ReceiveChatMessage";
-import {PlayerNameHelper} from "./PlayerNameHelper";
+import {PlayerNameHelper} from "./heplers/PlayerNameHelper";
 import {GamePartyType} from "./Tetrinet/types/GamePartyType";
 import {LeaveRequest} from "./Tetrinet/types/requests/LeaveRequest";
+import {OpponentsHelper} from "./heplers/OpponentsHelper";
+import {PlayerId} from "./Tetrinet/types/PlayerId";
 
 /**
  * Game macro data changes
@@ -46,13 +48,6 @@ export type TetrinetNetworkLayerSocketEvents = {
   onClose: () => void,
 }
 
-/**
- * Map keys 1-9
- * with player id
- */
-interface KeysPlayerMap {
-  [index: number]: string
-}
 
 /**
  * Network layer is a bad idea all this fuctions we shold move to plat screen
@@ -70,12 +65,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * received when you start search party
    * @private
    */
-  private _playerId:string = '';
-
-  /**
-   * This is mapping keys to index inside party
-   */
-  private partyIndexToPlayerId:KeysPlayerMap = {};
+  private _playerId:PlayerId = '';
 
   /**
    * Chat and log
@@ -171,14 +161,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   }
 
   /**
-   * get player is by index, and index it key that player push
-   * @param playerIndex
-   */
-  getPlayerIdByIndexInParty (playerIndex:number): string{
-    return this.partyIndexToPlayerId[playerIndex];
-  }
-
-  /**
    * Callback from game when lines was cleared
    * @param newScore
    */
@@ -236,30 +218,14 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this._partyId = data.partyId
 
     // call listener to display party id
+    // todo: remove this is test message
     this._gameDataEventListener?.onPartyIdChange(this._partyId)
-
-    // clear mapping array
-    this.partyIndexToPlayerId = {};
-
-    /**
-     * key index of player
-     * it begins from 1
-     */
-    let i:number = 1
-
-    // map opponents
-    // in array where key is index and value is player id
-    Object.keys(data.party).forEach((p:string) => {
-      const arrayKey = parseInt(p)
-      const it = data.party[arrayKey]
-      if (it.socketId !== this._playerId) {
-        this.partyIndexToPlayerId[i] = it.socketId
-        i++
-      }
-    })
 
     // store party and player id into storage
     StoreGameDataInStorage(this._partyId, this._playerId)
+
+    // make opponents array
+    OpponentsHelper.makeNewOpponentsArray(data, this._playerId)
 
     // start game
     // this.game.playGame();
@@ -269,6 +235,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // this._gameDataEventListener?.onGameStateChange(GameState.running)
     // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.running)
   }
+
+
 
   /**
    * Main method, when became new cups and game state data
@@ -539,23 +507,23 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.prepareToGame(this, GamePartyType.duel);
   }
 
-  public oldPlayMethod (){
-    // open socket connection
-    // this.socket = new Socket();
-    SocketSingleton.openConnection(() =>
-    {
-      // prepare
-      // this.game.prepareToGame(this)
-      this.prepareToGame(this, GamePartyType.duel)
-
-      // when socket open we start game
-      // this.game.playGame();
-      this.playGame();
-
-      //
-      // this._gameDataEventListener?.onGameStateChange(GameState.running)
-    }, () => {})
-  }
+  // public oldPlayMethod (){
+  //   // open socket connection
+  //   // this.socket = new Socket();
+  //   SocketSingleton.openConnection(() =>
+  //   {
+  //     // prepare
+  //     // this.game.prepareToGame(this)
+  //     this.prepareToGame(this, GamePartyType.duel)
+  //
+  //     // when socket open we start game
+  //     // this.game.playGame();
+  //     this.playGame();
+  //
+  //     //
+  //     // this._gameDataEventListener?.onGameStateChange(GameState.running)
+  //   }, () => {})
+  // }
 
   public sendChatMessage (message:string){
     // send command

@@ -3,7 +3,7 @@ import {Button} from "../../shared/ui/Button/Button";
 import {MyModal} from "../../shared/ui/MyModal/MyModal";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
-import {PlayerNameHelper} from "../../Common/PlayerNameHelper";
+import {PlayerNameHelper} from "../../Common/heplers/PlayerNameHelper";
 import {Input} from "../../shared/ui/Input/Input";
 
 type Props = {

@@ -32,6 +32,7 @@ import {TetrinetSingleton} from "../../TetrinetSingleton";
 import {SendBonusRequest} from "../types/requests/SendBonusRequest";
 import {GamePartyType} from "../types/GamePartyType";
 import {Assets} from "../Assets";
+import {OpponentsHelper} from "../../heplers/OpponentsHelper";
 
 
 /**
@@ -211,6 +212,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   constructor(game:Tetrinet, onChangeGameStateCallback: (newGameState:GameState) => void)
   {
     super(game)
+    console.log ('PlayScreen.constructor');
     
     // create cup object
     this._cup =  new CupWithFigureImpl(this);
@@ -294,6 +296,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   startNewGame ()
   {
+    // first render
+    // this._cupRenderer.renderCupWithFigure(this._cup)
+    console.log('PlayScreen.startNewGame')
+
+    // generate text texture
+
     // next figure random color
     // this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
     this._cup.generateNextFigure();
@@ -304,10 +312,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // generate new figure in cup
     const f = GenerateNewFigure(this._cup, GenerateRandomColor());
     this._cup.setFigureToDropPoint(f);
-    
-    // first render
-    // this._cupRenderer.renderCupWithFigure(this._cup)
-    console.log('PlayScreen.start')
+
     
     // finally set run status
     this.setGameRunning()
@@ -393,7 +398,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
-  setGameRunning() {
+  /**
+   * Set game running state
+   */
+  setGameRunning()
+  {
     this._state = GameState.running
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
@@ -843,7 +852,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._state !== GameState.running) return;
 
     // check is opponent live
-    const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
+    // const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
+    const targetPlayerId = OpponentsHelper.getPlayerIdByIndexInParty(indexOfOpponent)
+    debugger
     if (!targetPlayerId) return;
 
     // check target cup and state

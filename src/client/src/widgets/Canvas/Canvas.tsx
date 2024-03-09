@@ -61,11 +61,11 @@ export class Canvas extends React.PureComponent
   /**
    *
    */
-  onPlayClicked = () =>
-  {
-    console.log ('onPlayClicked');
-    TetrinetSingleton.getInstance().oldPlayMethod();
-  }
+  // onPlayClicked = () =>
+  // {
+  //   console.log ('onPlayClicked');
+  //   TetrinetSingleton.getInstance().oldPlayMethod();
+  // }
 
   onWatchClicked = () =>
   {
