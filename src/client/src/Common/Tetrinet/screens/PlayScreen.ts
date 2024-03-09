@@ -229,7 +229,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     WebGlProgramManager.sUseTextureProgram(gl);
 
     // init texture
-    Assets.sprite.init(gl)
+    Assets.sprite.init(gl, gl.TEXTURE0)
 
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())

@@ -5,8 +5,8 @@ export class Experimental extends WebGlGeneratedTexture
 {
 
 
-  constructor(textureIndex: number, width: number, height: number) {
-    super(textureIndex, width, height);
+  constructor(width: number, height: number) {
+    super(width, height);
 
     this.context.fillStyle = "back"; 	// This determines the text colour, it can take a hex value or rgba value (e.g. rgba(255,0,0,0.5))
     this.context.textAlign = "center";	// This determines the alignment of text, e.g. left, center, right

@@ -72,13 +72,13 @@ export class JustPlayScreen extends WebGlScreen
     WebGlProgramManager.sUseTextureProgram(gl);
 
     // init texture
-    Assets.sprite.init(gl)
+    Assets.sprite.init(gl, gl.TEXTURE0)
 
-    this.initExperimentalTexture (gl)
+    // this.initExperimentalTexture (gl)
 
     // init experimantal texture
-    this._experimentalTexture = new Experimental(1, 300, 150);
-    this._experimentalTexture.init(gl);
+    this._experimentalTexture = new Experimental(300, 150);
+    this._experimentalTexture.init(gl, gl.TEXTURE1);
 
     //
     this.startNewGame ()

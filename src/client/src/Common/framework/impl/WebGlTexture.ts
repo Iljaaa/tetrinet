@@ -4,7 +4,7 @@ import {Texture} from "../Texture";
  * this is texture with was loaded by url
  * @version 0.0.2
  */
-export class WebGlTexture implements Texture
+export class WebGlTexture
 {
   /**
    * Image url
@@ -20,7 +20,7 @@ export class WebGlTexture implements Texture
    * This is index of texture
    * @private
    */
-  private readonly textureIndex: number;
+  private textureIndex?: number;
 
   /**
    * Inited texture
@@ -32,9 +32,8 @@ export class WebGlTexture implements Texture
   /**
    * @param textureIndex
    */
-  constructor(textureIndex:number)
+  constructor()
   {
-    this.textureIndex = textureIndex;
     this.image = new Image();
   }
   
@@ -70,17 +69,17 @@ export class WebGlTexture implements Texture
    * Bind texurei into gl
    * @param gl
    */
-  init(gl:WebGL2RenderingContext): void
+  init(gl:WebGL2RenderingContext, textureIndex:number): void
   {
-    if (this.textureId === null) {
-      this.textureId = gl.createTexture()
-    }
+    this.textureIndex = textureIndex;
+
 
     console.log(this.textureId, 'this.textureId')
 
     // now it not do anything, but when we will be use different textures
     // gl.activeTexture(gl.TEXTURE0)
-    gl.activeTexture(this.textureIndex)
+    // gl.activeTexture(this.textureIndex)
+    this.textureId = gl.createTexture()
     gl.bindTexture(gl.TEXTURE_2D, this.textureId)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image)
     
@@ -89,7 +88,8 @@ export class WebGlTexture implements Texture
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 
     // gl.activeTexture(gl.TEXTURE0)
-    gl.activeTexture(this.textureIndex)
+    gl.bindTexture(gl.TEXTURE_2D, null)
+    // gl.activeTexture(this.textureIndex)
 
   }
 
@@ -102,10 +102,14 @@ export class WebGlTexture implements Texture
     if (!this.textureId){
       throw new Error('Texture was not init')
     }
+    if (this.textureIndex === undefined) {
+      alert ('textureIndexUndefines');
+      return;
+    }
 
     // now it not do anything, but when we will be use different textures
     // gl.activeTexture(gl.TEXTURE0)
-    gl.activeTexture(this.textureIndex)
+    // gl.activeTexture(this.textureIndex)
     gl.bindTexture(gl.TEXTURE_2D, this.textureId)
     // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image)
     //
