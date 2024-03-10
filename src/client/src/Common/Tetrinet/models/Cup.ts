@@ -129,17 +129,15 @@ export interface Cup
    */
   // blowRandomField() => void
 
-  /**
-   @deprecated that not should be here
+  /*
    * Add random row below in cup
    * @param countLines Number of lines to add
    */
-  addRandomRowBellow: (countLines:number) => void
+  // addRandomRowBellow: (countLines:number) => void
 
-  /**
-   * @deprecated this is not should be here
+  /*
    * Remove rows from bottom of cup
    * @param countLines Number of lines to add
    */
-  removeRowsBellow: (countLines:number) => void
+  // removeRowsBellow: (countLines:number) => void
 }

@@ -165,6 +165,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private playerBonuses: Array<Bonus> = [
+    Bonus.add, Bonus.add, Bonus.clear, Bonus.clear,
     // Bonus.gravity, Bonus.gravity,
     // Bonus.switch, Bonus.switch,
     // Bonus.quake,
@@ -436,7 +437,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   addRows(countLines:number, sendState: boolean = true)
   {
     // add lines
-    this._cup.addRandomRowBellow(countLines);
+    this.addRandomRowBellow(countLines);
 
     // rise update state callback
     if (sendState && this.listener) {
@@ -450,7 +451,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private clearRows(countLines:number, sendState: boolean = true)
   {
     // add lines
-    this._cup.removeRowsBellow(countLines);
+    this.removeRowsBellow(countLines);
 
     // rise update state callback
     if (sendState && this.listener) {
@@ -1462,5 +1463,90 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // send message about changed cup
     this.listener?.onCupUpdated(this._state, this._cup.getData())
+  }
+
+  /**
+   * This method add row bellow
+   * @param countLines Number of lines to add
+   */
+  addRandomRowBellow(countLines:number): void
+  {
+    for (let i = 0; i < countLines; i++) {
+      this.addOneRandomLineBellow ()
+    }
+  }
+
+  /**
+   * Add one random line
+   */
+  private addOneRandomLineBellow ()
+  {
+    //
+    this.moveCupUp();
+
+    // add row
+    const randomClearField = Math.floor(Math.random() * this._cup.getWidthInCells());
+    for (let col = 0; col < this._cup.getWidthInCells(); col++) {
+      this._cup.setFieldByCoordinates(col, this._cup.getHeightInCells() - 1, {
+        block: (col === randomClearField) ? - 1 : GenerateRandomColor(),
+      })
+    }
+  }
+
+  /**
+   * Move all lines up
+   */
+  private moveCupUp ()
+  {
+    // move cup up
+    for (let row = 0; row < this._cup.getHeightInCells() - 1; row++) {
+      for (let col = 0; col < this._cup.getWidthInCells(); col++) {
+        this._cup.copyBlockByCoords(col, row + 1, col, row)
+      }
+    }
+  }
+
+  /**
+   * Remove rows bellow cup
+   */
+  removeRowsBellow(countLines:number):void
+  {
+    for (let i = 0; i < countLines; i++) {
+      this.removeOneRowBelow ()
+    }
+  }
+
+  /**
+   *
+   */
+  private removeOneRowBelow()
+  {
+    // clear line
+    this.clearBottomLine();
+
+    // move cup down
+    this.moveCupDown();
+  }
+
+  private clearBottomLine()
+  {
+    const rowIndex = this._cup.getHeightInCells() - 1;
+    for (let col = 0; col < this._cup.getWidthInCells(); col++) {
+      this._cup.setFieldByCoordinates(col, rowIndex, {
+        block: -1
+      })
+    }
+  }
+
+  /**
+   * Move all lines up
+   */
+  private moveCupDown ()
+  {
+    for (let row = this._cup.getHeightInCells() -1; row > 0; row--) {
+      for (let col = 0; col < this._cup.getWidthInCells(); col++) {
+        this._cup.copyBlockByCoords(col, row -1, col, row)
+      }
+    }
   }
 }
