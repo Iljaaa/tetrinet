@@ -7,6 +7,7 @@ enum ResponseType:string
     case letsPlay = 'letsPlay';
     case backToParty = 'backToParty';
     case afterSet = 'afterSet';
+
     case paused = 'paused';
     case resumed = 'resumed';
 
@@ -15,6 +16,9 @@ enum ResponseType:string
      */
     case addLine = 'addLine';
 
+    /**
+     * Someone use a bonus
+     */
     case getBonus = 'getBonus'; // when bonus received
 
     /**

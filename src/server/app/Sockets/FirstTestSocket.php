@@ -5,6 +5,7 @@ namespace App\Sockets;
 use App\Common\Helper;
 use App\Common\Messages\AfterSetMessage;
 use App\Common\Messages\BackToPartyMessage;
+use App\Common\Messages\GameOverMessage;
 use App\Common\Messages\JoinToPartyMessage;
 use App\Common\Messages\LetsPlayMessage;
 use App\Common\Messages\PausedMessage;
@@ -48,7 +49,6 @@ class FirstTestSocket implements MessageComponentInterface
         $this->playersPool = new PoolOfPlayers();
     }
 
-
     /**
      * @param ConnectionInterface $conn
      * @return void
@@ -77,55 +77,46 @@ class FirstTestSocket implements MessageComponentInterface
     {
         $this->info(__METHOD__, ['socketId' =>  $conn->socketId]);
 
+        // this is player id
+        $playerId = $conn->socketId;
+
         // if connection was in search pool
         $this->playersPool->onConnectionClose($conn);
 
         // when connection closed we mark party as paused
-        $party = $this->partiesPool->findPartyByPlayerId($conn->socketId);
+        $party = $this->partiesPool->findPartyByPlayerId($playerId);
         if (!$party) return;
 
-        $player = $party->getPlayerById($conn->socketId);
+        $player = $party->getPlayerById($playerId);
         if (!$player) return;
 
-//        // set party on pause
-//        $party->setPause();
-//        $party->sendToAllPlayers([
-//            'type' => ResponseType::paused,
-//            'initiator' => $conn->socketId,
-//            'state' => $party->getGameState()
-//        ]);
-
-        // player may be offline if he leave game before
-        if (!$player->isOffLine()) {
-            $party->addChatMessage(sprintf('Connection with the user __%s__ was a loss', $player->getName()));
+        // player may be offline if he leaves game before
+        if (!$player->isOffLine())
+        {
+            // notify all players
+            $party->addChatMessage(sprintf('Connection with the user __%s__ was lost', $player->getName()));
             $party->sendChatToAllPlayers();
+
+            // set player is offline
+            $player->setOffline();
+
+            // set cup as over
+            $player->getCup()->setCupAsOver();
+
+            //
+            $this->determineGameOverInSet($party);
         }
 
-        // mark in party that user lost connection
-        $party->onConnectionClose($conn, function () use ($party)
-        {
+        // if all players offline we party should be terminated
+        $partyPlayers = $party->getPlayers();
+        $onLinePlayers = array_filter($partyPlayers, fn(Player $p) => $p->isOnLine());
+        Log::channel('socket')->info('after filter', ['count($onLinePlayers)' => count($onLinePlayers)]);
+        if (count($onLinePlayers) == 0) {
             // this is new method
             $this->partiesPool->terminatePartyByPartyId($party->partyId);
-        });
+        }
 
     }
-
-    /**
-     * this is callback method when all players leave the party and it destoyed
-     * @return void
-     */
-//    private function onAllPlayersOffline(): void
-//    {
-//        // $party = $this->party;
-//
-//        // close party
-//        // $partyId = $party->partyId;
-//
-//        // clear party
-//        $this->party = null;
-//
-//        $this->info('party AAAAA terminated');
-//    }
 
     /**
      * @param ConnectionInterface $conn
@@ -331,8 +322,15 @@ class FirstTestSocket implements MessageComponentInterface
         // mark player as offline
         $player->setOffline();
 
+        // set cup as over
+        $player->getCup()->setCupAsOver();
+
+        // notify users about
         $party->addChatMessage(sprintf('Player __%s__ leave the game', $player->getName()));
         $party->sendChatToAllPlayers();
+
+        // detect end game
+        $this->determineGameOverInSet($party);
     }
 
     /**
@@ -469,7 +467,7 @@ class FirstTestSocket implements MessageComponentInterface
         }
 
         // check game over
-        $activeCups = array_filter($party->getPlayers(), fn(Player $p) => $p->getCup()->state == CupState::online);
+        $activeCups = array_filter($party->getPlayers(), fn(Player $p) => $p->getCup()->getState() == CupState::online);
 
         // this is global game over
         if (count($activeCups) <= 1)
@@ -480,7 +478,7 @@ class FirstTestSocket implements MessageComponentInterface
             // mar winner
             $winner = null;
             foreach ($party->getPlayers() as $p) {
-                if ($p->getCup()->state == CupState::online) {
+                if ($p->getCup()->getState() == CupState::online) {
                     $winner = $p;
                     $winner->getCup()->setCupAsWinner();
                     break;
@@ -489,6 +487,9 @@ class FirstTestSocket implements MessageComponentInterface
 
             $party->addChatMessage(sprintf('End of the game, winner: __%s__', $winner->getName()));
             $party->sendChatToAllPlayers();
+
+            // inform all players
+            $party->sendMessageToAllPlayers(new GameOverMessage($party));
         }
 
     }

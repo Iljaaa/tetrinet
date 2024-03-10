@@ -97,7 +97,7 @@ const GameOver = () => {
         <div>
             <Button onClick={() => {
                 TetrinetSingleton.getInstance().cancelSearch();
-            }}>Back to serch</Button>
+            }}>Back to search</Button>
         </div>
     </div>
 }

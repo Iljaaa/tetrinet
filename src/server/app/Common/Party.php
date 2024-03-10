@@ -220,30 +220,6 @@ class Party
     }
 
     /**
-     * This method called when player socket closed
-     * and we remove player with this connection from list
-     * @param ConnectionInterface $conn
-     * @param callable $onTerminate
-     * @return void
-     */
-    public function onConnectionClose(ConnectionInterface $conn, callable $onTerminate): void
-    {
-        Log::channel('socket')->info(__METHOD__);
-        foreach ($this->players as $playerId => $p) {
-            if ($playerId == $conn->socketId){
-                $p->setOffline();
-            }
-        }
-
-        // is all players offline we party should be terminated
-        $onLinePlayers = array_filter($this->players, fn(Player $p) => $p->isOnLine());
-        Log::channel('socket')->info('after filter', ['count($onLinePlayers)' => count($onLinePlayers)]);
-        if (count($onLinePlayers) == 0) {
-            $onTerminate();
-        }
-    }
-
-    /**
      * Data for response to client
      * @return array
      */

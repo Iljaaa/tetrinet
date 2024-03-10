@@ -8,5 +8,5 @@ namespace App\Common\Types;
 enum PlayerState:string
 {
     case online = 'online';
-    case offline = 'offline'; // when connection is lost
+    case offline = 'offline'; // when connection is lost, or player leave a game
 }

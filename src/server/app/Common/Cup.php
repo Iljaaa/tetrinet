@@ -5,12 +5,12 @@ namespace App\Common;
 use App\Common\Types\CupState;
 
 /**
- * This is one class
+ * This is cup class
  */
 class Cup
 {
 
-    public CupState $state = CupState::online;
+    private CupState $state = CupState::online;
 
     /**
      * Field state data
@@ -47,6 +47,14 @@ class Cup
     /**
      * @return void
      */
+    public function setCupAsOver (): void
+    {
+        $this->state = CupState::over;
+    }
+
+    /**
+     * @return void
+     */
     public function setCupAsWinner (): void
     {
         $this->state = CupState::winner;
@@ -61,7 +69,16 @@ class Cup
         return [
             'state' => $this->state->value,
             'fields' => $this->fields,
-            'bonuses' => [], // todo: make it
+            'bonuses' => [], // todo: this is not used
         ];
     }
+
+    /**
+     * @return CupState
+     */
+    public function getState(): CupState
+    {
+        return $this->state;
+    }
+
 }
