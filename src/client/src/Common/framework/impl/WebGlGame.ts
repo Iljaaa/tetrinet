@@ -89,7 +89,7 @@ export abstract class WebGlGame implements Game
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     
     // Set the background color to sky blue.
-    gl.clearColor(.5, .7, 1, 1)
+    gl.clearColor(0, .5, .5, 1)
     
     // Tell webGL that we aren't doing anything special with the vertex buffer, just use a default one.
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
