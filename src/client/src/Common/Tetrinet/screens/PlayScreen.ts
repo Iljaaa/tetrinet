@@ -198,7 +198,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * todo: refactor textures to static objects
    * @private
    */
-  private pausedTexture:Paused;
   private specialBG:SpecialBG;
 
   /**
@@ -228,7 +227,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cups = {}
 
     // init textures
-    this.pausedTexture = new Paused();
     this.specialBG = new SpecialBG();
 
     // init texture programm
@@ -619,6 +617,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // this._block.setVertices(Vertices.createTextureVerticesArray(
     //     78, this.textsTopPosition, 160, 64,
     //   this.pausedTexture.texX, this.pausedTexture.texY, this.pausedTexture.texWidth, this.pausedTexture.texHeight
+    // super(320, 320, 192, 64);
     // ))
     // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
     // gl.drawArrays(gl.TRIANGLES, 0, 6);
