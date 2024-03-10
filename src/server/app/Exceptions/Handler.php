@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Services\TelegramBotService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -46,4 +48,24 @@ class Handler extends ExceptionHandler
 
         Log::channel('socket')->info('this is '.__METHOD__);
     }
+
+    public function report(Throwable $e)
+    {
+        $parentResult = parent::report($e);
+
+        $t  = 'There is exception'.PHP_EOL;
+        $t .= get_class($e).PHP_EOL;
+        $t .= $e->getMessage().PHP_EOL;
+        $t .= $e->getFile().':'.$e->getLine().PHP_EOL.PHP_EOL;
+        // $t .= $e->getTraceAsString().PHP_EOL;
+        $firstFive = array_slice($e->getTrace(), 0, 5);
+        $t .= implode(PHP_EOL, array_map(fn ($l) => $l['file'].':'.$l['line'].' '.$l['function'], $firstFive));
+
+        $messageBot = app('telergambot');
+        $messageBot->sendMessage($t);
+
+        return $parentResult;
+    }
+
+
 }
