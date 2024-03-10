@@ -10,6 +10,8 @@ export const Todo = () => {
         <li>pauses limit</li>
         <li>when some one live or lost connection check end of the game</li>
         <li>when some one live or lost connection write on cup suck information???</li>
+        <li>telegram notion when server stop</li>
+        <li>Service Worker and Wev worker</li>
         <li>pause in just play mode</li>
         <li>there bug: if we first just play tetris and then click find game</li>
         <li>remove special blocks from just play cup</li>

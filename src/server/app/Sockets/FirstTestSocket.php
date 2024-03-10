@@ -350,18 +350,28 @@ class FirstTestSocket implements MessageComponentInterface
         // pause game
         $party = $this->partiesPool->getPartyById($partyId);
         if (!$party) return;
+
+        /** @var Player $player */
+        $player = $party->getPlayerById($conn->socketId);
+        if (!$player) return;
+
+        //
+        if ($player->getPauses() <= 0) return;
+
+        // set pause
         $party->setPause();
+
+        // decrease user pauses count
+        $player->decreasePause();;
 
         //
         $party->sendMessageToAllPlayers(new PausedMessage($party));
 
         // send chat message
-        /** @var Player $player */
-        $player = $party->getPlayerById($conn->socketId);
         $intent = $data['intent'] ?? '';
         $s = ($intent)
-            ? sprintf('Player __%s__ paused the game, because: %s', $player->getName(), $intent)
-            : sprintf('Player __%s__ paused the game', $player->getName());
+            ? sprintf('Player __%s__ paused the game, because: %s. Left: %d', $player->getName(), $intent, $player->getPauses())
+            : sprintf('Player __%s__ paused the game. Left: %d', $player->getName(), $player->getPauses());
         $party->addChatMessage($s);
         $party->sendChatToAllPlayers();
 //        $party->sendToAllPlayers([

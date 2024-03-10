@@ -32,6 +32,11 @@ class Player
      */
     public PlayerState $state;
 
+    /**
+     * Pauses limit
+     */
+    private int $pauses = 5;
+
     public function __construct(ConnectionInterface $connection, string $name)
     {
         $this->connetion = $connection;
@@ -118,4 +123,15 @@ class Player
     {
         return $this->name;
     }
+
+    public function getPauses(): int
+    {
+        return $this->pauses;
+    }
+
+    public function decreasePause (): void
+    {
+        $this->pauses--;
+    }
+
 }

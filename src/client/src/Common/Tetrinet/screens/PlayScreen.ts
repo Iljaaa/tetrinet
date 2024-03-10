@@ -17,7 +17,7 @@ import {GameState, RequestTypes} from "../types";
 import {CupState} from "../types/CupState";
 import {Bonus} from "../types/Bonus";
 
-import {Paused, SearchForAGame} from "../textures";
+import {SearchForAGame} from "../textures";
 import {Cup} from "../models/Cup";
 import {CupsDataCollection} from "../../../widgets/Canvas/Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
