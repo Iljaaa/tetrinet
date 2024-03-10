@@ -472,13 +472,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
 
   /**
-   * Update cups,
+   * Update opponents cups,
    * here already filtered opponent cup
    * @param data
    */
-  updateCups (data:CupsDataCollection) {
-    Object.keys(data).forEach((playerId:string) => {
+  updateCups (data:CupsDataCollection)
+  {
+    Object.keys(data).forEach((playerId:string) =>
+    {
+      // if cup not exists we are create new
       if (!this._cups[playerId]) this._cups[playerId] = new CupImpl();
+
       const cd = data[playerId]
       this._cups[playerId].setFields(cd.fields)
       this._cups[playerId].setState(cd.state)
@@ -1065,9 +1069,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   onFigureMovedToCup()
   {
     // if new stage is game over that mens game over
-    if (this._cup.getState() === CupState.over){
+    // if (this._cup.getState() === CupState.over){
       // debugger
-    }
+    // }
     
     // call update callback
     this.listener?.onCupUpdated(this._state, this._cup.getData());

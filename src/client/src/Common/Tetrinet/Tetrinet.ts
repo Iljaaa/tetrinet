@@ -195,15 +195,15 @@ export class Tetrinet extends WebGlGame
   }
 
   /**
-   * this method update opponent cup
+   * this method update opponents cup
    * @param data
    */
-  updateCups (data:CupsDataCollection) {
+  updateCups (data:CupsDataCollection)
+  {
     const s =  this.getCurrentScreen()
     if (s && s instanceof PlayScreen) {
       s.updateCups(data)
     }
-
   }
 
   enableInput ()

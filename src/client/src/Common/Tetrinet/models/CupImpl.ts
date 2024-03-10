@@ -74,6 +74,13 @@ export class CupImpl implements Cup
   }
 
   /**
+   *
+   */
+  setCupOver(){
+    this._state.state = CupState.over;
+  }
+
+  /**
    * Clean up field
    */
   cleanBeforeNewGame ()

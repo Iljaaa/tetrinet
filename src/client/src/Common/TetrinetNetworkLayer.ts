@@ -23,6 +23,7 @@ import {GamePartyType} from "./Tetrinet/types/GamePartyType";
 import {LeaveRequest} from "./Tetrinet/types/requests/LeaveRequest";
 import {OpponentsHelper} from "./heplers/OpponentsHelper";
 import {PlayerId} from "./Tetrinet/types/PlayerId";
+import {CupState} from "./Tetrinet/types/CupState";
 
 /**
  * Game macro data changes
@@ -257,7 +258,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       }
     })
 
-    // update cups
+    // update opponents cups
     this.updateCups(ccc);
   }
 
@@ -298,6 +299,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
     // update our cup state
     const mineCup:CupData = data.cups[this._playerId]
+
+    // update cup state
     this.setCupState(mineCup.state);
 
     //

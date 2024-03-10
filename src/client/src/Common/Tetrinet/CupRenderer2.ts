@@ -215,12 +215,8 @@ export class CupRenderer2
     // textsTexture.bind(gl)
     // WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 300);
 
-    textTexture.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 300);
-
-
     // if cup over draw game over
-    if (cup.getState() === CupState.over){
+    if (cup.getState() === CupState.over) {
       this.presentGameOver(gl, textTexture)
     }
     if (cup.getState() === CupState.winner){

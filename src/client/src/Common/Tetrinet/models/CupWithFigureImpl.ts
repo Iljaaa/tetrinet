@@ -191,7 +191,9 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     }
 
     // set cup state to game over
-    this.setState(CupState.over);
+    // this.setState(CupState.over);
+    this.setCupOver();
+
 
     // rise callback event
     if (this.listener) this.listener.onFigureMovedToCup()
