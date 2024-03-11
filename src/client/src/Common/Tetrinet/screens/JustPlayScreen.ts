@@ -9,8 +9,7 @@ import {GenerateNewFigure} from "../process/GenerateNewFigure";
 import {GenerateRandomColor} from "../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
 import {Assets} from "../Assets";
-import {Vertices} from "../../framework/Vertices";
-import {Experimental} from "../textures/Experimental";
+import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 
 /**
  * @vaersion 0.0.1
@@ -31,21 +30,24 @@ export class JustPlayScreen extends WebGlScreen
   private readonly _cupRenderer: CupRenderer2 | null = null;
 
   /**
+   * Texture with text and player names
+   * @private
+   */
+  private textTexture: PlayScreenTexts;
+
+  /**
    * Timer for update cup data
    * @private
    */
   // private requestDataTimer:number = 0;
 
-
   /**
    * Temp field for draw fields
    * @private
    */
-  private _block: Vertices;
-  private canvasTexture: WebGLTexture | null = null;
+  // private canvasTexture: WebGLTexture | null = null;
 
-
-  private _experimentalTexture:Experimental;
+  // private _experimentalTexture:Experimental;
 
   /**
    * In this constructor we create cup
@@ -56,7 +58,7 @@ export class JustPlayScreen extends WebGlScreen
     console.log ('JustPlayScreen constructor');
 
 
-    this._block = new Vertices(false, true);
+    // this._block = new Vertices(false, true);
     
     // create cup object
     this._cup =  new CupWithFigureImpl();
@@ -74,11 +76,16 @@ export class JustPlayScreen extends WebGlScreen
     // init texture
     Assets.sprite.init(gl, gl.TEXTURE0)
 
+    // texture with texts
+    this.textTexture = new PlayScreenTexts();
+    this.textTexture.render();
+    this.textTexture.upload(gl, gl.TEXTURE1)
+
     // this.initExperimentalTexture (gl)
 
     // init experimantal texture
-    this._experimentalTexture = new Experimental(300, 150);
-    this._experimentalTexture.init(gl, gl.TEXTURE1);
+    // this._experimentalTexture = new Experimental(300, 150);
+    // this._experimentalTexture.init(gl, gl.TEXTURE1);
 
     //
     this.startNewGame ()
@@ -110,7 +117,6 @@ export class JustPlayScreen extends WebGlScreen
 
     this._cup.updateFigureDownTimer(deltaTime);
   }
-  
   
   present(): void
   {
@@ -154,14 +160,14 @@ export class JustPlayScreen extends WebGlScreen
     // render cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 232, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
-    //this._cupRenderer?.renderCupWithFigure(this._cup);
+    this._cupRenderer?.renderCupWithFigure(this._cup, this.textTexture);
 
     // render next figure
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 570, 32)
     this.presentNextFigure(gl);
 
     // render test text
-    this.presentExperiment(gl)
+    // this.presentExperiment(gl)
   }
 
   /**
@@ -178,67 +184,58 @@ export class JustPlayScreen extends WebGlScreen
     this._cupRenderer?.renderNextFigure(gl, nextFigure)
   }
 
-  /**
+  /*
    * Experiment with text
    * http://delphic.me.uk/tutorials/webgl-text
    * @private
    */
-  private presentExperiment (gl: WebGL2RenderingContext)
-  {
-    // gl.activeTexture(1)
-    // gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
-    this._experimentalTexture.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
+  // private presentExperiment (gl: WebGL2RenderingContext)
+  // {
+  //   this._experimentalTexture.bind(gl)
+  //   WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
+  //
+  //
+  //   this._block.setVertices(Vertices.createTextureVerticesArray(
+  //     0, 100, 300, 150,
+  //     // 320, 256, 192, 64
+  //     0, 0, 300, 150
+  //   ))
+  //
+  //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+  //
+  //   // draw here
+  //   gl.drawArrays(gl.TRIANGLES, 0, 6);
+  // }
 
-
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-      0, 100, 300, 150,
-      // 320, 256, 192, 64
-      0, 0, 300, 150
-    ))
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-
-    // draw here
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-    //gl.bindTexture(gl.TEXTURE_2D, null);
-  }
-
-  protected initExperimentalTexture (gl: WebGL2RenderingContext)
-  {
-    // let canvas:HTMLCanvasElement|null = document.getElementById('textureCanvas') as HTMLCanvasElement;
-
-
-    let canvas:HTMLCanvasElement = document.createElement('canvas');
-    canvas.width = 300
-    canvas.height = 150
-    let ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.fillStyle = "back"; 	// This determines the text colour, it can take a hex value or rgba value (e.g. rgba(255,0,0,0.5))
-    ctx.textAlign = "center";	// This determines the alignment of text, e.g. left, center, right
-    ctx.textBaseline = "middle";	// This determines the baseline of the text, e.g. top, middle, bottom
-    ctx.font = "16px monospace";
-    ctx.fillText("HTML5 Rocks!", canvas.width/2, canvas.height/2);
-    ctx.fillRect(0, 0, 100, 100)
-
-    this.canvasTexture = gl.createTexture();
-
-    // this is vertical flip
-    // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-    gl.activeTexture(1)
-    // gl.activeTexture(0)
-    gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); // This is the important line!
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-    gl.activeTexture(1)
-    // gl.generateMipmap(gl.TEXTURE_2D);
-    // gl.activeTexture(gl.TEXTURE1)
-  }
+  // protected initExperimentalTexture (gl: WebGL2RenderingContext)
+  // {
+  //   let canvas:HTMLCanvasElement = document.createElement('canvas');
+  //   canvas.width = 300
+  //   canvas.height = 150
+  //   let ctx = canvas.getContext('2d');
+  //   if (!ctx) return;
+  //
+  //   ctx.fillStyle = "back"; 	// This determines the text colour, it can take a hex value or rgba value (e.g. rgba(255,0,0,0.5))
+  //   ctx.textAlign = "center";	// This determines the alignment of text, e.g. left, center, right
+  //   ctx.textBaseline = "middle";	// This determines the baseline of the text, e.g. top, middle, bottom
+  //   ctx.font = "16px monospace";
+  //   ctx.fillText("HTML5 Rocks!", canvas.width/2, canvas.height/2);
+  //   ctx.fillRect(0, 0, 100, 100)
+  //
+  //   this.canvasTexture = gl.createTexture();
+  //
+  //   // this is vertical flip
+  //   // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  //
+  //   gl.activeTexture(1)
+  //   // gl.activeTexture(0)
+  //   gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
+  //   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); // This is the important line!
+  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  //
+  //   gl.activeTexture(1)
+  // }
 
   /**
    * @param code

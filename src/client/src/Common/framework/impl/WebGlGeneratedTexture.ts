@@ -70,16 +70,13 @@ export class WebGlGeneratedTexture
    * @param gl
    * @param textureIndex
    */
-  init(gl:WebGL2RenderingContext, textureIndex:number): void
+  upload(gl:WebGL2RenderingContext, textureIndex:number): void
   {
     if (!this.context){
       throw new Error('Content not generated')
     }
 
-
     this.textureIndex = textureIndex;
-
-    console.log(this.textureId, 'WebGlGeneratedTexture.textureId')
 
     // now it not do anything, but when we will be use different textures
     // gl.activeTexture(gl.TEXTURE0)

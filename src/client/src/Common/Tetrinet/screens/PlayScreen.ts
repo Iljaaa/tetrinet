@@ -207,7 +207,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private textTexture: PlayScreenTexts;
 
-
   /**
    * Callback about change game state
    * @private
@@ -239,7 +238,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // texture with texts
     this.textTexture = new PlayScreenTexts();
-    this.textTexture.init(gl, gl.TEXTURE1)
+    // this.textTexture.render();
+    // this.textTexture.upload(gl, gl.TEXTURE1)
 
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
@@ -293,14 +293,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   }
 
   /**
-   * Set player name
-   * @param playerName
-   */
-  // setPlayerName (playerName:string){
-  //   this._playerName = playerName
-  // }
-
-  /**
    * It starts the game
    * must be called after init!
    */
@@ -312,9 +304,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // generate text texture
     const gl = this.game.getGLGraphics().getGl();
-    // render players name on texture
-    this.textTexture.renderPlayers(OpponentsHelper.getOpponentsArray())
-    this.textTexture.init(gl, gl.TEXTURE1);
+
+    // render texture and player names
+    this.textTexture.render(OpponentsHelper.getOpponentsArray())
+    this.textTexture.upload(gl, gl.TEXTURE1);
 
     // next figure random color
     // this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());

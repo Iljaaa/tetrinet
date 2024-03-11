@@ -28,11 +28,20 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
    */
   playersBeginEdge = 256;
 
+  /**
+   *
+   */
   playerLineHeight = 32
 
   constructor() {
     super(300, 512);
+  }
 
+  /**
+   * Render
+   */
+  public render (opponents?:Array<{index:number, name:string}>)
+  {
     const startPosition = 32+2
 
     // draw prepare to game
@@ -41,9 +50,8 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
     this.context.textBaseline = "middle";	// This determines the baseline of the text, e.g. top, middle, bottom
     this.context.font = "32px monospace";
 
-    this.context.fillStyle = "#ded9c6";
-
     // fill text beckground
+    this.context.fillStyle = "#ded9c6";
     this.context.fillRect(0, 0, 300, this.playersBeginEdge)
 
     this.context.fillStyle = "black";
@@ -54,13 +62,19 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
     this.context.fillText("Winner", this.width/2, startPosition + 192);
     // this.context.fillText("Winner", this.width/2, startPosition + (64 * 2));
     // this.context.fillRect(0, 0, 100, 100)
+
+    if (opponents) {
+      this.renderPlayers(opponents)
+    }
+
   }
 
   /**
    *
    * @param opponents
    */
-  renderPlayers (opponents:Array<{index:number, name:string}>){
+  private renderPlayers (opponents:Array<{index:number, name:string}>)
+  {
     this.context.textAlign = "left";
     this.context.textBaseline = "middle";
     this.context.font = "16px monospace";
