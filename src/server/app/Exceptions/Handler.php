@@ -6,6 +6,7 @@ use App\Services\TelegramBotService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -54,7 +55,7 @@ class Handler extends ExceptionHandler
     {
         $parentResult = parent::report($e);
 
-        if ($e instanceof NotFoundHttpException){
+        if ($e instanceof NotFoundHttpException || $e instanceof MethodNotAllowedHttpException) {
             return $parentResult;
         }
 
