@@ -6,6 +6,7 @@ use App\Services\TelegramBotService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -53,6 +54,10 @@ class Handler extends ExceptionHandler
     {
         $parentResult = parent::report($e);
 
+        if ($e instanceof NotFoundHttpException){
+            return $parentResult;
+        }
+
         $t  = 'There is exception'.PHP_EOL;
         $t .= get_class($e).PHP_EOL;
         $t .= $e->getMessage().PHP_EOL;
@@ -66,6 +71,7 @@ class Handler extends ExceptionHandler
 
         return $parentResult;
     }
+
 
 
 }
