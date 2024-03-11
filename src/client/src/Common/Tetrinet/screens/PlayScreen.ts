@@ -307,7 +307,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // render texture and player names
     this.textTexture.render(OpponentsHelper.getOpponentsArray())
-    this.textTexture.upload(gl, gl.TEXTURE1);
+    this.textTexture.init(gl, gl.TEXTURE1);
 
     // next figure random color
     // this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
@@ -520,25 +520,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // Clear the screen.
     gl.clear(gl.COLOR_BUFFER_BIT)
-    
-    // use texture program
-    // todo: this is not necessary here
-    // todo: it may br in constructor
-    // WebGlProgramManager.sUseTextureProgram(gl);
-
-    // bind texture
-    Assets.sprite.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
 
     // render cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
     // this._cupRenderer?.setPosition(32, 32)
-    this._cupRenderer?.renderCupWithFigure(this._cup, this.textTexture);
+    this._cupRenderer?.renderCupWithFigure(gl, this._cup, this.textTexture);
 
     // bind texture
     Assets.sprite.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
 
     // render next figure
     this.presentNextFigure(gl);
@@ -555,11 +545,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
         WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
 
         //
-        this._cupRenderer?.renderCup(this._cups[playerId], this.textTexture);
+        this._cupRenderer?.renderCup(gl, this._cups[playerId], this.textTexture);
 
         // text height position
         WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y - this.textTexture.playerLineHeight + 8);
-
 
         // render player name
         this._cupRenderer?.renderCupIndex(index, this.textTexture);
@@ -764,9 +753,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // rerender cup
     // maybe it must be inside cause upper
-    if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
-    }
+    // if (this._cupRenderer){
+    //   this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
+    // }
     
   }
   
@@ -783,9 +772,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // rerender cup
     // maybe it must be inside cause upper
-    if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
-    }
+    // if (this._cupRenderer){
+    //   this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
+    // }
   }
   
   /**
@@ -805,9 +794,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // rerender cup
     // maybe it must be inside cause upper
-    if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
-    }
+    // if (this._cupRenderer){
+    //   this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
+    // }
   }
   
   /**
@@ -828,9 +817,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // rerender cup
     // maybe it must be inside cause upper
-    if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
-    }
+    // if (this._cupRenderer){
+    //   this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
+    // }
   }
   
   /**
@@ -848,9 +837,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // rerender cup
     // maybe it must be inside cause upper
-    if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
-    }
+    // if (this._cupRenderer){
+    //   this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
+    // }
   }
   
   /**
@@ -869,9 +858,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // rerender cup
     // maybe it must be inside cause upper
-    if (this._cupRenderer){
-      this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
-    }
+    // if (this._cupRenderer){
+    //   this._cupRenderer.renderCupWithFigure(this._cup, this.textTexture)
+    // }
   }
 
   /**

@@ -165,39 +165,17 @@ export class CupRenderer2
   
   /**
    * this method render cup
+   * @param gl
    * @param cup
    * @param textsTexture
    */
-  public renderCupWithFigure(cup:CupWithFigure, textsTexture:PlayScreenTexts):void
+  public renderCupWithFigure(gl:WebGL2RenderingContext, cup:CupWithFigure, textsTexture:PlayScreenTexts):void
   {
-    let gl:WebGL2RenderingContext = this.graphic.getGl();
-    
     // render cup state
-    this.renderCup(cup, textsTexture)
+    // this.renderCup(gl, cup, textsTexture)
 
     // bind texture
     Assets.sprite.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
-
-
-    // render figure
-    const f = cup.getFigure()
-    if (f) this.renderFigure(gl, cup, f, f.getColor())
-  }
-  
-  /**
-   * Render cup object
-   * @param cup
-   * @param textTexture
-   */
-  public renderCup (cup:Cup, textTexture:PlayScreenTexts)
-  {
-    //
-    let gl:WebGL2RenderingContext = this.graphic.getGl();
-
-    // bind texture
-    Assets.sprite.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
 
     // render background
     this.renderBackground(gl)
@@ -205,16 +183,44 @@ export class CupRenderer2
     // render cup blocks
     this.presentCupBlocks(gl, cup);
 
-    // this.presentSpecialBlocks();
+    // render figure
+    const f = cup.getFigure()
+    if (f) this.renderFigure(gl, cup, f)
 
-    // if (!textsTexture) return
-    //
-    // // render index
-    // // if (textsTexture) this.presentCupIndex(gl, textsTexture);
-    //
-    // textsTexture.bind(gl)
-    // WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 300);
+    // render status texts
+    this.renderCupStateMessages(gl, cup, textsTexture)
 
+  }
+  
+  /**
+   * Render cup object
+   * @param gl
+   * @param cup
+   * @param textsTexture
+   */
+  public renderCup (gl:WebGL2RenderingContext, cup:Cup, textsTexture:PlayScreenTexts)
+  {
+    // bind texture
+    Assets.sprite.bind(gl)
+
+    // render background
+    this.renderBackground(gl)
+
+    // render cup blocks
+    this.presentCupBlocks(gl, cup);
+
+    // render status texts
+    this.renderCupStateMessages(gl, cup, textsTexture)
+  }
+
+  /**
+   * Render text blocks
+   * @param gl
+   * @param cup
+   * @param textTexture
+   */
+  public renderCupStateMessages (gl:WebGL2RenderingContext, cup:Cup, textTexture:PlayScreenTexts)
+  {
     // if cup over draw game over
     if (cup.getState() === CupState.over) {
       this.presentGameOver(gl, textTexture)
@@ -261,9 +267,6 @@ export class CupRenderer2
    */
   private presentCupBlocks(gl: WebGL2RenderingContext, cup:Cup)
   {
-    // move cup
-    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
-
     // draw cup bodies
     const fields = cup.getFields()
     const len = fields.length;
@@ -328,7 +331,7 @@ export class CupRenderer2
   /**
    * @private
    */
-  private renderFigure (gl: WebGL2RenderingContext, cup:Cup, f: Figure, color:number)
+  private renderFigure (gl: WebGL2RenderingContext, cup:Cup, f: Figure)
   {
     const fields = f.getFields();
     const len = fields.length;
@@ -337,11 +340,12 @@ export class CupRenderer2
       const cellIndex = fields[r]
       
       const c:Coords = cup.getCoordsByIndex(cellIndex);
+      if (c.y < 0) continue
       
       const bottom = c.y * this.blockSize;
       const left = c.x * this.blockSize;
       
-      const textureLeft = 320 + color * this.blockSize;
+      const textureLeft = 320 + f.getColor() * this.blockSize;
       
       this._block.setVertices(Vertices.createTextureVerticesArray(
         left, bottom, this.blockSize, this.blockSize,
@@ -374,9 +378,6 @@ export class CupRenderer2
     //   0, 0, cupWidth, cupHeight,
     //   0, 0, cupWidth, cupHeight
     // ))
-
-    // move cup
-    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
     
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._background.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, this._background.getVerticesCount())
@@ -393,7 +394,6 @@ export class CupRenderer2
     // todo: move bind position before draw texts
     textTexture.bind(gl)
     WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, textTexture.getWidth(), textTexture.getHeight());
-    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
     this._block.setVertices(Vertices.createTextureVerticesArray(
       30, 0, 260, 64,
       20, textTexture.gameOverTopPosition, 260, textTexture.lineHeight
@@ -422,9 +422,6 @@ export class CupRenderer2
   //     0, 0, cupWidth, cupHeight
   //   ))
   //
-  //   // move cup
-  //   // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.position.x, this.position.y)
-  //
   // }
 
   /**
@@ -437,7 +434,6 @@ export class CupRenderer2
   {
     textTexture.bind(gl)
     WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, textTexture.getWidth(), textTexture.getHeight());
-    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
     this._block.setVertices(Vertices.createTextureVerticesArray(
       0, 0, 260, 64,
       20, textTexture.winnerTopPosition, 260, textTexture.lineHeight
@@ -457,6 +453,9 @@ export class CupRenderer2
    */
   public renderNextFigure(gl: WebGL2RenderingContext, nextFigure:Figure)
   {
+    // bind texture
+    Assets.sprite.bind(gl)
+
     // render background
     this.renderNextFigureBackground(gl)
 

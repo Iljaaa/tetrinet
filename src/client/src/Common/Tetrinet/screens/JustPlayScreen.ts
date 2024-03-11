@@ -79,7 +79,7 @@ export class JustPlayScreen extends WebGlScreen
     // texture with texts
     this.textTexture = new PlayScreenTexts();
     this.textTexture.render();
-    this.textTexture.upload(gl, gl.TEXTURE1)
+    this.textTexture.init(gl, gl.TEXTURE1)
 
     // this.initExperimentalTexture (gl)
 
@@ -128,20 +128,20 @@ export class JustPlayScreen extends WebGlScreen
     // const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(WebGlProgramManager.textureProgram, "translation");
     // gl.uniform2f(textureSizeLocation, x, y)
 
-    // const textureProgramm = WebGlProgramManager.getTextureProgram(gl)
-    // gl.useProgram(textureProgramm)
+    // const textureProgram = WebGlProgramManager.getTextureProgram(gl)
+    // gl.useProgram(textureProgram)
 
     //
     // // Tell webGL to read 2 floats from the vertex array for each vertex
     // // and store them in my vec2 shader variable I've named "coordinates"
     // // We need to tell it that each vertex takes 24 bytes now (6 floats)
-    // const coordAttributeLocation  = gl.getAttribLocation(textureProgramm, "coordinates")
-    // gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 16, 0)
-    // gl.enableVertexAttribArray(coordAttributeLocation)
+    // const coordsAttributeLocation  = gl.getAttribLocation(textureProgram, "coordinates")
+    // gl.vertexAttribPointer(coordsAttributeLocation, 2, gl.FLOAT, false, 16, 0)
+    // gl.enableVertexAttribArray(coordsAttributeLocation)
     //
     // // Tell webGL to read 2 floats from the vertex array for each vertex
     // // and store them in my vec2 shader variable I've named "texPos"
-    // const textilsAttributeLocation = gl.getAttribLocation(textureProgramm, "textilsPos")
+    // const textilsAttributeLocation = gl.getAttribLocation(textureProgram, "textilsPos")
     // gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 16, 8)
     // gl.enableVertexAttribArray(textilsAttributeLocation)
     //
@@ -153,14 +153,11 @@ export class JustPlayScreen extends WebGlScreen
     // WebGlProgramManager.sUseTextureProgram(gl);
 
     Assets.sprite.bind(gl)
-    // gl.activeTexture(0)
-
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, Assets.sprite.getWidth(), Assets.sprite.getHeight());
 
     // render cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 232, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
-    this._cupRenderer?.renderCupWithFigure(this._cup, this.textTexture);
+    this._cupRenderer?.renderCupWithFigure(gl, this._cup, this.textTexture);
 
     // render next figure
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 570, 32)

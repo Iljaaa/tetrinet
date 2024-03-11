@@ -1,4 +1,4 @@
-import {Texture} from "../Texture";
+import {WebGlProgramManager} from "./WebGlProgramManager";
 
 /**
  * this is texture with was loaded by url
@@ -30,7 +30,7 @@ export class WebGlTexture
 
 
   /**
-   * @param textureIndex
+   *
    */
   constructor()
   {
@@ -66,15 +66,13 @@ export class WebGlTexture
   }
   
   /**
-   * Bind texurei into gl
+   * Bind texture into gl
    * @param gl
+   * @param textureIndex
    */
   init(gl:WebGL2RenderingContext, textureIndex:number): void
   {
     this.textureIndex = textureIndex;
-
-
-    console.log(this.textureId, 'this.textureId')
 
     // now it not do anything, but when we will be use different textures
     // gl.activeTexture(gl.TEXTURE0)
@@ -119,6 +117,10 @@ export class WebGlTexture
 
     // gl.activeTexture(gl.TEXTURE0)
     // gl.activeTexture(0)
+
+
+    // describe texture size
+    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, this.getWidth(), this.getHeight());
 
   }
 

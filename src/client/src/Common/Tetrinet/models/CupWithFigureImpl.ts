@@ -151,7 +151,7 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    * and if it fails it means game over
    * @private
    */
-  private transferFigureToCupWithTail ():void
+  private transferFigureToCupWithTail():void
   {
     if (!this._figure) return;
     
@@ -159,12 +159,12 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     const figureFields = this._figure.getFields()
     figureFields.forEach((f:number) =>
     {
+      // if block out of screen
+      if (f < 0) return;
+
       const b = this._state.fields[f]
-      if (!b){
-        alert ('block not found, it means something go wrong');
-        debugger
-        return
-      }
+      if (!b) return
+
       b.block = this._figure ? this._figure.getColor() : 0
     })
 

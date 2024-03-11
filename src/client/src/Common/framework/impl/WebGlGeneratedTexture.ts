@@ -70,7 +70,7 @@ export class WebGlGeneratedTexture
    * @param gl
    * @param textureIndex
    */
-  upload(gl:WebGL2RenderingContext, textureIndex:number): void
+  init(gl:WebGL2RenderingContext, textureIndex:number): void
   {
     if (!this.context){
       throw new Error('Content not generated')
