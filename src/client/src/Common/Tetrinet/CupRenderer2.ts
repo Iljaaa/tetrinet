@@ -56,7 +56,12 @@ export class CupRenderer2
   /**
    * Background vertices array
    */
-  private _background: Vertices;
+  private _backgroundVertices: Vertices;
+
+  /**
+   * Player name vertices array
+   */
+  private _playerNameVertices: Vertices;
 
   /**
    * Game over vertices array
@@ -69,6 +74,7 @@ export class CupRenderer2
   private _winnerVertices: Vertices;
 
   /**
+   * @deprecated this is the test block
    * Temp field for draw fields
    */
   private _block: Vertices;
@@ -83,13 +89,16 @@ export class CupRenderer2
     }
     let cupWidth = this.cupSizeInCells.width * this.blockSize
     let cupHeight =this.cupSizeInCells.height * this.blockSize
-    
-    // init _background
-    this._background = new Vertices(false, true);
-    this._background.setVertices(Vertices.createTextureVerticesArray(
-      0, 0, cupWidth, cupHeight,
-      0, 0, cupWidth, cupHeight
-    ))
+
+    // init vertices
+    // init _backgroundVertices
+    this._backgroundVertices = new Vertices(false, true);
+    // this._backgroundVertices.setVertices(Vertices.createTextureVerticesArray(
+    //   0, 0, cupWidth, cupHeight,
+    //   0, 0, cupWidth, cupHeight
+    // ))
+
+    this._playerNameVertices = new Vertices(false, true);
     
     // init block
     this._block = new Vertices(false, true);
@@ -133,13 +142,13 @@ export class CupRenderer2
       this.blockSize = 32;
     }
 
-    // calculate _background size
+    // calculate _backgroundVertices size
     let cupWidth = this.cupSizeInCells.width * this.blockSize
     let cupHeight = this.cupSizeInCells.height * this.blockSize
 
-    // in _background we use only texture
-    this._background = new Vertices(false, true);
-    this._background.setVertices(Vertices.createTextureVerticesArray(
+    // in _backgroundVertices we use only texture
+    this._backgroundVertices = new Vertices(false, true);
+    this._backgroundVertices.setVertices(Vertices.createTextureVerticesArray(
       0, 0, cupWidth, cupHeight,
       0, 0, 320, 640
     ))
@@ -161,6 +170,22 @@ export class CupRenderer2
         this.winnerTexture.texX, this.winnerTexture.texY, this.winnerTexture.texWidth, this.winnerTexture.texHeight
     ))
 
+  }
+
+  /**
+   * Update player vertices block
+   * @param size
+   * @param cupIndex
+   * @param textsTexture
+   */
+  public setPlayerName (size:CupSize, cupIndex:number, textsTexture:PlayScreenTexts)
+  {
+    // calculate player name position
+    const top = textsTexture.playersBeginEdge + (cupIndex * textsTexture.playerLineHeight)
+    this._playerNameVertices.setVertices(Vertices.createTextureVerticesArray (
+      0, 0, 300, 200,
+      0, top, 300, 200
+    ))
   }
   
   /**
@@ -219,7 +244,7 @@ export class CupRenderer2
    * @param cup
    * @param textTexture
    */
-  public renderCupStateMessages (gl:WebGL2RenderingContext, cup:Cup, textTexture:PlayScreenTexts)
+  private renderCupStateMessages (gl:WebGL2RenderingContext, cup:Cup, textTexture:PlayScreenTexts)
   {
     // if cup over draw game over
     if (cup.getState() === CupState.over) {
@@ -232,33 +257,29 @@ export class CupRenderer2
 
   /**
    * Render player name and cup index
+   * @param gl
    * @param index
    * @param textsTexture
    */
-  public renderCupIndex (index:number, textsTexture?:PlayScreenTexts)
+  public renderCupIndex (gl:WebGL2RenderingContext, index:number, textsTexture:PlayScreenTexts)
   {
-    if (!textsTexture) return
-
-    //
-    let gl:WebGL2RenderingContext = this.graphic.getGl();
-
-
-    // render index
-    // if (textsTexture) this.presentCupIndex(gl, textsTexture);
 
     textsTexture.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, textsTexture.getWidth(), textsTexture.getHeight());
+
     // texture top
-    const top = textsTexture.playersBeginEdge + (index * textsTexture.playerLineHeight)
+    // const top = textsTexture.playersBeginEdge + (index * textsTexture.playerLineHeight)
 
     //
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-      0, 0, 300, 200,
-      0, top, 300, 200
-    ))
+    // this._block.setVertices(Vertices.createTextureVerticesArray(
+    //   0, 0, 300, 200,
+    //   0, top, 300, 200
+    // ))
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    gl.drawArrays(gl.TRIANGLES, 0, this._block.getVerticesCount())
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    // gl.drawArrays(gl.TRIANGLES, 0, this._block.getVerticesCount())
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._playerNameVertices.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, this._playerNameVertices.getVerticesCount())
   }
 
   /**
@@ -361,7 +382,7 @@ export class CupRenderer2
   }
   
   /**
-   * Render _background
+   * Render _backgroundVertices
    * @param gl
    * @private
    */
@@ -372,15 +393,15 @@ export class CupRenderer2
     // // let cupHeight = cup.getHeightInCells() * this.blockSize
     // let cupHeight = this.cupSizeInCells.height * this.blockSize
     //
-    // // in _background we use only texture
-    // this._background = new Vertices(false, true);
-    // this._background.setVertices(Vertices.createTextureVerticesArray(
+    // // in _backgroundVertices we use only texture
+    // this._backgroundVertices = new Vertices(false, true);
+    // this._backgroundVertices.setVertices(Vertices.createTextureVerticesArray(
     //   0, 0, cupWidth, cupHeight,
     //   0, 0, cupWidth, cupHeight
     // ))
     
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._background.vertices), gl.STATIC_DRAW)
-    gl.drawArrays(gl.TRIANGLES, 0, this._background.getVerticesCount())
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._backgroundVertices.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, this._backgroundVertices.getVerticesCount())
   }
 
   /**
@@ -404,7 +425,7 @@ export class CupRenderer2
   }
 
   // /**
-  //  * Render _background
+  //  * Render _backgroundVertices
   //  * @param gl
   //  * @private
   //  */
@@ -415,9 +436,9 @@ export class CupRenderer2
   //   // let cupHeight = cup.getHeightInCells() * this.blockSize
   //   let cupHeight = this.cupSizeInCells.height * this.blockSize
   //
-  //   // in _background we use only texture
-  //   this._background = new Vertices(false, true);
-  //   this._background.setVertices(Vertices.createTextureVerticesArray(
+  //   // in _backgroundVertices we use only texture
+  //   this._backgroundVertices = new Vertices(false, true);
+  //   this._backgroundVertices.setVertices(Vertices.createTextureVerticesArray(
   //     0, 0, cupWidth, cupHeight,
   //     0, 0, cupWidth, cupHeight
   //   ))

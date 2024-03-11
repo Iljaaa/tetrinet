@@ -537,23 +537,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this.presentUserBonuses(gl)
     
     // render opponents cups
-    this._cupRenderer?.setCupSize((this._partyType === GamePartyType.party) ? CupSize.small16 : CupSize.middle24)
-    Object.keys(this._cups).forEach((playerId:string, index:number) => {
-      if (this._cups[playerId])
-      {
-        // set cup position
-        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
-
-        //
-        this._cupRenderer?.renderCup(gl, this._cups[playerId], this.textTexture);
-
-        // text height position
-        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y - this.textTexture.playerLineHeight + 8);
-
-        // render player name
-        this._cupRenderer?.renderCupIndex(index, this.textTexture);
-      }
-    })
+    this.presentOpponentsCups(gl)
 
     // present interface
     if (this._state === GameState.ready){
@@ -620,6 +604,35 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
+
+  private presentOpponentsCups (gl: WebGL2RenderingContext)
+  {
+    // todo: remove this calculation from present
+    const cupSize = (this._partyType === GamePartyType.party) ? CupSize.small16 : CupSize.middle24
+
+    // update cup blocks
+    this._cupRenderer?.setCupSize(cupSize)
+
+    Object.keys(this._cups).forEach((playerId:string, index:number) => {
+      if (this._cups[playerId])
+      {
+        // set cup position
+        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
+
+        //
+        this._cupRenderer?.renderCup(gl, this._cups[playerId], this.textTexture);
+
+        // update
+        this._cupRenderer?.setPlayerName(cupSize, index, this.textTexture)
+
+        // text height position
+        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y - this.textTexture.playerLineHeight + 8);
+
+        // render player name
+        this._cupRenderer?.renderCupIndex(gl, index, this.textTexture);
+      }
+    })
   }
 
   /**

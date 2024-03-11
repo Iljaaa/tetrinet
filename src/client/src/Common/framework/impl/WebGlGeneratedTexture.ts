@@ -1,3 +1,4 @@
+import {WebGlProgramManager} from "./WebGlProgramManager";
 
 /**
  * this is texture with generate by static canvas
@@ -127,5 +128,7 @@ export class WebGlGeneratedTexture
 
     //gl.activeTexture(this.textureIndex)
     gl.bindTexture(gl.TEXTURE_2D, this.textureId)
+
+    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, this.width, this.height);
   }
 }

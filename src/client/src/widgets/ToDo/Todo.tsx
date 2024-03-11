@@ -17,6 +17,7 @@ export const Todo = () => {
         <li>big message search</li>
         <li>remove texts from main sprite</li>
         <li>move peoples bonuses upper in texture</li>
+        <li>move next figure bg</li>
         <li>remove textures list</li>
         <li>optimize CupRenderer2.setCupSize</li>
         <li>update order of drawing objects in cup because figures up to text</li>
