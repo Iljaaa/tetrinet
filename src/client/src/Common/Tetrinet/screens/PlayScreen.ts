@@ -525,7 +525,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 32, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
     // this._cupRenderer?.setPosition(32, 32)
-    this._cupRenderer?.renderCupWithFigure(gl, this._cup, this.textTexture);
+    this._cupRenderer?.renderCupWithFigure(this._cup, this.textTexture);
 
     // bind texture
     Assets.sprite.bind(gl)
@@ -599,7 +599,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
     this._block.setVertices(Vertices.createTextureVerticesArray(
       30, this.textsTopPosition, 260, 64,
-      20, this.textTexture.pauseTopPosition, 260, this.textTexture.lineHeight
+      20, PlayScreenTexts.pauseTopPosition, 260, PlayScreenTexts.lineHeight
     ))
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
@@ -621,7 +621,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
         WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
 
         //
-        this._cupRenderer?.renderCup(gl, this._cups[playerId], this.textTexture);
+        this._cupRenderer?.renderCup(this._cups[playerId], this.textTexture);
 
         // update player name texture position
         this._cupRenderer?.setPlayerName(cupSize, index, this.textTexture)
@@ -630,7 +630,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
         // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y - this.textTexture.playerLineHeight + 8);
 
         // render player name
-        this._cupRenderer?.renderCupIndex(gl, index, this.textTexture);
+        this._cupRenderer?.renderCupIndex(this.textTexture);
       }
     })
   }

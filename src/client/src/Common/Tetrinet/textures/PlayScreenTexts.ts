@@ -7,35 +7,43 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
   /**
    *
    */
-  lineHeight = 64;
+  static lineHeight = 64;
 
   /**
    * Pause text position
    */
-  pauseTopPosition = 64;
+  static pauseTopPosition = 64;
 
   /**
    * Pause text position
    */
-  gameOverTopPosition = 128;
+  static gameOverTopPosition = 128;
 
   /**
    * Pause text position
    */
-  winnerTopPosition = 192;
+  static winnerTopPosition = 192;
 
   /**
    * Height position when start players name
    */
-  playersBeginEdge = 256;
+  static playersBeginEdge = 256;
 
   /**
    *
    */
-  playerLineHeight = 24
+  static playerLineHeight = 24
 
-  constructor() {
-    super(300, 512);
+  // constructor() {
+  //   super(300, 512);
+  // }
+
+  getHeight(): number {
+    return 512;
+  }
+
+  getWidth(): number {
+    return 300;
   }
 
   /**
@@ -53,14 +61,14 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
 
     // fill text beckground
     this.context.fillStyle = "#ded9c6";
-    this.context.fillRect(0, 0, 300, this.playersBeginEdge)
+    this.context.fillRect(0, 0, 300, PlayScreenTexts.playersBeginEdge)
 
     this.context.fillStyle = "black";
     // this.context.fillText("HTML5 Rocks!", this.width/2, this.height/2);
-    this.context.fillText("Searching...", this.width/2, startPosition);
-    this.context.fillText("Paused", this.width/2, startPosition + 64);
-    this.context.fillText("Game over", this.width/2, startPosition + 128);
-    this.context.fillText("Winner", this.width/2, startPosition + 192);
+    this.context.fillText("Searching...", this.getWidth()/2, startPosition);
+    this.context.fillText("Paused", this.getWidth()/2, startPosition + 64);
+    this.context.fillText("Game over", this.getWidth()/2, startPosition + 128);
+    this.context.fillText("Winner", this.getWidth()/2, startPosition + 192);
     // this.context.fillText("Winner", this.width/2, startPosition + (64 * 2));
     // this.context.fillRect(0, 0, 100, 100)
 
@@ -82,7 +90,7 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
     this.context.fillStyle = "white";
 
     opponents.forEach((it:{index:number, name:string}) => {
-      const top = this.getNameTopPositionByIndex(it.index - 1) + this.playerLineHeight / 2;
+      const top = PlayScreenTexts.getNameTopPositionByIndex(it.index - 1) + PlayScreenTexts.playerLineHeight / 2;
       // const top = this.playersBeginEdge + ((it.index - 1) * this.playerLineHeight) + 16;
       this.context.fillText(it.index + ". " + it.name, 0, top);
     })
@@ -95,14 +103,14 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
    * Player name position by cup index
    * @param playerIndex
    */
-  public getNameTopPositionByIndex (playerIndex:number):number {
-    return this.playersBeginEdge + (playerIndex * this.playerLineHeight)
+  public static getNameTopPositionByIndex (playerIndex:number):number {
+    return PlayScreenTexts.playersBeginEdge + (playerIndex * this.playerLineHeight)
   }
 
   /**
    * @param cupSize
    */
-  public getPlayerLineHeightByCupSize (cupSize:CupSize):number
+  public static getPlayerLineHeightByCupSize (cupSize:CupSize):number
   {
     if (cupSize === CupSize.small16) return  16;
     else if (CupSize.middle24) return 24;

@@ -4,13 +4,11 @@ import {Coords} from "./math/Coords";
 import {Cup} from "./models/Cup";
 import {Figure} from "./models/Figure";
 import {CupState} from "./types/CupState";
-import {GameOver} from "./textures/GameOver";
-import {WinnerTexture} from "./textures/WinnerTexture";
 import {CupWithFigure} from "./models/CupWithFigure";
 import {NextBG} from "./textures/NextBG";
 import {PlayScreenTexts} from "./textures/PlayScreenTexts";
 import {Assets} from "./Assets";
-import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
+// import {WebGlProgramManager} from "../framework/impl/WebGlProgramManager";
 
 export enum CupSize {
   small16 = 'small16',
@@ -23,7 +21,7 @@ export class CupRenderer2
   /**
    * @private
    */
-  private graphic: WebGlGraphics;
+  private readonly gl:WebGL2RenderingContext;
 
   /**
    * Cup size set in constructor and then never change
@@ -44,8 +42,8 @@ export class CupRenderer2
    *
    * @private
    */
-  private gameOverTexture:GameOver;
-  private winnerTexture:WinnerTexture;
+  // private gameOverTexture:GameOver;
+  // private winnerTexture:WinnerTexture;
   
   /**
    * Block size
@@ -86,8 +84,8 @@ export class CupRenderer2
   private _block: Vertices;
 
   constructor(graphic:WebGlGraphics, cupWidthInCells:number, cupHeightInCell:number) {
-    this.graphic = graphic;
-    
+    this.gl = graphic.getGl();
+
     //
     this.cupSizeInCells = {
       width: cupWidthInCells,
@@ -115,22 +113,22 @@ export class CupRenderer2
     ))
 
     // init textures objects
-    this.gameOverTexture = new GameOver();
-    this.winnerTexture = new WinnerTexture();
+    // this.gameOverTexture = new GameOver();
+    // this.winnerTexture = new WinnerTexture();
 
     //
     this._gameOverVertices = new Vertices(false, true);
-    this._gameOverVertices.setVertices(Vertices.createTextureVerticesArray(
-        0, 0, this._cupWidth, cupHeight,
-        0, 0, this.gameOverTexture.texWidth, this.gameOverTexture.texHeight
-    ))
+    // this._gameOverVertices.setVertices(Vertices.createTextureVerticesArray(
+    //     0, 0, this._cupWidth, cupHeight,
+    //     0, 0, this.gameOverTexture.texWidth, this.gameOverTexture.texHeight
+    // ))
 
     //
     this._winnerVertices = new Vertices(false, true);
-    this._winnerVertices.setVertices(Vertices.createTextureVerticesArray(
-        0, 0, this._cupWidth, cupHeight,
-        0, 0, this.winnerTexture.texWidth, this.winnerTexture.texHeight
-    ))
+    // this._winnerVertices.setVertices(Vertices.createTextureVerticesArray(
+    //     0, 0, this._cupWidth, cupHeight,
+    //     0, 0, this.winnerTexture.texWidth, this.winnerTexture.texHeight
+    // ))
   }
 
   /**
@@ -163,18 +161,22 @@ export class CupRenderer2
     // calculate game ove position
     // const textWidth = this.cupSizeInCells.width * this.blockSize;
     const textHeight =  64 / 320 * this._cupWidth;
-    const marginTop = this.cupSizeInCells.height * this.blockSize * 0.2;
+    const marginTop = this.cupSizeInCells.height * this.blockSize * 0.15;
+    const marginLeft = 20 / 320 * this._cupWidth;
 
     this._gameOverVertices.setVertices(Vertices.createTextureVerticesArray(
-        0, marginTop, this._cupWidth, textHeight,
+        marginLeft, marginTop, this._cupWidth - marginLeft - marginLeft, textHeight,
         // 320, 192, 320, 64
-        this.gameOverTexture.texX, this.gameOverTexture.texY, this.gameOverTexture.texWidth, this.gameOverTexture.texHeight
+        // this.gameOverTexture.texX, this.gameOverTexture.texY, this.gameOverTexture.texWidth, this.gameOverTexture.texHeight
+        20, PlayScreenTexts.gameOverTopPosition, 260, PlayScreenTexts.lineHeight
     ))
 
     this._winnerVertices.setVertices(Vertices.createTextureVerticesArray(
-        46, marginTop, this._cupWidth, textHeight,
+        marginLeft, marginTop, this._cupWidth - marginLeft - marginLeft, textHeight,
+        // 46, marginTop, this._cupWidth, textHeight,
         // 320, 192, 320, 64
-        this.winnerTexture.texX, this.winnerTexture.texY, this.winnerTexture.texWidth, this.winnerTexture.texHeight
+        //this.winnerTexture.texX, this.winnerTexture.texY, this.winnerTexture.texWidth, this.winnerTexture.texHeight
+      20, PlayScreenTexts.winnerTopPosition, 260, PlayScreenTexts.lineHeight
     ))
 
   }
@@ -188,62 +190,60 @@ export class CupRenderer2
   public setPlayerName (cupSize:CupSize, cupIndex:number, textsTexture:PlayScreenTexts)
   {
     // calculate player name position
-    const top = textsTexture.getNameTopPositionByIndex(cupIndex)
-    const drawPlayerLineHeight = textsTexture.getPlayerLineHeightByCupSize(cupSize)
+    const top = PlayScreenTexts.getNameTopPositionByIndex(cupIndex)
+    const drawPlayerLineHeight = PlayScreenTexts.getPlayerLineHeightByCupSize(cupSize)
     this._playerNameVertices.setVertices(Vertices.createTextureVerticesArray (
       0, -1 * drawPlayerLineHeight, this._cupWidth, drawPlayerLineHeight,
-      0, top, textsTexture.getWidth(), textsTexture.playerLineHeight
+      0, top, textsTexture.getWidth(), PlayScreenTexts.playerLineHeight
     ))
   }
   
   /**
    * this method render cup
-   * @param gl
    * @param cup
    * @param textsTexture
    */
-  public renderCupWithFigure(gl:WebGL2RenderingContext, cup:CupWithFigure, textsTexture:PlayScreenTexts):void
+  public renderCupWithFigure(cup:CupWithFigure, textsTexture:PlayScreenTexts):void
   {
     // render cup state
     // this.renderCup(gl, cup, textsTexture)
 
     // bind texture
-    Assets.sprite.bind(gl)
+    Assets.sprite.bind(this.gl)
 
     // render background
-    this.renderBackground(gl)
+    this.renderBackground(this.gl)
 
     // render cup blocks
-    this.presentCupBlocks(gl, cup);
+    this.presentCupBlocks(this.gl, cup);
 
     // render figure
     const f = cup.getFigure()
-    if (f) this.renderFigure(gl, cup, f)
+    if (f) this.renderFigure(this.gl, cup, f)
 
     // render status texts
-    this.renderCupStateMessages(gl, cup, textsTexture)
+    this.renderCupStateMessages(this.gl, cup, textsTexture)
 
   }
   
   /**
    * Render cup object
-   * @param gl
    * @param cup
    * @param textsTexture
    */
-  public renderCup (gl:WebGL2RenderingContext, cup:Cup, textsTexture:PlayScreenTexts)
+  public renderCup (cup:Cup, textsTexture:PlayScreenTexts)
   {
     // bind texture
-    Assets.sprite.bind(gl)
+    Assets.sprite.bind(this.gl)
 
     // render background
-    this.renderBackground(gl)
+    this.renderBackground(this.gl)
 
     // render cup blocks
-    this.presentCupBlocks(gl, cup);
+    this.presentCupBlocks(this.gl, cup);
 
     // render status texts
-    this.renderCupStateMessages(gl, cup, textsTexture)
+    this.renderCupStateMessages(this.gl, cup, textsTexture)
   }
 
   /**
@@ -265,14 +265,12 @@ export class CupRenderer2
 
   /**
    * Render player name and cup index
-   * @param gl
-   * @param index
    * @param textsTexture
    */
-  public renderCupIndex (gl:WebGL2RenderingContext, index:number, textsTexture:PlayScreenTexts)
+  public renderCupIndex (textsTexture:PlayScreenTexts)
   {
 
-    textsTexture.bind(gl)
+    textsTexture.bind(this.gl)
 
     // texture top
     // const top = textsTexture.playersBeginEdge + (index * textsTexture.playerLineHeight)
@@ -286,8 +284,8 @@ export class CupRenderer2
     // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
     // gl.drawArrays(gl.TRIANGLES, 0, this._block.getVerticesCount())
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._playerNameVertices.vertices), gl.STATIC_DRAW)
-    gl.drawArrays(gl.TRIANGLES, 0, this._playerNameVertices.getVerticesCount())
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this._playerNameVertices.vertices), this.gl.STATIC_DRAW)
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, this._playerNameVertices.getVerticesCount())
   }
 
   /**
@@ -422,13 +420,14 @@ export class CupRenderer2
   {
     // todo: move bind position before draw texts
     textTexture.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, textTexture.getWidth(), textTexture.getHeight());
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-      30, 0, 260, 64,
-      20, textTexture.gameOverTopPosition, 260, textTexture.lineHeight
-    ))
+    // WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, textTexture.getWidth(), textTexture.getHeight());
+    // this._block.setVertices(Vertices.createTextureVerticesArray(
+    //   30, 0, 260, 64,
+    //   20, textTexture.gameOverTopPosition, 260, textTexture.lineHeight
+    // ))
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._gameOverVertices.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
@@ -462,14 +461,16 @@ export class CupRenderer2
   private presentWinner (gl: WebGL2RenderingContext, textTexture:PlayScreenTexts)
   {
     textTexture.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, textTexture.getWidth(), textTexture.getHeight());
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-      0, 0, 260, 64,
-      20, textTexture.winnerTopPosition, 260, textTexture.lineHeight
-    ))
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    // WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, textTexture.getWidth(), textTexture.getHeight());
+    // this._block.setVertices(Vertices.createTextureVerticesArray(
+    //   0, 0, 260, 64,
+    //   20, PlayScreenTexts.winnerTopPosition, 260, PlayScreenTexts.lineHeight
+    // ))
+
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._winnerVertices.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, this._winnerVertices.getVerticesCount());
     //
     // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._winnerVertices.vertices), gl.STATIC_DRAW)
     // gl.drawArrays(gl.TRIANGLES, 0, this._winnerVertices.getVerticesCount());

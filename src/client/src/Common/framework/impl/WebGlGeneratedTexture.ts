@@ -4,10 +4,18 @@ import {WebGlProgramManager} from "./WebGlProgramManager";
  * this is texture with generate by static canvas
  * @version 0.0.1
  */
-export class WebGlGeneratedTexture
+export abstract class WebGlGeneratedTexture
 {
-  protected width:number;
-  protected height:number;
+
+  /**
+   * Width in pixels
+   */
+  public abstract getWidth(): number;
+
+  /**
+   * Height in pixels
+   */
+  public abstract getHeight(): number;
 
   /**
    * This is index of texture
@@ -31,19 +39,12 @@ export class WebGlGeneratedTexture
    */
   protected context:CanvasRenderingContext2D
 
-  /**
-   * @param width
-   * @param height
-   */
-  constructor(width:number, height:number)
+  constructor()
   {
 
-    this.width = width
-    this.height = height
-
     this.canvas = document.createElement('canvas');
-    this.canvas.width = width
-    this.canvas.height = height
+    this.canvas.width = this.getWidth()
+    this.canvas.height = this.getHeight()
 
     let context = this.canvas.getContext('2d');
     if (!context) throw new Error('2d context not creates')
@@ -58,13 +59,6 @@ export class WebGlGeneratedTexture
   //   return this.image;
   // }
 
-  getHeight(): number {
-    return this.height;
-  }
-
-  getWidth(): number {
-    return this.width;
-  }
   
   /**
    * Bind texture into gl
@@ -129,6 +123,6 @@ export class WebGlGeneratedTexture
     //gl.activeTexture(this.textureIndex)
     gl.bindTexture(gl.TEXTURE_2D, this.textureId)
 
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, this.width, this.height);
+    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, this.getWidth(), this.getHeight());
   }
 }

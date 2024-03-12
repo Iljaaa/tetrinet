@@ -157,7 +157,7 @@ export class JustPlayScreen extends WebGlScreen
     // render cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 232, 32);
     this._cupRenderer?.setCupSize(CupSize.normal32);
-    this._cupRenderer?.renderCupWithFigure(gl, this._cup, this.textTexture);
+    this._cupRenderer?.renderCupWithFigure(this._cup, this.textTexture);
 
     // render next figure
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 570, 32)
