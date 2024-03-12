@@ -344,7 +344,7 @@ export class CupRenderer2
         // update position
         this._block.setVertices(Vertices.createTextureVerticesArray(
             left, bottom, this.blockSize, this.blockSize,
-            f, 128, 32, 32
+            f, 64, 32, 32
         ))
 
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)

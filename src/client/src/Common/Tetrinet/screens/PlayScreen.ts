@@ -196,12 +196,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private textsTopPosition = 100;
 
   /**
-   * todo: refactor textures to static objects
-   * @private
-   */
-  private specialBG:SpecialBG;
-
-  /**
    * Texture with text and player names
    * @private
    */
@@ -225,9 +219,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // init cups collection
     this._cups = {}
-
-    // init textures
-    this.specialBG = new SpecialBG();
 
     // init texture programm
     const gl = this.game.getGLGraphics().getGl();
@@ -666,7 +657,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // draw bg
     this._block.setVertices(Vertices.createTextureVerticesArray(
       0, 0, 320, 32,
-      this.specialBG.texX, this.specialBG.texY, this.specialBG.texWidth, this.specialBG.texHeight
+      SpecialBG.texX, SpecialBG.texY, SpecialBG.texWidth, SpecialBG.texHeight
     ))
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
@@ -916,7 +907,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // check is opponent live
     // const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
     const targetPlayerId = OpponentsHelper.getPlayerIdByIndexInParty(indexOfOpponent)
-    debugger
     if (!targetPlayerId) return;
 
     // check target cup and state
