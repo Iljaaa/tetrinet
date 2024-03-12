@@ -54,6 +54,12 @@ export class CupRenderer2
   private blockSize:number = 32;
 
   /**
+   * Calculated cup width by block size
+   * @private
+   */
+  private _cupWidth:number = 0;
+
+  /**
    * Background vertices array
    */
   private _backgroundVertices: Vertices;
@@ -87,7 +93,8 @@ export class CupRenderer2
       width: cupWidthInCells,
       height: cupHeightInCell
     }
-    let cupWidth = this.cupSizeInCells.width * this.blockSize
+
+    this._cupWidth = this.cupSizeInCells.width * this.blockSize
     let cupHeight =this.cupSizeInCells.height * this.blockSize
 
     // init vertices
@@ -104,7 +111,7 @@ export class CupRenderer2
     this._block = new Vertices(false, true);
     this._block.setVertices(Vertices.createTextureVerticesArray(
       200, 200, this.blockSize, this.blockSize,
-      0, 0, cupWidth, cupHeight
+      0, 0, this._cupWidth, cupHeight
     ))
 
     // init textures objects
@@ -114,14 +121,14 @@ export class CupRenderer2
     //
     this._gameOverVertices = new Vertices(false, true);
     this._gameOverVertices.setVertices(Vertices.createTextureVerticesArray(
-        0, 0, cupWidth, cupHeight,
+        0, 0, this._cupWidth, cupHeight,
         0, 0, this.gameOverTexture.texWidth, this.gameOverTexture.texHeight
     ))
 
     //
     this._winnerVertices = new Vertices(false, true);
     this._winnerVertices.setVertices(Vertices.createTextureVerticesArray(
-        0, 0, cupWidth, cupHeight,
+        0, 0, this._cupWidth, cupHeight,
         0, 0, this.winnerTexture.texWidth, this.winnerTexture.texHeight
     ))
   }
@@ -143,29 +150,29 @@ export class CupRenderer2
     }
 
     // calculate _backgroundVertices size
-    let cupWidth = this.cupSizeInCells.width * this.blockSize
+    this._cupWidth = this.cupSizeInCells.width * this.blockSize
     let cupHeight = this.cupSizeInCells.height * this.blockSize
 
     // in _backgroundVertices we use only texture
     this._backgroundVertices = new Vertices(false, true);
     this._backgroundVertices.setVertices(Vertices.createTextureVerticesArray(
-      0, 0, cupWidth, cupHeight,
+      0, 0, this._cupWidth, cupHeight,
       0, 0, 320, 640
     ))
 
     // calculate game ove position
     // const textWidth = this.cupSizeInCells.width * this.blockSize;
-    const textHeight =  64 / 320 * cupWidth;
+    const textHeight =  64 / 320 * this._cupWidth;
     const marginTop = this.cupSizeInCells.height * this.blockSize * 0.2;
 
     this._gameOverVertices.setVertices(Vertices.createTextureVerticesArray(
-        0, marginTop, cupWidth, textHeight,
+        0, marginTop, this._cupWidth, textHeight,
         // 320, 192, 320, 64
         this.gameOverTexture.texX, this.gameOverTexture.texY, this.gameOverTexture.texWidth, this.gameOverTexture.texHeight
     ))
 
     this._winnerVertices.setVertices(Vertices.createTextureVerticesArray(
-        46, marginTop, cupWidth, textHeight,
+        46, marginTop, this._cupWidth, textHeight,
         // 320, 192, 320, 64
         this.winnerTexture.texX, this.winnerTexture.texY, this.winnerTexture.texWidth, this.winnerTexture.texHeight
     ))
@@ -174,17 +181,18 @@ export class CupRenderer2
 
   /**
    * Update player vertices block
-   * @param size
+   * @param cupSize
    * @param cupIndex
    * @param textsTexture
    */
-  public setPlayerName (size:CupSize, cupIndex:number, textsTexture:PlayScreenTexts)
+  public setPlayerName (cupSize:CupSize, cupIndex:number, textsTexture:PlayScreenTexts)
   {
     // calculate player name position
-    const top = textsTexture.playersBeginEdge + (cupIndex * textsTexture.playerLineHeight)
+    const top = textsTexture.getNameTopPositionByIndex(cupIndex)
+    const drawPlayerLineHeight = textsTexture.getPlayerLineHeightByCupSize(cupSize)
     this._playerNameVertices.setVertices(Vertices.createTextureVerticesArray (
-      0, 0, 300, 200,
-      0, top, 300, 200
+      0, -1 * drawPlayerLineHeight, this._cupWidth, drawPlayerLineHeight,
+      0, top, textsTexture.getWidth(), textsTexture.playerLineHeight
     ))
   }
   

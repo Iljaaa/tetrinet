@@ -122,7 +122,7 @@ export class WebGlGeneratedTexture
     }
 
     if (this.textureIndex === undefined) {
-      alert ('textureIndexUndefines');
+      alert ('textureIndexUndefined');
       return;
     }
 

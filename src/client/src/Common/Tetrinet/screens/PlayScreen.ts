@@ -623,11 +623,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
         //
         this._cupRenderer?.renderCup(gl, this._cups[playerId], this.textTexture);
 
-        // update
+        // update player name texture position
         this._cupRenderer?.setPlayerName(cupSize, index, this.textTexture)
 
         // text height position
-        WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y - this.textTexture.playerLineHeight + 8);
+        // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y - this.textTexture.playerLineHeight + 8);
 
         // render player name
         this._cupRenderer?.renderCupIndex(gl, index, this.textTexture);

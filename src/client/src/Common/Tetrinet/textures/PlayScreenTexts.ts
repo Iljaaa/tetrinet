@@ -1,4 +1,5 @@
 import {WebGlGeneratedTexture} from "../../framework/impl/WebGlGeneratedTexture";
+import {CupSize} from "../CupRenderer2";
 
 export class PlayScreenTexts extends WebGlGeneratedTexture
 {
@@ -31,7 +32,7 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
   /**
    *
    */
-  playerLineHeight = 32
+  playerLineHeight = 24
 
   constructor() {
     super(300, 512);
@@ -79,13 +80,32 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
     this.context.textBaseline = "middle";
     this.context.font = "16px monospace";
     this.context.fillStyle = "white";
+
     opponents.forEach((it:{index:number, name:string}) => {
-      const top = this.playersBeginEdge + ((it.index - 1) * this.playerLineHeight) + 16;
+      const top = this.getNameTopPositionByIndex(it.index - 1) + this.playerLineHeight / 2;
+      // const top = this.playersBeginEdge + ((it.index - 1) * this.playerLineHeight) + 16;
       this.context.fillText(it.index + ". " + it.name, 0, top);
     })
 
     // for
     // this.context.fillText("Paused", this.width/2, startPosition + 64);
+  }
 
+  /**
+   * Player name position by cup index
+   * @param playerIndex
+   */
+  public getNameTopPositionByIndex (playerIndex:number):number {
+    return this.playersBeginEdge + (playerIndex * this.playerLineHeight)
+  }
+
+  /**
+   * @param cupSize
+   */
+  public getPlayerLineHeightByCupSize (cupSize:CupSize):number
+  {
+    if (cupSize === CupSize.small16) return  16;
+    else if (CupSize.middle24) return 24;
+    return 32;
   }
 }
