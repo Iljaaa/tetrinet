@@ -462,7 +462,7 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private function determineGameOverInSet(Party $party): void
     {
-        if ($party->getGameState() != GameState::running){
+        if (!in_array($party->getGameState(), [GameState::running, GameState::paused])){
             return;
         }
 
