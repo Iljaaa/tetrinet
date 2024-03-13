@@ -23,7 +23,6 @@ import {GamePartyType} from "./Tetrinet/types/GamePartyType";
 import {LeaveRequest} from "./Tetrinet/types/requests/LeaveRequest";
 import {OpponentsHelper} from "./heplers/OpponentsHelper";
 import {PlayerId} from "./Tetrinet/types/PlayerId";
-import {CupState} from "./Tetrinet/types/CupState";
 
 /**
  * Game macro data changes
@@ -237,8 +236,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.running)
   }
 
-
-
   /**
    * Main method, when became new cups and game state data
    * @param data
@@ -324,20 +321,16 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     //
     // Here we check if game already online
     //
-    let s = this.getCurrentScreen()
-    if (s)
-    {
-      // if it play cup
-      if (s instanceof PlayScreen) {
-        if (s.getGameState() === GameState.running || s.getGameState() === GameState.paused) {
-          alert ('Game is still running, do you wanna leave?');
-          return;
-        }
-      }
-      else {
-        alert ('fixme: It is not play cup');
-      }
-    }
+    // let s = this.getCurrentScreen()
+    // if (s) {
+    //   // if it is play cup
+    //   if (s instanceof PlayScreen) {
+    //     if (s.getGameState() === GameState.running || s.getGameState() === GameState.paused) {
+    //       alert ('Game is still running, do you wanna leave?');
+    //       return;
+    //     }
+    //   }
+    // }
 
     /**
      * This is not simple code
@@ -365,7 +358,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   {
     console.log ('TetrinetNetworkLayer.onJoinPartyConnectionOpen', gamePartyType);
 
-    // when connection os open we can subscribe to sockets event
+    // when connection os open we can subscribe to close event
     if (this._socketEventListener?.onClose) {
       SocketSingleton.getInstance()?.setOnCloseCallback(this._socketEventListener.onClose)
     }
@@ -388,6 +381,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinResponse = (data:StartResponse) =>
   {
+    console.log('TetrinetNetworkLayer.onJoinResponse')
     //
     this._playerId = data.yourPlayerId
 

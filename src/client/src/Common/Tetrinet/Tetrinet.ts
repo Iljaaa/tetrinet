@@ -83,10 +83,12 @@ export class Tetrinet extends WebGlGame
    */
   prepareToGame (eventListener: PlayScreenEventListener, partyType:GamePartyType, initCup:Cup|null = null)
   {
-    // get current screen
-    let scr = this.getCurrentScreen() as PlayScreen;
+    console.log ('Tetrinet.PrepareToGame')
 
-    if (!scr)
+    // get current screen
+    let scr = this.getCurrentScreen();
+
+    if (!scr || !(scr instanceof PlayScreen))
     {
       // we get current screen
       // and if it is not a play screen create new one
@@ -97,14 +99,15 @@ export class Tetrinet extends WebGlGame
         if (this._onStateChangeForButton) this._onStateChangeForButton(newGameSate)
       });
 
-      // bind event listener
-      scr.setGameEventListener(eventListener)
-
       // write as current
       this.setScreen(scr);
     }
 
-    scr.setPartyType(partyType)
+    // bind event listener
+    (scr as PlayScreen).setGameEventListener(eventListener)
+      .setPartyType(partyType)
+      .clearDataBeforeNewGame()
+
 
     // clear sup from previous game
     // todo: move it to start game

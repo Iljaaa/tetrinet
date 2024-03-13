@@ -42,6 +42,7 @@ export class CupImpl implements Cup
   protected listener: CupEventListener|null = null;
 
   /**
+   * todo: split on two fields
    */
   protected _state:CupData = {
     state: CupState.online,
@@ -87,6 +88,7 @@ export class CupImpl implements Cup
   {
     // clear bonuses
     // this._state.bonuses = []
+    this._state.state = CupState.online;
 
     // clear field
     this._state.fields = new Array<Field>(this.widthInCells * this.heightInCells) // .fill( {block: -1})

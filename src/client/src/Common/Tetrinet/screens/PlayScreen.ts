@@ -141,7 +141,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * for temp test
    * @private
    */
-  private readonly _cups: CupsCollection
+  private _cups: CupsCollection
 
   /**
    * Render
@@ -279,8 +279,23 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     return this
   }
 
-  setPartyType(value: GamePartyType) {
+  setPartyType(value: GamePartyType): PlayScreen {
     this._partyType = value;
+    return this;
+  }
+
+  clearDataBeforeNewGame ()
+  {
+    this._state = GameState.waiting
+
+    // clear cups
+    this._cup.cleanBeforeNewGame();
+
+    // clear opponents
+    this._cups = {};
+
+    // clear bonuses
+    this.playerBonuses = [];
   }
 
   /**
