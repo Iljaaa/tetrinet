@@ -1026,8 +1026,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       // if it is a clear field
       if (value.block === -1) return
 
-      // if there bonus
-      if (value.block) return
+      // if there is a bonus
+      if (value.bonus !== undefined) return
 
       // clear bonus fields
       notFreeFieldsIds.push(cellId)
