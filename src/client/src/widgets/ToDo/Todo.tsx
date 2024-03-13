@@ -10,9 +10,8 @@ export const Todo = () => {
         <li>Service Worker and Web worker</li>
         <li>nice preview of cup until game is searching</li>
         <li>optimize CupRenderer2.setCupSize</li>
-        <li>when clear more then 1 row special block can not appears</li>
         <li>remove special blocks from just play cup</li>
-        <li>fix block help</li>
+        <li>refactor: in cup impl split state and and fields</li>
         <li>make speed up</li>
         <li>big message search</li>
       </ul>

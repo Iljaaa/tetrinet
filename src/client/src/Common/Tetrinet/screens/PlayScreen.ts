@@ -706,7 +706,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
       this._block.setVertices(Vertices.createTextureVerticesArray(
           left, -2, BLOCK_SIZE, BLOCK_SIZE,
-          spriteLeft, 128, BLOCK_SIZE, BLOCK_SIZE
+          spriteLeft, 64, BLOCK_SIZE, BLOCK_SIZE
       ))
 
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)

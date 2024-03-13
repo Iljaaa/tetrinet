@@ -72,6 +72,6 @@ type BlockBlock = {
 
 const BlockBlock = (props:BlockBlock) => <div className={styles.BlockBlock}>
     <div className={styles.BlockIcon}
-         style={{backgroundImage: `url(${img})`, backgroundPosition: `${320 - props.delta}px 510px`}}></div>
+         style={{backgroundImage: `url(${img})`, backgroundPosition: `${320 - props.delta}px 576px`}}></div>
     <div>{props.children}</div>
 </div>
