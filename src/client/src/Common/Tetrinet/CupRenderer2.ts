@@ -481,7 +481,7 @@ export class CupRenderer2
    * @param gl
    * @param nextFigure
    */
-  public renderNextFigure(gl: WebGL2RenderingContext, nextFigure:Figure)
+  public renderNextFigure(gl: WebGL2RenderingContext, nextFigure?:Figure)
   {
     // bind texture
     Assets.sprite.bind(gl)
@@ -490,7 +490,9 @@ export class CupRenderer2
     this.renderNextFigureBackground(gl)
 
     // render figure
-    this.renderFigureNextFigure(gl, nextFigure)
+    if (nextFigure) {
+      this.renderFigureNextFigure(gl, nextFigure)
+    }
   }
 
   /**

@@ -246,8 +246,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
 
-
-
     // in the background we use only texture
     this._block = new Vertices(false, true);
     this._block.setVertices(Vertices.createTextureVerticesArray(
@@ -667,14 +665,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private presentNextFigure(gl: WebGL2RenderingContext)
   {
-    const nextFigure = this._cup.getNextFigure();
-    if (!nextFigure) return
+    // const nextFigure = this._cup.getNextFigure();
+    // if (!nextFigure) return
 
     // move position
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.nextFigurePosition.x, this.nextFigurePosition.y)
 
     //
-    this._cupRenderer?.renderNextFigure(gl, nextFigure)
+    this._cupRenderer?.renderNextFigure(gl, this._cup.getNextFigure())
   }
 
   /**

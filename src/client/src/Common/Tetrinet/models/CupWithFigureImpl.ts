@@ -71,7 +71,15 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
         1
     )
 
-    this._nextFigure = GenerateNewFigure(this, GenerateRandomColor())
+    // this._nextFigure = GenerateNewFigure(this, GenerateRandomColor())
+  }
+
+  cleanBeforeNewGame ()
+  {
+    super.cleanBeforeNewGame();
+
+    // clear next figure
+    this._nextFigure = undefined
   }
   
   setFigureToDropPoint(f:Figure) {

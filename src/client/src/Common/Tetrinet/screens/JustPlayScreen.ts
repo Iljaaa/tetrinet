@@ -200,11 +200,11 @@ export class JustPlayScreen extends WebGlScreen
    */
   private presentNextFigure(gl: WebGL2RenderingContext)
   {
-    const nextFigure = this._cup.getNextFigure();
-    if (!nextFigure) return
+    // const nextFigure = this._cup.getNextFigure();
+    // if (!nextFigure) return
 
     //
-    this._cupRenderer?.renderNextFigure(gl, nextFigure)
+    this._cupRenderer?.renderNextFigure(gl, this._cup.getNextFigure())
   }
 
   private presentPaused (gl: WebGL2RenderingContext)
