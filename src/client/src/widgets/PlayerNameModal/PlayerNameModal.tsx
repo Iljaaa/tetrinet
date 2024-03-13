@@ -26,7 +26,7 @@ export class PlayerNameModal extends React.PureComponent<Props, State>
   componentDidMount()
   {
     // we will edit player name
-    PlayerNameHelper.setRequestPlayerNameCallback(this.onRequestNewPlayerName)
+    PlayerNameHelper.callbackForOpenInputNameInterface(this.onRequestNewPlayerName)
 
     // init player name here, nut it must be somewhere else
     PlayerNameHelper.initPlayerName();

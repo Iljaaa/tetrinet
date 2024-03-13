@@ -16,12 +16,18 @@ export class PlayerNameHelper
   private static _playerNameChangeListener?: (newPlayerName:string) => void
 
   /**
+   *
+   * @private
+   */
+  private static onNameInputFinish?: () => void
+
+  /**
    * We call this method when we need to get player name
    */
-  private static _requestPlayerNameCallback?: (defaultPlayerName:string, onNameSubmit:(newPlayerName:string) => void) => void = undefined
+  private static _startInputName?: (defaultPlayerName:string, onNameSubmit:(newPlayerName:string) => void) => void = undefined
 
-  public static setRequestPlayerNameCallback (callback:(defaultPlayerName: string, onNameSubmit:(newPlayerName:string) => void) => void){
-    this._requestPlayerNameCallback = callback
+  public static callbackForOpenInputNameInterface (callback:(defaultPlayerName: string, onNameSubmit:(newPlayerName:string) => void) => void){
+    this._startInputName = callback
   }
 
   public static setPlayerNameChangeListener (callback:(newPlayerName:string) => void){
@@ -60,20 +66,30 @@ export class PlayerNameHelper
     }
 
     // if player name empty we request window for input
-    if (PlayerNameHelper._requestPlayerNameCallback) {
-      PlayerNameHelper._requestPlayerNameCallback(this._playerName, (newPlayerName:string) =>
+    if (PlayerNameHelper._startInputName)
+    {
+      console.log(PlayerNameHelper._startInputName, 'PlayerNameHelper._startInputName')
+
+      PlayerNameHelper.onNameInputFinish = onInputFinish
+      PlayerNameHelper._startInputName(this._playerName, (newPlayerName:string) =>
       {
         // save player name
         this.setPlayerName(newPlayerName)
 
-        onInputFinish()
       });
     }
   }
 
   public static setPlayerName(newPlayerName:string)
   {
+    console.log ('PlayerNameHelper.setPlayerName');
     this._playerName = newPlayerName;
+
+
+    if (PlayerNameHelper.onNameInputFinish) {
+      PlayerNameHelper.onNameInputFinish()
+      PlayerNameHelper.onNameInputFinish = undefined
+    }
 
     // save in store player name
     StorePlayerName(this._playerName)
@@ -86,8 +102,8 @@ export class PlayerNameHelper
 
   public static editPlayerName ()
   {
-    if (PlayerNameHelper._requestPlayerNameCallback) {
-      PlayerNameHelper._requestPlayerNameCallback(this._playerName, (newPlayerName: string) => {
+    if (PlayerNameHelper._startInputName) {
+      PlayerNameHelper._startInputName(this._playerName, (newPlayerName: string) => {
         // save player name
         this.setPlayerName(newPlayerName)
       });
