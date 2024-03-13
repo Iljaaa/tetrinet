@@ -10,13 +10,22 @@ import {GenerateRandomColor} from "../process/GenerateRandomColor";
 import {CupState} from "../types/CupState";
 import {Assets} from "../Assets";
 import {PlayScreenTexts} from "../textures/PlayScreenTexts";
+import {GameState} from "../types";
+import {Vertices} from "../../framework/Vertices";
 
 /**
  * @vaersion 0.0.1
  */
 export class JustPlayScreen extends WebGlScreen
 {
-  
+
+  /**
+   * Here we use only two states
+   * pause and running
+   * @private
+   */
+  private _state: GameState  = GameState.running;
+
   /**
    * Cup object
    * @private
@@ -48,6 +57,12 @@ export class JustPlayScreen extends WebGlScreen
   // private canvasTexture: WebGLTexture | null = null;
 
   // private _experimentalTexture:Experimental;
+
+  /**
+   * Vertices for pause block
+   * @private
+   */
+  private _pauseTextVertices: Vertices;
 
   /**
    * In this constructor we create cup
@@ -87,6 +102,12 @@ export class JustPlayScreen extends WebGlScreen
     // this._experimentalTexture = new Experimental(300, 150);
     // this._experimentalTexture.init(gl, gl.TEXTURE1);
 
+    this._pauseTextVertices = new Vertices();
+    this._pauseTextVertices.setVertices(Vertices.createTextureVerticesArray(
+      30, 100, 260, 64,
+      20, PlayScreenTexts.pauseTopPosition, 260, PlayScreenTexts.lineHeight
+    ));
+
     //
     this.startNewGame ()
   }
@@ -113,9 +134,10 @@ export class JustPlayScreen extends WebGlScreen
    */
   update (deltaTime:number):void
   {
-    // todo: get game state
+    if (this._state === GameState.running){
+      this._cup.updateFigureDownTimer(deltaTime);
+    }
 
-    this._cup.updateFigureDownTimer(deltaTime);
   }
   
   present(): void
@@ -165,6 +187,10 @@ export class JustPlayScreen extends WebGlScreen
 
     // render test text
     // this.presentExperiment(gl)
+
+    if (this._state === GameState.paused){
+      this.presentPaused(gl);
+    }
   }
 
   /**
@@ -179,6 +205,17 @@ export class JustPlayScreen extends WebGlScreen
 
     //
     this._cupRenderer?.renderNextFigure(gl, nextFigure)
+  }
+
+  private presentPaused (gl: WebGL2RenderingContext)
+  {
+    this.textTexture.bind(gl)
+    // WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, this.textTexture.getWidth(), this.textTexture.getHeight());
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, 232, 32);
+
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._pauseTextVertices.vertices), gl.STATIC_DRAW)
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
   /*
@@ -234,12 +271,24 @@ export class JustPlayScreen extends WebGlScreen
   //   gl.activeTexture(1)
   // }
 
+  pauseOrResume ()
+  {
+    if (this._state === GameState.running){
+      this._state = GameState.paused
+    }
+    else if (this._state === GameState.paused){
+      this._state = GameState.running
+    }
+  }
+
   /**
    * @param code
    */
   onKeyDown(code:string): void
   {
+    console.log(code)
     switch (code) {
+      case "KeyP": this.pauseOrResume(); break;
       case "KeyD": this.onRight(); break;
       case "KeyA": this.onLeft(); break;
       case "KeyQ": this.onRotateCounterClockwise(); break;

@@ -17,7 +17,6 @@ import {GameState, RequestTypes} from "../types";
 import {CupState} from "../types/CupState";
 import {Bonus} from "../types/Bonus";
 
-import {SearchForAGame} from "../textures";
 import {Cup} from "../models/Cup";
 import {CupsDataCollection} from "../../../widgets/Canvas/Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
@@ -183,6 +182,18 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   private _block: Vertices;
 
   /**
+   * Pause text
+   * @private
+   */
+  private _pauseTextVertices: Vertices;
+
+  /**
+   * Ready text
+   * @private
+   */
+  private _readyTextVertices: Vertices;
+
+  /**
    * Position of player cup
    */
   private mainCupPosition = {
@@ -229,17 +240,33 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // texture with texts
     this.textTexture = new PlayScreenTexts();
-    // this.textTexture.render();
-    // this.textTexture.upload(gl, gl.TEXTURE1)
+    this.textTexture.render([])
+    this.textTexture.init(gl, gl.TEXTURE1);
 
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
-    
+
+
+
     // in the background we use only texture
     this._block = new Vertices(false, true);
     this._block.setVertices(Vertices.createTextureVerticesArray(
       200, 200, 32, 32,
       0, 0, 200, 200
+    ))
+
+    this._pauseTextVertices = new Vertices(false, true);
+    this._pauseTextVertices.setVertices(Vertices.createTextureVerticesArray(
+      30, this.textsTopPosition, 260, 64,
+      20, PlayScreenTexts.pauseTopPosition, 260, PlayScreenTexts.lineHeight
+    ))
+
+    // todo: ready is not seraching game
+    this._readyTextVertices = new Vertices(false, true);
+    this._readyTextVertices.setVertices(Vertices.createTextureVerticesArray(
+      30, this.textsTopPosition, 260, 64,
+      // SearchForAGame.texX, SearchForAGame.texY, SearchForAGame.texWidth, SearchForAGame.texHeight
+      20, 0, 260, PlayScreenTexts.lineHeight
     ))
 
     // save game status change callback
@@ -546,7 +573,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this.presentOpponentsCups(gl)
 
     // present interface
-    if (this._state === GameState.ready){
+    if (this._state === GameState.searching){
       this.presentReady(gl);
     }
 
@@ -564,20 +591,22 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private presentReady (gl: WebGL2RenderingContext)
   {
-    debugger
+    this.textTexture.bind(gl)
+
     // move position of cup
     WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y)
 
     // calc left position
     // this._cup.getWidthInCells()
 
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-        0, this.textsTopPosition, 320, 64,
-        // 320, 256, 192, 64
-        SearchForAGame.texX, SearchForAGame.texY, SearchForAGame.texWidth, SearchForAGame.texHeight
-    ))
+    // this._block.setVertices(Vertices.createTextureVerticesArray(
+    //     0, this.textsTopPosition, 320, 64,
+    //     // 320, 256, 192, 64
+    //     SearchForAGame.texX, SearchForAGame.texY, SearchForAGame.texWidth, SearchForAGame.texHeight
+    // ))
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._readyTextVertices.vertices), gl.STATIC_DRAW)
 
     // draw here
     gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -590,25 +619,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private presentPaused (gl: WebGL2RenderingContext)
   {
-    // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y)
+    this.textTexture.bind(gl)
+    // WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, this.textTexture.getWidth(), this.textTexture.getHeight());
+    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
     // this._block.setVertices(Vertices.createTextureVerticesArray(
-    //     78, this.textsTopPosition, 160, 64,
-    //   this.pausedTexture.texX, this.pausedTexture.texY, this.pausedTexture.texWidth, this.pausedTexture.texHeight
-    // super(320, 320, 192, 64);
+    //   30, this.textsTopPosition, 260, 64,`
+    //   20, PlayScreenTexts.pauseTopPosition, 260, PlayScreenTexts.lineHeight
     // ))
     // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-    // gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-    // todo: move bind position before draw texts
-    this.textTexture.bind(gl)
-    WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, this.textTexture.getWidth(), this.textTexture.getHeight());
-    WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
-    this._block.setVertices(Vertices.createTextureVerticesArray(
-      30, this.textsTopPosition, 260, 64,
-      20, PlayScreenTexts.pauseTopPosition, 260, PlayScreenTexts.lineHeight
-    ))
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._pauseTextVertices.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
