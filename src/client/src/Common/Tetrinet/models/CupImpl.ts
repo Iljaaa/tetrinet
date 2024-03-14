@@ -41,13 +41,23 @@ export class CupImpl implements Cup
    */
   protected listener: CupEventListener|null = null;
 
-  /**
+  /*
    * todo: split on two fields
    */
-  protected _state:CupData = {
-    state: CupState.online,
-    fields: [],
-  }
+  // protected _state:CupData = {
+  //   state: CupState.online,
+  //   fields: [],
+  // }
+
+  /**
+   * Cup state
+   */
+  protected state:CupState = CupState.online;
+
+  /**
+   * Cup fields
+   */
+  protected fields:Array<Field> = [];
 
   /**
    *
@@ -67,18 +77,19 @@ export class CupImpl implements Cup
   }
 
   getState(): CupState {
-    return this._state.state;
+    // return this._state.state;
+    return this.state
   }
 
   setState(state:CupState): void {
-    this._state.state = state;
+    this.state = state;
   }
 
   /**
    *
    */
   setCupOver(){
-    this._state.state = CupState.over;
+    this.state = CupState.over;
   }
 
   /**
@@ -88,91 +99,91 @@ export class CupImpl implements Cup
   {
     // clear bonuses
     // this._state.bonuses = []
-    this._state.state = CupState.online;
+    this.state = CupState.online;
 
     // clear field
-    this._state.fields = new Array<Field>(this.widthInCells * this.heightInCells) // .fill( {block: -1})
+    this.fields = new Array<Field>(this.widthInCells * this.heightInCells) // .fill( {block: -1})
 
-    for (let i = 0; i < this._state.fields.length; i++) {
-      this._state.fields[i] = {block: -1}
+    for (let i = 0; i < this.fields.length; i++) {
+     this.fields[i] = {block: -1}
       // people.push(person);
     }
 
-    // this._state.fields[100].block = 1;
+    //this.fields[100].block = 1;
 
 
-    this._state.fields[95].block = 2;
-    this._state.fields[104].block = 1;
-    this._state.fields[105].block = 1 ;
-    this._state.fields[106].block = 1;
-    this._state.fields[113].block = 2;
-    this._state.fields[114].block = 1;
+   this.fields[95].block = 2;
+   this.fields[104].block = 1;
+   this.fields[105].block = 1 ;
+   this.fields[106].block = 1;
+   this.fields[113].block = 2;
+   this.fields[114].block = 1;
 
-    this._state.fields[115].block = 0;
-    this._state.fields[115].bonus = Bonus.bomb;
+   this.fields[115].block = 0;
+   this.fields[115].bonus = Bonus.bomb;
 
-    this._state.fields[116].block = 1;
-    this._state.fields[117].block = 2;
-    this._state.fields[124].block = 1;
-    this._state.fields[125].block = 1;
-    this._state.fields[126].block = 1;
-    this._state.fields[135].block = 2;
-    // this._state.fields[103].block = 0;
+   this.fields[116].block = 1;
+   this.fields[117].block = 2;
+   this.fields[124].block = 1;
+   this.fields[125].block = 1;
+   this.fields[126].block = 1;
+   this.fields[135].block = 2;
+    //this.fields[103].block = 0;
 
-    this._state.fields[150].block = 1;
-    this._state.fields[150].bonus = Bonus.add;
+   this.fields[150].block = 1;
+   this.fields[150].bonus = Bonus.add;
 
-    this._state.fields[160].block = 1;
-    this._state.fields[160].bonus = Bonus.gravity;
-    this._state.fields[161].block = 1;
-    this._state.fields[162].block = 1;
-    this._state.fields[165].block = 1;
-    this._state.fields[164].block = 1;
-    this._state.fields[166].block = 1;
-    this._state.fields[167].block = 1;
-    this._state.fields[168].block = 1;
-    this._state.fields[169].block = 1;
+   this.fields[160].block = 1;
+   this.fields[160].bonus = Bonus.gravity;
+   this.fields[161].block = 1;
+   this.fields[162].block = 1;
+   this.fields[165].block = 1;
+   this.fields[164].block = 1;
+   this.fields[166].block = 1;
+   this.fields[167].block = 1;
+   this.fields[168].block = 1;
+   this.fields[169].block = 1;
 
-    this._state.fields[170].block = 1;
-    this._state.fields[171].block = 1;
-    this._state.fields[172].block = 1;
-    this._state.fields[175].block = 1;
-    this._state.fields[174].block = 1;
-    this._state.fields[176].block = 1;
-    this._state.fields[177].block = 1;
-    this._state.fields[178].block = 1;
-    this._state.fields[179].block = 1;
+   this.fields[170].block = 1;
+   this.fields[171].block = 1;
+   this.fields[172].block = 1;
+   this.fields[175].block = 1;
+   this.fields[174].block = 1;
+   this.fields[176].block = 1;
+   this.fields[177].block = 1;
+   this.fields[178].block = 1;
+   this.fields[179].block = 1;
 
     // temp cup state
-    this._state.fields[180].block = 1;
-    this._state.fields[181].block = 1;
-    this._state.fields[182].block = 1;
-    this._state.fields[182].bonus = Bonus.bomb;
-    this._state.fields[184].block = 1;
-    this._state.fields[185].block = 1;
-    this._state.fields[186].block = 1;
-    this._state.fields[187].block = 1;
-    this._state.fields[188].block = 1;
-    this._state.fields[189].block = 1;
+   this.fields[180].block = 1;
+   this.fields[181].block = 1;
+   this.fields[182].block = 1;
+   this.fields[182].bonus = Bonus.bomb;
+   this.fields[184].block = 1;
+   this.fields[185].block = 1;
+   this.fields[186].block = 1;
+   this.fields[187].block = 1;
+   this.fields[188].block = 1;
+   this.fields[189].block = 1;
 
-    this._state.fields[190].block = 1;
-    this._state.fields[191].block = 1;
-    this._state.fields[192].block = 1;
-    this._state.fields[195].block = 1;
-    this._state.fields[194].block = 1;
-    this._state.fields[196].block = 1;
-    this._state.fields[197].block = 1;
-    this._state.fields[197].bonus = Bonus.bomb;
-    this._state.fields[198].block = 1;
-    this._state.fields[199].block = 1;
+   this.fields[190].block = 1;
+   this.fields[191].block = 1;
+   this.fields[192].block = 1;
+   this.fields[195].block = 1;
+   this.fields[194].block = 1;
+   this.fields[196].block = 1;
+   this.fields[197].block = 1;
+   this.fields[197].bonus = Bonus.bomb;
+   this.fields[198].block = 1;
+   this.fields[199].block = 1;
   }
   
   getFields = ():Array<Field> => {
-    return this._state.fields;
+    return this.fields;
   }
   
   setFields(fields: Array<Field>): void {
-    this._state.fields = fields;
+   this.fields = fields;
   }
 
   // getBonusFields():Array<number> {
@@ -192,7 +203,7 @@ export class CupImpl implements Cup
    * @param index
    */
   getFieldByIndex(index:number):Field {
-    return this._state.fields[index]
+    return this.fields[index]
   }
 
   /**
@@ -209,14 +220,17 @@ export class CupImpl implements Cup
    * Set field info
    */
   setFieldByIndex (index:number, field:Field):void{
-    this._state.fields[index] = field
+   this.fields[index] = field
   }
 
   /**
    * Export data for request
    */
   getData = ():CupData => {
-    return this._state;
+    return {
+      state: this.state,
+      fields: this.fields,
+    }
   }
   
   /**
@@ -227,14 +241,14 @@ export class CupImpl implements Cup
   {
     const i:number = newFields.findIndex((cellIndex:number) => {
       if (cellIndex < 0) return false
-      return this._state.fields[cellIndex].block > -1
+      return this.fields[cellIndex].block > -1
     });
     
     return i === -1;
   }
   
   // getFieldValueByIndex(index: number): number {
-  //   return this._state.fields[index].block
+  //   return this.fields[index].block
   // }
   
   getHeightInCells(): number {
@@ -286,7 +300,7 @@ export class CupImpl implements Cup
     const sourceIndex = this.getCellIndexByCoords(sourceX, sourceY)
     const destIndex = this.getCellIndexByCoords(destX, destY)
 
-    this._state.fields[destIndex] = {...this._state.fields[sourceIndex]}
+   this.fields[destIndex] = {...this.fields[sourceIndex]}
     // this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
   }
 
@@ -299,7 +313,7 @@ export class CupImpl implements Cup
    * @param index
    */
   public clearBlock (index:number) {
-    if (this._state.fields[index] !== undefined){
+    if (this.fields[index] !== undefined){
       this.setFieldByIndex(index, {block: -1})
     }
   }
@@ -310,7 +324,7 @@ export class CupImpl implements Cup
    * @param bonusIndex
    */
   addBonusFiled(fIndex: number, bonusIndex: number): void {
-    this._state.fields[fIndex].bonus = bonusIndex
+   this.fields[fIndex].bonus = bonusIndex
   }
 
   /**
@@ -333,7 +347,7 @@ export class CupImpl implements Cup
       let fullLine:boolean = true;
       for (let i = startIndex; i < endIndex; i++)
       {
-        if (this._state.fields[i].block === -1) {
+        if (this.fields[i].block === -1) {
           fullLine = false
           break
         }
@@ -356,13 +370,13 @@ export class CupImpl implements Cup
         let index = this.getCellIndexByCoords(i, fullLineIndex)
 
         // if there is bonus
-        let b = this._state.fields[index].bonus
+        let b =this.fields[index].bonus
         if (b !== undefined) {
           // add to return array
           bonuses.push(b)
         }
 
-        // this._state.fields[index].block = -1
+        //this.fields[index].block = -1
         this.clearBlock(index)
       }
     })
@@ -390,8 +404,8 @@ export class CupImpl implements Cup
   }
 
   clearBlockByIndex(cellIndex: number): void {
-    this._state.fields[cellIndex].block = -1
-    this._state.fields[cellIndex].bonus = undefined
+   this.fields[cellIndex].block = -1
+   this.fields[cellIndex].bonus = undefined
   }
 
 }

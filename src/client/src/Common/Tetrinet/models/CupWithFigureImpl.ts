@@ -170,7 +170,7 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
       // if block out of screen
       if (f < 0) return;
 
-      const b = this._state.fields[f]
+      const b = this.fields[f]
       if (!b) return
 
       b.block = this._figure ? this._figure.getColor() : 0
@@ -223,7 +223,7 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
   updateFigureDownTimer(deltaTime:number): void
   {
     // nothing to update if cup is offline
-    if (this._state.state !== CupState.online) return;
+    if (this.state !== CupState.online) return;
 
     // tick figure down timer
     this.downTimer += deltaTime
