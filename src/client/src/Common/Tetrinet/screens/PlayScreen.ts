@@ -164,15 +164,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * @private
    */
   private playerBonuses: Array<Bonus> = [
-    Bonus.add, Bonus.add, Bonus.clear, Bonus.clear,
+    // Bonus.add, Bonus.add, Bonus.clear, Bonus.clear,
     // Bonus.gravity, Bonus.gravity,
     // Bonus.switch, Bonus.switch,
     // Bonus.quake,
-    Bonus.bomb,
-    Bonus.bomb,
-    Bonus.bomb,
+    // Bonus.bomb, Bonus.bomb, Bonus.bomb,
     // Bonus.randomClear,Bonus.randomClear,Bonus.randomClear,
-    Bonus.clearSpecials, // Bonus.clear,Bonus.clear
+    // Bonus.clearSpecials, // Bonus.clear,Bonus.clear
   ];
 
   /**

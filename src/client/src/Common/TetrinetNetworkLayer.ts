@@ -24,19 +24,15 @@ import {LeaveRequest} from "./Tetrinet/types/requests/LeaveRequest";
 import {OpponentsHelper} from "./heplers/OpponentsHelper";
 import {PlayerId} from "./Tetrinet/types/PlayerId";
 
-/**
+/*
  * Game macro data changes
  */
-export type TetrinetEventListener = {
-  /**
-   * todo" remove it from this callback, because it only for debug
-   * @param state
-   */
-  onGameStateChange: (state:GameState) => void,
-  onScoreChange: (score:number) => void,
-  onPartyIdChange: (partyId:string) => void,
-  onPlayerIdChange: (playerId:string) => void,
-}
+// export type TetrinetEventListener = {
+//   onGameStateChange: (state:GameState) => void,
+//   onScoreChange: (score:number) => void,
+//   onPartyIdChange: (partyId:string) => void,
+//   onPlayerIdChange: (playerId:string) => void,
+// }
 
 /**
  * Socket events
@@ -165,7 +161,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    * @param newScore
    */
   onScoreChanged (newScore:number): void {
-    this._gameDataEventListener?.onScoreChange(newScore)
+    console.info(newScore, 'newScore')
+    // this._gameDataEventListener?.onScoreChange(newScore)
   }
 
   /**
@@ -218,8 +215,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this._partyId = data.partyId
 
     // call listener to display party id
-    // todo: remove this is test message
-    this._gameDataEventListener?.onPartyIdChange(this._partyId)
+    //this._gameDataEventListener?.onPartyIdChange(this._partyId)
+    console.info(this._playerId, 'new party id');
 
     // store party and player id into storage
     StoreGameDataInStorage(this._partyId, this._playerId)
@@ -393,8 +390,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     this.prepareToGame(this, data.partyType);
 
     //
-
-    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
+    // this._gameDataEventListener?.onPlayerIdChange(this._playerId);
+    console.info(this._playerId, 'new player id');
 
     // this._gameDataEventListener?.onGameStateChange(GameState.searching)
     // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)
@@ -420,7 +417,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
     // clear player id
     this._playerId = '';
-    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
+    // this._gameDataEventListener?.onPlayerIdChange(this._playerId);
+    console.info(this._playerId, 'new player id', 'TetrinetNetworkLayer.cancelSearch');
 
     //
     // this._gameDataEventListener?.onGameStateChange(GameState.waiting)
@@ -433,8 +431,6 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   public quitGame ()
   {
-    debugger
-    // close socket
 
     // this.setGameOver()
     const data:LeaveRequest = {
@@ -451,7 +447,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
     // clear player id
     this._playerId = '';
-    this._gameDataEventListener?.onPlayerIdChange(this._playerId);
+    //this._gameDataEventListener?.onPlayerIdChange(this._playerId);
+    console.info(this._playerId, 'new player id', 'TetrinetNetworkLayer.quitGame');
 
     // back to waiting state
     // this._gameDataEventListener?.onGameStateChange(GameState.waiting)

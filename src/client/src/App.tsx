@@ -5,7 +5,6 @@ import {JoinButtons} from "./widgets/JoinButtons/JoinButtons";
 import {Help} from "./widgets/Help/Help";
 
 import './App.css';
-import {StateRow} from "./widgets/StateRow/StateRow";
 import SocketsEventsAndModals from "./widgets/SocketEventsAndModals/SocketsEventsAndModals";
 import {Chat} from "./widgets/Chat/Chat";
 import {PlayerNameModal} from "./widgets/PlayerNameModal/PlayerNameModal";
@@ -22,7 +21,7 @@ function App()
         <div className="App-body">
           <div><JoinButtons/></div>
           <hr style={{background: "#53adae", height: "1px", border: "none"}}/>
-          <div><StateRow/></div>
+          {/*<div><StateRow/></div>*/}
           <div><Canvas/></div>
           <div><Chat/></div>
           <div><Help/></div>

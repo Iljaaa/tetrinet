@@ -1,7 +1,6 @@
 import React from "react";
 import {GameState} from "../../Common/Tetrinet/types";
-import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
-import {TetrinetEventListener} from "../../Common/TetrinetNetworkLayer";
+
 
 type State =
   {
@@ -27,7 +26,7 @@ type State =
   }
 
 
-export class StateRow extends React.PureComponent<{}, State> implements TetrinetEventListener
+export class StateRow extends React.PureComponent<{}, State>
 {
 
   /**
@@ -46,7 +45,7 @@ export class StateRow extends React.PureComponent<{}, State> implements Tetrinet
   componentDidMount()
   {
     // set listen events
-    TetrinetSingleton.getInstance().setGameDataEventListener(this)
+    // TetrinetSingleton.getInstance().setGameDataEventListener(this)
   }
 
 

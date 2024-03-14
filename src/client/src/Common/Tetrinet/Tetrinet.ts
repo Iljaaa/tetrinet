@@ -6,7 +6,6 @@ import {CupsDataCollection} from "../../widgets/Canvas/Canvas";
 import {GetBonusMessage} from "./types/messages/GetBonusMessage";
 import {Cup} from "./models/Cup";
 import {JustPlayScreen} from "./screens/JustPlayScreen";
-import {TetrinetEventListener} from "../TetrinetNetworkLayer";
 import {GameState} from "./types";
 import {GamePartyType} from "./types/GamePartyType";
 
@@ -26,7 +25,7 @@ export class Tetrinet extends WebGlGame
    * @deprecated
    * Listener of tetrinet events
    */
-  protected _gameDataEventListener:TetrinetEventListener | undefined = undefined
+  // protected _gameDataEventListener:TetrinetEventListener | undefined = undefined
 
   /**
    * this callback for buttons search
@@ -38,13 +37,10 @@ export class Tetrinet extends WebGlGame
     super();
   }
 
-  /**
-   * Listener of game events
-   * @param listener
-   */
-  setGameDataEventListener(listener: TetrinetEventListener) {
-    this._gameDataEventListener = listener
-  }
+
+  // setGameDataEventListener(listener: TetrinetEventListener) {
+  //   this._gameDataEventListener = listener
+  // }
 
   /**
    *
@@ -95,7 +91,7 @@ export class Tetrinet extends WebGlGame
       scr = new PlayScreen(this, (newGameSate:GameState) =>
       {
         // trow trough change status event
-        this._gameDataEventListener?.onGameStateChange(newGameSate)
+        // this._gameDataEventListener?.onGameStateChange(newGameSate)
         if (this._onStateChangeForButton) this._onStateChangeForButton(newGameSate)
       });
 
@@ -149,9 +145,6 @@ export class Tetrinet extends WebGlGame
   {
     //
     (this.getCurrentScreen() as PlayScreen)?.resume();
-
-    //
-    // this._gameDataEventListener?.onGameStateChange(GameState.running)
   }
 
   /**

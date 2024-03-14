@@ -98,7 +98,6 @@ export class CupImpl implements Cup
   cleanBeforeNewGame ()
   {
     // clear bonuses
-    // this._state.bonuses = []
     this.state = CupState.online;
 
     // clear field
@@ -108,74 +107,70 @@ export class CupImpl implements Cup
      this.fields[i] = {block: -1}
       // people.push(person);
     }
+   //
+   // this.fields[95].block = 2;
+   // this.fields[104].block = 1;
+   // this.fields[105].block = 1 ;
+   // this.fields[106].block = 1;
+   // this.fields[113].block = 2;
+   // this.fields[114].block = 1;
+   //
+   // this.fields[115].block = 0;
+   // this.fields[115].bonus = Bonus.bomb;
+   //
+   // this.fields[116].block = 1;
+   // this.fields[117].block = 2;
+   // this.fields[124].block = 1;
+   // this.fields[125].block = 1;
+   // this.fields[126].block = 1;
+   // this.fields[135].block = 2;
 
-    //this.fields[100].block = 1;
-
-
-   this.fields[95].block = 2;
-   this.fields[104].block = 1;
-   this.fields[105].block = 1 ;
-   this.fields[106].block = 1;
-   this.fields[113].block = 2;
-   this.fields[114].block = 1;
-
-   this.fields[115].block = 0;
-   this.fields[115].bonus = Bonus.bomb;
-
-   this.fields[116].block = 1;
-   this.fields[117].block = 2;
-   this.fields[124].block = 1;
-   this.fields[125].block = 1;
-   this.fields[126].block = 1;
-   this.fields[135].block = 2;
-    //this.fields[103].block = 0;
-
-   this.fields[150].block = 1;
-   this.fields[150].bonus = Bonus.add;
-
-   this.fields[160].block = 1;
-   this.fields[160].bonus = Bonus.gravity;
-   this.fields[161].block = 1;
-   this.fields[162].block = 1;
-   this.fields[165].block = 1;
-   this.fields[164].block = 1;
-   this.fields[166].block = 1;
-   this.fields[167].block = 1;
-   this.fields[168].block = 1;
-   this.fields[169].block = 1;
-
-   this.fields[170].block = 1;
-   this.fields[171].block = 1;
-   this.fields[172].block = 1;
-   this.fields[175].block = 1;
-   this.fields[174].block = 1;
-   this.fields[176].block = 1;
-   this.fields[177].block = 1;
-   this.fields[178].block = 1;
-   this.fields[179].block = 1;
-
-    // temp cup state
-   this.fields[180].block = 1;
-   this.fields[181].block = 1;
-   this.fields[182].block = 1;
-   this.fields[182].bonus = Bonus.bomb;
-   this.fields[184].block = 1;
-   this.fields[185].block = 1;
-   this.fields[186].block = 1;
-   this.fields[187].block = 1;
-   this.fields[188].block = 1;
-   this.fields[189].block = 1;
-
-   this.fields[190].block = 1;
-   this.fields[191].block = 1;
-   this.fields[192].block = 1;
-   this.fields[195].block = 1;
-   this.fields[194].block = 1;
-   this.fields[196].block = 1;
-   this.fields[197].block = 1;
-   this.fields[197].bonus = Bonus.bomb;
-   this.fields[198].block = 1;
-   this.fields[199].block = 1;
+   // this.fields[150].block = 1;
+   // this.fields[150].bonus = Bonus.add;
+   //
+   // this.fields[160].block = 1;
+   // this.fields[160].bonus = Bonus.gravity;
+   // this.fields[161].block = 1;
+   // this.fields[162].block = 1;
+   // this.fields[165].block = 1;
+   // this.fields[164].block = 1;
+   // this.fields[166].block = 1;
+   // this.fields[167].block = 1;
+   // this.fields[168].block = 1;
+   // this.fields[169].block = 1;
+   //
+   // this.fields[170].block = 1;
+   // this.fields[171].block = 1;
+   // this.fields[172].block = 1;
+   // this.fields[175].block = 1;
+   // this.fields[174].block = 1;
+   // this.fields[176].block = 1;
+   // this.fields[177].block = 1;
+   // this.fields[178].block = 1;
+   // this.fields[179].block = 1;
+   //
+   //  // temp cup state
+   // this.fields[180].block = 1;
+   // this.fields[181].block = 1;
+   // this.fields[182].block = 1;
+   // this.fields[182].bonus = Bonus.bomb;
+   // this.fields[184].block = 1;
+   // this.fields[185].block = 1;
+   // this.fields[186].block = 1;
+   // this.fields[187].block = 1;
+   // this.fields[188].block = 1;
+   // this.fields[189].block = 1;
+   //
+   // this.fields[190].block = 1;
+   // this.fields[191].block = 1;
+   // this.fields[192].block = 1;
+   // this.fields[195].block = 1;
+   // this.fields[194].block = 1;
+   // this.fields[196].block = 1;
+   // this.fields[197].block = 1;
+   // this.fields[197].bonus = Bonus.bomb;
+   // this.fields[198].block = 1;
+   // this.fields[199].block = 1;
   }
   
   getFields = ():Array<Field> => {
