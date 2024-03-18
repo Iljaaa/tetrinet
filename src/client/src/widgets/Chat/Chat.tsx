@@ -3,7 +3,6 @@ import {Container} from "../../shared/ui/Container/Container";
 import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 import {ChatMessage} from "../../Common/Tetrinet/types/ChatMessage";
 import {MarkDown} from "../../process/MarkDown";
-import {Input} from "../../shared/ui/Input/Input";
 import {Button} from "../../shared/ui/Button/Button";
 
 import styles from "./Chat.module.css"
@@ -19,10 +18,12 @@ export class Chat extends React.PureComponent<{}, State>
     chat: [],
     message: ''
   }
-  private _inputRef: React.RefObject<HTMLInputElement>;
+
+  private readonly _inputRef: React.RefObject<HTMLInputElement>;
 
   constructor(props: {}, context: any) {
     super(props, context);
+    // this._inputRef = React.createRef()
     this._inputRef = React.createRef()
   }
 
@@ -73,11 +74,13 @@ export class Chat extends React.PureComponent<{}, State>
         <h2>Chat</h2>
         <div style={{display: "flex", alignItems: "center"}}>
           <div>
-            <Input type="text" value={this.state.message}
+            <input type="text"
+                   value={this.state.message}
                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})}
                    onFocus={this.onMessageInputFocus}
                    onBlur={this.onMessageInputBlur}
-                   ref={this._inputRef} style={{width: "400px", marginRight: "2rem"}}/>
+                   ref={this._inputRef}
+                   style={{width: "400px", marginRight: "2rem"}} />
           </div>
           <div>
             <Button onClick={this.sendMessage} variant={"small"}>send</Button>
