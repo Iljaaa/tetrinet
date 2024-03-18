@@ -12,33 +12,10 @@ import {Header} from "./widgets/Header/Header";
 import {Todo} from "./widgets/ToDo/Todo";
 import {Footer} from "./widgets/Footer/Footer";
 
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import Worker from "worker-loader!./worker.ts"
+
 
 function App()
 {
-
-  useEffect(() => {
-    // Создайте новый экземпляр Web Worker
-    const worker = new Worker();
-
-    // Отправьте сообщение в Web Worker
-    worker.postMessage(5);
-
-    // Получите результат от Web Worker
-    worker.onmessage = (event: MessageEvent) => {
-      const { data } = event;
-
-      // Обработайте результат
-      console.log(data, 'webworker message');
-    };
-
-    // Завершите Web Worker после использования
-    return () => {
-      worker.terminate();
-    };
-  }, []);
-
   return (
     <div className="App">
         <Header />
@@ -50,10 +27,8 @@ function App()
           <div><Chat/></div>
           <div><Help/></div>
           <div><Todo /></div>
-
       </div>
       <Footer />
-
       <SocketsEventsAndModals/>
       <PlayerNameModal />
 </div>

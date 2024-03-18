@@ -19,6 +19,15 @@ export class TetrinetSingleton
   }
 
   /**
+   * Finalize instance
+   */
+  public static finalize (){
+    TetrinetSingleton.getInstance()?.finalize()
+  }
+
+
+
+  /**
    *
    */
   public static getInstance():TetrinetNetworkLayer {

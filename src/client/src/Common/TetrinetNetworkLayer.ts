@@ -80,9 +80,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
   private _onChatChanged?: (items:ChatMessage[]) => void = undefined
 
   // if it comments al stop working
-  constructor() {
-    super();
-  }
+  // constructor() {
+  //   super();
+  // }
 
   /**
    * This is listener of sockets events
@@ -223,6 +223,9 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
     // make opponents array
     OpponentsHelper.makeNewOpponentsArray(data, this._playerId)
+
+    // start down timer worker
+    this.startDownTimerInWorker();
 
     // start game
     // this.game.playGame();

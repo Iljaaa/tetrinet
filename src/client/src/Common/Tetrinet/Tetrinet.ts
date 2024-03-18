@@ -9,6 +9,10 @@ import {JustPlayScreen} from "./screens/JustPlayScreen";
 import {GameState} from "./types";
 import {GamePartyType} from "./types/GamePartyType";
 
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import Worker from "worker-loader!./worker2.js"
+import {WorkerMessageTypes} from "./types/worker/WorkerMessageTypes";
+
 /**
  * @version 0.1.0
  */
@@ -31,12 +35,42 @@ export class Tetrinet extends WebGlGame
    * this callback for buttons search
    */
   protected _onStateChangeForButton?:(gameState:GameState) => void
-  
-  // if it comments all stop working
+
+  /**
+   * Asinc worker
+   * @private
+   */
+  private worker:Worker;
+
   constructor() {
     super();
+
+    console.log ('Tetrinet.constructor');
+
+    this.worker = new Worker();
+
+    this.worker.onmessage = (event:any) => {
+      // const { data } = event;
+      // Обработайте результат
+      console.log(event, 'this.worker.onmessage');
+    };
+
+    // Получите результат от Web Worker
+    this.worker.onerror = (event:any) => {
+      // const { data } = event;
+      // Обработайте результат
+      console.log(event, 'webworker error');
+    };
+
+    // Отправьте сообщение в Web Worker
+    this.worker.postMessage(5);
+
   }
 
+  finalize (){
+    console.log ('Tetrinet.finalize');
+    this.worker.terminate();
+  }
 
   // setGameDataEventListener(listener: TetrinetEventListener) {
   //   this._gameDataEventListener = listener
@@ -116,12 +150,22 @@ export class Tetrinet extends WebGlGame
     }
 
   }
+
+  /**
+   * Here we start down timer
+   */
+  protected startDownTimerInWorker () {
+    console.log (this.worker, 'Tetrinet.startDownTimerInWorker');
+    // const m:StartDownTimerMessage =
+    this.worker.postMessage(1)
+  }
   
   /**
    * Play game
    * the game starts automatically when we receive the message from socket
    */
-  playGame() {
+  playGame()
+  {
     // start game
     (this.getCurrentScreen() as PlayScreen)?.startNewGame()
   }

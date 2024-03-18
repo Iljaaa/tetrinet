@@ -53,9 +53,10 @@ export class Canvas extends React.PureComponent
   
   componentWillUnmount()
   {
-    // unbind events
-    // this.game.getInput().unBind();
-    // TetrinetSingleton.getInstance().getInput().unBind();
+    /**
+     * finalize instance
+     */
+    TetrinetSingleton.finalize();
   }
   
   /**
