@@ -47,12 +47,14 @@ export class Canvas extends React.PureComponent
    */
   componentDidMount()
   {
+    console.log('Canvas.componentDidMount');
     // init graphic
     TetrinetSingleton.getInstance().initGraphicAndLoadAssets(this._canvas.current as HTMLCanvasElement);
   }
   
   componentWillUnmount()
   {
+    console.log('Canvas.componentWillUnmount');
     /**
      * finalize instance
      */

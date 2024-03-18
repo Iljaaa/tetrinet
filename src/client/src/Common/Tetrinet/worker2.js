@@ -15,7 +15,7 @@ const factorial2 = (n) => {
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener('message', (event) => {
 
-  // console.log (window.requestAnimationFrame, 'asdasdasd');
+  console.log ('inside worker2.js');
 
   const result = '2222' // factorial2(event.data);
   // eslint-disable-next-line no-restricted-globals

@@ -14,7 +14,7 @@ const factorial = (n: number): number => {
 // eslint-disable-next-line no-restricted-globals
 (self as any).addEventListener('message', (event:any) => {
 
-  // console.log (window.requestAnimationFrame, 'asdasdasd');
+  console.log (window.requestAnimationFrame, 'inside worker');
 
   const result = factorial(event.data);
   // eslint-disable-next-line no-restricted-globals

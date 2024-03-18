@@ -13,6 +13,14 @@ import {GamePartyType} from "./types/GamePartyType";
 import Worker from "worker-loader!./worker2.js"
 import {WorkerMessageTypes} from "./types/worker/WorkerMessageTypes";
 
+
+/**
+ * Asinc worker
+ * @private
+ */
+let worker:Worker;
+
+
 /**
  * @version 0.1.0
  */
@@ -36,40 +44,39 @@ export class Tetrinet extends WebGlGame
    */
   protected _onStateChangeForButton?:(gameState:GameState) => void
 
-  /**
-   * Asinc worker
-   * @private
-   */
-  private worker:Worker;
-
   constructor() {
     super();
 
     console.log ('Tetrinet.constructor');
 
-    this.worker = new Worker();
+    if (!worker) {
+      worker = new Worker();
 
-    this.worker.onmessage = (event:any) => {
-      // const { data } = event;
-      // Обработайте результат
-      console.log(event, 'this.worker.onmessage');
-    };
+      worker.onmessage = (event:any) => {
+        // const { data } = event;
+        // Обработайте результат
+        console.log(event, 'this.worker.onmessage');
+      };
 
-    // Получите результат от Web Worker
-    this.worker.onerror = (event:any) => {
-      // const { data } = event;
-      // Обработайте результат
-      console.log(event, 'webworker error');
-    };
+      // Получите результат от Web Worker
+      worker.onerror = (event:any) => {
+        // const { data } = event;
+        // Обработайте результат
+        console.log(event, 'webworker error');
+      };
+    }
+
+    console.log (worker, 'worker');
 
     // Отправьте сообщение в Web Worker
-    this.worker.postMessage(5);
+    worker.postMessage(5);
+    console.log (worker, 'worker2');
 
   }
 
   finalize (){
     console.log ('Tetrinet.finalize');
-    this.worker.terminate();
+    worker.terminate();
   }
 
   // setGameDataEventListener(listener: TetrinetEventListener) {
@@ -155,9 +162,12 @@ export class Tetrinet extends WebGlGame
    * Here we start down timer
    */
   protected startDownTimerInWorker () {
-    console.log (this.worker, 'Tetrinet.startDownTimerInWorker');
+    console.log (worker, 'Tetrinet.startDownTimerInWorker');
     // const m:StartDownTimerMessage =
-    this.worker.postMessage(1)
+    worker.postMessage(1)
+    worker.postMessage(1)
+    worker.postMessage(1)
+    worker.postMessage(1)
   }
   
   /**
