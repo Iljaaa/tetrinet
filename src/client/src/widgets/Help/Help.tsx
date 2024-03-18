@@ -65,12 +65,12 @@ export const Help = () => {
     </Container>
 }
 
-type BlockBlock = {
+type BlockBlockType = {
     delta: number
     children: string
 }
 
-const BlockBlock = (props:BlockBlock) => <div className={styles.BlockBlock}>
+const BlockBlock = (props:BlockBlockType) => <div className={styles.BlockBlock}>
     <div className={styles.BlockIcon}
          style={{backgroundImage: `url(${img})`, backgroundPosition: `${320 - props.delta}px 576px`}}></div>
     <div>{props.children}</div>

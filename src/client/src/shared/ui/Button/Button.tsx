@@ -10,7 +10,7 @@ export interface ButtonProps extends React.DetailedHTMLProps<React.ButtonHTMLAtt
 
 export const Button = (props:ButtonProps) =>
 {
-  return <button className={`${styles.JoinButton} ${(props.variant == "small") ? styles.small : ''}`}
+  return <button className={`${styles.JoinButton} ${(props.variant === "small") ? styles.small : ''}`}
                  style={props.style}
                  onClick={() => { if(props.onClick) props.onClick()}}
                  disabled={props.disabled}>{props.children}</button>
