@@ -25,8 +25,6 @@ export class TetrinetSingleton
     TetrinetSingleton.getInstance()?.finalize()
   }
 
-
-
   /**
    *
    */

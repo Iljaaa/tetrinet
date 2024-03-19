@@ -12,6 +12,8 @@ export const Todo = () => {
         <li>optimize CupRenderer2.setCupSize</li>
         <li>make speed up</li>
         <li>big message search</li>
+        <li>when game end stop timer</li>
+        <li>when paused pause timer</li>
       </ul>
       <h2>I am not sure</h2>
       <ul>

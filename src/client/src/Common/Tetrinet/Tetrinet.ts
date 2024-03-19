@@ -10,16 +10,9 @@ import {GameState} from "./types";
 import {GamePartyType} from "./types/GamePartyType";
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import Worker from "worker-loader!./worker2.js"
+import Worker from "worker-loader!./worker.ts"
 import {WorkerMessageTypes} from "./types/worker/WorkerMessageTypes";
-
-
-/**
- * Asinc worker
- * @private
- */
-let worker:Worker;
-
+import {WorkerMessage} from "./types/worker/WorkerMessage";
 
 /**
  * @version 0.1.0
@@ -44,39 +37,20 @@ export class Tetrinet extends WebGlGame
    */
   protected _onStateChangeForButton?:(gameState:GameState) => void
 
+  /**
+   * Asinc worker
+   * @private
+   */
+  protected worker?:Worker = undefined;
+
   constructor() {
     super();
-
     console.log ('Tetrinet.constructor');
-
-    if (!worker) {
-      worker = new Worker();
-
-      worker.onmessage = (event:any) => {
-        // const { data } = event;
-        // Обработайте результат
-        console.log(event, 'this.worker.onmessage');
-      };
-
-      // Получите результат от Web Worker
-      worker.onerror = (event:any) => {
-        // const { data } = event;
-        // Обработайте результат
-        console.log(event, 'webworker error');
-      };
-    }
-
-    console.log (worker, 'worker');
-
-    // Отправьте сообщение в Web Worker
-    worker.postMessage(5);
-    console.log (worker, 'worker2');
-
   }
 
   finalize (){
     console.log ('Tetrinet.finalize');
-    worker.terminate();
+    this.worker?.terminate();
   }
 
   // setGameDataEventListener(listener: TetrinetEventListener) {
@@ -161,13 +135,44 @@ export class Tetrinet extends WebGlGame
   /**
    * Here we start down timer
    */
-  protected startDownTimerInWorker () {
-    console.log (worker, 'Tetrinet.startDownTimerInWorker');
+  protected startDownTimerInWorker ()
+  {
+    if (!this.worker) this.initWorker();
+
+    // start new timer
+    // add start speed
+    this.worker?.postMessage({
+      type:WorkerMessageTypes.startDownTimer
+    })
+  }
+
+  /**
+   * Init asinc worker
+   * @private
+   */
+  private initWorker ()
+  {
+    this.worker = new Worker();
+
+    this.worker.onmessage = (event:MessageEvent) => {
+      console.log(event, 'Tetrinet.worker.onmessage');
+      if ((event.data as WorkerMessage).type === WorkerMessageTypes.downTimerTick) {
+        console.log ('down tick');
+        (this.getCurrentScreen() as PlayScreen).moveFigureDown()
+      }
+    };
+
+    this.worker.onerror = (event:any) => {
+      console.log(event, 'webworker error');
+    };
+
+    this.worker.postMessage(5);
+    console.log (this.worker, 'Tetrinet.startDownTimerInWorker');
     // const m:StartDownTimerMessage =
-    worker.postMessage(1)
-    worker.postMessage(1)
-    worker.postMessage(1)
-    worker.postMessage(1)
+    // this.worker.postMessage(1)
+    // this.worker.postMessage(1)
+    // this.worker.postMessage(1)
+    // this.worker.postMessage(1)
   }
   
   /**

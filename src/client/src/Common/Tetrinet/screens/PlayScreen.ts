@@ -489,9 +489,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cup.setState(state)
   }
 
-  getGameState(): GameState {
+  /*getGameState(): GameState {
     return this._state;
-  }
+  }*/
 
   /**
    * Update opponents cups,
@@ -531,15 +531,15 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private _updateRunning(deltaTime:number)
   {
-    // // tick figure down timer
-    // this._downTimer += deltaTime
-    //
-    // // one sec
-    // if (this._downTimer > 1000) {
-    //   this.onDown();
-    //   this._downTimer = 0;
-    // }
-    this._cup.updateFigureDownTimer(deltaTime);
+
+    // this._cup.updateFigureDownTimer(deltaTime);
+  }
+
+  public moveFigureDown (){
+    if (this._state === GameState.running) {
+      this._cup.moveFigureDown();
+    }
+
   }
   
   present(): void
