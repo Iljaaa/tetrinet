@@ -1,7 +1,6 @@
 import {Container} from "../../shared/ui/Container/Container";
 import React from "react";
 
-
 export const Todo = () => {
   return <Container>
     <div style={{padding: '0 2rem'}}>

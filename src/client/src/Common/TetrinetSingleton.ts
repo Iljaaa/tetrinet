@@ -1,4 +1,5 @@
 import {TetrinetNetworkLayer} from "./TetrinetNetworkLayer";
+import {WorkerSingleton} from "./WorkerSingleton";
 
 /**
  *
@@ -22,7 +23,8 @@ export class TetrinetSingleton
    * Finalize instance
    */
   public static finalize (){
-    TetrinetSingleton.getInstance()?.finalize()
+    // TetrinetSingleton.getInstance()?.finalize()
+    WorkerSingleton.finalize();
   }
 
   /**

@@ -33,6 +33,7 @@ import {GamePartyType} from "../types/GamePartyType";
 import {Assets} from "../Assets";
 import {OpponentsHelper} from "../../heplers/OpponentsHelper";
 import {PlayScreenTexts} from "../textures/PlayScreenTexts";
+import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
 
 
 /**
@@ -110,7 +111,7 @@ const CupsPosition:CupsPositionInterface = {
 /**
  * @vaersion 0.0.1
  */
-export class PlayScreen extends WebGlScreen implements CupEventListener, WebInputEventListener
+export class PlayScreen extends WebGlScreen implements CupEventListener, WebInputEventListener, WorkerEventListener
 {
 
   /**
@@ -271,6 +272,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // bind this to input listener
     this.game.getInput().setListener(this);
 
+    // set timer listener
+    WorkerSingleton.setListener(this)
+
     // check lost and get window focus
     window.addEventListener('blur', this.onWindowBlur);
     // window.addEventListener('focus', this.onWindowFocus);
@@ -349,9 +353,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     const f = GenerateNewFigure(this._cup, GenerateRandomColor());
     this._cup.setFigureToDropPoint(f);
 
-    
     // finally set run status
     this.setGameRunning()
+
+    // start drop timer
+    WorkerSingleton.startTimer()
     
     // call first callback
     // I'm not sure that it need to be here
@@ -416,6 +422,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   pause (){
     if (this._state !== GameState.running) return;
     this._state = GameState.paused
+
+    WorkerSingleton.pauseTimer()
+
+    // rise callback
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
@@ -426,6 +436,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // is game not on the pause
     if (this._state !== GameState.paused) return;
     this._state = GameState.running
+
+    WorkerSingleton.resumeTimer()
+
+    // rise callback
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
@@ -535,11 +549,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // this._cup.updateFigureDownTimer(deltaTime);
   }
 
+  /**
+   * Event from drop worker
+   */
+  onTickDown(): void {
+    this.moveFigureDown();
+  }
+
   public moveFigureDown (){
     if (this._state === GameState.running) {
       this._cup.moveFigureDown();
     }
-
   }
   
   present(): void
@@ -713,6 +733,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
   }
 
+
   // private presentExperiment (gl: WebGL2RenderingContext)
   // {
   //   // gl.activeTexture(1)
@@ -743,6 +764,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   //
   // key events
   //
+
+
 
   /**
    * @param code
@@ -1090,6 +1113,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     
     // call update callback
     this.listener?.onCupUpdated(this._state, this._cup.getData());
+  }
+
+  onFigureDrop(): void {
+    WorkerSingleton.resetTimer()
   }
 
   /**

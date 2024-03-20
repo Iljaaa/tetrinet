@@ -18,7 +18,7 @@ export interface CupWithFigure extends Cup
   /**
    * Update timer that figure must go down
    */
-  updateFigureDownTimer (deltaTime:number): void
+  // updateFigureDownTimer (deltaTime:number): void
   
   /**
    * Move figure right

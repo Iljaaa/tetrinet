@@ -1,5 +1,9 @@
 
 export enum WorkerMessageTypes {
-  startDownTimer = 'startDownTimer',
-  downTimerTick = 'downTimerTick'
+  startTimer = 'startTimer',
+  pauseTimer = 'pauseTimer',
+  resumeTimer = 'resumeTimer',
+  resetTimer = 'resetTimer',
+
+  downTick = 'downTick'
 }

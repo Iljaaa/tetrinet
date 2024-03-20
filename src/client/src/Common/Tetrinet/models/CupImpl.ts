@@ -20,6 +20,11 @@ export type CupEventListener =
    * When figure moved to cup
    */
   onFigureMovedToCup: () => void,
+
+  /**
+   * When figure drop to cup
+   */
+  onFigureDrop: () => void
 }
 
 /**

@@ -225,7 +225,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     OpponentsHelper.makeNewOpponentsArray(data, this._playerId)
 
     // start down timer worker
-    this.startDownTimerInWorker();
+    // this.startDownTimerInWorker();
 
     // start game
     // this.game.playGame();

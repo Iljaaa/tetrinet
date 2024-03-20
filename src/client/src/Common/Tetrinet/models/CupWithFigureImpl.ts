@@ -145,7 +145,10 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     }
 
     // clear drop timer
-    this.downTimer = 0
+    // this.downTimer = 0
+
+    // reset timer
+    this.listener?.onFigureDrop()
 
 
     return hasMoved;
@@ -220,20 +223,20 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
   /**
    * Timer for down figure
    */
-  updateFigureDownTimer(deltaTime:number): void
-  {
-    // nothing to update if cup is offline
-    if (this.state !== CupState.online) return;
-
-    // tick figure down timer
-    this.downTimer += deltaTime
-
-    if (this.downTimer > 1000) {
-      this.moveFigureDown();
-      this.downTimer = 0;
-    }
-
-  }
+  // updateFigureDownTimer(deltaTime:number): void
+  // {
+  //   // nothing to update if cup is offline
+  //   if (this.state !== CupState.online) return;
+  //
+  //   // tick figure down timer
+  //   // this.downTimer += deltaTime
+  //   //
+  //   // if (this.downTimer > 1000) {
+  //   //   this.moveFigureDown();
+  //   //   this.downTimer = 0;
+  //   // }
+  //
+  // }
 
   generateNextFigure(): void {
     this._nextFigure = GenerateNewFigure(this, GenerateRandomColor())

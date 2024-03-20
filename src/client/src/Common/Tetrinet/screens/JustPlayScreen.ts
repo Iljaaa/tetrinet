@@ -134,10 +134,9 @@ export class JustPlayScreen extends WebGlScreen
    */
   update (deltaTime:number):void
   {
-    if (this._state === GameState.running){
-      this._cup.updateFigureDownTimer(deltaTime);
-    }
-
+    // if (this._state === GameState.running){
+    //   this._cup.updateFigureDownTimer(deltaTime);
+    // }
   }
   
   present(): void

@@ -10,9 +10,8 @@ import {GameState} from "./types";
 import {GamePartyType} from "./types/GamePartyType";
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import Worker from "worker-loader!./worker.ts"
-import {WorkerMessageTypes} from "./types/worker/WorkerMessageTypes";
-import {WorkerMessage} from "./types/worker/WorkerMessage";
+import Worker from "worker-loader!../worker.ts"
+import {WorkerSingleton} from "../WorkerSingleton";
 
 /**
  * @version 0.1.0
@@ -37,20 +36,12 @@ export class Tetrinet extends WebGlGame
    */
   protected _onStateChangeForButton?:(gameState:GameState) => void
 
-  /**
-   * Asinc worker
-   * @private
-   */
-  protected worker?:Worker = undefined;
-
   constructor() {
     super();
     console.log ('Tetrinet.constructor');
-  }
 
-  finalize (){
-    console.log ('Tetrinet.finalize');
-    this.worker?.terminate();
+    // init worker
+    WorkerSingleton.init()
   }
 
   // setGameDataEventListener(listener: TetrinetEventListener) {
@@ -134,46 +125,17 @@ export class Tetrinet extends WebGlGame
 
   /**
    * Here we start down timer
-   */
-  protected startDownTimerInWorker ()
-  {
-    if (!this.worker) this.initWorker();
-
-    // start new timer
-    // add start speed
-    this.worker?.postMessage({
-      type:WorkerMessageTypes.startDownTimer
-    })
-  }
-
-  /**
-   * Init asinc worker
-   * @private
-   */
-  private initWorker ()
-  {
-    this.worker = new Worker();
-
-    this.worker.onmessage = (event:MessageEvent) => {
-      console.log(event, 'Tetrinet.worker.onmessage');
-      if ((event.data as WorkerMessage).type === WorkerMessageTypes.downTimerTick) {
-        console.log ('down tick');
-        (this.getCurrentScreen() as PlayScreen).moveFigureDown()
-      }
-    };
-
-    this.worker.onerror = (event:any) => {
-      console.log(event, 'webworker error');
-    };
-
-    this.worker.postMessage(5);
-    console.log (this.worker, 'Tetrinet.startDownTimerInWorker');
-    // const m:StartDownTimerMessage =
-    // this.worker.postMessage(1)
-    // this.worker.postMessage(1)
-    // this.worker.postMessage(1)
-    // this.worker.postMessage(1)
-  }
+   *
+  // protected startDownTimerInWorker ()
+  // {
+  //   if (!this.worker) this.initWorker();
+  //
+  //   // start new timer
+  //   // add start speed
+  //   this.worker?.postMessage({
+  //     type:WorkerMessageTypes.startDownTimer
+  //   })
+  // }
   
   /**
    * Play game
