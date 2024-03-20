@@ -7,7 +7,6 @@ class timer
 
   // static startTimer (){
   //   timer.downTimer = setInterval(() => {
-  //     console.log ('tick in timer')
   //     worker.postMessage({
   //       type: WorkerMessageTypes.downTick
   //     });
@@ -18,6 +17,13 @@ class timer
 
 // const self: Worker = <any>globalThis;
 
+
+
+let currentDelay: number = 750;
+
+let speedUpIteration = 10;
+
+
 // eslint-disable-next-line no-restricted-globals
 (self as any).addEventListener('message', (event:MessageEvent) =>
 {
@@ -25,7 +31,17 @@ class timer
   const worker = (self as any)
 
   const tickFunction = () => {
-    console.log ('tick in timer')
+    speedUpIteration -= 1;
+    console.log ('tickFunction', speedUpIteration)
+    if (speedUpIteration <= 0) {
+      speedUpIteration = 10;
+      if (currentDelay >= 200) currentDelay -= 50
+      console.log ('speedUp', currentDelay)
+
+      clearInterval(timer.downTimer)
+      timer.downTimer = setInterval(tickFunction, currentDelay)
+    }
+
     worker.postMessage({ type: WorkerMessageTypes.downTick });
   }
 
@@ -33,7 +49,6 @@ class timer
    * timer counter
    */
   // let timer;
-  console.log (event.data, 'inside worker');
   if (typeof event.data === 'object')
   {
 
@@ -41,20 +56,21 @@ class timer
     switch ((event.data as WorkerMessage).type )
     {
       case WorkerMessageTypes.startTimer: {
-        timer.downTimer = setInterval(tickFunction, 1000)
+        currentDelay = 1000
+        timer.downTimer = setInterval(tickFunction, currentDelay)
       }  break;
 
       case WorkerMessageTypes.pauseTimer: {
-        if (timer.downTimer) clearInterval(timer.downTimer)
+        clearInterval(timer.downTimer)
       } break;
 
       case WorkerMessageTypes.resumeTimer: {
-        timer.downTimer = setInterval(tickFunction, 1000)
+        timer.downTimer = setInterval(tickFunction, currentDelay)
       }  break;
 
       case WorkerMessageTypes.resetTimer: {
-        if (timer.downTimer) clearInterval(timer.downTimer)
-        timer.downTimer = setInterval(tickFunction, 1000)
+        clearInterval(timer.downTimer)
+        timer.downTimer = setInterval(tickFunction, currentDelay)
       }  break;
     }
 
@@ -64,6 +80,6 @@ class timer
 
   // const result = factorial(event.data);
 
-  worker.postMessage(22);
+  // worker.postMessage(22);
 })
 //window.self.onmessage =

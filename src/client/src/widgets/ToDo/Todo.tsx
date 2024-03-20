@@ -8,6 +8,7 @@ export const Todo = () => {
       <ul>
         <li>Service Worker and Web worker</li>
         <li>nice preview of cup until game is searching</li>
+        <li>stop timer wen game ends</li>
         <li>optimize CupRenderer2.setCupSize</li>
         <li>make speed up</li>
         <li>big message search</li>

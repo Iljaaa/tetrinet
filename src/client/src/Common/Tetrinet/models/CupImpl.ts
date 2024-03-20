@@ -335,8 +335,6 @@ export class CupImpl implements Cup
   // public clearAndMoveLines(callCallback:boolean = true):{countLines: number, bonuses: number[]}
   public clearAndMoveLines(callCallback:boolean = true):void
   {
-    console.log ('CupImpl.clearAndMoveLines');
-
     // we find full lines
     const fullLines:Array<number> = [];
     for (let row = 0; row < this.heightInCells; row++)
@@ -360,8 +358,6 @@ export class CupImpl implements Cup
     if (fullLines.length === 0) {
       return;
     }
-
-    console.log ('full lines', fullLines);
 
     // clear lines and add bonus
     const bonuses:Array<Bonus> = [];

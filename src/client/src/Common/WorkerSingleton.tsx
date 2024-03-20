@@ -26,7 +26,8 @@ export class WorkerSingleton
 
   public static init()
   {
-    console.log('WorkerSingleton.init');
+    if (WorkerSingleton.worker !== undefined) return;
+
     WorkerSingleton.worker = new Worker();
 
     WorkerSingleton.worker.onmessage = (event:MessageEvent) => {
@@ -36,15 +37,14 @@ export class WorkerSingleton
     };
 
     WorkerSingleton.worker.onerror = (event:any) => {
-      console.log(event, 'webworker error');
+      console.error(event, 'webworker error');
     };
 
     WorkerSingleton.worker.postMessage(5);
-    console.log (this.worker, 'Tetrinet.startDownTimerInWorker');
   }
 
   public static finalize (){
-    console.log ('WorkerSingleton.finalize');
+    console.info ('WorkerSingleton.finalize');
     // WorkerSingleton.worker?.terminate();
   }
 

@@ -12,11 +12,14 @@ import {Assets} from "../Assets";
 import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 import {GameState} from "../types";
 import {Vertices} from "../../framework/Vertices";
+import {Cup} from "../models/Cup";
+import {CupEventListener} from "../models/CupImpl";
+import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
 
 /**
  * @vaersion 0.0.1
  */
-export class JustPlayScreen extends WebGlScreen
+export class JustPlayScreen extends WebGlScreen implements CupEventListener, WorkerEventListener
 {
 
   /**
@@ -72,11 +75,10 @@ export class JustPlayScreen extends WebGlScreen
     super(game)
     console.log ('JustPlayScreen constructor');
 
-
     // this._block = new Vertices(false, true);
     
     // create cup object
-    this._cup =  new CupWithFigureImpl();
+    this._cup =  new CupWithFigureImpl(this);
     
     // init renderer
     this._cupRenderer  = new CupRenderer2(game.getGLGraphics(), this._cup.getWidthInCells(), this._cup.getHeightInCells())
@@ -108,8 +110,11 @@ export class JustPlayScreen extends WebGlScreen
       20, PlayScreenTexts.pauseTopPosition, 260, PlayScreenTexts.lineHeight
     ));
 
+    // set timer listener
+    WorkerSingleton.setListener(this)
+
     //
-    this.startNewGame ()
+    // this.startNewGame ()
   }
 
   startNewGame ()
@@ -126,6 +131,12 @@ export class JustPlayScreen extends WebGlScreen
 
     // generate new next figure
     this._cup.generateNextFigure()
+
+    // finally set run status
+    this.setGameRunning()
+
+    // start drop timer
+    WorkerSingleton.startTimer()
   }
   
   /**
@@ -216,6 +227,27 @@ export class JustPlayScreen extends WebGlScreen
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._pauseTextVertices.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
+  setGameRunning()
+  {
+    this._state = GameState.running
+  }
+
+  onFigureDrop(): void {
+    WorkerSingleton.resetTimer()
+  }
+
+  onFigureMovedToCup(): void {
+  }
+
+  onLineCleared(clearData: { countLines: number; bonuses: Array<number> }): void {
+  }
+
+  onTickDown(): void {
+    if (this._state === GameState.running) {
+      this._cup.moveFigureDown();
+    }
+  }
+
 
   /*
    * Experiment with text
@@ -270,6 +302,7 @@ export class JustPlayScreen extends WebGlScreen
   //   gl.activeTexture(1)
   // }
 
+
   pauseOrResume ()
   {
     if (this._state === GameState.running){
@@ -285,7 +318,6 @@ export class JustPlayScreen extends WebGlScreen
    */
   onKeyDown(code:string): void
   {
-    console.log(code)
     switch (code) {
       case "KeyP": this.pauseOrResume(); break;
       case "KeyD": this.onRight(); break;
@@ -312,33 +344,45 @@ export class JustPlayScreen extends WebGlScreen
   }
 
   onRight(){
-    this._cup.moveFigureRight();
+    if (this._state === GameState.running) {
+      this._cup.moveFigureRight();
+    }
   }
 
   onLeft() {
-    this._cup.moveFigureLeft();
+    if (this._state === GameState.running) {
+      this._cup.moveFigureLeft();
+    }
   }
 
   /**
    * Down figure
    */
   onDown(){
-    this._cup.moveFigureDown();
+    if (this._state === GameState.running) {
+      this._cup.moveFigureDown();
+    }
   }
 
   /**
    * Drop it almost as down but to the bottom
    */
   onDrop(){
-    this._cup.dropFigureDown();
+    if (this._state === GameState.running) {
+      this._cup.dropFigureDown();
+    }
   }
 
   onRotateClockwise (){
-    this._cup.rotateClockwise();
+    if (this._state === GameState.running) {
+      this._cup.rotateClockwise();
+    }
   }
 
   onRotateCounterClockwise (){
-    this._cup.rotateCounterClockwise();
+    if (this._state === GameState.running) {
+      this._cup.rotateCounterClockwise();
+    }
   }
   
 }
