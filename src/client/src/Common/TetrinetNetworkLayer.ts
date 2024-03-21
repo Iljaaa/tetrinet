@@ -23,6 +23,8 @@ import {GamePartyType} from "./Tetrinet/types/GamePartyType";
 import {LeaveRequest} from "./Tetrinet/types/requests/LeaveRequest";
 import {OpponentsHelper} from "./heplers/OpponentsHelper";
 import {PlayerId} from "./Tetrinet/types/PlayerId";
+import {SpeedUpMessage} from "./Tetrinet/types/messages/SpeedUpMessage";
+import {WorkerSingleton} from "./WorkerSingleton";
 
 /*
  * Game macro data changes
@@ -199,9 +201,11 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       case MessageTypes.getBonus: this.processGetBonusMessage(data as GetBonusMessage); break;
       case MessageTypes.paused: this.processSetPause(); break;
       case MessageTypes.resumed: this.processResumeGame(); break;
+      case MessageTypes.speedUp: this.processSpeedUp(data as SpeedUpMessage); break;
 
       // updated chat is comming
       case MessageTypes.chat: this.processChat(data as ReceiveChatMessage); break;
+
     }
   }
 
@@ -283,6 +287,16 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
         if (this._onChatChanged) this._onChatChanged(this.chat);
       }
     }
+  }
+
+  /**
+   * Receive chat message
+   * @param data
+   * @private
+   */
+  private processSpeedUp(data:SpeedUpMessage)
+  {
+    WorkerSingleton.setSpeed(data.speed)
   }
 
   /**

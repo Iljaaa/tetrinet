@@ -76,4 +76,11 @@ export class WorkerSingleton
     })
   }
 
+  public static setSpeed(speed:number) {
+    WorkerSingleton.worker?.postMessage({
+      type:WorkerMessageTypes.setSpeed,
+      speed: speed
+    })
+  }
+
 }

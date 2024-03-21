@@ -11,6 +11,12 @@ enum ResponseType:string
     case paused = 'paused';
     case resumed = 'resumed';
 
+
+    /**
+     * Speed has increased
+     */
+    case speedUp = 'speedUp';
+
     /**
      * @deprecated
      */

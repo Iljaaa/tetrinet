@@ -10,6 +10,7 @@ use App\Common\Messages\JoinToPartyMessage;
 use App\Common\Messages\LetsPlayMessage;
 use App\Common\Messages\PausedMessage;
 use App\Common\Messages\ResumeMessage;
+use app\Common\Messages\SpeedupMessage;
 use App\Common\Messages\SwitchCupsMessage;
 use App\Common\Party;
 use App\Common\Player;
@@ -161,6 +162,7 @@ class FirstTestSocket implements MessageComponentInterface
             // case MessageType::addLine: $this->processAddLine($conn, $data); break;
             case MessageType::sendBonus: $this->processSendBonus($conn, $data); break;
             case MessageType::chatMessage: $this->processChatMessage($conn, $data); break;
+            case MessageType::speedUp: $this->processChatMessage($conn, $data); break;
         }
     }
 
@@ -694,6 +696,43 @@ class FirstTestSocket implements MessageComponentInterface
         // add message
         $party->addChatMessage($message, $player->getName(), $playerId);
         $party->sendChatToAllPlayers();
+    }
+
+    /**
+     * Process chat message
+     * @param ConnectionInterface $conn
+     * @param array $data
+     * @return void
+     */
+    private function processSpeedUpMessage(ConnectionInterface $conn, array $data): void
+    {
+        // party
+        $partyId = $data['partyId'] ?? '';
+        if (!$partyId) return;
+        $party = $this->partiesPool->getPartyById($partyId);
+        if (!$party) return;
+
+        // increase speed
+        $party->speedUp();
+
+        // player
+//        $playerId = $data['playerId'] ?? '';
+//        if (!$playerId) return;
+//        $player = $party->findPlayerById($playerId);
+//        if (!$player) return;
+
+        $this->info('speed up', [
+            'partyId' => $partyId,
+            'speed' => $party->getSpeed()
+        ]);
+
+        $m = sprintf('Speed has increased to: %s', $party->getSpeed());
+
+        $party->addChatMessage($m);
+        $party->sendChatToAllPlayers();
+
+        $party->sendMessageToAllPlayers(new SpeedupMessage($party, $party->getSpeed()));
+
     }
 
     /**

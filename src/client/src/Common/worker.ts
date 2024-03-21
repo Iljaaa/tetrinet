@@ -19,7 +19,7 @@ class timer
 
 
 
-let currentDelay: number = 750;
+let currentDelay: number = 1000;
 
 let speedUpIteration = 10;
 
@@ -31,18 +31,21 @@ let speedUpIteration = 10;
   const worker = (self as any)
 
   const tickFunction = () => {
-    speedUpIteration -= 1;
-    console.log ('tickFunction', speedUpIteration)
-    if (speedUpIteration <= 0) {
-      speedUpIteration = 10;
-      if (currentDelay >= 200) currentDelay -= 50
-      console.log ('speedUp', currentDelay)
-
-      clearInterval(timer.downTimer)
-      timer.downTimer = setInterval(tickFunction, currentDelay)
-    }
+    // speedUpIteration -= 1;
+    // console.log ('tickFunction', speedUpIteration)
+    // if (speedUpIteration <= 0) {
+    //   speedUpIteration = 10;
+    //   if (currentDelay >= 200) currentDelay -= 50
+    //   console.log ('speedUp', currentDelay)
+    //
+    //   clearInterval(timer.downTimer)
+    //   timer.downTimer = setInterval(tickFunction, currentDelay)
+    // }
 
     worker.postMessage({ type: WorkerMessageTypes.downTick });
+
+    // delay
+    timer.downTimer = setTimeout(tickFunction, currentDelay)
   }
 
   /**
@@ -57,20 +60,24 @@ let speedUpIteration = 10;
     {
       case WorkerMessageTypes.startTimer: {
         currentDelay = 1000
-        timer.downTimer = setInterval(tickFunction, currentDelay)
+        timer.downTimer = setTimeout(tickFunction, currentDelay)
       }  break;
 
       case WorkerMessageTypes.pauseTimer: {
-        clearInterval(timer.downTimer)
+        clearTimeout(timer.downTimer)
       } break;
 
       case WorkerMessageTypes.resumeTimer: {
-        timer.downTimer = setInterval(tickFunction, currentDelay)
+        timer.downTimer = setTimeout(tickFunction, currentDelay)
       }  break;
 
       case WorkerMessageTypes.resetTimer: {
-        clearInterval(timer.downTimer)
-        timer.downTimer = setInterval(tickFunction, currentDelay)
+        clearTimeout(timer.downTimer)
+        timer.downTimer = setTimeout(tickFunction, currentDelay)
+      }  break;
+
+      case WorkerMessageTypes.setSpeed: {
+        currentDelay = event.data.speed
       }  break;
     }
 

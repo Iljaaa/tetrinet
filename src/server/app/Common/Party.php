@@ -38,6 +38,11 @@ class Party
      */
     private array $chat = [];
 
+    /**
+     * @var int
+     */
+    private int $speed = 1000;
+
     /*
      * Player cups
      * @var Cup[]
@@ -116,14 +121,14 @@ class Party
      * @param array $data
      * @return void
      */
-    public function sendToAllPlayers(array $data): void {
-        foreach ($this->players as $index => $p) {
-            $p->getConnection()->send(json_encode(array_merge($data, [
-                'yourIndex' => $index,
-                'partyId' => $this->partyId
-            ])));
-        }
-    }
+//    public function sendToAllPlayers(array $data): void {
+//        foreach ($this->players as $index => $p) {
+//            $p->getConnection()->send(json_encode(array_merge($data, [
+//                'yourIndex' => $index,
+//                'partyId' => $this->partyId
+//            ])));
+//        }
+//    }
 
     /**
      * Send data to all players
@@ -249,6 +254,22 @@ class Party
     public function sendChatToAllPlayers(): void
     {
         $this->sendMessageToAllPlayers(new UpdateChatMessage($this->partyId, $this->chat));
+    }
+
+    /**
+     * Speed up cup
+     * @return void
+     */
+    public function speedUp(): void
+    {
+        if ($this->speed >= 200) {
+            $this->speed -= 50;
+        }
+    }
+
+    public function getSpeed(): int
+    {
+        return $this->speed;
     }
 
     /*

@@ -12,4 +12,5 @@ export enum RequestTypes {
     addLine = 'addLine', // this request not used, we use only super blocks
     sendBonus = 'sendBonus',
     chatMessage = 'chatMessage',
+    speedUp = 'speedUp',
 }

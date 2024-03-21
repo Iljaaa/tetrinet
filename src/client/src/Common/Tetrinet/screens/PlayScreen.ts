@@ -34,6 +34,7 @@ import {Assets} from "../Assets";
 import {OpponentsHelper} from "../../heplers/OpponentsHelper";
 import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
+import {SpeedUpRequest} from "../types/requests/SpeedUpRequest";
 
 
 /**
@@ -130,6 +131,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Current game score
    */
   private _score:number = 0
+
+  /**
+   * Count line to speedup
+   * @private
+   */
+  private _linesToSpeedup:number = 2;
 
   /**
    * Cup object
@@ -411,6 +418,22 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
 
     if (intent) request.intent = intent
+
+    // send data
+    SocketSingleton.getInstance()?.sendData(request);
+  }
+
+  /**
+   * Send special report to speed up
+   * @private
+   */
+  private sendSpeedUpRequest () {
+    // request data
+    const request:SpeedUpRequest = {
+      type: RequestTypes.speedUp,
+      partyId: TetrinetSingleton.getInstance().getPartyId(),
+      playerId: TetrinetSingleton.getInstance().getPlayerId(),
+    }
 
     // send data
     SocketSingleton.getInstance()?.sendData(request);
@@ -1016,6 +1039,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     //
     this.listener?.onScoreChanged(this._score);
+
+    // calculate speed up
+    this._linesToSpeedup -= data.countLines
+    if (this._linesToSpeedup <= 0){
+      this.sendSpeedUpRequest()
+    }
 
     // add cleared bonuses to me
     if (data.bonuses.length > 0){
