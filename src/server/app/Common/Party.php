@@ -41,7 +41,7 @@ class Party
     /**
      * @var int
      */
-    private int $speed = 1000;
+    private int $speed = 0;
 
     /*
      * Player cups
@@ -78,6 +78,15 @@ class Party
         $this->players[$p->getConnectionId()] = $p;
         // return array_search($connection, $this->players);
     }
+
+    /**
+     * Set part host who will check the speed
+     * @return void
+     */
+//    public function setHost()
+//    {
+//        //
+//    }
 
     /*
      * Is party has connection
@@ -258,13 +267,16 @@ class Party
 
     /**
      * Speed up cup
-     * @return void
+     * @return bool was speed updated
      */
-    public function speedUp(): void
+    public function setSpeed(int $speed): bool
     {
-        if ($this->speed >= 200) {
-            $this->speed -= 50;
+        if ($this->speed < $speed){
+            $this->speed = $speed;
+            return true;
         }
+
+        return false;
     }
 
     public function getSpeed(): int

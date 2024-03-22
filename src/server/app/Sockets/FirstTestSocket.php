@@ -10,7 +10,7 @@ use App\Common\Messages\JoinToPartyMessage;
 use App\Common\Messages\LetsPlayMessage;
 use App\Common\Messages\PausedMessage;
 use App\Common\Messages\ResumeMessage;
-use app\Common\Messages\SpeedupMessage;
+use App\Common\Messages\SpeedupMessage;
 use App\Common\Messages\SwitchCupsMessage;
 use App\Common\Party;
 use App\Common\Player;
@@ -162,7 +162,7 @@ class FirstTestSocket implements MessageComponentInterface
             // case MessageType::addLine: $this->processAddLine($conn, $data); break;
             case MessageType::sendBonus: $this->processSendBonus($conn, $data); break;
             case MessageType::chatMessage: $this->processChatMessage($conn, $data); break;
-            case MessageType::speedUp: $this->processChatMessage($conn, $data); break;
+            case MessageType::speedUp: $this->processSpeedUpMessage($conn, $data); break;
         }
     }
 
@@ -228,6 +228,9 @@ class FirstTestSocket implements MessageComponentInterface
 
             // move players to party
             foreach ($players as $p) $party->addPlayer($p);
+
+            // choose host
+            // $party->setHost();
 
             // run game
             // $this->party->setGameState(GameState::running);
@@ -422,10 +425,13 @@ class FirstTestSocket implements MessageComponentInterface
     {
         $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
         $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';
-        $this->info("set", ['partyId' => $partyId, 'playerId' => $playerId]);
+        $this->info("set", [
+            'partyId' => $partyId,
+            'playerId' => $playerId
+        ]);
         // $this->info("received", ['data.cup' => $data['cup']]);
 
-        if (empty($partyId)){
+        if (empty($partyId)) {
             $this->info("Party id is empty, ignore request");
             return;
         }
@@ -435,9 +441,18 @@ class FirstTestSocket implements MessageComponentInterface
             return;
         }
 
-        // pause game
-        // $party = $this->party;
         $party = $this->partiesPool->getPartyById($partyId);
+        if (!$party) {
+            $this->info(sprintf('Party %s not found', $partyId));
+            return;
+        }
+
+        //
+        $cupData = $data['cup'] ?? null;
+        if (!$cupData){
+            $this->info('Cup data not received');
+            return;
+        }
 
         // save cup info
         $party->updateCupByPlayerId($playerId, $data['cup']);
@@ -452,8 +467,9 @@ class FirstTestSocket implements MessageComponentInterface
 //            // 'responsibleId' => $conn->socketId
 //            'state' => $party->getGameState(),
 //            'cups' => $cupsResponse
-//        ]);
+//        ])
 
+        // todo: may be we should refactor this method and send only one cup instead of all party
         $party->sendMessageToAllPlayers(new AfterSetMessage($party));
     }
 
@@ -706,14 +722,28 @@ class FirstTestSocket implements MessageComponentInterface
      */
     private function processSpeedUpMessage(ConnectionInterface $conn, array $data): void
     {
+
+        $this->info('data from speed up request', $data);
+
         // party
         $partyId = $data['partyId'] ?? '';
         if (!$partyId) return;
+
         $party = $this->partiesPool->getPartyById($partyId);
         if (!$party) return;
 
+        $newSpeed = $data['speed'] ?? null;
+        if ($newSpeed === null) {
+            $this->error('speed not received from request');
+            return;
+        }
+
         // increase speed
-        $party->speedUp();
+        // $party->speedUp();
+        if (!$party->setSpeed($newSpeed)){
+            $this->info('speed was not updated, ignore it');
+            return;
+        }
 
         // player
 //        $playerId = $data['playerId'] ?? '';
@@ -767,6 +797,16 @@ class FirstTestSocket implements MessageComponentInterface
     private function info (string $message, array $data = []) :void
     {
         Log::channel('socket')->info($message, $data);
+    }
+
+    /**
+     * @param string $message
+     * @param array $data
+     * @return void
+     */
+    private function error (string $message, array $data = []) :void
+    {
+        Log::channel('socket')->error($message, $data);
     }
 
 }

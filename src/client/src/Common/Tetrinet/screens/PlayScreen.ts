@@ -136,7 +136,12 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Count line to speedup
    * @private
    */
-  private _linesToSpeedup:number = 2;
+  private _linesToSpeedup:number = 10;
+
+  /**
+   * Count lines to next level
+   */
+  protected _linesForNextLevel:number = 10;
 
   /**
    * Cup object
@@ -427,16 +432,49 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Send special report to speed up
    * @private
    */
-  private sendSpeedUpRequest () {
+  private sendSpeedUpRequest (currentSpeed:number) {
     // request data
     const request:SpeedUpRequest = {
       type: RequestTypes.speedUp,
       partyId: TetrinetSingleton.getInstance().getPartyId(),
       playerId: TetrinetSingleton.getInstance().getPlayerId(),
+      speed: currentSpeed
     }
 
     // send data
     SocketSingleton.getInstance()?.sendData(request);
+  }
+
+  /**
+   *
+   * @param newSpeed
+   */
+  speedUp (newSpeed: number)
+  {
+
+    // set new speed in cup
+    this._cup.setSpeed(newSpeed);
+
+
+    // calculate new delay
+    // 600 is the during between max 800 and min 200 speed
+    // 200 minimal speed
+
+    const maxSpeed = 15;
+
+    const minimalDelay = 200;
+
+    if (newSpeed > maxSpeed) newSpeed = maxSpeed
+
+    let newDelay = (600 -  (newSpeed / maxSpeed) * 600) + 200;
+    if (newDelay < minimalDelay) newDelay = minimalDelay;
+
+    console.log ('set new delay', newDelay)
+
+    // reset lines count to nex level
+    this._linesToSpeedup = this._linesForNextLevel
+
+    WorkerSingleton.setDelay(newDelay)
   }
 
   /**
@@ -568,7 +606,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private _updateRunning(deltaTime:number)
   {
-
     // this._cup.updateFigureDownTimer(deltaTime);
   }
 
@@ -1042,8 +1079,16 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // calculate speed up
     this._linesToSpeedup -= data.countLines
-    if (this._linesToSpeedup <= 0){
-      this.sendSpeedUpRequest()
+    if (this._linesToSpeedup <= 0)
+    {
+      // set lines to next speed up
+      this._linesToSpeedup = this._linesForNextLevel;
+
+      // increase speed
+      this._cup.increaseSpeed();
+
+      // send request about speedup
+      this.sendSpeedUpRequest(this._cup.getSpeed());
     }
 
     // add cleared bonuses to me

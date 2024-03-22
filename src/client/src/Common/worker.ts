@@ -59,7 +59,7 @@ let speedUpIteration = 10;
     switch ((event.data as WorkerMessage).type )
     {
       case WorkerMessageTypes.startTimer: {
-        currentDelay = 1000
+        currentDelay = (event.data.delay) ? event.data.delay : 800
         timer.downTimer = setTimeout(tickFunction, currentDelay)
       }  break;
 
@@ -76,8 +76,8 @@ let speedUpIteration = 10;
         timer.downTimer = setTimeout(tickFunction, currentDelay)
       }  break;
 
-      case WorkerMessageTypes.setSpeed: {
-        currentDelay = event.data.speed
+      case WorkerMessageTypes.setDelay: {
+        currentDelay = event.data.delay
       }  break;
     }
 

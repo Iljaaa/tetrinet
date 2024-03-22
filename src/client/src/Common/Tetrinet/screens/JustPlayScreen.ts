@@ -227,6 +227,7 @@ export class JustPlayScreen extends WebGlScreen implements CupEventListener, Wor
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._pauseTextVertices.vertices), gl.STATIC_DRAW)
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
+
   setGameRunning()
   {
     this._state = GameState.running

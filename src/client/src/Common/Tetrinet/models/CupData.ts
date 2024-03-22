@@ -12,6 +12,9 @@ export interface CupData
   // fields state
   fields: Array<Field>,
 
-  // bonuses: Array<number>
+  // speed of down
+  // todo: remove speed from his request
+  speed: number
 
+  // bonuses: Array<number>
 }

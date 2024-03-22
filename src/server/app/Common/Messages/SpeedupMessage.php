@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Common\Messages;
+namespace App\Common\Messages;
 
 use App\Common\Party;
 use App\Common\Types\ResponseType;

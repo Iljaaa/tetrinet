@@ -8,17 +8,17 @@ export interface Cup
   /**
    * Current cup state
    */
-  getState: () => CupState
+  getState (): CupState
 
   /**
    *
    */
-  setState: (state:CupState) => void
+  setState (state:CupState): void
 
   /**
    * All fields array
    */
-  getFields: () => Array<Field>
+  getFields (): Array<Field>
 
   /**
    * Set fields data
@@ -122,7 +122,22 @@ export interface Cup
    * @param filedIndex
    * @param bonusIndex
    */
-  addBonusFiled: (filedIndex:number, bonusIndex:number) => void;
+  addBonusFiled (filedIndex:number, bonusIndex:number): void;
+
+  /**
+   * Increase down speed
+   */
+  increaseSpeed() : void
+
+  /**
+   *
+   */
+  getSpeed(): number
+
+  /**
+   *
+   */
+  setSpeed(newSpeed:number): void
 
   /*
    *

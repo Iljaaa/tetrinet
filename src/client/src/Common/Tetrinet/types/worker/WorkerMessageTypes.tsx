@@ -4,7 +4,9 @@ export enum WorkerMessageTypes {
   pauseTimer = 'pauseTimer',
   resumeTimer = 'resumeTimer',
   resetTimer = 'resetTimer',
-  setSpeed = 'setSpeed',
+
+  // se new delay with speed up
+  setDelay = 'setDelay',
 
   downTick = 'downTick'
 }

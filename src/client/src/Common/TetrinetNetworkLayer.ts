@@ -201,6 +201,8 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
       case MessageTypes.getBonus: this.processGetBonusMessage(data as GetBonusMessage); break;
       case MessageTypes.paused: this.processSetPause(); break;
       case MessageTypes.resumed: this.processResumeGame(); break;
+
+      // speed up message
       case MessageTypes.speedUp: this.processSpeedUp(data as SpeedUpMessage); break;
 
       // updated chat is comming
@@ -296,7 +298,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private processSpeedUp(data:SpeedUpMessage)
   {
-    WorkerSingleton.setSpeed(data.speed)
+    (this.getCurrentScreen() as PlayScreen).speedUp(data.speed)
   }
 
   /**

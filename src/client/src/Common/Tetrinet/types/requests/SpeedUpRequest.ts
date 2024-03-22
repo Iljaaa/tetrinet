@@ -5,4 +5,8 @@ import {Request} from "./Request";
  */
 export interface SpeedUpRequest extends Request {
 
+  /**
+   * New speed
+   */
+  speed: number
 }

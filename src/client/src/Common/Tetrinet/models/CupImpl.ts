@@ -65,6 +65,14 @@ export class CupImpl implements Cup
   protected fields:Array<Field> = [];
 
   /**
+   * Down speed
+   * we have 15 levels of speed
+   * from 800 to 200 timer
+   * @protected
+   */
+  protected speed: number = 0;
+
+  /**
    *
    * @param listener
    * @param widthInCells
@@ -230,6 +238,7 @@ export class CupImpl implements Cup
     return {
       state: this.state,
       fields: this.fields,
+      speed: this.speed
     }
   }
   
@@ -304,7 +313,7 @@ export class CupImpl implements Cup
     // this._state.bonuses[destIndex] = this._state.bonuses[sourceIndex]
   }
 
-  public clearBlockByCoords (x: number, y: number) {
+  clearBlockByCoords (x: number, y: number) {
     this.clearBlock(this.getCellIndex(x, y))
   }
 
@@ -312,7 +321,7 @@ export class CupImpl implements Cup
    * Clear block
    * @param index
    */
-  public clearBlock (index:number) {
+  clearBlock (index:number) {
     if (this.fields[index] !== undefined){
       this.setFieldByIndex(index, {block: -1})
     }
@@ -333,7 +342,7 @@ export class CupImpl implements Cup
    * returns number of cleared lines
    */
   // public clearAndMoveLines(callCallback:boolean = true):{countLines: number, bonuses: number[]}
-  public clearAndMoveLines(callCallback:boolean = true):void
+  clearAndMoveLines(callCallback:boolean = true):void
   {
     // we find full lines
     const fullLines:Array<number> = [];
@@ -402,6 +411,18 @@ export class CupImpl implements Cup
   clearBlockByIndex(cellIndex: number): void {
    this.fields[cellIndex].block = -1
    this.fields[cellIndex].bonus = undefined
+  }
+
+  increaseSpeed(): void {
+    this.speed++;
+  }
+
+  getSpeed(): number {
+    return this.speed;
+  }
+
+  setSpeed(newSpeed: number): void {
+    this.speed = newSpeed
   }
 
 }

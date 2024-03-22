@@ -43,6 +43,10 @@ export class WorkerSingleton
     WorkerSingleton.worker.postMessage(5);
   }
 
+  /**
+   * Destroy worker
+   * Finalize in not necessary because it closes when the page closes
+   */
   public static finalize (){
     console.info ('WorkerSingleton.finalize');
     // WorkerSingleton.worker?.terminate();
@@ -52,9 +56,14 @@ export class WorkerSingleton
     WorkerSingleton.eventListener = listener;
   }
 
-  public static startTimer (){
+  /**
+   * Start timer on new game
+   * @param startDelay
+   */
+  public static startTimer (startDelay:number = 800){
     WorkerSingleton.worker?.postMessage({
-      type:WorkerMessageTypes.startTimer
+      type:WorkerMessageTypes.startTimer,
+      delay: startDelay
     })
   }
 
@@ -76,10 +85,14 @@ export class WorkerSingleton
     })
   }
 
-  public static setSpeed(speed:number) {
+  /**
+   * Trow to worker new down delay
+   * @param delay
+   */
+  public static setDelay(delay:number) {
     WorkerSingleton.worker?.postMessage({
-      type:WorkerMessageTypes.setSpeed,
-      speed: speed
+      type:WorkerMessageTypes.setDelay,
+      delay: delay
     })
   }
 
