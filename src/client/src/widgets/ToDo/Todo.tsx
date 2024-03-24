@@ -14,6 +14,8 @@ export const Todo = () => {
         <li>when game end stop timer</li>
         <li>Fix chat input style</li>
         <li>Timer in just play</li>
+        <li>Move socket url to config</li>
+        <li>Write instruction start and install process</li>
       </ul>
       <h2>I am not sure</h2>
       <ul>
