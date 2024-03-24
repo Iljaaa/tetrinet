@@ -1,0 +1,274 @@
+<html>
+<head>
+    <title></title>
+<script>
+
+let gl;
+
+/**
+ * Create texture program
+ * @returns {*}
+ */
+function createTextureProgram (gl)
+{
+    const vertCode =
+        // describe position in vertices array
+        "attribute vec2 coordinates;" +
+
+        // describe texture position in vertices array
+        "attribute vec2 textilsPos;" +
+
+        // var tp pass textils coords to fragment shader
+        "varying highp vec2 texPosForFrag;" +
+
+        // canvas size, used to map local coords to pixels
+        "uniform vec2 canvasSize;" +
+
+        // texture size
+        "uniform vec2 texSize;" +
+
+        // translation
+        "uniform vec2 translation;" +
+
+        "void main(void) {" +
+        // create and move position
+        " vec2 drawPos = coordinates + translation;" +
+        // Divide the pixel position by our current canvas size, because webGL wants a number from -1 to 1
+        " drawPos = drawPos / canvasSize * 2.0;" +
+
+        // We are passing in only 2D coordinates. Then Z is always 0.0 and the divisor is always 1.0
+        // " gl_Position = vec4(drawPos.x - 1.0, drawPos.y - 1.0, 0.0, 1.0);" +
+
+        // this made all upside down
+        " gl_Position = vec4(drawPos.x - 1.0, -1.0 * (drawPos.y - 1.0), 0.0, 1.0);" +
+
+        // Pass the texture position to the fragment shader.
+        // WebGL wants numbers from 0 to 1, but we are passing in pixel positions.
+        " texPosForFrag = textilsPos / texSize;" +
+        // " texPosForFrag = vec2(textilsPos.x / texSize.x, (1.0 - textilsPos.y) / texSize.y);" +
+
+        "}"
+
+    // Create a vertex shader object.
+    let vertShader = createShader(gl, gl.VERTEX_SHADER, vertCode)
+    if (!vertShader) throw new Error("vertShader was not created");
+
+    // Fragment shader source code.
+    const fragCode =
+        "varying highp vec2 texPosForFrag;" +
+        "uniform sampler2D sampler;" +
+        "void main(void) {" +
+        " gl_FragColor = texture2D(sampler, texPosForFrag);" +
+        "}"
+
+    // Create fragment shader object.
+    let fragShader = createShader(gl, gl.FRAGMENT_SHADER, fragCode)
+    if (!fragShader) throw new Error("fragCode was not created");
+
+    // Tell webGL to use both my shaders.
+    const program = createProgram(gl, vertShader, fragShader)
+    if (!program) throw new Error("Program was not created");
+
+    return program
+}
+
+/**
+ * Create shader that we use in texture program
+ */
+// function createShader (gl:WebGL2RenderingContext, type:number, source:string):WebGLShader|null
+function createShader (gl, type, source)
+{
+    const shader = gl.createShader(type);
+    // if (!shader) return null;
+
+    // создание шейдера
+    gl.shaderSource(shader, source);      // устанавливаем шейдеру его программный код
+    gl.compileShader(shader);             // компилируем шейдер
+    const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    if (success) {                        // если компиляция прошла успешно - возвращаем шейдер
+        return shader;
+    }
+
+    console.error(gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
+}
+
+/**
+ *
+ * @param gl
+ * @param vertexShader
+ * @param fragmentShader
+ */
+// function createProgram  (gl:WebGL2RenderingContext, vertexShader:WebGLShader, fragmentShader:WebGLShader): WebGLProgram|null =>
+function createProgram  (gl, vertexShader, fragmentShader)
+{
+    const program = gl.createProgram();
+
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+
+    // when i comment this row it stop working at all
+    gl.linkProgram(program);
+
+    const success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (success) {
+        return program;
+    }
+
+    console.error(gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+    return null;
+}
+
+/**
+ * Use program
+ */
+function useProgram (gl, program)
+// function _startUseTextureProgram (gl:WebGL2RenderingContext, program:WebGLProgram )
+{
+    gl.useProgram(program)
+
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "coordinates"
+    // We need to tell it that each vertex takes 24 bytes now (6 floats)
+    const coordAttributeLocation  = gl.getAttribLocation(program, "coordinates")
+    gl.vertexAttribPointer(coordAttributeLocation, 2, gl.FLOAT, false, 16, 0)
+    gl.enableVertexAttribArray(coordAttributeLocation)
+
+    // Tell webGL to read 2 floats from the vertex array for each vertex
+    // and store them in my vec2 shader variable I've named "texPos"
+    const textilsAttributeLocation = gl.getAttribLocation(program, "textilsPos")
+    gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 16, 8)
+    gl.enableVertexAttribArray(textilsAttributeLocation)
+
+    // Set shader variable for canvas size. It's a vec2 that holds both width and height.
+    const canvasSizeLocation = gl.getUniformLocation(program, "canvasSize");
+    gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
+
+
+    // set texture size
+    // todo: possible it must be after load texture
+    const textureSizeLocation = gl.getUniformLocation(program, "texSize");
+    gl.uniform2f(textureSizeLocation, 192, 192)
+}
+
+function loadImageAndRunDrwCircle (gl){
+    var image = new Image()
+    image.onload = function()
+    {
+        // UPDATE: Create a gl texture from our JS image object.
+        gl.bindTexture(gl.TEXTURE_2D, gl.createTexture())
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
+        gl.activeTexture(gl.TEXTURE0)
+        // Tell gl that when draw images scaled up, smooth it.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+
+
+        window.requestAnimationFrame(drawCircle)
+    }
+    image.src = "/logo192.png"
+}
+
+function drawCircle ()
+{
+    console.log ('drawCircle');
+
+    // position
+    const x = 0;
+    const y = 0;
+    const width = 200;
+    const height = 200;
+
+
+    // textils
+    const texX = 0;
+    const texY = 0;
+    const texWidth = 100;
+    const texHeight = 100;
+
+    const x2 = x+width
+    const y2 = y+height
+    const texX2 = texX + texWidth
+    const texY2 = texY + texHeight
+
+    let vertices = [
+        x, y, texX, texY,
+        x, y2, texX, texY2,
+        x2, y2, texX2, texY2,
+
+        x, y, texX, texY,
+        x2, y, texX2, texY,
+        x2, y2, texX2, texY2
+    ];
+
+
+    // Clear the screen.
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
+    // Tell webGL to draw these triangle this frame.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+
+    // Draw all the triangles.
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length/4)
+
+    // Clear vertices. We will fill it every frame.
+    // This way you don't need to delete objects from the screen. You just stop drawing them.
+
+
+
+    // window.requestAnimationFrame(drawCircle)
+}
+
+
+document.addEventListener("DOMContentLoaded", (event) =>
+{
+    console.log('document ready')
+
+    // create canvas and content
+    const canvas = document.getElementById("canvas")
+    gl = canvas.getContext("webgl2")
+
+
+    // Set the viewport size to be the whole canvas.
+    // gl.viewport(0, 0, canvas.width, canvas.height)
+    gl.viewport(0, 0, 500, 500)
+
+    // Set the background color to sky blue.
+    gl.clearColor(.5, 0, 0, 1)
+
+    //
+    // Tell webGL that we aren't doing anything special with the vertex buffer, just use a default one.
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+
+    // create vertex programs
+    const textureProgram = createTextureProgram(gl)
+
+    // use program
+    useProgram(gl, textureProgram)
+
+    // some config
+    // Tell webGL that when we set the opacity, it should be semi transparent above what was already drawn.
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    gl.enable(gl.BLEND)
+
+
+    // load image and run circle
+    loadImageAndRunDrwCircle(gl)
+});
+
+
+</script>
+</head>
+<body>
+<h1>This is the test to draw one time texture and generated text</h1>
+<canvas id="canvas" style="border: solid 2px orange; width: 500px; height: 500px;">
+
+</canvas>
+<div>
+<img src="/logo192.png" />
+</div>
+</body>
+</html>
