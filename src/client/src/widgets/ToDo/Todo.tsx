@@ -13,6 +13,7 @@ export const Todo = () => {
         <li>big message search</li>
         <li>when game end stop timer</li>
         <li>Fix chat input style</li>
+        <li>Timer in just play</li>
       </ul>
       <h2>I am not sure</h2>
       <ul>
