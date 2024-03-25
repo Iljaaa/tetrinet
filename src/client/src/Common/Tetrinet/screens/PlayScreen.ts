@@ -36,6 +36,10 @@ import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
 import {SpeedUpRequest} from "../types/requests/SpeedUpRequest";
 
+/**
+ * Count lines that we should clear to next level
+ */
+const linesToNextLevel:number = 5;
 
 /**
  * @deprecated
@@ -136,12 +140,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Count line to speedup
    * @private
    */
-  private _linesToSpeedup:number = 10;
-
-  /**
-   * Count lines to next level
-   */
-  protected _linesForNextLevel:number = 10;
+  private _linesToSpeedup:number = linesToNextLevel;
 
   /**
    * Cup object
@@ -466,10 +465,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     let newDelay = (600 -  (newSpeed / maxSpeed) * 600) + 200;
     if (newDelay < minimalDelay) newDelay = minimalDelay;
 
-    console.log ('set new delay', newDelay)
+    console.log ('set new speed and delay', newSpeed, newDelay)
 
     // reset lines count to nex level
-    this._linesToSpeedup = this._linesForNextLevel
+    this._linesToSpeedup = linesToNextLevel
 
     WorkerSingleton.setDelay(newDelay)
   }
@@ -1097,7 +1096,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._linesToSpeedup <= 0)
     {
       // set lines to next speed up
-      this._linesToSpeedup = this._linesForNextLevel;
+      this._linesToSpeedup = linesToNextLevel;
 
       // increase speed
       this._cup.increaseSpeed();

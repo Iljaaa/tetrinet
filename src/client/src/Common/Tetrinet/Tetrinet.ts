@@ -8,9 +8,6 @@ import {Cup} from "./models/Cup";
 import {JustPlayScreen} from "./screens/JustPlayScreen";
 import {GameState} from "./types";
 import {GamePartyType} from "./types/GamePartyType";
-
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import Worker from "worker-loader!../worker.ts"
 import {WorkerSingleton} from "../WorkerSingleton";
 
 /**
