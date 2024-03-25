@@ -16,6 +16,12 @@ export const Todo = () => {
         <li>Timer in just play</li>
         <li>Move socket url to config</li>
         <li>Write instruction start and install process</li>
+        <li>Wrong player  buttons and cups</li>
+        <li>Remove pause on lost focus</li>
+        <li>Bug with two names in cup chat, when one player change name and game restart</li>
+        <li>Improve speed up</li>
+        <li>Decrease gravity blocks</li>
+        <li>Two timers when new game start</li>
       </ul>
       <h2>I am not sure</h2>
       <ul>
