@@ -10,14 +10,13 @@ import {CupRenderer2, CupSize} from "../CupRenderer2";
 
 import {Coords} from "../math/Coords";
 import {CupData} from "../models/CupData";
-import {CupEventListener, CupImpl} from "../models/CupImpl";
+import {CupEventListener} from "../models/CupImpl";
 import {GenerateRandomColor} from "../process/GenerateRandomColor";
 
 import {GameState, RequestTypes} from "../types";
 import {CupState} from "../types/CupState";
 import {Bonus} from "../types/Bonus";
 
-import {Cup} from "../models/Cup";
 import {CupsDataCollection} from "../../../widgets/Canvas/Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
 import {Field} from "../models/Field";
@@ -35,6 +34,7 @@ import {OpponentsHelper} from "../../heplers/OpponentsHelper";
 import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
 import {SpeedUpRequest} from "../types/requests/SpeedUpRequest";
+import {GenerateRandomBlock} from "../process/GenerateRandomBlock";
 
 /**
  * Count lines that we should clear to next level
@@ -93,9 +93,9 @@ export interface PlayScreenEventListener
   //
   //   SocketSingleton.getInstance()?.sendData(data)
   // }
-export interface CupsCollection {
-  [index: string]: Cup
-}
+// export interface CupsCollection {
+//   [index: string]: Cup
+// }
 
 interface CupsPositionInterface {
   [index: number]: {x:number, y: number}
@@ -1149,42 +1149,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     const randomFieldIndexInNoFreeFields:number = Math.floor(Math.random() * notFreeFieldsIds.length);
     const bonusFieldIndex = notFreeFieldsIds[randomFieldIndexInNoFreeFields];
 
-    // todo: store in global
-    const availableBonuses = [
-      Bonus.add,
-      Bonus.add,
-      Bonus.add,
-      Bonus.add,
-      Bonus.add,
-      Bonus.clear,
-      Bonus.clear,
-      Bonus.clear,
-      Bonus.clear,
-      Bonus.clear,
-      Bonus.clearSpecials,
-      Bonus.clearSpecials,
-      Bonus.clearSpecials,
-      Bonus.clearSpecials,
-      Bonus.randomClear,
-      Bonus.randomClear,
-      Bonus.randomClear,
-      Bonus.quake,
-      Bonus.quake,
-      Bonus.quake,
-      Bonus.gravity,
-      Bonus.gravity,
-      Bonus.bomb,
-      Bonus.bomb,
-      Bonus.switch,
-      Bonus.nuke
-    ];
-
-    // take random block
-    // now we have only 3 special blocks
-    const b = availableBonuses[Math.floor(Math.random() * availableBonuses.length)]
-
     // place it
-    this._cup.addBonusFiled(bonusFieldIndex, b)
+    this._cup.addBonusFiled(bonusFieldIndex, GenerateRandomBlock())
   }
   
   /**
