@@ -15,7 +15,6 @@ export const Todo = () => {
         <li>Fix chat input style</li>
         <li>Timer in just play</li>
         <li>Move socket url to config</li>
-        <li>Write instruction start and install process</li>
         <li>????Wrong player buttons and cups</li>
       </ul>
       <h2>I am not sure</h2>
