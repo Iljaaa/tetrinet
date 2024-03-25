@@ -89,6 +89,9 @@ export class PlayScreenTexts extends WebGlGeneratedTexture
     this.context.font = "16px monospace";
     this.context.fillStyle = "white";
 
+    // clear old names
+    this.context.clearRect(0, PlayScreenTexts.getNameTopPositionByIndex(0), 300, 512);
+
     opponents.forEach((it:{index:number, name:string}) => {
       const top = PlayScreenTexts.getNameTopPositionByIndex(it.index - 1) + PlayScreenTexts.playerLineHeight / 2;
       // const top = this.playersBeginEdge + ((it.index - 1) * this.playerLineHeight) + 16;
