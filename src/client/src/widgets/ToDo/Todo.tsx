@@ -11,7 +11,7 @@ export const Todo = () => {
         <li>optimize CupRenderer2.setCupSize</li>
         <li>make speed up</li>
         <li>big message search</li>
-        <li>when game end stop timer</li>
+        <li>when game end stop timer in just play</li>
         <li>Fix chat input style</li>
         <li>Timer in just play</li>
         <li>Move socket url to config</li>
