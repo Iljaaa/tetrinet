@@ -1,15 +1,23 @@
 import {LetsPlayMessage} from "../Tetrinet/types/messages/LetsPlayMessage";
 import {PlayerId} from "../Tetrinet/types/PlayerId";
+import {Cup} from "../Tetrinet/models/Cup";
+import {CupImpl} from "../Tetrinet/models/CupImpl";
+import {CupsDataCollection} from "../../widgets/Canvas/Canvas";
+import {CupData} from "../Tetrinet/models/CupData";
+
+type PlayerData = {
+  index: number,
+  playerId:PlayerId,
+  name:string,
+  cup: Cup // player cup
+}
 
 /**
  * Map keys 1-9
  * with player id
  */
 export interface PlayersCollection {
-  [index: number]: {
-    playerId:PlayerId,
-    name:string
-  }
+  [index: number]: PlayerData
 }
 
 /**
@@ -21,7 +29,7 @@ export class OpponentsHelper {
   /**
    * This is mapping keys to index inside party
    */
-  private static party:PlayersCollection = {};
+  public static party:PlayersCollection = {};
 
   /**
    *
@@ -48,33 +56,77 @@ export class OpponentsHelper {
       const it = data.party[arrayKey]
       if (it.playerId !== me) {
         OpponentsHelper.party[i] = {
+          index: i,
           playerId: it.playerId,
-          name: it.name
+          name: it.name,
+          cup: new CupImpl()
         }
         i++
       }
     })
   }
 
-  /**
-   * get player is by index, and index it key that player push
-   * @param playerIndex
-   */
-  static getPlayerIdByIndexInParty (playerIndex:number): PlayerId {
-    return OpponentsHelper.party[playerIndex]?.playerId;
+  public static updateCups (data:CupsDataCollection){
+    Object.keys(data).forEach((playerId:string) =>
+    {
+      // if cup not exists we are create new
+      // if (!this._cups[playerId]) this._cups[playerId] = new CupImpl();
+
+      // const cd = data[playerId]
+      // this._cups[playerId].setFields(cd.fields)
+      // this._cups[playerId].setState(cd.state)
+      OpponentsHelper.updateCupByPlayerId(playerId, data[playerId])
+    })
   }
 
   /**
-   *
+   * Update one cup data
+   * @param playerId
+   * @param data
    */
-  static getOpponentsArray ():Array<{index:number, name:string}>
+  public static updateCupByPlayerId (playerId:PlayerId, data:CupData)
+  {
+    return Object.keys(OpponentsHelper.party).map((i:string) => {
+      const index = parseInt(i)
+      const p = OpponentsHelper.party[index]
+      if (p.playerId === playerId) {
+        p.cup.setFields(data.fields)
+        p.cup.setState(data.state)
+      }
+    });
+  }
+
+  /**
+   * get player data by index, and index it key that player push
+   * @param playerIndex
+   */
+  static getPlayerDataByIndexInParty (playerIndex:number): PlayerData|undefined {
+    return OpponentsHelper.party[playerIndex];
+  }
+
+  // static getDataByPlayerId (playerId:PlayerId):PlayerData|undefined
+  // {
+  //   Object.keys(OpponentsHelper.party).find((i:string) => {
+  //     return ( OpponentsHelper.party[parseInt(i)].playerId === playerId)
+  //   });
+  //
+  //   return undefined;
+  // }
+
+  /**
+   * Here only names
+   * @deprecated
+   */
+  static getOpponentsArray ():Array<PlayerData>
   {
     return Object.keys(OpponentsHelper.party).map((i:string) => {
       const index = parseInt(i)
       const p = OpponentsHelper.party[index]
       return {
         index: index,
-        name: p.name
+        name: p.name,
+        playerId: p.playerId,
+        cup: p.cup
       }
     });
   }

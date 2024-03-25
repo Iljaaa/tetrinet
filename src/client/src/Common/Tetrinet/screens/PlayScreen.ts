@@ -153,7 +153,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * for temp test
    * @private
    */
-  private _cups: CupsCollection
+  // private _cups: CupsCollection
 
   /**
    * Render
@@ -240,7 +240,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cup =  new CupWithFigureImpl(this);
 
     // init cups collection
-    this._cups = {}
+    // this._cups = {}
 
     // init texture programm
     const gl = this.game.getGLGraphics().getGl();
@@ -331,7 +331,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cup.cleanBeforeNewGame();
 
     // clear opponents
-    this._cups = {};
+    // this._cups = {};
 
     // clear bonuses
     this.playerBonuses = [];
@@ -583,15 +583,18 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   updateCups (data:CupsDataCollection)
   {
-    Object.keys(data).forEach((playerId:string) =>
-    {
-      // if cup not exists we are create new
-      if (!this._cups[playerId]) this._cups[playerId] = new CupImpl();
+    // update cups in storage
+    OpponentsHelper.updateCups(data);
 
-      const cd = data[playerId]
-      this._cups[playerId].setFields(cd.fields)
-      this._cups[playerId].setState(cd.state)
-    })
+    // Object.keys(data).forEach((playerId:string) =>
+    // {
+    //   // if cup not exists we are create new
+    //   if (!this._cups[playerId]) this._cups[playerId] = new CupImpl();
+    //
+    //   const cd = data[playerId]
+    //   this._cups[playerId].setFields(cd.fields)
+    //   this._cups[playerId].setState(cd.state)
+    // })
   }
   
   /**
@@ -723,14 +726,17 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // update cup blocks
     this._cupRenderer?.setCupSize(cupSize)
 
-    Object.keys(this._cups).forEach((playerId:string, index:number) => {
-      if (this._cups[playerId])
+    // Object.keys(this._cups).forEach((playerId:string, index:number) => {
+    OpponentsHelper.getOpponentsArray().forEach((data, index:number) => {
+      // if (this._cups[playerId])
+      if (data.cup)
       {
         // set cup position
         WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y);
 
         //
-        this._cupRenderer?.renderCup(this._cups[playerId], this.textTexture);
+        // this._cupRenderer?.renderCup(this._cups[playerId], this.textTexture);
+        this._cupRenderer?.renderCup(data.cup, this.textTexture);
 
         // update player name texture position
         this._cupRenderer?.setPlayerName(cupSize, index, this.textTexture)
@@ -1027,13 +1033,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // check is opponent live
     // const targetPlayerId = TetrinetSingleton.getInstance().getPlayerIdByIndexInParty(indexOfOpponent)
-    const targetPlayerId = OpponentsHelper.getPlayerIdByIndexInParty(indexOfOpponent)
-    if (!targetPlayerId) return;
+    // const targetPlayerId = OpponentsHelper.getPlayerIdByIndexInParty(indexOfOpponent)
+    // if (!targetPlayerId) return;
 
     // check target cup and state
-    const targetCup = this._cups[targetPlayerId]
-    if (!targetCup) return;
-    if (targetCup.getState() !== CupState.online) return;
+    // const targetCup = this._cups[targetPlayerId]
+    const playerData = OpponentsHelper.getPlayerDataByIndexInParty(indexOfOpponent)
+    if (!playerData) return;
+    if (playerData.cup.getState() !== CupState.online) return;
 
 
     const firstBonus:Bonus|undefined = this.playerBonuses.shift();
@@ -1046,7 +1053,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
       // playerId: this._playerId,
       partyId: TetrinetSingleton.getInstance().getPartyId(),
       playerId: TetrinetSingleton.getInstance().getPlayerId(),
-      target: targetPlayerId,
+      target: playerData.playerId,
       bonus: firstBonus
     }
 
