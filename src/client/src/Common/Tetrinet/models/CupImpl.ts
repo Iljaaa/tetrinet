@@ -99,7 +99,7 @@ export class CupImpl implements Cup
   }
 
   /**
-   *
+   * This is the end
    */
   setCupOver(){
     this.state = CupState.over;

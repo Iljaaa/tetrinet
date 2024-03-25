@@ -205,7 +205,6 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
     // this.setState(CupState.over);
     this.setCupOver();
 
-
     // rise callback event
     if (this.listener) this.listener.onFigureMovedToCup()
   }

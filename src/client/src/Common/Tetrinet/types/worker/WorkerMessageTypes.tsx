@@ -1,6 +1,7 @@
 
 export enum WorkerMessageTypes {
   startTimer = 'startTimer',
+  stopTimer = 'stopTimer',
   pauseTimer = 'pauseTimer',
   resumeTimer = 'resumeTimer',
   resetTimer = 'resetTimer',

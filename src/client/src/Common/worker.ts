@@ -60,10 +60,12 @@ let speedUpIteration = 10;
     {
       case WorkerMessageTypes.startTimer: {
         currentDelay = (event.data.delay) ? event.data.delay : 800
+        clearTimeout(timer.downTimer)
         timer.downTimer = setTimeout(tickFunction, currentDelay)
       }  break;
 
-      case WorkerMessageTypes.pauseTimer: {
+      case WorkerMessageTypes.pauseTimer
+      && WorkerMessageTypes.stopTimer: {
         clearTimeout(timer.downTimer)
       } break;
 

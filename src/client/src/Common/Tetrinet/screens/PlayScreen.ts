@@ -288,20 +288,20 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     WorkerSingleton.setListener(this)
 
     // check lost and get window focus
-    window.addEventListener('blur', this.onWindowBlur);
+    // window.addEventListener('blur', this.onWindowBlur);
     // window.addEventListener('focus', this.onWindowFocus);
   }
 
-  destroy() {
-    window.removeEventListener('blur', this.onWindowBlur);
-    // window.removeEventListener('focus', this.onWindowFocus);
-  }
+  // destroy() {
+  //   // window.removeEventListener('blur', this.onWindowBlur);
+  //   // window.removeEventListener('focus', this.onWindowFocus);
+  // }
 
-  private onWindowBlur = () => {
-    if (this._state === GameState.running) {
-      this.sendPauseRequest('window lost focus')
-    }
-  }
+  //private onWindowBlur = () => {
+    // if (this._state === GameState.running) {
+    //   this.sendPauseRequest('window lost focus')
+    // }
+  //}
 
   // private onWindowFocus = () => {
   //   if (this._state === GameState.paused) {
@@ -367,9 +367,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
 
     // finally set run status
     this.setGameRunning()
-
-    // start drop timer
-    WorkerSingleton.startTimer()
     
     // call first callback
     // I'm not sure that it need to be here
@@ -480,7 +477,8 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   /**
    * Pause running game
    */
-  pause (){
+  pause ()
+  {
     if (this._state !== GameState.running) return;
     this._state = GameState.paused
 
@@ -498,14 +496,20 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._state !== GameState.paused) return;
     this._state = GameState.running
 
+    // resume times
     WorkerSingleton.resumeTimer()
 
     // rise callback
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
-  gameOver() {
+  gameOver()
+  {
     this._state = GameState.over;
+
+    // stop timer
+    WorkerSingleton.stopTimer()
+
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
@@ -515,6 +519,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   setGameRunning()
   {
     this._state = GameState.running
+
+    // start drop timer
+    WorkerSingleton.startTimer()
+
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
@@ -1180,10 +1188,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   onFigureMovedToCup()
   {
-    // if new stage is game over that mens game over
-    // if (this._cup.getState() === CupState.over){
-      // debugger
-    // }
+    // when cup became to game over we should stop timer
+    if (this._cup.getState() === CupState.over){
+      WorkerSingleton.stopTimer();
+    }
     
     // call update callback
     this.listener?.onCupUpdated(this._state, this._cup.getData());

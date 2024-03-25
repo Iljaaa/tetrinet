@@ -67,6 +67,18 @@ export class WorkerSingleton
     })
   }
 
+  /**
+   * Stop timer
+   * it happen when game ends
+   * @param startDelay
+   */
+  public static stopTimer (startDelay:number = 800){
+    WorkerSingleton.worker?.postMessage({
+      type:WorkerMessageTypes.startTimer,
+      delay: startDelay
+    })
+  }
+
   public static pauseTimer () {
     WorkerSingleton.worker?.postMessage({
       type:WorkerMessageTypes.pauseTimer
