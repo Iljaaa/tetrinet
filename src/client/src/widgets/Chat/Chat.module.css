@@ -5,3 +5,11 @@
     padding: 1rem;
     border-radius: 1rem;
 }
+
+.ChatInput {
+    border: solid 1px darkgray;
+    font-size: 1rem;
+    box-shadow: #daa520 9px 9px 0 0;
+    height: 38px;
+    padding: 0 0 0 1rem;
+}

@@ -80,6 +80,7 @@ export class Chat extends React.PureComponent<{}, State>
                    onFocus={this.onMessageInputFocus}
                    onBlur={this.onMessageInputBlur}
                    ref={this._inputRef}
+                   className={styles.ChatInput}
                    style={{width: "400px", marginRight: "2rem"}} />
           </div>
           <div>
