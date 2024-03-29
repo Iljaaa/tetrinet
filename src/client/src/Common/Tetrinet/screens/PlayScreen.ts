@@ -530,8 +530,16 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
-  setGameWaiting(){
+  /**
+   *
+   */
+  setGameWaiting()
+  {
     this._state = GameState.waiting
+
+    // it possibly may be quit from game, so we stop timer too
+    WorkerSingleton.stopTimer()
+
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 

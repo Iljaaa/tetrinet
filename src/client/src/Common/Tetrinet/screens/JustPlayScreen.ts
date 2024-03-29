@@ -12,7 +12,6 @@ import {Assets} from "../Assets";
 import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 import {GameState} from "../types";
 import {Vertices} from "../../framework/Vertices";
-import {Cup} from "../models/Cup";
 import {CupEventListener} from "../models/CupImpl";
 import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
 
@@ -238,6 +237,10 @@ export class JustPlayScreen extends WebGlScreen implements CupEventListener, Wor
   }
 
   onFigureMovedToCup(): void {
+    // when cup became to game over we should stop timer
+    if (this._cup.getState() === CupState.over) {
+      WorkerSingleton.stopTimer();
+    }
   }
 
   onLineCleared(clearData: { countLines: number; bonuses: Array<number> }): void {
@@ -248,61 +251,6 @@ export class JustPlayScreen extends WebGlScreen implements CupEventListener, Wor
       this._cup.moveFigureDown();
     }
   }
-
-
-  /*
-   * Experiment with text
-   * http://delphic.me.uk/tutorials/webgl-text
-   * @private
-   */
-  // private presentExperiment (gl: WebGL2RenderingContext)
-  // {
-  //   this._experimentalTexture.bind(gl)
-  //   WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
-  //
-  //
-  //   this._block.setVertices(Vertices.createTextureVerticesArray(
-  //     0, 100, 300, 150,
-  //     // 320, 256, 192, 64
-  //     0, 0, 300, 150
-  //   ))
-  //
-  //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-  //
-  //   // draw here
-  //   gl.drawArrays(gl.TRIANGLES, 0, 6);
-  // }
-
-  // protected initExperimentalTexture (gl: WebGL2RenderingContext)
-  // {
-  //   let canvas:HTMLCanvasElement = document.createElement('canvas');
-  //   canvas.width = 300
-  //   canvas.height = 150
-  //   let ctx = canvas.getContext('2d');
-  //   if (!ctx) return;
-  //
-  //   ctx.fillStyle = "back"; 	// This determines the text colour, it can take a hex value or rgba value (e.g. rgba(255,0,0,0.5))
-  //   ctx.textAlign = "center";	// This determines the alignment of text, e.g. left, center, right
-  //   ctx.textBaseline = "middle";	// This determines the baseline of the text, e.g. top, middle, bottom
-  //   ctx.font = "16px monospace";
-  //   ctx.fillText("HTML5 Rocks!", canvas.width/2, canvas.height/2);
-  //   ctx.fillRect(0, 0, 100, 100)
-  //
-  //   this.canvasTexture = gl.createTexture();
-  //
-  //   // this is vertical flip
-  //   // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-  //
-  //   gl.activeTexture(1)
-  //   // gl.activeTexture(0)
-  //   gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
-  //   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas); // This is the important line!
-  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  //   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  //
-  //   gl.activeTexture(1)
-  // }
-
 
   pauseOrResume ()
   {

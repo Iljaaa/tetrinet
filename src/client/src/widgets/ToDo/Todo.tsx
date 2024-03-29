@@ -6,15 +6,15 @@ export const Todo = () => {
     <div style={{padding: '0 2rem'}}>
       <h2>Todo:</h2>
       <ul>
-        <li>nice preview of cup until game is searching</li>
         <li>stop timer wen game ends</li>
-        <li>optimize CupRenderer2.setCupSize</li>
-        <li>make speed up</li>
-        <li>big message search</li>
         <li>when game end stop timer in just play</li>
         <li>Fix chat input style</li>
         <li>Timer in just play</li>
         <li>Move socket url to config</li>
+        <li>make speed up</li>
+        <li>nice preview of cup until game is searching</li>
+        <li>optimize CupRenderer2.setCupSize</li>
+        <li>big message search</li>
         <li>????Wrong player buttons and cups</li>
       </ul>
       <h2>I am not sure</h2>

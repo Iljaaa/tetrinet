@@ -69,13 +69,11 @@ export class WorkerSingleton
 
   /**
    * Stop timer
-   * it happen when game ends
-   * @param startDelay
+   * it happens when game ends
    */
-  public static stopTimer (startDelay:number = 800){
+  public static stopTimer (){
     WorkerSingleton.worker?.postMessage({
-      type:WorkerMessageTypes.startTimer,
-      delay: startDelay
+      type:WorkerMessageTypes.stopTimer,
     })
   }
 

@@ -57,7 +57,7 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    * Timer when figure goes down
    * @private
    */
-  private downTimer:number = 0
+  // private downTimer:number = 0
   
   constructor(listener?:CupEventListener)
   {

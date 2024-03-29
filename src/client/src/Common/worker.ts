@@ -3,26 +3,21 @@ import {WorkerMessageTypes} from "./Tetrinet/types/worker/WorkerMessageTypes";
 
 class timer
 {
+
+  /**
+   *Timer running flag
+   */
+  static isTimerRun:boolean = false;
+
+  /**
+   * Timer object
+   */
   static downTimer:any = null
-
-  // static startTimer (){
-  //   timer.downTimer = setInterval(() => {
-  //     worker.postMessage({
-  //       type: WorkerMessageTypes.downTick
-  //     });
-  //   }, 1000)
-  // }
 }
-
-
-// const self: Worker = <any>globalThis;
-
-
 
 let currentDelay: number = 1000;
 
-let speedUpIteration = 10;
-
+// let speedUpIteration = 10;
 
 // eslint-disable-next-line no-restricted-globals
 (self as any).addEventListener('message', (event:MessageEvent) =>
@@ -32,11 +27,9 @@ let speedUpIteration = 10;
 
   const tickFunction = () => {
     // speedUpIteration -= 1;
-    // console.log ('tickFunction', speedUpIteration)
     // if (speedUpIteration <= 0) {
     //   speedUpIteration = 10;
     //   if (currentDelay >= 200) currentDelay -= 50
-    //   console.log ('speedUp', currentDelay)
     //
     //   clearInterval(timer.downTimer)
     //   timer.downTimer = setInterval(tickFunction, currentDelay)
@@ -45,7 +38,10 @@ let speedUpIteration = 10;
     worker.postMessage({ type: WorkerMessageTypes.downTick });
 
     // delay
-    timer.downTimer = setTimeout(tickFunction, currentDelay)
+    if (timer.isTimerRun) {
+      timer.downTimer = setTimeout(tickFunction, currentDelay)
+    }
+
   }
 
   /**
@@ -61,15 +57,18 @@ let speedUpIteration = 10;
       case WorkerMessageTypes.startTimer: {
         currentDelay = (event.data.delay) ? event.data.delay : 800
         clearTimeout(timer.downTimer)
+        timer.isTimerRun = true
         timer.downTimer = setTimeout(tickFunction, currentDelay)
       }  break;
 
-      case WorkerMessageTypes.pauseTimer
-      && WorkerMessageTypes.stopTimer: {
+      case WorkerMessageTypes.pauseTimer:
+      case WorkerMessageTypes.stopTimer: {
+        timer.isTimerRun = false
         clearTimeout(timer.downTimer)
       } break;
 
       case WorkerMessageTypes.resumeTimer: {
+        timer.isTimerRun = true
         timer.downTimer = setTimeout(tickFunction, currentDelay)
       }  break;
 
