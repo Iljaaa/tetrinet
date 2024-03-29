@@ -57,6 +57,11 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    /*
+     * Client socket url
+     */
+    'socket' => env('APP_SOCKET', 'ws://164.92.147.167:10000/websocket'),
+
     'asset_url' => env('ASSET_URL'),
 
     /*
