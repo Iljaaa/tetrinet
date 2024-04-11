@@ -47,14 +47,12 @@ export class Canvas extends React.PureComponent
    */
   componentDidMount()
   {
-    console.log('Canvas.componentDidMount');
     // init graphic
     TetrinetSingleton.getInstance().initGraphicAndLoadAssets(this._canvas.current as HTMLCanvasElement);
   }
   
   componentWillUnmount()
   {
-    console.log('Canvas.componentWillUnmount');
     /**
      * finalize instance
      */
@@ -66,14 +64,11 @@ export class Canvas extends React.PureComponent
    */
   // onPlayClicked = () =>
   // {
-  //   console.log ('onPlayClicked');
   //   TetrinetSingleton.getInstance().oldPlayMethod();
   // }
 
   onWatchClicked = () =>
   {
-    console.log ('onWatchClicked');
-    
     // open socket connection
     // this.socket = new Socket();
     SocketSingleton.openConnection(() =>
@@ -96,10 +91,7 @@ export class Canvas extends React.PureComponent
 
   render () {
     return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem"}}>
-      <div>
         <canvas id="canvas" width={960} height={750} ref={this._canvas}/>
-        {/*<canvas id="textureCanvas"></canvas>*/}
-      </div>
     </div>
   }
 }
