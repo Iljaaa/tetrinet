@@ -194,10 +194,6 @@ export class CupImpl implements Cup
    this.fields = fields;
   }
 
-  // getBonusFields():Array<number> {
-  //   return this._state.bonuses;
-  // }
-
   /**
    * Get field info
    * @param x
@@ -411,6 +407,10 @@ export class CupImpl implements Cup
   clearBlockByIndex(cellIndex: number): void {
    this.fields[cellIndex].block = -1
    this.fields[cellIndex].bonus = undefined
+  }
+
+  resetSpeed(){
+    this.speed = 0;
   }
 
   increaseSpeed(): void {

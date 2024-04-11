@@ -71,32 +71,6 @@ export interface PlayScreenEventListener
   onCupUpdated: (state:GameState, cupState:CupData) => void
 }
 
-/**
- * Cups collection
- */  // onSendBonusToOpponent (bonus:Bonus, opponentIndex:number)
-  // {
-  //
-  //   // try to fine opponent socket id in the party
-  //   const targetPlayerId = this.partyIndexToPlayerId[opponentIndex]
-  //
-  //   // when opponent not found
-  //   if (!targetPlayerId) return;
-  //
-  //   // send command
-  //   const data:SendBonusRequest = {
-  //     type: RequestTypes.sendBonus,
-  //     partyId: this._partyId,
-  //     playerId: this._playerId,
-  //     target: targetPlayerId,
-  //     bonus: bonus
-  //   }
-  //
-  //   SocketSingleton.getInstance()?.sendData(data)
-  // }
-// export interface CupsCollection {
-//   [index: string]: Cup
-// }
-
 interface CupsPositionInterface {
   [index: number]: {x:number, y: number}
 }
@@ -111,7 +85,6 @@ const CupsPosition:CupsPositionInterface = {
   3: {x: 576, y: 384},
   4: {x: 768, y: 384},
 }
-
 
 /**
  * @vaersion 0.0.1
@@ -233,7 +206,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   constructor(game:Tetrinet, onChangeGameStateCallback: (newGameState:GameState) => void)
   {
     super(game)
-    console.log ('PlayScreen.constructor');
     
     // create cup object
     this._cup =  new CupWithFigureImpl(this);
@@ -312,7 +284,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Set event listener
    * @param listener
    */
-  public setGameEventListener (listener:PlayScreenEventListener):PlayScreen{
+  setGameEventListener (listener:PlayScreenEventListener):PlayScreen{
     this.listener = listener;
     return this
   }
@@ -342,10 +314,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   startNewGame ()
   {
-    // first render
-    // this._cupRenderer.renderCupWithFigure(this._cup)
-    console.log('PlayScreen.startNewGame')
-
     // generate text texture
     const gl = this.game.getGLGraphics().getGl();
 
@@ -356,13 +324,13 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // next figure random color
     // this._nextFigure = GenerateNewFigure(this._cup, GenerateRandomColor());
     this._cup.generateNextFigure();
-    
-    // next figure random color
-    // this._nextFigureColor = GenerateRandomColor();
 
     // generate new figure in cup
     const f = GenerateNewFigure(this._cup, GenerateRandomColor());
     this._cup.setFigureToDropPoint(f);
+
+    // clean up speed
+    this._cup.resetSpeed()
 
     // finally set run status
     this.setGameRunning()
@@ -410,7 +378,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    */
   private sendResumeRequest (intent?:string)
   {
-    console.log('onResumeRequest')
     // request data
     const request:ResumeRequest = {
       type: RequestTypes.resume,
@@ -451,21 +418,18 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     // set new speed in cup
     this._cup.setSpeed(newSpeed);
 
-
     // calculate new delay
     // 600 is the during between max 800 and min 200 speed
     // 200 minimal speed
 
     const maxSpeed = 15;
-
     const minimalDelay = 200;
-
     if (newSpeed > maxSpeed) newSpeed = maxSpeed
 
     let newDelay = (600 -  (newSpeed / maxSpeed) * 600) + 200;
     if (newDelay < minimalDelay) newDelay = minimalDelay;
 
-    console.log ('set new speed and delay', newSpeed, newDelay)
+    console.info ('set new speed and delay', newSpeed, newDelay)
 
     // reset lines count to nex level
     this._linesToSpeedup = linesToNextLevel
@@ -578,10 +542,6 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
   setCupState(state:CupState){
     this._cup.setState(state)
   }
-
-  /*getGameState(): GameState {
-    return this._state;
-  }*/
 
   /**
    * Update opponents cups,
@@ -813,40 +773,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     })
 
   }
-
-
-  // private presentExperiment (gl: WebGL2RenderingContext)
-  // {
-  //   // gl.activeTexture(1)
-  //   // gl.bindTexture(gl.TEXTURE_2D, this.canvasTexture);
-  //   this.textTexture.bind(gl)
-  //   WebGlProgramManager.setUpIntoTextureProgramImageSize(gl, 300, 150);
-  //
-  //   // move to start
-  //   WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, this.mainCupPosition.x, this.mainCupPosition.y);
-  //
-  //
-  //   this._block.setVertices(Vertices.createTextureVerticesArray(
-  //     30, this.textsTopPosition, 260, 64,
-  //     20, 0, 260, 64
-  //   ))
-  //
-  //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-  //   gl.drawArrays(gl.TRIANGLES, 0, 6);
-  //
-  //   // this._block.setVertices(Vertices.createTextureVerticesArray(
-  //   //   0, 300, 300, 64,
-  //   //   0, 0, 300, 64
-  //   // ))
-  //   // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this._block.vertices), gl.STATIC_DRAW)
-  //   // gl.drawArrays(gl.TRIANGLES, 0, 6);
-  // }
   
   //
   // key events
   //
-
-
 
   /**
    * @param code
@@ -1091,16 +1021,16 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
    * Callback when line was cleared in the cup
    * @param data
    */
-  onLineCleared(data:{countLines: number, bonuses: number[]}): void
+  onLineCleared(clearData:{countLines: number, bonuses: number[]}): void
   {
     // call event
-    this._score = this._score + ((data.countLines + data.countLines - 1) * 10);
+    this._score = this._score + ((clearData.countLines + clearData.countLines - 1) * 10);
 
     //
     this.listener?.onScoreChanged(this._score);
 
     // calculate speed up
-    this._linesToSpeedup -= data.countLines
+    this._linesToSpeedup -= clearData.countLines
     if (this._linesToSpeedup <= 0)
     {
       // set lines to next speed up
@@ -1114,14 +1044,14 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     }
 
     // add cleared bonuses to me
-    if (data.bonuses.length > 0){
+    if (clearData.bonuses.length > 0){
       if (this.playerBonuses.length < 10) {
-        this.playerBonuses = this.playerBonuses.concat(data.bonuses.slice(0, 10 - this.playerBonuses.length));
+        this.playerBonuses = this.playerBonuses.concat(clearData.bonuses.slice(0, 10 - this.playerBonuses.length));
       }
     }
 
     // add special block
-    for (let i = 0; i < data.countLines; i++) {
+    for (let i = 0; i < clearData.countLines; i++) {
       this.addSpecialBlock()
     }
 

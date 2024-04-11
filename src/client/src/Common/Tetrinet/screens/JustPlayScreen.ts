@@ -16,7 +16,22 @@ import {CupEventListener} from "../models/CupImpl";
 import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
 
 /**
- * @vaersion 0.0.1
+ * Count lines that we should clear to next level
+ */
+const linesToNextLevel:number = 2;
+
+/**
+ * Max level of speed
+ */
+const maxSpeed = 15;
+
+/**
+ * Minimal delay to drop down
+ */
+const minimalDelay = 200;
+
+/**
+ * @version 0.0.2
  */
 export class JustPlayScreen extends WebGlScreen implements CupEventListener, WorkerEventListener
 {
@@ -47,18 +62,10 @@ export class JustPlayScreen extends WebGlScreen implements CupEventListener, Wor
   private textTexture: PlayScreenTexts;
 
   /**
-   * Timer for update cup data
+   * Count line to speedup
    * @private
    */
-  // private requestDataTimer:number = 0;
-
-  /**
-   * Temp field for draw fields
-   * @private
-   */
-  // private canvasTexture: WebGLTexture | null = null;
-
-  // private _experimentalTexture:Experimental;
+  private _linesToSpeedup:number = linesToNextLevel;
 
   /**
    * Vertices for pause block
@@ -72,7 +79,6 @@ export class JustPlayScreen extends WebGlScreen implements CupEventListener, Wor
   constructor(game:Tetrinet)
   {
     super(game)
-    console.log ('JustPlayScreen constructor');
 
     // this._block = new Vertices(false, true);
     
@@ -134,6 +140,9 @@ export class JustPlayScreen extends WebGlScreen implements CupEventListener, Wor
     // finally set run status
     this.setGameRunning()
 
+    //
+    this._cup.resetSpeed();
+
     // start drop timer
     WorkerSingleton.startTimer()
   }
@@ -155,33 +164,6 @@ export class JustPlayScreen extends WebGlScreen implements CupEventListener, Wor
 
     // Clear the screen.
     gl.clear(gl.COLOR_BUFFER_BIT)
-    //
-    // const textureSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(WebGlProgramManager.textureProgram, "translation");
-    // gl.uniform2f(textureSizeLocation, x, y)
-
-    // const textureProgram = WebGlProgramManager.getTextureProgram(gl)
-    // gl.useProgram(textureProgram)
-
-    //
-    // // Tell webGL to read 2 floats from the vertex array for each vertex
-    // // and store them in my vec2 shader variable I've named "coordinates"
-    // // We need to tell it that each vertex takes 24 bytes now (6 floats)
-    // const coordsAttributeLocation  = gl.getAttribLocation(textureProgram, "coordinates")
-    // gl.vertexAttribPointer(coordsAttributeLocation, 2, gl.FLOAT, false, 16, 0)
-    // gl.enableVertexAttribArray(coordsAttributeLocation)
-    //
-    // // Tell webGL to read 2 floats from the vertex array for each vertex
-    // // and store them in my vec2 shader variable I've named "texPos"
-    // const textilsAttributeLocation = gl.getAttribLocation(textureProgram, "textilsPos")
-    // gl.vertexAttribPointer(textilsAttributeLocation, 2, gl.FLOAT, false, 16, 8)
-    // gl.enableVertexAttribArray(textilsAttributeLocation)
-    //
-    // // Set shader variable for canvas size. It's a vec2 that holds both width and height.
-    // const canvasSizeLocation:WebGLUniformLocation|null = gl.getUniformLocation(textureProgramm, "canvasSize");
-    // gl.uniform2f(canvasSizeLocation, gl.canvas.width, gl.canvas.height)
-    //
-    // // use texture program
-    // WebGlProgramManager.sUseTextureProgram(gl);
 
     Assets.sprite.bind(gl)
 
@@ -243,9 +225,38 @@ export class JustPlayScreen extends WebGlScreen implements CupEventListener, Wor
     }
   }
 
-  onLineCleared(clearData: { countLines: number; bonuses: Array<number> }): void {
+  onLineCleared(clearData: { countLines: number; bonuses: Array<number> }): void
+  {
+    console.info("line(s) cleared", clearData.countLines)
+
+    // calculate speed up
+    this._linesToSpeedup -= clearData.countLines
+    if (this._linesToSpeedup <= 0)
+    {
+
+      // increase speed
+      this._cup.increaseSpeed();
+
+      //
+      let newSpeed = this._cup.getSpeed();
+
+      if (newSpeed > maxSpeed) newSpeed = maxSpeed
+
+      let newDelay = (600 -  (newSpeed / maxSpeed) * 600) + 200;
+      if (newDelay < minimalDelay) newDelay = minimalDelay;
+
+      console.info ('set new speed and delay', newSpeed, newDelay)
+
+      // reset lines count to nex level
+      this._linesToSpeedup = linesToNextLevel
+
+      WorkerSingleton.setDelay(newDelay)
+    }
   }
 
+  /**
+   * Event from worker, that this id time to drop line
+   */
   onTickDown(): void {
     if (this._state === GameState.running) {
       this._cup.moveFigureDown();

@@ -56,6 +56,7 @@ let currentDelay: number = 1000;
     {
       case WorkerMessageTypes.startTimer: {
         currentDelay = (event.data.delay) ? event.data.delay : 800
+        console.log('delay on start ', currentDelay)
         clearTimeout(timer.downTimer)
         timer.isTimerRun = true
         timer.downTimer = setTimeout(tickFunction, currentDelay)

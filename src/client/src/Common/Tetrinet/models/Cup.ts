@@ -125,6 +125,11 @@ export interface Cup
   addBonusFiled (filedIndex:number, bonusIndex:number): void;
 
   /**
+   * Reset speed to start value
+   */
+  resetSpeed() : void
+
+  /**
    * Increase down speed
    */
   increaseSpeed() : void

@@ -52,12 +52,6 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
    * @private
    */
   private readonly dropPoint: Coords;
-
-  /**
-   * Timer when figure goes down
-   * @private
-   */
-  // private downTimer:number = 0
   
   constructor(listener?:CupEventListener)
   {
@@ -244,6 +238,4 @@ export class CupWithFigureImpl extends CupImpl implements CupWithFigure
   getNextFigure(): Figure|undefined {
     return this._nextFigure;
   }
-
-
 }

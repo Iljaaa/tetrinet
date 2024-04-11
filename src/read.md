@@ -59,6 +59,11 @@ autostart=true
 autorestart=true
 ```
 
+then restart supervisord
+```
+sudo systemctl restart supervisor
+```
+
 Start, restart, 
 ```
 
