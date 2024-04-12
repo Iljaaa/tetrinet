@@ -7,20 +7,24 @@
 
 .App-body {
   /*background-color: #5fb9ba;*/
-  background-color: #008080;
+  /*background-color: #008080;*/
   border-radius: .25rem;
   box-shadow: silver 0px 0px 5px 0;
+
+  max-width: 1024px;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@media screen and (min-width: 1024px) {
+  .App-body {
+    /*width: 1024px;*/
+    /*border-color: orange;*/
+    /*padding: 0 2rem;*/
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media screen and (min-width: 1280px) {
+  .App-body {
+    /*width: 1024px;*/
+    border-color: orange;
   }
 }

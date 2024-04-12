@@ -5,7 +5,6 @@ import {WebInputEventListener} from "../../framework/impl/WebInput";
 import {Vertices} from "../../framework/Vertices";
 import {WebGlProgramManager} from "../../framework/impl/WebGlProgramManager";
 
-// import {CupRenderer} from "./CupRenderer";
 import {CupRenderer2, CupSize} from "../CupRenderer2";
 
 import {Coords} from "../math/Coords";
@@ -17,7 +16,6 @@ import {GameState, RequestTypes} from "../types";
 import {CupState} from "../types/CupState";
 import {Bonus} from "../types/Bonus";
 
-import {CupsDataCollection} from "../../../widgets/Canvas/Canvas";
 import {SpecialBG} from "../textures/SpecialBG";
 import {Field} from "../models/Field";
 import {GetBonusMessage} from "../types/messages/GetBonusMessage";
@@ -35,6 +33,7 @@ import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
 import {SpeedUpRequest} from "../types/requests/SpeedUpRequest";
 import {GenerateRandomBlock} from "../process/GenerateRandomBlock";
+import {CupsDataCollection} from "../../CupsDataCollection";
 
 /**
  * Count lines that we should clear to next level

@@ -1,6 +1,21 @@
 
-.ChtOutputWrap {
-    border: solid 2px silver;
+.CharWrap {
+    padding: 0 2rem;
+}
+
+.ChatInputWrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .InputColl {
+        flex: 1;
+        max-width: 400px;
+        padding-right: 3rem;
+    }
+}
+
+.ChatOutputWrap {
     margin-top: 1rem;
     padding: 1rem;
     border-radius: 1rem;
@@ -12,4 +27,6 @@
     box-shadow: #daa520 9px 9px 0 0;
     height: 38px;
     padding: 0 0 0 1rem;
+    width: 100%;
 }
+

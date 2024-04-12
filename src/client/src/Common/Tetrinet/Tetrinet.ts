@@ -2,13 +2,13 @@ import {WebGlGame} from "../framework/impl/WebGlGame";
 import {PlayScreen, PlayScreenEventListener} from "./screens/PlayScreen";
 import {WatchScreen} from "./screens/WatchScreen";
 import {CupState} from "./types/CupState";
-import {CupsDataCollection} from "../../widgets/Canvas/Canvas";
 import {GetBonusMessage} from "./types/messages/GetBonusMessage";
 import {Cup} from "./models/Cup";
 import {JustPlayScreen} from "./screens/JustPlayScreen";
 import {GameState} from "./types";
 import {GamePartyType} from "./types/GamePartyType";
 import {WorkerSingleton} from "../WorkerSingleton";
+import {CupsDataCollection} from "../CupsDataCollection";
 
 /**
  * @version 0.1.0

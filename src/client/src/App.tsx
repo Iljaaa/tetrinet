@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import {Canvas} from "./widgets/Canvas/Canvas";
 import {JoinButtons} from "./widgets/JoinButtons/JoinButtons";
@@ -11,26 +11,27 @@ import {PlayerNameModal} from "./widgets/PlayerNameModal/PlayerNameModal";
 import {Header} from "./widgets/Header/Header";
 import {Todo} from "./widgets/ToDo/Todo";
 import {Footer} from "./widgets/Footer/Footer";
-
-
+import {Container} from "./shared/ui/Container/Container";
 
 function App()
 {
   return (
     <div className="App">
+      <div className="App-body">
         <Header />
-        <div className="App-body">
-          <div><JoinButtons/></div>
-          <hr style={{background: "#53adae", height: "1px", border: "none"}}/>
+        <JoinButtons />
+        <Container style={{padding: "0"}}>
+          <hr style={{background: "#53adae", height: "1px", border: "none", margin: 0}}/>
           {/*<div><StateRow/></div>*/}
-          <div><Canvas/></div>
-          <div><Chat/></div>
-          <div><Help/></div>
-          <div><Todo /></div>
+          <Canvas/>
+        </Container>
+        <div><Chat/></div>
+        <div><Help/></div>
+        <div><Todo /></div>
+        <Footer />
+        <SocketsEventsAndModals/>
+        <PlayerNameModal />
       </div>
-      <Footer />
-      <SocketsEventsAndModals/>
-      <PlayerNameModal />
 </div>
 )
   ;

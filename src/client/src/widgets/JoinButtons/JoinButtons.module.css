@@ -1,10 +1,9 @@
 
 .ButtonsWrap {
-    padding: 0 2rem;
-    height: 82px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .SearchButtonsWrap {
@@ -12,10 +11,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 
-    > div {
-        margin: 0 1rem;
+    .Button {
+        min-width: 150px;
+        margin: 0 1rem 1rem 1rem;
     }
+
 }
 
 .LookingForAGame {

@@ -1,16 +1,9 @@
 import React from "react";
 
-import {CupData} from "../../Common/Tetrinet/models/CupData";
 import {SocketSingleton} from "../../Common/SocketSingleton";
 import {TetrinetSingleton} from "../../Common/TetrinetSingleton";
 
-/**
- * Collection of cups data received from server
- * after update
- */
-export interface CupsDataCollection {
-  [index: string]: CupData
-}
+import styles from "./Canvas.module.css"
 
 export class Canvas extends React.PureComponent
 {
@@ -19,7 +12,6 @@ export class Canvas extends React.PureComponent
    * @private
    */
   private readonly _canvas: React.RefObject<HTMLCanvasElement>;
-  private _wrapRef: React.RefObject<HTMLDivElement>;
   
   /**
    * Game object
@@ -36,8 +28,6 @@ export class Canvas extends React.PureComponent
      */
     this._canvas = React.createRef();
 
-    this._wrapRef = React.createRef();
-
     // create game instance
     TetrinetSingleton.init();
   }
@@ -49,6 +39,8 @@ export class Canvas extends React.PureComponent
   {
     // init graphic
     TetrinetSingleton.getInstance().initGraphicAndLoadAssets(this._canvas.current as HTMLCanvasElement);
+
+    window.addEventListener("resize", this.onResize);
   }
   
   componentWillUnmount()
@@ -57,6 +49,19 @@ export class Canvas extends React.PureComponent
      * finalize instance
      */
     TetrinetSingleton.finalize();
+
+    //
+    window.removeEventListener("resize", this.onResize)
+    this.onResize()
+  }
+
+  onResize = () => {
+    const x = 750 / 960
+    if (this._canvas.current) {
+      this._canvas.current.style.height = (x * this._canvas.current.offsetWidth) + "px";
+
+    }
+
   }
   
   /**
@@ -90,8 +95,8 @@ export class Canvas extends React.PureComponent
 
 
   render () {
-    return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "0 1rem"}}>
-        <canvas id="canvas" width={960} height={750} ref={this._canvas}/>
+    return <div className={styles.CanvasWrap}>
+        <canvas id="canvas" width={960} height={750} ref={this._canvas} className={styles.Canvas} />
     </div>
   }
 }

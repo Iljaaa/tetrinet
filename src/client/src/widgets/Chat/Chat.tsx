@@ -70,24 +70,23 @@ export class Chat extends React.PureComponent<{}, State>
   render ()
   {
     return <Container variant={"gray"}>
-      <div style={{padding: '0 2rem'}}>
+      <div className={styles.CharWrap}>
         <h2>Chat</h2>
-        <div style={{display: "flex", alignItems: "center"}}>
-          <div>
+        <div className={styles.ChatInputWrap}>
+          <div className={styles.InputColl}>
             <input type="text"
                    value={this.state.message}
                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => this.setState({message: event.target.value})}
                    onFocus={this.onMessageInputFocus}
                    onBlur={this.onMessageInputBlur}
                    ref={this._inputRef}
-                   className={styles.ChatInput}
-                   style={{width: "400px", marginRight: "2rem"}} />
+                   className={styles.ChatInput} />
           </div>
           <div>
             <Button onClick={this.sendMessage} variant={"small"}>send</Button>
           </div>
         </div>
-        {this.state.chat.length > 0 && <div className={styles.ChtOutputWrap}>
+        {this.state.chat.length > 0 && <div className={styles.ChatOutputWrap}>
           {this.state.chat.reverse().map((c: ChatMessage, index: number) => {
             return <div key={`chat_item_${index}`}><strong>{c.playerName}</strong>:
               <span dangerouslySetInnerHTML={{__html: MarkDown(c.message)}}/>

@@ -1,9 +1,8 @@
 
 .Container {
-    max-width: 1024px;
-    width: 1024px;
-    padding: 2rem 0;
+    padding: 2rem;
     background-color: #008080;
+    display: block;
     &.gray {
         background-color: rgb(222, 217, 198);
         color: black;

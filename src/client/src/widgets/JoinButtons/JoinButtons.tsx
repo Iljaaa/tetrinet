@@ -46,17 +46,17 @@ export class JoinButtons extends PureComponent<{}, State>
 const SearchGameButtons = () =>
 {
     return <div className={styles.SearchButtonsWrap}>
-        <div>
+        <div className={styles.Button}>
             <Button onClick={() => {
                 TetrinetSingleton.getInstance().joinToParty(GamePartyType.duel)
             }}>Find a duel</Button>
         </div>
-        <div>
+        <div className={styles.Button}>
             <Button onClick={() => {
                 TetrinetSingleton.getInstance().joinToParty(GamePartyType.party)
             }}>Find a deathmatch</Button>
         </div>
-        <div>
+        <div className={styles.Button}>
             <Button onClick={() => {
                 TetrinetSingleton.getInstance().justPlayTetris();
             }}>Just play tetris</Button>

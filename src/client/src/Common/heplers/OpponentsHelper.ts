@@ -2,8 +2,8 @@ import {LetsPlayMessage} from "../Tetrinet/types/messages/LetsPlayMessage";
 import {PlayerId} from "../Tetrinet/types/PlayerId";
 import {Cup} from "../Tetrinet/models/Cup";
 import {CupImpl} from "../Tetrinet/models/CupImpl";
-import {CupsDataCollection} from "../../widgets/Canvas/Canvas";
 import {CupData} from "../Tetrinet/models/CupData";
+import {CupsDataCollection} from "../CupsDataCollection";
 
 type PlayerData = {
   index: number,

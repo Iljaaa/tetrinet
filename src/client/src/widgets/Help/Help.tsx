@@ -1,13 +1,13 @@
 import React from "react";
 
-import styles from "./Help.module.css"
 import {Container} from "../../shared/ui/Container/Container";
+import styles from "./Help.module.css"
 
 import img from "../../sprite.png"
 
 export const Help = () => {
     return <Container variant={'orange'}>
-        <div style={{padding: '0 2rem'}}>
+        <div className={styles.HelpWrap}>
             <h2>Help</h2>
             <div className={styles.Help}>
                 <div className={styles.ControlsColl}>

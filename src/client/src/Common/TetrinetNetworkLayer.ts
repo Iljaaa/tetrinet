@@ -12,7 +12,6 @@ import {CupData} from "./Tetrinet/models/CupData";
 import {AddLineMessage, Message, SetMessage} from "./Tetrinet/types/messages";
 import {LetsPlayMessage} from "./Tetrinet/types/messages/LetsPlayMessage";
 import {GetBonusMessage} from "./Tetrinet/types/messages/GetBonusMessage";
-import {CupsDataCollection} from "../widgets/Canvas/Canvas";
 import {ClearGameDataInStorage, StoreGameDataInStorage} from "../process/store";
 import {BackRequest} from "./Tetrinet/types/requests/BackRequest";
 import {BackToPartyResponse} from "./Tetrinet/types/responses/BackToPartyResponse";
@@ -25,6 +24,7 @@ import {OpponentsHelper} from "./heplers/OpponentsHelper";
 import {PlayerId} from "./Tetrinet/types/PlayerId";
 import {SpeedUpMessage} from "./Tetrinet/types/messages/SpeedUpMessage";
 import {WorkerSingleton} from "./WorkerSingleton";
+import {CupsDataCollection} from "./CupsDataCollection";
 
 /*
  * Game macro data changes

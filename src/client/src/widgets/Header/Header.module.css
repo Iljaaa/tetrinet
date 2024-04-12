@@ -9,11 +9,15 @@
 
 .HeaderWrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 0 1rem;
 }
 
 .UserBlock {
     color: black;
+    padding-bottom: 1rem;
+
     .UserName {
         background: #ded9c6;
         font-size: 24px;
@@ -34,5 +38,22 @@
                 color: navy;
             }
         }
+    }
+}
+
+
+@media screen and (min-width: 1024px) {
+    .HeaderWrapper {
+        padding: 0;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .HeaderWrapper {
+        flex-direction: row;
+    }
+
+    .UserBlock {
+        padding: 1rem 0;
     }
 }
