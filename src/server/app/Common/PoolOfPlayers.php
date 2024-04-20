@@ -11,7 +11,7 @@ use Ratchet\ConnectionInterface;
 class PoolOfPlayers
 {
 
-    const DEAD_MATCH_PARTY_SIZE = 3;
+    const DEAD_MATCH_PARTY_SIZE = 5;
 
     /**
      * Pull for duels
