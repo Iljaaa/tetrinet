@@ -1,6 +1,6 @@
 <?php
 
-use App\Sockets\FirstTestSocket;
+use App\Sockets\GameSocket;
 use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +22,4 @@ Route::get('/test', function () {
     return view('test');
 });
 
-WebSocketsRouter::webSocket('/websocket', FirstTestSocket::class);
+WebSocketsRouter::webSocket('/websocket', GameSocket::class);

@@ -24,7 +24,7 @@ import {OpponentsHelper} from "./heplers/OpponentsHelper";
 import {PlayerId} from "./Tetrinet/types/PlayerId";
 import {SpeedUpMessage} from "./Tetrinet/types/messages/SpeedUpMessage";
 import {WorkerSingleton} from "./WorkerSingleton";
-import {CupsDataCollection} from "./CupsDataCollection";
+import {CupsDataCollection} from "./Tetrinet/helpers/CupsDataCollection";
 
 /*
  * Game macro data changes
@@ -124,7 +124,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     {
       // start game
       // this.game.startGame();
-      console.log ('Assets loaded, updates graphics');
+      console.info ('Assets loaded, now update graphics');
 
       //
       // const gl:WebGL2RenderingContext|null = this.game.getGLGraphics().getGl();
@@ -228,7 +228,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     StoreGameDataInStorage(this._partyId, this._playerId)
 
     // make opponents array
-    OpponentsHelper.makeNewOpponentsArray(data, this._playerId)
+    OpponentsHelper.createNewParty(data, this._playerId)
 
     // start down timer worker
     // this.startDownTimerInWorker();
@@ -332,7 +332,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   public joinToParty (gamePartyType:GamePartyType)
   {
-    console.log ('TetrinetNetworkLayer.joinToParty', gamePartyType);
+    console.info ('TetrinetNetworkLayer.joinToParty', gamePartyType);
 
     //
     // Here we check if game already online
@@ -362,8 +362,10 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
 
   private connectToJoinParty (gamePartyType:GamePartyType)
   {
-    console.log ('TetrinetNetworkLayer.connectToJoinParty', gamePartyType);
-    SocketSingleton.reOpenConnection(() => this.onJoinPartyConnectionOpen(gamePartyType), this._socketEventListener?.onErrorOnOpen)
+    SocketSingleton.reOpenConnection(
+      () => this.onJoinPartyConnectionOpen(gamePartyType),
+      this._socketEventListener?.onErrorOnOpen
+    )
   }
 
   /**
@@ -372,13 +374,10 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinPartyConnectionOpen = (gamePartyType:GamePartyType) =>
   {
-    console.log ('TetrinetNetworkLayer.onJoinPartyConnectionOpen', gamePartyType);
-
     // when connection os open we can subscribe to close event
     if (this._socketEventListener?.onClose) {
       SocketSingleton.getInstance()?.setOnCloseCallback(this._socketEventListener.onClose)
     }
-
 
     // send handshake and waiting our data
     const request:StartRequest = {
@@ -397,7 +396,7 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
    */
   private onJoinResponse = (data:StartResponse) =>
   {
-    console.log('TetrinetNetworkLayer.onJoinResponse')
+    console.info('TetrinetNetworkLayer.onJoinResponse')
     //
     this._playerId = data.yourPlayerId
 
@@ -405,12 +404,11 @@ export class TetrinetNetworkLayer extends Tetrinet implements PlayScreenEventLis
     SocketSingleton.getInstance()?.setMessageReceiveCallback(this.onMessageReceive);
 
     // when socket open prepare to game
-    // this.game.prepareToGame(this);
     this.prepareToGame(this, data.partyType);
 
-    //
-    // this._gameDataEventListener?.onPlayerIdChange(this._playerId);
     console.info(this._playerId, 'new player id');
+
+    // clear
 
     // this._gameDataEventListener?.onGameStateChange(GameState.searching)
     // if (this._onStateChangeForButton) this._onStateChangeForButton(GameState.searching)

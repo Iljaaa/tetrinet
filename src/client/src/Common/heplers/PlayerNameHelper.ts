@@ -68,8 +68,6 @@ export class PlayerNameHelper
     // if player name empty we request window for input
     if (PlayerNameHelper._startInputName)
     {
-      console.log(PlayerNameHelper._startInputName, 'PlayerNameHelper._startInputName')
-
       PlayerNameHelper.onNameInputFinish = onInputFinish
       PlayerNameHelper._startInputName(this._playerName, (newPlayerName:string) =>
       {
@@ -82,7 +80,6 @@ export class PlayerNameHelper
 
   public static setPlayerName(newPlayerName:string)
   {
-    console.log ('PlayerNameHelper.setPlayerName');
     this._playerName = newPlayerName;
 
 

@@ -65,7 +65,11 @@ class Handler extends ExceptionHandler
         $t .= $e->getFile().':'.$e->getLine().PHP_EOL.PHP_EOL;
         // $t .= $e->getTraceAsString().PHP_EOL;
         $firstFive = array_slice($e->getTrace(), 0, 5);
-        $t .= implode(PHP_EOL, array_map(fn ($l) => $l['file'].':'.$l['line'].' '.$l['function'], $firstFive));
+        $t .= implode(PHP_EOL, array_map(fn ($l) =>
+            ($l['file'] ?? "-") .':'.
+            ($l['line'] ?? "-") .' '.
+            ($l['function'] ?? "-")
+            , $firstFive));
 
         $messageBot = app('telergambot');
         $messageBot->sendMessage($t);

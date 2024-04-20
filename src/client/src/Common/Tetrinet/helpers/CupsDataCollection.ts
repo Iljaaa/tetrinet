@@ -1,4 +1,4 @@
-import {CupData} from "./Tetrinet/models/CupData";
+import {CupData} from "../models/CupData";
 
 /**
  * Collection of cups data received from server

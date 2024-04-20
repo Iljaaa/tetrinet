@@ -187,11 +187,13 @@ export class CupRenderer2
    * @param cupIndex
    * @param textsTexture
    */
-  public setPlayerName (cupSize:CupSize, cupIndex:number, textsTexture:PlayScreenTexts)
+  public updatePlayerNameVertices (cupSize:CupSize, cupIndex:number, textsTexture:PlayScreenTexts)
   {
     // calculate player name position
     const top = PlayScreenTexts.getNameTopPositionByIndex(cupIndex)
     const drawPlayerLineHeight = PlayScreenTexts.getPlayerLineHeightByCupSize(cupSize)
+
+    //
     this._playerNameVertices.setVertices(Vertices.createTextureVerticesArray (
       0, -1 * drawPlayerLineHeight, this._cupWidth, drawPlayerLineHeight,
       0, top, textsTexture.getWidth(), PlayScreenTexts.playerLineHeight

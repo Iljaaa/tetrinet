@@ -1,6 +1,6 @@
 {
   "name": "tetrinet",
-  "version": "0.5.10",
+  "version": "0.5.11",
   "private": true,
   "proxy": "http://127.0.0.1:8080/",
   "dependencies": {

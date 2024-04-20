@@ -23,7 +23,7 @@ export const MyModal = (props:Props) => {
       }
     }}
     onRequestClose={() => {
-      console.log ('Modal request close')
+      console.info ('Modal request close')
     }}>
     {props.children}
   </Modal>

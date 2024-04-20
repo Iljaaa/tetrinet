@@ -3,7 +3,7 @@ import {PlayerId} from "../Tetrinet/types/PlayerId";
 import {Cup} from "../Tetrinet/models/Cup";
 import {CupImpl} from "../Tetrinet/models/CupImpl";
 import {CupData} from "../Tetrinet/models/CupData";
-import {CupsDataCollection} from "../CupsDataCollection";
+import {CupsDataCollection} from "../Tetrinet/helpers/CupsDataCollection";
 
 type PlayerData = {
   index: number,
@@ -32,12 +32,11 @@ export class OpponentsHelper {
   public static party:PlayersCollection = {};
 
   /**
-   *
+   * Create new party by data from lets play request
    * @param data
-   *
    * @param me we use me to exclude myself from opponents array
    */
-  public static makeNewOpponentsArray (data:LetsPlayMessage, me:PlayerId)
+  public static createNewParty (data:LetsPlayMessage, me:PlayerId)
   {
 
     // clear mapping array
@@ -64,6 +63,13 @@ export class OpponentsHelper {
         i++
       }
     })
+  }
+
+  /**
+   * Clear party
+   */
+  public static clearParty() {
+    OpponentsHelper.party = {};
   }
 
   public static updateCups (data:CupsDataCollection){
@@ -104,20 +110,10 @@ export class OpponentsHelper {
     return OpponentsHelper.party[playerIndex];
   }
 
-  // static getDataByPlayerId (playerId:PlayerId):PlayerData|undefined
-  // {
-  //   Object.keys(OpponentsHelper.party).find((i:string) => {
-  //     return ( OpponentsHelper.party[parseInt(i)].playerId === playerId)
-  //   });
-  //
-  //   return undefined;
-  // }
-
   /**
-   * Here only names
-   * @deprecated
+   * Data for drawing
    */
-  static getOpponentsArray ():Array<PlayerData>
+  static getOpponentsData ():Array<PlayerData>
   {
     return Object.keys(OpponentsHelper.party).map((i:string) => {
       const index = parseInt(i)

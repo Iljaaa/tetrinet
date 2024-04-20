@@ -74,8 +74,6 @@ export abstract class WebGlGame implements Game
    */
   initGraphic (canvas:HTMLCanvasElement)
   {
-    console.log ('WebGlGame.initGraphics', canvas.width, canvas.height);
-    
     // create gl
     const gl:WebGL2RenderingContext|null = canvas.getContext("webgl2");
     if (!gl) throw new Error("Gl not created");

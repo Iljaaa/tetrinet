@@ -33,7 +33,7 @@ import {PlayScreenTexts} from "../textures/PlayScreenTexts";
 import {WorkerEventListener, WorkerSingleton} from "../../WorkerSingleton";
 import {SpeedUpRequest} from "../types/requests/SpeedUpRequest";
 import {GenerateRandomBlock} from "../process/GenerateRandomBlock";
-import {CupsDataCollection} from "../../CupsDataCollection";
+import {CupsDataCollection} from "../helpers/CupsDataCollection";
 
 /**
  * Count lines that we should clear to next level
@@ -298,10 +298,10 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._state = GameState.waiting
 
     // clear cups
-    this._cup.cleanBeforeNewGame();
+    this._cup.cleanBeforeNewGame()
 
     // clear opponents
-    // this._cups = {};
+    OpponentsHelper.clearParty()
 
     // clear bonuses
     this.playerBonuses = [];
@@ -317,7 +317,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     const gl = this.game.getGLGraphics().getGl();
 
     // render texture and player names
-    this.textTexture.render(OpponentsHelper.getOpponentsArray())
+    this.textTexture.render(OpponentsHelper.getOpponentsData())
     this.textTexture.init(gl, gl.TEXTURE1);
 
     // next figure random color
@@ -465,6 +465,9 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
+  /**
+   * Game over, when all cups done and we have a winner
+   */
   gameOver()
   {
     this._state = GameState.over;
@@ -488,7 +491,11 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
 
-  setGameSearching(){
+  /**
+   * Set search state
+   */
+  setGameSearching()
+  {
     this._state = GameState.searching
     if (this._onStateChangeCallback) this._onStateChangeCallback(this._state)
   }
@@ -693,8 +700,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
     this._cupRenderer?.setCupSize(cupSize)
 
     // Object.keys(this._cups).forEach((playerId:string, index:number) => {
-    OpponentsHelper.getOpponentsArray().forEach((data, index:number) => {
-      // if (this._cups[playerId])
+    OpponentsHelper.getOpponentsData().forEach((data, index:number) => {
       if (data.cup)
       {
         // set cup position
@@ -705,7 +711,7 @@ export class PlayScreen extends WebGlScreen implements CupEventListener, WebInpu
         this._cupRenderer?.renderCup(data.cup, this.textTexture);
 
         // update player name texture position
-        this._cupRenderer?.setPlayerName(cupSize, index, this.textTexture)
+        this._cupRenderer?.updatePlayerNameVertices(cupSize, index, this.textTexture)
 
         // text height position
         // WebGlProgramManager.setUpIntoTextureProgramTranslation(gl, CupsPosition[index].x, CupsPosition[index].y - this.textTexture.playerLineHeight + 8);

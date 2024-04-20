@@ -31,7 +31,6 @@ export const Feedback = (
   successCallback:()=>void,
   errorCallback:(error:string)=>void
 ) => {
-  console.log(data)
 
   const cfg = {
     method: "POST",

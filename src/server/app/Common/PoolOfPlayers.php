@@ -10,6 +10,9 @@ use Ratchet\ConnectionInterface;
  */
 class PoolOfPlayers
 {
+
+    const DEAD_MATCH_PARTY_SIZE = 3;
+
     /**
      * Pull for duels
      * @var Player[]
@@ -66,7 +69,7 @@ class PoolOfPlayers
             'size' => count($this->party)
         ]);
 
-        $partySize = 5;
+        $partySize = static::DEAD_MATCH_PARTY_SIZE;
         $party = [];
 
         if (count($this->party) >= $partySize)

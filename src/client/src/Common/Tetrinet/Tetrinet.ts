@@ -8,7 +8,8 @@ import {JustPlayScreen} from "./screens/JustPlayScreen";
 import {GameState} from "./types";
 import {GamePartyType} from "./types/GamePartyType";
 import {WorkerSingleton} from "../WorkerSingleton";
-import {CupsDataCollection} from "../CupsDataCollection";
+import {CupsDataCollection} from "./helpers/CupsDataCollection";
+import {OpponentsHelper} from "../heplers/OpponentsHelper";
 
 /**
  * @version 0.1.0
@@ -35,7 +36,7 @@ export class Tetrinet extends WebGlGame
 
   constructor() {
     super();
-    console.log ('Tetrinet.constructor');
+    console.info ('Tetrinet.constructor');
 
     // init worker
     WorkerSingleton.init()
@@ -82,8 +83,6 @@ export class Tetrinet extends WebGlGame
    */
   prepareToGame (eventListener: PlayScreenEventListener, partyType:GamePartyType, initCup:Cup|null = null)
   {
-    console.log ('Tetrinet.PrepareToGame')
-
     // get current screen
     let scr = this.getCurrentScreen();
 
@@ -107,12 +106,10 @@ export class Tetrinet extends WebGlGame
       .setPartyType(partyType)
       .clearDataBeforeNewGame()
 
+    // clear opponents
+    OpponentsHelper.clearParty();
 
-    // clear sup from previous game
-    // todo: move it to start game
-    // scr.cleanUpCup();
-
-    // start request
+    // start animation
     if (!this.isAnimationRequested) {
       this.isAnimationRequested = true
       window.requestAnimationFrame(this.update)

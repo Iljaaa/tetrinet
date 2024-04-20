@@ -42,7 +42,6 @@ export class WatchScreen extends WebGlScreen
   constructor(game:Tetrinet)
   {
     super(game)
-    console.log ('WatchScreen constructor');
     
     // create cup object
     this._cup =  new CupImpl();

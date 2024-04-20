@@ -56,7 +56,6 @@ export class Chat extends React.PureComponent<{}, State>
   }
 
   onInputKeyUp = (event:KeyboardEvent):void => {
-    console.log (event.key, 'onInputKeyUp');
     if (event.key === 'Enter') this.sendMessage()
   }
 

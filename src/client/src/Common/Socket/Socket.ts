@@ -120,7 +120,6 @@ export class Socket
    */
   protected onError = (error:Event):void =>
   {
-    console.log(this.socket?.CLOSED, this.socket?.OPEN, 'Socket.OnError', this._onOpenErrorCallback)
     console.error (error);
 
     // clear close callback, am not sure about it
@@ -136,7 +135,6 @@ export class Socket
    */
   private onClose = (event:any):void =>
   {
-    console.log ('Socket.onClose', this._onCloseCallback);
     if (this._onCloseCallback) this._onCloseCallback()
   }
   

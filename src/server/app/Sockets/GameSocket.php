@@ -27,7 +27,7 @@ use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
 
-class FirstTestSocket implements MessageComponentInterface
+class GameSocket implements MessageComponentInterface
 {
 
     /**
