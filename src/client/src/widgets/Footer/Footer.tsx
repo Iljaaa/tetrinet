@@ -44,7 +44,7 @@ export class Footer extends React.PureComponent<{}, State>
             </div>
 
             <div style={{marginTop: ".75rem"}}>
-              Or just write by email.
+              Or just text to email: <a href="mailto:tetrinet.online@gmail.com">tetrinet.online@gmail.com</a>
             </div>
 
           </div>
