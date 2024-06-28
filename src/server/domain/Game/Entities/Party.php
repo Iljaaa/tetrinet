@@ -3,9 +3,11 @@
 namespace Domain\Game\Entities;
 
 use App\Common\ChatMessage;
+use App\Common\Messages\GameOverMessage;
 use App\Common\Messages\Message;
 use App\Common\Messages\UpdateChatMessage;
 use App\Helper;
+use domain\Game\Enums\CupState;
 use domain\Game\Enums\GameState;
 use Illuminate\Support\Facades\Log;
 
@@ -140,15 +142,13 @@ class Party
 //    }
 
     /**
+     * todo: this method must be in action
      * Send data to all players
      * @param Message $m
      * @return void
      */
     public function sendMessageToAllPlayers(Message $m): void
     {
-        // set chat from party to message
-        // $m->setChat($this->chat);
-
         $mString = $m->getDataAsString();
         foreach ($this->players as $p) {
             $p->getConnection()->send($mString);
@@ -208,20 +208,6 @@ class Party
      */
     public function findPlayerById (string $playerId):? Player
     {
-        // here we need players for found the opponent and add line to him
-        // $players = $this->party->getPlayers();
-        // Log::channel('socket')->info("party", ['len' => count($players)]);
-
-        // this is temporary code
-        // we are searching opponent
-//        $opponentConnection = null;
-//        // foreach ($players as $pIndex => $p) {
-//        foreach ($players as $p) {
-//            if ($p->getConnectionId() === $playerId) {
-//                $opponentConnection = $p;
-//            }
-//        }
-
         // return $opponentConnection;
         return $this->players[$playerId];
     }
@@ -284,20 +270,45 @@ class Party
         return $this->speed;
     }
 
-    /*
-     * @return array
-     */
-//    public function getChat (): array
-//    {
-//        return $this->chat;
-//    }
 
-    /*
-     * @return array
+    /**
+     * Here we check end of the game
+     * todo: this function to big it must be in service
+     * @return void
      */
-//    public function getChatAssArray(): array
-//    {
-//        return array_map(fn (ChatMessage $m) => $m->asArray(), $this->chat);
-//    }
+    public function determineGameOverInSetItOver (): void
+    {
+        //
+        if (!in_array($this->getGameState(), [GameState::running, GameState::paused])){
+            return;
+        }
+
+        // check players with active cups
+        $activeCups = array_filter($this->getPlayers(), fn(Player $p) => $p->getCup()->getState() == CupState::online);
+
+        // this is global game over
+        if (count($activeCups) <= 1)
+        {
+            // $this->party->setGameState(GameState::over);
+            $this->setGameOver();
+
+            // searching winner
+            $winner = null;
+            foreach ($this->getPlayers() as $p) {
+                if ($p->getCup()->getState() == CupState::online) {
+                    $winner = $p;
+                    $winner->getCup()->setCupAsWinner();
+                    break;
+                }
+            }
+
+            // this must be in callback
+            $this->addChatMessage(sprintf('End of the game, winner: __%s__', $winner->getName()));
+            $this->sendChatToAllPlayers();
+
+            // inform all players
+            $this->sendMessageToAllPlayers(new GameOverMessage($this));
+        }
+    }
 
 }

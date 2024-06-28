@@ -2,18 +2,17 @@
 
 namespace App\Contracts\Game;
 
-use App\Common\Connection;
 use Domain\Game\Entities\Player;
-use Ratchet\ConnectionInterface;
+use Domain\Game\ValueObjects\Connection;
 
 interface PoolOfPlayers
 {
     /**
      * When player connection close
-     * @param Connection $conn
+     * @param Connection $c
      * @return void
      */
-    public function onConnectionClose(ConnectionInterface $conn): void;
+    public function onConnectionClose(Connection $c): void;
 
     /**
      * Add player to a pool for waiting other players

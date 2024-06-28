@@ -4,6 +4,7 @@ namespace App\Services\Game;
 
 use App\Contracts\Game\PoolOfPlayers;
 use Domain\Game\Entities\Player;
+use Domain\Game\ValueObjects\Connection;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;
 
@@ -90,29 +91,20 @@ class BasePoolOfPlayers implements PoolOfPlayers
 
     /**
      * When connection close we search it in pools
-     * @param ConnectionInterface $conn
+     * @param Connection $c
      * @return void
      */
-    public function onConnectionClose(ConnectionInterface $conn): void
+    public function onConnectionClose(Connection $c): void
     {
-        Log::channel('socket')->info(__METHOD__, ['playerId' => $conn->socketId]);
+        // Log::channel('socket')->info(__METHOD__, ['playerId' => $conn->socketId]);
 
         // looking for connection in players pool
-        // $index = array_search($conn, $this->duels);
-        // if ($index > -1) {
-            // Log::channel('socket')->info('connection found in duel pull', ['index' => $index, 'size' => count($this->duelPlayersPool)]);
-            // filter from pool out connection
-        $this->duels = array_filter($this->duels, fn (Player $p) =>  $p->getConnectionId() != $conn->socketId);
-        // }
+        $this->duels = array_filter($this->duels, fn (Player $p) =>  $p->getConnectionId() != $c->getSocketId());
 
         // looking for connection in players pool
-        // $index = array_search($conn, $this->party);
-        // if ($index > -1) {
-            // Log::channel('socket')->info('connection found in party pull', ['index' => $index, 'size' => count($this->duelPlayersPool)]);
-            // filter from pool out connection
-        $this->party = array_filter($this->party, fn (Player $p) =>  $p->getConnectionId() != $conn->socketId);
+        $this->party = array_filter($this->party, fn (Player $p) =>  $p->getConnectionId() != $c->getSocketId());
         //}
 
-        Log::channel('socket')->info('size', ['duel' => count($this->duels), 'party' => count($this->party)]);
+        // Log::channel('socket')->info('size', ['duel' => count($this->duels), 'party' => count($this->party)]);
     }
 }

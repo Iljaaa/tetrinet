@@ -2,6 +2,7 @@
 
 namespace App\Sockets;
 
+use App\Actions\OnConnectionClose;
 use App\Common\Messages\AfterSetMessage;
 use App\Common\Messages\BackToPartyMessage;
 use App\Common\Messages\GameOverMessage;
@@ -22,11 +23,15 @@ use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
 use Domain\Game\Enums\GameState;
+use Domain\Game\ValueObjects\Connection;
 use Illuminate\Support\Facades\Log;
-use Ratchet\ConnectionInterface;
+use Ratchet\ConnectionInterface as RatchetConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
 
+/**
+ * Object witch ratchet connection
+ */
 class GameSocket implements MessageComponentInterface
 {
 
@@ -38,91 +43,48 @@ class GameSocket implements MessageComponentInterface
     }
 
     /**
-     * @param ConnectionInterface $conn
+     * @param RatchetConnectionInterface $conn
      * @return void
      */
-    public function onOpen(ConnectionInterface $conn): void
+    public function onOpen(RatchetConnectionInterface $conn): void
     {
         $this->info(__METHOD__);
 
-        // generate socket is
-        $conn->socketId = Helper::random();
+        // init nex connection
+        $connection = Connection::init($conn);
 
-        //
-        $this->info(sprintf('Connection open with %s', $conn->socketId));
-
-        // what this code do?
-        // $connection->app = App::findById('YOUR_APP_ID');
-        $app = \BeyondCode\LaravelWebSockets\Apps\App::findById("app_id");
-        $conn->app = $app;
+        $this->info(sprintf('Connection open with %s', $connection->getSocketId()));
     }
 
     /**
-     * @param ConnectionInterface $conn
+     * @param RatchetConnectionInterface $conn
      * @return void
      */
-    public function onClose(ConnectionInterface $conn): void
+    public function onClose(RatchetConnectionInterface $conn): void
     {
         $this->info(__METHOD__, ['socketId' =>  $conn->socketId]);
 
-        // this is player id
-        $playerId = $conn->socketId;
-
-        // if connection was in search pool
-        $this->playersPool->onConnectionClose($conn);
-
-        // when connection closed we mark party as paused
-        $party = $this->partiesPool->findPartyByPlayerId($playerId);
-        if (!$party) return;
-
-        $player = $party->getPlayerById($playerId);
-        if (!$player) return;
-
-        // player may be offline if he leaves game before
-        if (!$player->isOffLine())
-        {
-            // notify all players
-            $party->addChatMessage(sprintf('Connection with the user __%s__ was lost', $player->getName()));
-            $party->sendChatToAllPlayers();
-
-            // set player is offline
-            $player->setOffline();
-
-            // set cup as over
-            $player->getCup()->setCupAsOver();
-
-            //
-            $this->determineGameOverInSet($party);
-        }
-
-        // if all players offline we party should be terminated
-        $partyPlayers = $party->getPlayers();
-        $onLinePlayers = array_filter($partyPlayers, fn(Player $p) => $p->isOnLine());
-        Log::channel('socket')->info('after filter', ['count($onLinePlayers)' => count($onLinePlayers)]);
-        if (count($onLinePlayers) == 0) {
-            // this is new method
-            $this->partiesPool->terminatePartyByPartyId($party->partyId);
-        }
-
+        (new OnConnectionClose(Connection::factory($conn), $this->playersPool, $this->partiesPool))
+            ->handle();
     }
 
     /**
-     * @param ConnectionInterface $conn
+     * @param RatchetConnectionInterface $conn
      * @param \Exception $e
      * @return void
      */
-    public function onError(ConnectionInterface $conn, \Exception $e): void
+    public function onError(RatchetConnectionInterface $conn, \Exception $e): void
     {
         $this->info(__METHOD__);
         $this->info($e->getMessage());
     }
 
     /**
-     * @param ConnectionInterface $conn
+     * @param RatchetConnectionInterface $conn
      * @param MessageInterface $msg
      * @return void
      */
-    public function onMessage(ConnectionInterface $conn, MessageInterface $msg):void
+    public function onMessage(RatchetConnectionInterface $conn, MessageInterface $msg):void
     {
         $this->info(__METHOD__);
 
@@ -159,7 +121,7 @@ class GameSocket implements MessageComponentInterface
      * @param array $data
      * @return void
      */
-    private function processJoinToParty (ConnectionInterface $conn, array $data): void
+    private function processJoinToParty (RatchetConnectionInterface $conn, array $data): void
     {
         $this->info(__METHOD__);
 
@@ -425,20 +387,12 @@ class GameSocket implements MessageComponentInterface
         // try to determine game over
         $this->determineGameOverInSet($party);
 
-//        $cupsResponse = $party->getCupsResponse();
-//        $party->sendToAllPlayers([
-//            'type' => ResponseType::afterSet,
-//            // 'responsible' => $partyIndex,
-//            // 'responsibleId' => $conn->socketId
-//            'state' => $party->getGameState(),
-//            'cups' => $cupsResponse
-//        ])
-
         // todo: may be we should refactor this method and send only one cup instead of all party
         $party->sendMessageToAllPlayers(new AfterSetMessage($party));
     }
 
     /**
+     * @deprecated this method should be in tha party
      * check and set game over
      * @param Party $party
      * @return void
@@ -476,51 +430,6 @@ class GameSocket implements MessageComponentInterface
         }
 
     }
-    /*
-     * @deprecated
-     * @param ConnectionInterface $conn
-     * @param array $data
-     * @return void
-     */
-//    private function processAddLine (ConnectionInterface $conn, array $data): void
-//    {
-//        // send to target player
-//        // but, now we have two players and if it not a sender then it opponent
-//
-//        // player index in party
-//        // $partyIndex = (int) $data['partyIndex'];
-//
-//        $source = (int) $data['source'];
-//        $target = (int) $data['target'];
-//        $linesCount = (int) $data['linesCount'];
-//
-//        $this->info("add line", [
-//            // 'partyIndex' => $partyIndex,
-//            'source' => $source,
-//            'sourceId' => $conn->socketId,
-//            'target' => $target,
-//            'linesCount' => $linesCount,
-//        ]);
-//
-//
-//        // here we need players for found the opponent and add line to him
-//        $players = $this->party->getPlayers();
-//        $this->info("party", ['len' => count($players)]);
-//
-//        // found opponent
-//        $opponent = $this->findPlayerById($source);
-//
-//        // send command to opponent
-//        if ($opponent) {
-//            $opponent->getConnection()->send(json_encode([
-//                'type' => ResponseType::addLine,
-//                'source' => $source, // todo: remake source to socket id
-//                'sourceId' => $conn->socketId,
-//                'target' => $target,
-//                'linesCount' => $linesCount,
-//            ]));
-//        }
-//    }
 
     /**
      * @param ConnectionInterface $conn
@@ -631,18 +540,6 @@ class GameSocket implements MessageComponentInterface
         $m->setSwitchData($targetPlayerId, $sourcePlayerId, $sourcePlayer->getCup());
         $sourcePlayer->getConnection()->send($m->getDataAsString());
 
-        // send response to all
-//        $party->sendToAllPlayers([
-//            'type' => ResponseType::getBonus,
-//            // 'responsible' => $partyIndex,
-//            // 'responsibleId' => $conn->socketId
-//            'source' => $sourcePlayerId,
-//            'target' => $targetPlayer,
-//            'bonus' => BonusType::switch,
-//            'state' => $party->getGameState(),
-//            'cups' => $party->getCupsResponse()
-//        ]);
-
         // send message to chat
         $party->addChatMessage(sprintf('Player __%s__ switch cup with __%s__', $sourcePlayer->getName(), $targetPlayer->getName()));
         $party->sendChatToAllPlayers();
@@ -729,30 +626,6 @@ class GameSocket implements MessageComponentInterface
         $party->sendMessageToAllPlayers(new SpeedupMessage($party, $party->getSpeed()));
 
     }
-
-    /**
-     * @param string $playerId
-     * @return Player|null
-     */
-//    private function findPlayerById (string $playerId):? Player
-//    {
-//        // here we need players for found the opponent and add line to him
-//        $players = $this->party->getPlayers();
-//        // $this->info("party", ['len' => count($players)]);
-//
-//        // this is temporary code
-//        // we are searching opponent
-//        /** @var ConnectionInterface $opponentConnection */
-//        $opponentConnection = null;
-//        // foreach ($players as $pIndex => $p) {
-//        foreach ($players as $p) {
-//            if ($p->getConnectionId() === $playerId) {
-//                $opponentConnection = $p;
-//            }
-//        }
-//
-//        return $opponentConnection;
-//    }
 
     /**
      * todo: move to trait
