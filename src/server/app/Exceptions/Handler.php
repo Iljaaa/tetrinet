@@ -59,6 +59,10 @@ class Handler extends ExceptionHandler
             return;
         }
 
+        if (!app()->environment('production')) {
+            return;
+        }
+
         $this->notifyViaTelegram($e);
     }
 
