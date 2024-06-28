@@ -3,7 +3,7 @@
 namespace App\Contracts\Game;
 
 use App\Common\Connection;
-use App\Common\Player;
+use app\Common\Player;
 use Ratchet\ConnectionInterface;
 
 interface PoolOfPlayers

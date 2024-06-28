@@ -2,7 +2,7 @@
 
 namespace App\Services\Game;
 
-use App\Common\Player;
+use app\Common\Player;
 use App\Contracts\Game\PoolOfPlayers;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;

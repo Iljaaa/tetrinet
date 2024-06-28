@@ -2,7 +2,7 @@
 
 namespace App\Contracts\Game;
 
-use App\Common\Party;
+use app\Common\Party;
 
 interface PoolOfParties
 {

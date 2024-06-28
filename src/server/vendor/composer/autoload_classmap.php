@@ -7,7 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Common\\Connection' => $baseDir . '/app/Common/Connection.php',
-    'App\\Common\\Cup' => $baseDir . '/app/Common/Cup.php',
+    'app\\Common\\Cup' => $baseDir . '/app/Common/Cup.php',
     'App\\Common\\Helper' => $baseDir . '/app/Common/Helper.php',
     'App\\Common\\Messages\\AfterSetMessage' => $baseDir . '/app/Common/Messages/AfterSetMessage.php',
     'App\\Common\\Messages\\BackToPartyMessage' => $baseDir . '/app/Common/Messages/BackToPartyMessage.php',
@@ -20,8 +20,8 @@ return array(
     'App\\Common\\Messages\\SpeedupMessage' => $baseDir . '/app/Common/Messages/SpeedupMessage.php',
     'App\\Common\\Messages\\SwitchCupsMessage' => $baseDir . '/app/Common/Messages/SwitchCupsMessage.php',
     'App\\Common\\Messages\\UpdateChatMessage' => $baseDir . '/app/Common/Messages/UpdateChatMessage.php',
-    'App\\Common\\Party' => $baseDir . '/app/Common/Party.php',
-    'App\\Common\\Player' => $baseDir . '/app/Common/Player.php',
+    'app\\Common\\Party' => $baseDir . '/app/Common/Party.php',
+    'app\\Common\\Player' => $baseDir . '/app/Common/Player.php',
     'App\\Common\\Types\\BonusType' => $baseDir . '/app/Common/Types/BonusType.php',
     'App\\Common\\Types\\CupState' => $baseDir . '/app/Common/Types/CupState.php',
     'App\\Common\\Types\\GameState' => $baseDir . '/app/Common/Types/GameState.php',

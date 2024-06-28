@@ -613,7 +613,7 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
 
     public static $classMap = array (
         'App\\Common\\Connection' => __DIR__ . '/../..' . '/app/Common/Connection.php',
-        'App\\Common\\Cup' => __DIR__ . '/../..' . '/app/Common/Cup.php',
+        'app\\Common\\Cup' => __DIR__ . '/../..' . '/app/Common/Cup.php',
         'App\\Common\\Helper' => __DIR__ . '/../..' . '/app/Common/Helper.php',
         'App\\Common\\Messages\\AfterSetMessage' => __DIR__ . '/../..' . '/app/Common/Messages/AfterSetMessage.php',
         'App\\Common\\Messages\\BackToPartyMessage' => __DIR__ . '/../..' . '/app/Common/Messages/BackToPartyMessage.php',
@@ -626,8 +626,8 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'App\\Common\\Messages\\SpeedupMessage' => __DIR__ . '/../..' . '/app/Common/Messages/SpeedupMessage.php',
         'App\\Common\\Messages\\SwitchCupsMessage' => __DIR__ . '/../..' . '/app/Common/Messages/SwitchCupsMessage.php',
         'App\\Common\\Messages\\UpdateChatMessage' => __DIR__ . '/../..' . '/app/Common/Messages/UpdateChatMessage.php',
-        'App\\Common\\Party' => __DIR__ . '/../..' . '/app/Common/Party.php',
-        'App\\Common\\Player' => __DIR__ . '/../..' . '/app/Common/Player.php',
+        'app\\Common\\Party' => __DIR__ . '/../..' . '/app/Common/Party.php',
+        'app\\Common\\Player' => __DIR__ . '/../..' . '/app/Common/Player.php',
         'App\\Common\\Types\\BonusType' => __DIR__ . '/../..' . '/app/Common/Types/BonusType.php',
         'App\\Common\\Types\\CupState' => __DIR__ . '/../..' . '/app/Common/Types/CupState.php',
         'App\\Common\\Types\\GameState' => __DIR__ . '/../..' . '/app/Common/Types/GameState.php',
