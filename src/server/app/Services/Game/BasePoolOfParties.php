@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Common;
+namespace App\Services\Game;
 
-class PoolOfParties
+use App\Common\Party;
+use App\Contracts\Game\PoolOfParties;
+
+class BasePoolOfParties implements PoolOfParties
 {
 
     /**
@@ -37,12 +40,12 @@ class PoolOfParties
         return $this->parties[$partyId] ?? null;
     }
 
-    public function addParty (Party $p)
+    public function addParty (Party $p): void
     {
         $this->parties[$p->partyId] = $p;
     }
 
-    public function terminatePartyByPartyId (string $partyId)
+    public function terminatePartyByPartyId (string $partyId): void
     {
         if (isset($this->parties[$partyId])){
             unset($this->parties[$partyId]);

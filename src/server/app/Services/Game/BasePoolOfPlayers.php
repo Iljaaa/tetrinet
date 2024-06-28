@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Common;
+namespace App\Services\Game;
 
+use App\Common\Player;
+use App\Contracts\Game\PoolOfPlayers;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;
 
 /**
- * Pull of players who are looking for a game
+ * Base pool
  */
-class PoolOfPlayers
+class BasePoolOfPlayers implements PoolOfPlayers
 {
 
     const DEAD_MATCH_PARTY_SIZE = 5;
@@ -26,16 +28,16 @@ class PoolOfPlayers
     private array $party = [];
 
     /**
-     * @param Player $p
-     * @param callable $onPartyFull
+     * @param Player $player
+     * @param callable $onPartyFullCallback
      * @return void
      */
-    public function addToDuels(Player $p, callable $onPartyFull): void
+    public function addToDuels(Player $player, callable $onPartyFullCallback): void
     {
-        $this->duels[] = $p;
+        $this->duels[] = $player;
         Log::channel('socket')->info('connection added to pool', [
             'pool' => 'duel',
-            'socketId' => $p->getConnectionId(),
+            'socketId' => $player->getConnectionId(),
             'size' => count($this->duels)
         ]);
 
@@ -50,22 +52,22 @@ class PoolOfPlayers
             }
 
             //
-            $onPartyFull($party);
+            $onPartyFullCallback($party);
         }
     }
 
 
     /**
-     * @param Player $p
-     * @param callable $onPartyFull
+     * @param Player $player
+     * @param callable $onPartyFullCallback
      * @return void
      */
-    public function addToParty(Player $p, callable $onPartyFull): void
+    public function addToParty(Player $player, callable $onPartyFullCallback): void
     {
-        $this->party[] = $p;
+        $this->party[] = $player;
         Log::channel('socket')->info('connection added to pool', [
             'pool' => 'party',
-            'socketId' => $p->getConnectionId(),
+            'socketId' => $player->getConnectionId(),
             'size' => count($this->party)
         ]);
 
@@ -82,7 +84,7 @@ class PoolOfPlayers
             }
 
             //
-            $onPartyFull($party);
+            $onPartyFullCallback($party);
         }
     }
 
@@ -91,7 +93,7 @@ class PoolOfPlayers
      * @param ConnectionInterface $conn
      * @return void
      */
-    public function onConnectionClose(ConnectionInterface $conn)
+    public function onConnectionClose(ConnectionInterface $conn): void
     {
         Log::channel('socket')->info(__METHOD__, ['playerId' => $conn->socketId]);
 

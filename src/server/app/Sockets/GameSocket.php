@@ -14,14 +14,14 @@ use App\Common\Messages\SpeedupMessage;
 use App\Common\Messages\SwitchCupsMessage;
 use App\Common\Party;
 use App\Common\Player;
-use App\Common\PoolOfParties;
-use App\Common\PoolOfPlayers;
 use App\Common\Types\BonusType;
 use App\Common\Types\CupState;
 use App\Common\Types\GameState;
 use App\Common\Types\MessageType;
 use App\Common\Types\PartyType;
 use App\Common\Types\ResponseType;
+use App\Contracts\Game\PoolOfParties;
+use App\Contracts\Game\PoolOfPlayers;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
@@ -31,23 +31,10 @@ class GameSocket implements MessageComponentInterface
 {
 
     /**
-     * Pool of player for play
-     */
-    private PoolOfPlayers $playersPool;
-
-    /**
-     * This is pool of parties
-     */
-    private PoolOfParties $partiesPool;
-
-    /**
      *
      */
-    public function __construct()
+    public function __construct(private readonly PoolOfPlayers $playersPool, private readonly PoolOfParties $partiesPool)
     {
-        $this->info('Socket created');
-        $this->partiesPool = new PoolOfParties();
-        $this->playersPool = new PoolOfPlayers();
     }
 
     /**
@@ -165,28 +152,6 @@ class GameSocket implements MessageComponentInterface
             case MessageType::speedUp: $this->processSpeedUpMessage($conn, $data); break;
         }
     }
-
-    /*
-     * @deprecated
-     * Create new party and add itself to this
-     * @param ConnectionInterface $connection
-     * @param array $data
-     * @return void
-     */
-//    private function processStartParty (ConnectionInterface $connection, array $data):void
-//    {
-//        $this->info(__METHOD__);
-//
-//        // create party id
-//        $party = new Party();
-//        $this->party = $party;
-//
-//        //
-//        $connection->send(json_encode([
-//            'partyId' => $party->partyId,
-//            'yourIndex' => 0,
-//        ]));
-//    }
 
     /**
      * Join to party
@@ -790,6 +755,7 @@ class GameSocket implements MessageComponentInterface
 //    }
 
     /**
+     * todo: move to trait
      * @param string $message
      * @param array $data
      * @return void
@@ -800,6 +766,7 @@ class GameSocket implements MessageComponentInterface
     }
 
     /**
+     * todo: move to trait
      * @param string $message
      * @param array $data
      * @return void
