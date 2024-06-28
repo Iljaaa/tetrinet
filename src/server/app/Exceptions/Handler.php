@@ -2,10 +2,8 @@
 
 namespace App\Exceptions;
 
-use App\Services\TelegramBotService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -31,6 +29,8 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->registerShutdownFunction();
     }
 
     /**
@@ -38,45 +38,75 @@ class Handler extends ExceptionHandler
      */
     public function registerShutdownFunction()
     {
-        $error = error_get_last();
+        register_shutdown_function(function () {
+            $error = error_get_last();
 
-        // Проверяем, была ли ошибка и нужно ли выполнить какие-либо действия
-        if ($error && $error['type'] === E_ERROR) {
-
-            // ВЫПОЛНЯЕМ ВАШУ ФУНКЦИЮ ЗДЕСЬ
-
-        }
-
-
-        Log::channel('socket')->info('this is '.__METHOD__);
+            if ($error && $error['type'] === E_ERROR) {
+                Log::channel('socket')->info('Fatal error: ' . json_encode($error));
+            }
+        });
     }
 
     public function report(Throwable $e)
     {
-        $parentResult = parent::report($e);
+        parent::report($e);
 
-        if ($e instanceof NotFoundHttpException || $e instanceof MethodNotAllowedHttpException) {
-            return $parentResult;
+        if (!$this->shouldReport($e)) {
+            return;
         }
 
-        $t  = 'There is exception'.PHP_EOL;
-        $t .= get_class($e).PHP_EOL;
-        $t .= $e->getMessage().PHP_EOL;
-        $t .= $e->getFile().':'.$e->getLine().PHP_EOL.PHP_EOL;
-        // $t .= $e->getTraceAsString().PHP_EOL;
-        $firstFive = array_slice($e->getTrace(), 0, 5);
-        $t .= implode(PHP_EOL, array_map(fn ($l) =>
-            ($l['file'] ?? "-") .':'.
-            ($l['line'] ?? "-") .' '.
-            ($l['function'] ?? "-")
-            , $firstFive));
+        if ($e instanceof NotFoundHttpException || $e instanceof MethodNotAllowedHttpException) {
+            return;
+        }
 
-        $messageBot = app('telergambot');
-        $messageBot->sendMessage($t);
-
-        return $parentResult;
+        $this->notifyViaTelegram($e);
     }
 
+    /**
+     * // todo: make special interface for case if transport changed
+     * @param Throwable $e
+     * @return void
+     */
+    private function notifyViaTelegram(\Throwable $e): void
+    {
+        $messageBot = app('telergambot');
+        $messageBot->sendMessage($this->createMessage($e));
+    }
 
+    /**
+     * @param Throwable $e
+     * @return string
+     */
+    private function createMessage(\Throwable $e)
+    {
+        return sprintf(
+            "There is an exception\n%s\n%s\n%s:%d\n\n%s",
+            get_class($e),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $this->formatTrace($e->getTrace())
+        );
+    }
+
+    /**
+     * Format the stack trace.
+     *
+     * @param array $trace
+     * @return string
+     */
+    protected function formatTrace(array $trace): string
+    {
+        $firstFive = array_slice($trace, 0, 5);
+
+        return implode(PHP_EOL, array_map(function ($item) {
+            return sprintf(
+                "%s:%s %s",
+                $item['file'] ?? "-",
+                $item['line'] ?? "-",
+                $item['function'] ?? "-"
+            );
+        }, $firstFive));
+    }
 
 }
