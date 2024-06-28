@@ -2,7 +2,6 @@
 
 namespace App\Sockets;
 
-use App\Common\Helper;
 use App\Common\Messages\AfterSetMessage;
 use App\Common\Messages\BackToPartyMessage;
 use App\Common\Messages\GameOverMessage;
@@ -12,16 +11,17 @@ use App\Common\Messages\PausedMessage;
 use App\Common\Messages\ResumeMessage;
 use App\Common\Messages\SpeedupMessage;
 use App\Common\Messages\SwitchCupsMessage;
-use app\Common\Party;
-use app\Common\Player;
 use App\Common\Types\BonusType;
-use App\Common\Types\CupState;
-use App\Common\Types\GameState;
 use App\Common\Types\MessageType;
 use App\Common\Types\PartyType;
 use App\Common\Types\ResponseType;
 use App\Contracts\Game\PoolOfParties;
 use App\Contracts\Game\PoolOfPlayers;
+use App\Helper;
+use Domain\Game\Entities\Party;
+use Domain\Game\Entities\Player;
+use Domain\Game\Enums\CupState;
+use Domain\Game\Enums\GameState;
 use Illuminate\Support\Facades\Log;
 use Ratchet\ConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;

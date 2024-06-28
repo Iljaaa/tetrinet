@@ -2,8 +2,8 @@
 
 namespace App\Common\Messages;
 
-use App\Common\Party;
 use App\Common\Types\ResponseType;
+use domain\Game\Entities\Party;
 
 class PausedMessage extends Message
 {

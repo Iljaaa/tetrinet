@@ -1,12 +1,16 @@
 <?php
 
-namespace App\Common;
+namespace App;
 
 use App\Common\Types\BonusType;
 
+/**
+ *
+ */
 class Helper
 {
     /**
+     * Todo: move to stand alone function
      * Generate random string for socket(playerId) and partyId
      * @return string
      */
@@ -17,6 +21,7 @@ class Helper
     }
 
     /**
+     * Todo: move to stand alone function
      * User friendly
      * @param BonusType $b
      * @return string

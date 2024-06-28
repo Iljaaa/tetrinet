@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Common;
+namespace Domain\Game\Entities;
 
-use App\Common\Types\CupState;
+use Domain\Game\Enums\CupState;
 
 /**
  * This is cup class

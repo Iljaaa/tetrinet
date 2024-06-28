@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Common\Types;
+namespace domain\Game\Enums;
 
 /**
  * Cup state

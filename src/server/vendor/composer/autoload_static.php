@@ -174,6 +174,7 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'D' => 
         array (
             'Dotenv\\' => 7,
+            'Domain\\' => 7,
             'Doctrine\\Inflector\\' => 19,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Dflydev\\DotAccessData\\' => 22,
@@ -558,6 +559,10 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
+        'Domain\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/domain',
+        ),
         'Doctrine\\Inflector\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector',
@@ -613,8 +618,6 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
 
     public static $classMap = array (
         'App\\Common\\Connection' => __DIR__ . '/../..' . '/app/Common/Connection.php',
-        'app\\Common\\Cup' => __DIR__ . '/../..' . '/app/Common/Cup.php',
-        'App\\Common\\Helper' => __DIR__ . '/../..' . '/app/Common/Helper.php',
         'App\\Common\\Messages\\AfterSetMessage' => __DIR__ . '/../..' . '/app/Common/Messages/AfterSetMessage.php',
         'App\\Common\\Messages\\BackToPartyMessage' => __DIR__ . '/../..' . '/app/Common/Messages/BackToPartyMessage.php',
         'App\\Common\\Messages\\GameOverMessage' => __DIR__ . '/../..' . '/app/Common/Messages/GameOverMessage.php',
@@ -626,11 +629,7 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'App\\Common\\Messages\\SpeedupMessage' => __DIR__ . '/../..' . '/app/Common/Messages/SpeedupMessage.php',
         'App\\Common\\Messages\\SwitchCupsMessage' => __DIR__ . '/../..' . '/app/Common/Messages/SwitchCupsMessage.php',
         'App\\Common\\Messages\\UpdateChatMessage' => __DIR__ . '/../..' . '/app/Common/Messages/UpdateChatMessage.php',
-        'app\\Common\\Party' => __DIR__ . '/../..' . '/app/Common/Party.php',
-        'app\\Common\\Player' => __DIR__ . '/../..' . '/app/Common/Player.php',
         'App\\Common\\Types\\BonusType' => __DIR__ . '/../..' . '/app/Common/Types/BonusType.php',
-        'App\\Common\\Types\\CupState' => __DIR__ . '/../..' . '/app/Common/Types/CupState.php',
-        'App\\Common\\Types\\GameState' => __DIR__ . '/../..' . '/app/Common/Types/GameState.php',
         'App\\Common\\Types\\MessageType' => __DIR__ . '/../..' . '/app/Common/Types/MessageType.php',
         'App\\Common\\Types\\PartyType' => __DIR__ . '/../..' . '/app/Common/Types/PartyType.php',
         'App\\Common\\Types\\PlayerState' => __DIR__ . '/../..' . '/app/Common/Types/PlayerState.php',
@@ -640,6 +639,7 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'App\\Contracts\\Game\\PoolOfParties' => __DIR__ . '/../..' . '/app/Contracts/Game/PoolOfParties.php',
         'App\\Contracts\\Game\\PoolOfPlayers' => __DIR__ . '/../..' . '/app/Contracts/Game/PoolOfPlayers.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+        'App\\Helper' => __DIR__ . '/../..' . '/app/Helper.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\FeedbackController' => __DIR__ . '/../..' . '/app/Http/Controllers/FeedbackController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
@@ -661,8 +661,8 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\MyCustomAppProvider' => __DIR__ . '/../..' . '/app/Providers/MyCustomAppProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
-        'app\\Services\\Game\\BasePoolOfPlayers' => __DIR__ . '/../..' . '/app/Services/BasePoolOfPlayers.php',
-        'App\\Services\\GameService' => __DIR__ . '/../..' . '/app/Services/GameService.php',
+        'App\\Services\\Game\\BasePoolOfParties' => __DIR__ . '/../..' . '/app/Services/Game/BasePoolOfParties.php',
+        'App\\Services\\Game\\BasePoolOfPlayers' => __DIR__ . '/../..' . '/app/Services/Game/BasePoolOfPlayers.php',
         'App\\Services\\TelegramBotService' => __DIR__ . '/../..' . '/app/Services/TelegramBotService.php',
         'App\\Sockets\\GameSocket' => __DIR__ . '/../..' . '/app/Sockets/GameSocket.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
@@ -915,6 +915,10 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'Doctrine\\Inflector\\Rules\\Word' => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector/Rules/Word.php',
         'Doctrine\\Inflector\\RulesetInflector' => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector/RulesetInflector.php',
         'Doctrine\\Inflector\\WordInflector' => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector/WordInflector.php',
+        'Domain\\Game\\Entities\\Cup' => __DIR__ . '/../..' . '/domain/Game/Entities/Cup.php',
+        'Domain\\Game\\Entities\\Party' => __DIR__ . '/../..' . '/domain/Game/Entities/Party.php',
+        'Domain\\Game\\Entities\\Player' => __DIR__ . '/../..' . '/domain/Game/Entities/Player.php',
+        'Domain\\Game\\Enums\\GameState' => __DIR__ . '/../..' . '/domain/Game/Enums/GameState.php',
         'Dotenv\\Dotenv' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Dotenv.php',
         'Dotenv\\Exception\\ExceptionInterface' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Exception/ExceptionInterface.php',
         'Dotenv\\Exception\\InvalidEncodingException' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Exception/InvalidEncodingException.php',
@@ -6858,7 +6862,6 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'Tests\\CreatesApplication' => __DIR__ . '/../..' . '/tests/CreatesApplication.php',
         'Tests\\Feature\\ExampleTest' => __DIR__ . '/../..' . '/tests/Feature/ExampleTest.php',
         'Tests\\TestCase' => __DIR__ . '/../..' . '/tests/TestCase.php',
-        'Tests\\Unit\\ExampleTest' => __DIR__ . '/../..' . '/tests/Unit/ExampleTest.php',
         'TheSeer\\Tokenizer\\Exception' => __DIR__ . '/..' . '/theseer/tokenizer/src/Exception.php',
         'TheSeer\\Tokenizer\\NamespaceUri' => __DIR__ . '/..' . '/theseer/tokenizer/src/NamespaceUri.php',
         'TheSeer\\Tokenizer\\NamespaceUriException' => __DIR__ . '/..' . '/theseer/tokenizer/src/NamespaceUriException.php',

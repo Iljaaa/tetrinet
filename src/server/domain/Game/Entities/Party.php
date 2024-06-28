@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Common;
+namespace Domain\Game\Entities;
 
+use App\Common\ChatMessage;
 use App\Common\Messages\Message;
 use App\Common\Messages\UpdateChatMessage;
-use App\Common\Types\GameState;
-use App\Common\Types\PlayerState;
+use App\Helper;
+use domain\Game\Enums\GameState;
 use Illuminate\Support\Facades\Log;
-use Ratchet\ConnectionInterface;
 
 /**
  * @version 0.1.3

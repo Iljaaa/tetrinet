@@ -2,8 +2,8 @@
 
 namespace App\Services\Game;
 
-use app\Common\Party;
 use App\Contracts\Game\PoolOfParties;
+use domain\Game\Entities\Party;
 
 class BasePoolOfParties implements PoolOfParties
 {

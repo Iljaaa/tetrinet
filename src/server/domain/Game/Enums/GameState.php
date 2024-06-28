@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Common\Types;
+namespace Domain\Game\Enums;
 
 /**
  * This is global game state

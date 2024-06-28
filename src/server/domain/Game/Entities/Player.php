@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Common;
+namespace Domain\Game\Entities;
 
 use App\Common\Types\PlayerState;
 use Ratchet\ConnectionInterface;
 
 /**
  * Player object it is,
+ * todo: refactor player to aggregate with connection and player
  */
 class Player
 {
     /**
+     * todo: move connection to Aggregate
      * @var ConnectionInterface
      */
-    private ConnectionInterface $connetion;
+    private ConnectionInterface $connection;
 
     /**
      * Player name
@@ -39,7 +41,7 @@ class Player
 
     public function __construct(ConnectionInterface $connection, string $name)
     {
-        $this->connetion = $connection;
+        $this->connection = $connection;
         $this->name = $name;
         $this->state = PlayerState::online;
         $this->cup = new Cup();
@@ -50,16 +52,17 @@ class Player
      */
     public function getConnection(): ConnectionInterface
     {
-        return $this->connetion;
+        return $this->connection;
     }
 
     /**
+     * @deprecated use getConnection()->socketId
      * Get socket is from connection
      * @return string
      */
     public function getConnectionId(): string
     {
-        return $this->connetion->socketId;
+        return $this->connection->socketId;
     }
 
     /**
@@ -81,6 +84,7 @@ class Player
     }
 
     /**
+     * @deprecated use getCup()->updateByData()
      * @param array $data
      * @return void
      */

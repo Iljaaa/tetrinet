@@ -2,7 +2,6 @@
 
 namespace App\Common\Messages;
 
-use App\Common\Party;
 use App\Common\Types\ResponseType;
 
 class BackToPartyMessage extends Message
