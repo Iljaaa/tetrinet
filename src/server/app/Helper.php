@@ -9,16 +9,6 @@ use App\Common\Types\BonusType;
  */
 class Helper
 {
-    /**
-     * Todo: move to stand alone function
-     * Generate random string for socket(playerId) and partyId
-     * @return string
-     */
-    public static function random (): string
-    {
-        // return sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
-        return (string) random_int(1, 1000000000);
-    }
 
     /**
      * Todo: move to stand alone function

@@ -41,6 +41,7 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'a1cfe24d14977df6878b9bf804af2d1c' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Phpunit/Autoload.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '320163ac6b93aebe3dc25b60a0533d56' => __DIR__ . '/..' . '/spatie/laravel-ignition/src/helpers.php',
+        'ee06ab6b2db7b9a79227454ee260da9e' => __DIR__ . '/../..' . '/app/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -617,6 +618,7 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
     );
 
     public static $classMap = array (
+        'App\\Actions\\OnConnectionClose' => __DIR__ . '/../..' . '/app/Actions/OnConnectionClose.php',
         'App\\Common\\Connection' => __DIR__ . '/../..' . '/app/Common/Connection.php',
         'App\\Common\\Messages\\AfterSetMessage' => __DIR__ . '/../..' . '/app/Common/Messages/AfterSetMessage.php',
         'App\\Common\\Messages\\BackToPartyMessage' => __DIR__ . '/../..' . '/app/Common/Messages/BackToPartyMessage.php',
@@ -915,10 +917,12 @@ class ComposerStaticInitb6efe5edbd28b4806ce8729c9131447f
         'Doctrine\\Inflector\\Rules\\Word' => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector/Rules/Word.php',
         'Doctrine\\Inflector\\RulesetInflector' => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector/RulesetInflector.php',
         'Doctrine\\Inflector\\WordInflector' => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector/WordInflector.php',
+        'Domain\\Game\\Aggregates\\PlayerAggregate' => __DIR__ . '/../..' . '/domain/Game/Aggregates/PlayerAggregate.php',
         'Domain\\Game\\Entities\\Cup' => __DIR__ . '/../..' . '/domain/Game/Entities/Cup.php',
         'Domain\\Game\\Entities\\Party' => __DIR__ . '/../..' . '/domain/Game/Entities/Party.php',
         'Domain\\Game\\Entities\\Player' => __DIR__ . '/../..' . '/domain/Game/Entities/Player.php',
         'Domain\\Game\\Enums\\GameState' => __DIR__ . '/../..' . '/domain/Game/Enums/GameState.php',
+        'Domain\\Game\\ValueObjects\\Connection' => __DIR__ . '/../..' . '/domain/Game/ValueObjects/Connection.php',
         'Dotenv\\Dotenv' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Dotenv.php',
         'Dotenv\\Exception\\ExceptionInterface' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Exception/ExceptionInterface.php',
         'Dotenv\\Exception\\InvalidEncodingException' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Exception/InvalidEncodingException.php',

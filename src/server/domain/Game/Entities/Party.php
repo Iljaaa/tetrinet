@@ -58,7 +58,7 @@ class Party
     {
         // generate party id
         // $this->partyId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
-        $this->partyId = Helper::random();
+        $this->partyId = generateRandomPlayerId();
 
         // add chat message
         $this->addChatMessage('Party created');

@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Actions\\OnConnectionClose' => $baseDir . '/app/Actions/OnConnectionClose.php',
     'App\\Common\\Connection' => $baseDir . '/app/Common/Connection.php',
     'App\\Common\\Messages\\AfterSetMessage' => $baseDir . '/app/Common/Messages/AfterSetMessage.php',
     'App\\Common\\Messages\\BackToPartyMessage' => $baseDir . '/app/Common/Messages/BackToPartyMessage.php',
@@ -304,10 +305,12 @@ return array(
     'Doctrine\\Inflector\\Rules\\Word' => $vendorDir . '/doctrine/inflector/lib/Doctrine/Inflector/Rules/Word.php',
     'Doctrine\\Inflector\\RulesetInflector' => $vendorDir . '/doctrine/inflector/lib/Doctrine/Inflector/RulesetInflector.php',
     'Doctrine\\Inflector\\WordInflector' => $vendorDir . '/doctrine/inflector/lib/Doctrine/Inflector/WordInflector.php',
+    'Domain\\Game\\Aggregates\\PlayerAggregate' => $baseDir . '/domain/Game/Aggregates/PlayerAggregate.php',
     'Domain\\Game\\Entities\\Cup' => $baseDir . '/domain/Game/Entities/Cup.php',
     'Domain\\Game\\Entities\\Party' => $baseDir . '/domain/Game/Entities/Party.php',
     'Domain\\Game\\Entities\\Player' => $baseDir . '/domain/Game/Entities/Player.php',
     'Domain\\Game\\Enums\\GameState' => $baseDir . '/domain/Game/Enums/GameState.php',
+    'Domain\\Game\\ValueObjects\\Connection' => $baseDir . '/domain/Game/ValueObjects/Connection.php',
     'Dotenv\\Dotenv' => $vendorDir . '/vlucas/phpdotenv/src/Dotenv.php',
     'Dotenv\\Exception\\ExceptionInterface' => $vendorDir . '/vlucas/phpdotenv/src/Exception/ExceptionInterface.php',
     'Dotenv\\Exception\\InvalidEncodingException' => $vendorDir . '/vlucas/phpdotenv/src/Exception/InvalidEncodingException.php',

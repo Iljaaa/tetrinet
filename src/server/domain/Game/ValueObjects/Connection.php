@@ -3,6 +3,7 @@
 namespace Domain\Game\ValueObjects;
 
 use App\Helper;
+use Random\RandomException;
 use Ratchet\ConnectionInterface as RatchetConnectionInterface;
 
 /**
@@ -19,11 +20,12 @@ class Connection
      * used when new clint connecting
      * @param RatchetConnectionInterface $rConn
      * @return Connection
+     * @throws RandomException
      */
     public static function init(RatchetConnectionInterface $rConn): Connection
     {
         // generate socket is
-        $rConn->socketId = Helper::random();
+        $rConn->socketId = generateRandomPlayerId();
 
         // what this code do?
         // todo: move id into config
