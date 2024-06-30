@@ -84,9 +84,10 @@ class PoolOfPlayersTest extends TestCase
 
     public function test_when_connection_close()
     {
-
         $pool = new BasePoolOfPlayers();
+
         $pool->addPlayerToPull(PartyType::party, new Player($this->mockConnection, 'Vasinka'), fn() => null);
+        $this->assertEquals(1, $pool->getPullSize(PartyType::party));
 
         // close connection
         $pool->onConnectionClose($this->mockConnection);

@@ -2,11 +2,10 @@
 
 namespace App\Actions;
 
+use App\Actions\Messages\JoinToParty;
 use App\Common\Messages\AfterSetMessage;
 use App\Common\Messages\BackToPartyMessage;
 use App\Common\Messages\GameOverMessage;
-use App\Common\Messages\JoinToPartyMessage;
-use App\Common\Messages\LetsPlayMessage;
 use App\Common\Messages\PausedMessage;
 use App\Common\Messages\ResumeMessage;
 use App\Common\Messages\SpeedupMessage;
@@ -22,7 +21,6 @@ use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
 use Domain\Game\Enums\GameState;
-use Domain\Game\Enums\PartyType;
 use Domain\Game\ValueObjects\Connection;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 
@@ -58,7 +56,10 @@ class OnMessage
 
         switch ($messageType) {
             // case MessageType::start: $this->processStartParty($conn, $data); break;
-            case MessageType::join: $this->processJoinToParty($connection, $data); break;
+            case MessageType::join:
+                (new JoinToParty($this->playersPool, $this->partiesPool))($connection ,$data);
+                // $this->processJoinToParty($connection, $data);
+                break;
             case MessageType::back: $this->processBackToParty($connection, $data); break;
             case MessageType::leave: $this->processLeaveToParty($connection, $data); break;
 
@@ -73,68 +74,68 @@ class OnMessage
     }
 
 
-    /**
+    /*
      * Join to party
      * @param Connection $conn
      * @param array $data
      * @return void
      */
-    private function processJoinToParty (Connection $conn, array $data): void
-    {
-        $this->info(__METHOD__);
-
-        // in witch pool we should add user
-        $pool = PartyType::from($data['partyType'] ?? 'duel');
-        $playerName = trim($data['playerName']);
-        $this->info('get request to add in pull', ['pool' => $pool->value, 'socketId' => $conn->getSocketId(), 'playerName' => $playerName]);
-
-        // create new player
-        $p = new Player($conn, $playerName);
-
-        // create handshake message
-        $m = (new JoinToPartyMessage())
-            ->setPartyType($pool)
-            ->setYourPlayerId($p->getConnectionId());
-
-        // send answer to handshake with connection id
-        $p->getConnection()->send($m->getDataAsString());
-
-        /**
-         * @param Player[] $players
-         * @return void
-         */
-        $onPoolReadyToMakeParty = function (array $players)
-        {
-            // create party
-            $party = $this->partiesPool->createParty();
-
-            //
-            $this->partiesPool->addParty($party);
-
-            // move players to party
-            foreach ($players as $p) $party->addPlayer($p);
-
-            // choose host
-            // $party->setHost();
-
-            // run game
-            // $this->party->setGameState(GameState::running);
-            $party->setGameRunning();
-
-            // create message
-            $m = new LetsPlayMessage($party);
-            $party->sendMessageToAllPlayers($m);
-
-            // send chat message to all
-            $party->sendChatToAllPlayers();
-
-        };
-
-        // add player to pool
-        $this->playersPool->addPlayerToPull($pool, $p, $onPoolReadyToMakeParty);
-        // if ($pool === PartyType::duel) $this->playersPool->addToDuels($p, $onPoolReadyToMakeParty);
-        // if ($pool === PartyType::party) $this->playersPool->addToParty($p, $onPoolReadyToMakeParty);
-    }
+//    private function processJoinToParty (Connection $conn, array $data): void
+//    {
+//        $this->info(__METHOD__);
+//
+//        // in witch pool we should add user
+//        $pool = PartyType::from($data['partyType'] ?? 'duel');
+//        $playerName = trim($data['playerName']);
+//        $this->info('get request to add in pull', ['pool' => $pool->value, 'socketId' => $conn->getSocketId(), 'playerName' => $playerName]);
+//
+//        // create new player
+//        $p = new Player($conn, $playerName);
+//
+//        // create handshake message
+//        $m = (new JoinToPartyMessage())
+//            ->setPartyType($pool)
+//            ->setYourPlayerId($p->getConnectionId());
+//
+//        // send answer to handshake with connection id
+//        $p->getConnection()->send($m->getDataAsString());
+//
+//        /**
+//         * @param Player[] $players
+//         * @return void
+//         */
+//        $onPoolReadyToMakeParty = function (array $players)
+//        {
+//            // create party
+//            $party = $this->partiesPool->createParty();
+//
+//            //
+//            $this->partiesPool->addParty($party);
+//
+//            // move players to party
+//            foreach ($players as $p) $party->addPlayer($p);
+//
+//            // choose host
+//            // $party->setHost();
+//
+//            // run game
+//            // $this->party->setGameState(GameState::running);
+//            $party->setGameRunning();
+//
+//            // create message
+//            $m = new LetsPlayMessage($party);
+//            $party->sendMessageToAllPlayers($m);
+//
+//            // send chat message to all
+//            $party->sendChatToAllPlayers();
+//
+//        };
+//
+//        // add player to pool
+//        $this->playersPool->addPlayerToPull($pool, $p, $onPoolReadyToMakeParty);
+//        // if ($pool === PartyType::duel) $this->playersPool->addToDuels($p, $onPoolReadyToMakeParty);
+//        // if ($pool === PartyType::party) $this->playersPool->addToParty($p, $onPoolReadyToMakeParty);
+//    }
 
     /**
      * @param Connection $conn
