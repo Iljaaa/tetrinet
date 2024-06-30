@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts\Game;
+namespace Domain\Game\Contracts;
 
 use Domain\Game\Entities\Player;
 use Domain\Game\ValueObjects\Connection;

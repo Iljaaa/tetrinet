@@ -3,11 +3,10 @@
 namespace tests\Unit;
 
 use App\Actions\OnConnectionClose;
-use App\Contracts\Game\PoolOfParties;
-use App\Contracts\Game\PoolOfPlayers;
+use domain\Game\Contracts\PoolOfParties;
+use domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\ValueObjects\Connection;
 use PHPUnit\Framework\TestCase;
-use Ratchet\ConnectionInterface;
 
 class OnConnectionCloseTest extends TestCase
 {

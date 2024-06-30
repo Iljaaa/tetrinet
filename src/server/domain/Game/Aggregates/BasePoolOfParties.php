@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services\Game;
+namespace Domain\Game\Aggregates;
 
-use App\Contracts\Game\PoolOfParties;
-use domain\Game\Entities\Party;
+use Domain\Game\Contracts\PoolOfParties;
+use Domain\Game\Entities\Party;
 
 class BasePoolOfParties implements PoolOfParties
 {

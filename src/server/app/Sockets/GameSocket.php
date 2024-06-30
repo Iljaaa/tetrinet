@@ -16,9 +16,9 @@ use App\Common\Types\BonusType;
 use App\Common\Types\MessageType;
 use App\Common\Types\PartyType;
 use App\Common\Types\ResponseType;
-use App\Contracts\Game\PoolOfParties;
-use App\Contracts\Game\PoolOfPlayers;
 use App\Helper;
+use Domain\Game\Contracts\PoolOfParties;
+use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
@@ -344,11 +344,11 @@ class GameSocket implements MessageComponentInterface
     }
 
     /**
-     * @param ConnectionInterface $conn
+     * @param RatchetConnectionInterface $conn
      * @param array $data
      * @return void
      */
-    private function processSet (ConnectionInterface $conn, array $data): void
+    private function processSet (RatchetConnectionInterface $conn, array $data): void
     {
         $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
         $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';

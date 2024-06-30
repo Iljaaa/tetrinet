@@ -6,9 +6,8 @@ use App\Common\ChatMessage;
 use App\Common\Messages\GameOverMessage;
 use App\Common\Messages\Message;
 use App\Common\Messages\UpdateChatMessage;
-use App\Helper;
-use domain\Game\Enums\CupState;
-use domain\Game\Enums\GameState;
+use Domain\Game\Enums\CupState;
+use Domain\Game\Enums\GameState;
 use Illuminate\Support\Facades\Log;
 
 /**

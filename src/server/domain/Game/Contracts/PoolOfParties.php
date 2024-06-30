@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Contracts\Game;
+namespace Domain\Game\Contracts;
 
-use domain\Game\Entities\Party;
+use Domain\Game\Entities\Party;
 
 interface PoolOfParties
 {

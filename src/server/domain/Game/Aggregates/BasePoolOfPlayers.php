@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Services\Game;
+namespace Domain\Game\Aggregates;
 
-use App\Contracts\Game\PoolOfPlayers;
+use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\ValueObjects\Connection;
 use Illuminate\Support\Facades\Log;
-use Ratchet\ConnectionInterface;
 
 /**
  * Base pool

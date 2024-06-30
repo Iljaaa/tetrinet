@@ -4,8 +4,8 @@ namespace App\Common\Messages;
 
 use App\Common\Types\BonusType;
 use App\Common\Types\ResponseType;
-use domain\Game\Entities\Cup;
-use domain\Game\Entities\Party;
+use Domain\Game\Entities\Cup;
+use Domain\Game\Entities\Party;
 
 class SwitchCupsMessage extends Message
 {

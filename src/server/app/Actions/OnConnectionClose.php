@@ -2,8 +2,8 @@
 
 namespace App\Actions;
 
-use App\Contracts\Game\PoolOfParties;
-use App\Contracts\Game\PoolOfPlayers;
+use Domain\Game\Contracts\PoolOfParties;
+use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\ValueObjects\Connection;
 

@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Contracts\Game\PoolOfParties;
-use App\Contracts\Game\PoolOfPlayers;
-use App\Services\Game\BasePoolOfParties;
-use App\Services\Game\BasePoolOfPlayers;
 use App\Services\TelegramBotService;
+use Domain\Game\Aggregates\BasePoolOfParties;
+use Domain\Game\Aggregates\BasePoolOfPlayers;
+use Domain\Game\Contracts\PoolOfParties;
+use Domain\Game\Contracts\PoolOfPlayers;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

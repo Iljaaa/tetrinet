@@ -3,7 +3,7 @@
 namespace App\Common\Messages;
 
 use App\Common\Types\ResponseType;
-use domain\Game\Entities\Party;
+use Domain\Game\Entities\Party;
 
 class ResumeMessage extends Message
 {
