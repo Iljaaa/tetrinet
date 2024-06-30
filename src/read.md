@@ -147,8 +147,8 @@ then restart supervisord
 sudo systemctl restart supervisor
 ```
 
-Start, restart, 
+Start (restart, stop) 
 ```
-
+sudo supervisorctl start websocket
 ```
 
