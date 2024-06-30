@@ -7,6 +7,9 @@ use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\ValueObjects\Connection;
 
+/**
+ * todo: move connection from constructor
+ */
 class OnConnectionClose
 {
     public function __construct(

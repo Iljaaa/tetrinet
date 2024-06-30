@@ -35,6 +35,7 @@ class Party
     private array $players = [];
 
     /**
+     * todo: remove chat from this object
      * @var array
      */
     private array $chat = [];

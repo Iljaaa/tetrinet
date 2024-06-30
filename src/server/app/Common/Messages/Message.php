@@ -12,7 +12,7 @@ class Message
      */
     protected array $data = [];
 
-    /**
+    /*
      * this is chat
      * @var array
      *
@@ -22,7 +22,7 @@ class Message
 //    {
 //        $this->setData();
 //        return $this;
-//    }
+//    }*/
 
     /**
      * @param string $key

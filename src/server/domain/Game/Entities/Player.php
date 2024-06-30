@@ -3,6 +3,7 @@
 namespace Domain\Game\Entities;
 
 use App\Common\Types\PlayerState;
+use Domain\Game\ValueObjects\Connection;
 use Ratchet\ConnectionInterface;
 
 /**
@@ -12,10 +13,10 @@ use Ratchet\ConnectionInterface;
 class Player
 {
     /**
-     * todo: move connection to Aggregate
-     * @var ConnectionInterface
+     * todo: remove connecttion from here
+     * @var Connection
      */
-    private ConnectionInterface $connection;
+    private Connection $connection;
 
     /**
      * Player name
@@ -39,7 +40,7 @@ class Player
      */
     private int $pauses = 5;
 
-    public function __construct(ConnectionInterface $connection, string $name)
+    public function __construct(Connection $connection, string $name)
     {
         $this->connection = $connection;
         $this->name = $name;
@@ -48,9 +49,9 @@ class Player
     }
 
     /**
-     * @return ConnectionInterface
+     * @return Connection
      */
-    public function getConnection(): ConnectionInterface
+    public function getConnection(): Connection
     {
         return $this->connection;
     }
@@ -62,7 +63,7 @@ class Player
      */
     public function getConnectionId(): string
     {
-        return $this->connection->socketId;
+        return $this->connection->getSocketId();
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace Domain\Game\ValueObjects;
 
-use App\Helper;
 use Random\RandomException;
 use Ratchet\ConnectionInterface as RatchetConnectionInterface;
 
@@ -50,5 +49,15 @@ class Connection
     public function getSocketId(): string
     {
         return $this->rConn->socketId;
+    }
+
+    /**
+     * Send data
+     * @param string $data
+     * @return void
+     */
+    public function send(string $data)
+    {
+        $this->rConn->send($data);
     }
 }
