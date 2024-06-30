@@ -48,7 +48,7 @@ class JoinToParty
         // create handshake message
         $m = (new JoinToPartyMessage())
             ->setPartyType($pool)
-            ->setYourPlayerId($p->getConnectionId());
+            ->setYourPlayerId($p->getConnection()->getSocketId());
 
         // send answer to handshake with connection id
         $p->getConnection()->send($m->getDataAsString());

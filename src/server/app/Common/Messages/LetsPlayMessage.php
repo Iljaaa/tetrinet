@@ -19,7 +19,7 @@ class LetsPlayMessage extends Message
         // create party info
         $partyResponse = [];
         foreach ($party->getPlayers() as $p) $partyResponse[] = [
-            'playerId' => $p->getConnectionId(),
+            'playerId' => $p->getConnection()->getSocketId(),
             'name' => $p->getName()
         ];
 

@@ -441,7 +441,7 @@ class OnMessage
         $opponent = $party->findPlayerById($target);
 
         $this->info("send bonus", [
-            'opponent' => $opponent->getConnectionId(),
+            'opponent' => $opponent->getConnection()->getSocketId(),
             'target' => $target,
             'bonus' => $bonus,
         ]);

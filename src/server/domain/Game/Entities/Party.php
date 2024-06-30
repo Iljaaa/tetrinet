@@ -77,7 +77,7 @@ class Party
      */
     public function addPlayer (Player $p): void
     {
-        $this->players[$p->getConnectionId()] = $p;
+        $this->players[$p->getConnection()->getSocketId()] = $p;
         // return array_search($connection, $this->players);
     }
 

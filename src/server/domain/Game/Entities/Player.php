@@ -57,16 +57,6 @@ class Player
     }
 
     /**
-     * @deprecated use getConnection()->socketId
-     * Get socket is from connection
-     * @return string
-     */
-    public function getConnectionId(): string
-    {
-        return $this->connection->getSocketId();
-    }
-
-    /**
      * @return Cup
      */
     public function getCup(): Cup
