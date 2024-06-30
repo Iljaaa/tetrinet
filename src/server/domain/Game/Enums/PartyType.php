@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Common\Types;
+namespace Domain\Game\Enums;
 
 /**
- * Type messages received from client
+ * Type of parties
  */
 enum PartyType:string
 {

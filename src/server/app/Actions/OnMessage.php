@@ -14,7 +14,6 @@ use App\Common\Messages\SwitchCupsMessage;
 use app\Common\SocketLogTrait;
 use App\Common\Types\BonusType;
 use App\Common\Types\MessageType;
-use App\Common\Types\PartyType;
 use App\Common\Types\ResponseType;
 use App\Helper;
 use Domain\Game\Contracts\PoolOfParties;
@@ -23,6 +22,7 @@ use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
 use Domain\Game\Enums\GameState;
+use Domain\Game\Enums\PartyType;
 use Domain\Game\ValueObjects\Connection;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 
@@ -130,9 +130,10 @@ class OnMessage
 
         };
 
-        // add to pool
-        if ($pool === PartyType::duel) $this->playersPool->addToDuels($p, $onPoolReadyToMakeParty);
-        if ($pool === PartyType::party) $this->playersPool->addToParty($p, $onPoolReadyToMakeParty);
+        // add player to pool
+        $this->playersPool->addPlayerToPull($pool, $p, $onPoolReadyToMakeParty);
+        // if ($pool === PartyType::duel) $this->playersPool->addToDuels($p, $onPoolReadyToMakeParty);
+        // if ($pool === PartyType::party) $this->playersPool->addToParty($p, $onPoolReadyToMakeParty);
     }
 
     /**

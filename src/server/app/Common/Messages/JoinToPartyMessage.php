@@ -2,7 +2,7 @@
 
 namespace App\Common\Messages;
 
-use App\Common\Types\PartyType;
+use domain\Game\Enums\PartyType;
 
 class JoinToPartyMessage extends Message
 {

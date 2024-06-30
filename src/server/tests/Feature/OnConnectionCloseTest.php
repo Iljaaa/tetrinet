@@ -1,10 +1,10 @@
 <?php
 
-namespace tests\Unit;
+namespace tests\Feature;
 
 use App\Actions\OnConnectionClose;
-use domain\Game\Contracts\PoolOfParties;
-use domain\Game\Contracts\PoolOfPlayers;
+use Domain\Game\Contracts\PoolOfParties;
+use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\ValueObjects\Connection;
 use PHPUnit\Framework\TestCase;
 
@@ -32,4 +32,8 @@ class OnConnectionCloseTest extends TestCase
 
         $this->assertTrue(true);
     }
+
+
+
+
 }
