@@ -9,11 +9,12 @@ use Ratchet\ConnectionInterface;
 /**
  * Player object it is,
  * todo: refactor player to aggregate with connection and player
+ * todo: make factory method
  */
 class Player
 {
     /**
-     * todo: remove connecttion from here
+     * todo: remove connection from here
      * @var Connection
      */
     private Connection $connection;

@@ -2,7 +2,9 @@
 
 namespace App\Actions;
 
+use app\Actions\Messages\BackToParty;
 use App\Actions\Messages\JoinToParty;
+use App\Actions\Messages\LeaveParty;
 use App\Common\Messages\AfterSetMessage;
 use App\Common\Messages\BackToPartyMessage;
 use App\Common\Messages\GameOverMessage;
@@ -57,11 +59,13 @@ class OnMessage
         switch ($messageType) {
             // case MessageType::start: $this->processStartParty($conn, $data); break;
             case MessageType::join:
-                (new JoinToParty($this->playersPool, $this->partiesPool))($connection ,$data);
-                // $this->processJoinToParty($connection, $data);
-                break;
-            case MessageType::back: $this->processBackToParty($connection, $data); break;
-            case MessageType::leave: $this->processLeaveToParty($connection, $data); break;
+                (new JoinToParty($this->playersPool, $this->partiesPool))($connection ,$data);break;
+            case MessageType::back:
+                // $this->processBackToParty($connection, $data); break;
+                (new BackToParty($this->partiesPool))($connection, $data); break;
+            case MessageType::leave:
+                // $this->processLeaveToParty($connection, $data); break;
+                (new LeaveParty($this->partiesPool))($connection, $data); break;
 
             case MessageType::pause: $this->processPause($connection, $data); break;
             case MessageType::resume: $this->processResume($connection, $data); break;
@@ -137,93 +141,93 @@ class OnMessage
 //        // if ($pool === PartyType::party) $this->playersPool->addToParty($p, $onPoolReadyToMakeParty);
 //    }
 
-    /**
+    /*
      * @param Connection $conn
      * @param array $data
      * @return void
      */
-    private function processBackToParty(Connection $conn, array $data)
-    {
-        $this->info(__METHOD__);
+//    private function processBackToParty(Connection $conn, array $data)
+//    {
+//        $this->info(__METHOD__);
+//
+//        $playerId = $data['playerId'];
+//        $partyId = $data['partyId'];
+//        $this->info('back to', ['partyId' => $partyId, 'playerId' => $playerId]);
+//
+//        // response message
+//        $m = new BackToPartyMessage();
+//
+//        $party = $this->partiesPool->getPartyById($partyId);
+//        if (!$party){
+//            $this->info('party not found');
+//            $m->partyNotFound('Party not found');
+//            $conn->send($m->getDataAsString());
+//            return;
+//        }
+//
+//        // find play in the party
+//        $player = $party->findPlayerById($playerId);
+//        if (!$player){
+//            $this->info('Player not found in the party');
+//            $m->partyNotFound('Player not found in the party');
+//            $conn->send($m->getDataAsString());
+//            return;
+//        }
+//
+//        // change socket id
+//        // $conn->socketId = $playerId;
+//
+//        $this->info('party found');
+//
+//        // todo: add log message
+//        // $party->addChatMessage();
+//
+//        // return cups info
+//        $m->setCupsResponseData($party->getCupsResponse());
+//
+//        //
+//        // it it not working because player has new socket id
+//        // and we do not have it in collection
+//        //
+//        //
+//
+//        $this->info('party found');
+//        $party->sendMessageToAllPlayers($m);
+//    }
 
-        $playerId = $data['playerId'];
-        $partyId = $data['partyId'];
-        $this->info('back to', ['partyId' => $partyId, 'playerId' => $playerId]);
-
-        // response message
-        $m = new BackToPartyMessage();
-
-        $party = $this->partiesPool->getPartyById($partyId);
-        if (!$party){
-            $this->info('party not found');
-            $m->partyNotFound('Party not found');
-            $conn->send($m->getDataAsString());
-            return;
-        }
-
-        // find play in the party
-        $player = $party->findPlayerById($playerId);
-        if (!$player){
-            $this->info('Player not found in the party');
-            $m->partyNotFound('Player not found in the party');
-            $conn->send($m->getDataAsString());
-            return;
-        }
-
-        // change socket id
-        // $conn->socketId = $playerId;
-
-        $this->info('party found');
-
-        // todo: add log message
-        // $party->addChatMessage();
-
-        // return cups info
-        $m->setCupsResponseData($party->getCupsResponse());
-
-        //
-        // it it not working because player has new socket id
-        // and we do not have it in collection
-        //
-        //
-
-        $this->info('party found');
-        $party->sendMessageToAllPlayers($m);
-    }
-
-    /**
+    /*
      * @param Connection $conn
      * @param array $data
      * @return void
      */
-    private function processLeaveToParty(Connection $conn, array $data)
-    {
-        $this->info(__METHOD__);
-
-        $playerId = $data['playerId'] ?? '';
-        $partyId = $data['partyId'] ?? '';
-        $this->info('leave', ['partyId' => $partyId, 'playerId' => $playerId]);
-
-        $party = $this->partiesPool->getPartyById($partyId);
-        if (!$party) return;
-
-        // find player in the party
-        $player = $party->findPlayerById($playerId);
-        if (!$player) return;
-
-        // mark player as offline
-        $player->setOffline();
-
-        // set cup as over
-        $player->getCup()->setCupAsOver();
-
-        // notify users about
-        $party->addChatMessage(sprintf('Player __%s__ leave the game', $player->getName()));
-        $party->sendChatToAllPlayers();
-
-        // detect end game
-        $this->determineGameOverInSet($party);
-    }
+//    private function processLeaveToParty(Connection $conn, array $data)
+//    {
+//        $this->info(__METHOD__);
+//
+//        $playerId = $data['playerId'] ?? '';
+//        $partyId = $data['partyId'] ?? '';
+//        $this->info('leave', ['partyId' => $partyId, 'playerId' => $playerId]);
+//
+//        $party = $this->partiesPool->getPartyById($partyId);
+//        if (!$party) return;
+//
+//        // find player in the party
+//        $player = $party->findPlayerById($playerId);
+//        if (!$player) return;
+//
+//        // mark player as offline
+//        $player->setOffline();
+//
+//        // set cup as over
+//        $player->getCup()->setCupAsOver();
+//
+//        // notify users about
+//        $party->addChatMessage(sprintf('Player __%s__ leave the game', $player->getName()));
+//        $party->sendChatToAllPlayers();
+//
+//        // detect end game
+//        $this->determineGameOverInSet($party);
+//    }
 
     /**
      * @param Connection $conn

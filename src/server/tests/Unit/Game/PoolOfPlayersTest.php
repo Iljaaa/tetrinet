@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\Unit;
+namespace tests\Unit\Game;
 
 use Domain\Game\Aggregates\BasePoolOfPlayers;
 use Domain\Game\Entities\Player;

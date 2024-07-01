@@ -57,17 +57,17 @@ class Party
     public function __construct ()
     {
         // generate party id
-        // $this->partyId = sprintf('%d.%d', random_int(1, 1000000000), random_int(1, 1000000000));
+        // fixme: OMG! this is not valid to D from SOLID
         $this->partyId = generateRandomPlayerId();
 
         // add chat message
-        $this->addChatMessage('Party created');
-
+        // fixme: and this not S from solid
+        $this->addChatMessage(sprintf('Party %s created', $this->partyId));
     }
 
     public function __destruct()
     {
-        Log::channel('socket')->info('party '.$this->partyId.' terminated2222');
+        Log::channel('socket')->info('party '.$this->partyId.' terminated');
     }
 
 
@@ -161,15 +161,6 @@ class Party
     public function getPlayers (): array {
         return $this->players;
     }
-
-    /**
-     * @param string $playerId
-     * @return Player|null
-     */
-    public function getPlayerById (string $playerId): ?Player {
-        return $this->players[$playerId] ?? null;
-    }
-
     /**
      * Pause game
      * @return void
@@ -203,6 +194,7 @@ class Party
 //    }
 
     /**
+     * @deprecated use getPlayerById
      * @param string $playerId
      * @return Player|null
      */
@@ -211,6 +203,15 @@ class Party
         // return $opponentConnection;
         return $this->players[$playerId];
     }
+
+    /**
+     * @param string $playerId
+     * @return Player|null
+     */
+    public function getPlayerById (string $playerId): ?Player {
+        return $this->players[$playerId] ?? null;
+    }
+
 
     /**
      * @return GameState
@@ -273,7 +274,7 @@ class Party
 
     /**
      * Here we check end of the game
-     * todo: this function to big it must be in service
+     * todo: add callback tat party is ends
      * @return void
      */
     public function determineGameOverInSetItOver (): void
