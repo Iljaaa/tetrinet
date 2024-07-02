@@ -49,4 +49,7 @@ class PartyTest extends TestCase
 //        $this->assertEquals(PlayerState::offline, $player->state);
 //        $this->assertEquals(CupState::over, $player->getCup()->getState());
 //    }
+
+
+    // test that user exists in party and not
 }

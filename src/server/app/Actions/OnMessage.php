@@ -2,28 +2,20 @@
 
 namespace App\Actions;
 
-use app\Actions\Messages\BackToParty;
+use App\Actions\Messages\BackToParty;
+use App\Actions\Messages\ChatMessage;
 use App\Actions\Messages\JoinToParty;
 use App\Actions\Messages\LeaveParty;
 use App\Actions\Messages\Pause;
 use App\Actions\Messages\Resume;
+use App\Actions\Messages\SendBonus;
 use App\Actions\Messages\SetCup;
-use App\Common\Messages\GameOverMessage;
-use App\Common\Messages\PausedMessage;
-use App\Common\Messages\ResumeMessage;
-use App\Common\Messages\SpeedupMessage;
-use App\Common\Messages\SwitchCupsMessage;
-use app\Common\SocketLogTrait;
-use App\Common\Types\BonusType;
+use app\Actions\Messages\SpeedUp;
+use App\Common\SocketLogTrait;
 use App\Common\Types\MessageType;
-use App\Common\Types\ResponseType;
-use App\Helper;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
-use Domain\Game\Entities\Party;
-use Domain\Game\Entities\Player;
-use Domain\Game\Enums\CupState;
-use Domain\Game\Enums\GameState;
+use Domain\Game\Exceptions\DomainException;
 use Domain\Game\ValueObjects\Connection;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 
@@ -43,6 +35,7 @@ class OnMessage
      * @param Connection $connection
      * @param MessageInterface $msg
      * @return void
+     * @throws DomainException
      */
     public function handle(Connection $connection, MessageInterface $msg): void
     {
@@ -80,9 +73,18 @@ class OnMessage
                 (new SetCup($this->partiesPool))($data);
                 break;
             // case MessageType::addLine: $this->processAddLine($conn, $data); break;
-            case MessageType::sendBonus: $this->processSendBonus($connection, $data); break;
-            case MessageType::chatMessage: $this->processChatMessage($connection, $data); break;
-            case MessageType::speedUp: $this->processSpeedUpMessage($connection, $data); break;
+            case MessageType::sendBonus:
+                // $this->processSendBonus($connection, $data); break;
+                (new SendBonus($this->partiesPool))($data);
+                break;
+            case MessageType::chatMessage:
+                // $this->processChatMessage($connection, $data); break;
+                (new ChatMessage($this->partiesPool))($data);
+                break;
+            case MessageType::speedUp:
+                // $this->processSpeedUpMessage($connection, $data); break;
+                (new SpeedUp($this->partiesPool))($data);
+                break;
         }
     }
 
@@ -397,201 +399,201 @@ class OnMessage
 //
 //    }
 
-    /**
+    /*
      * @param Connection $conn
      * @param array $data
      * @return void
      */
-    private function processSendBonus (Connection $conn, array $data): void
-    {
-        // send to target player
-        // but, now we have two players and if it not a sender then it opponent
+//    private function processSendBonus (Connection $conn, array $data): void
+//    {
+//        // send to target player
+//        // but, now we have two players and if it not a sender then it opponent
+//
+//        // player index in party
+//        // $partyIndex = (int) $data['partyIndex'];
+//
+//        /**
+//         */
+//        // $source = (int) $data['source'];
+//
+//        // party
+//        $partyId = $data['partyId'] ?? '';
+//
+//        /**
+//         * Target player id
+//         */
+//        $target = $data['target'];
+//        $playerId = $data['playerId'];
+//
+////        $sourceSocketId = $data['sourceSocketId'];
+////        $targetSocketId = $data['targetSocketId'];
+//
+//        $bonus = BonusType::from((int) $data['bonus']);
+//
+//        // special situation split cup bonus
+//        if ($bonus == BonusType::switch) {
+//            $this->info('process switch', ['data' => $data]);
+//            $this->processSwitchSpecial($partyId, $playerId, $target);
+//            return;
+//        }
+//
+//        // add log
+//
+//        // found opponent
+//
+//        // pause game
+//        // $party = $this->party;
+//        $party = $this->partiesPool->getPartyById($partyId);
+//
+//        $player = $party->getPlayerById($playerId);
+//        $opponent = $party->getPlayerById($target);
+//
+//        $this->info("send bonus", [
+//            'opponent' => $opponent->getConnection()->getSocketId(),
+//            'target' => $target,
+//            'bonus' => $bonus,
+//        ]);
+//
+//        // send command to opponent
+//        // todo: think about chat may be we should create stand alone message
+//        if ($opponent) {
+//            $opponent->getConnection()->send(json_encode([
+//                'type' => ResponseType::getBonus,
+//                'source' => $conn->getSocketId(),
+//                'target' => $target,
+//                'bonus' => $bonus->value
+//            ]));
+//        }
+//
+//        // add message
+//        $party->addChatMessage(sprintf('Player __%s__ sent __%s__ to __%s__', $player->getName(),  Helper::GetNiceBlockName($bonus), $opponent->getName()));
+//        $party->sendChatToAllPlayers();
+//    }
 
-        // player index in party
-        // $partyIndex = (int) $data['partyIndex'];
-
-        /**
-         */
-        // $source = (int) $data['source'];
-
-        // party
-        $partyId = $data['partyId'] ?? '';
-
-        /**
-         * Target player id
-         */
-        $target = $data['target'];
-        $playerId = $data['playerId'];
-
-//        $sourceSocketId = $data['sourceSocketId'];
-//        $targetSocketId = $data['targetSocketId'];
-
-        $bonus = BonusType::from((int) $data['bonus']);
-
-        // special situation split cup bonus
-        if ($bonus == BonusType::switch) {
-            $this->info('process switch', ['data' => $data]);
-            $this->processSwitchSpecial($partyId, $playerId, $target);
-            return;
-        }
-
-        // add log
-
-        // found opponent
-
-        // pause game
-        // $party = $this->party;
-        $party = $this->partiesPool->getPartyById($partyId);
-
-        $player = $party->findPlayerById($playerId);
-        $opponent = $party->findPlayerById($target);
-
-        $this->info("send bonus", [
-            'opponent' => $opponent->getConnection()->getSocketId(),
-            'target' => $target,
-            'bonus' => $bonus,
-        ]);
-
-        // send command to opponent
-        // todo: think about chat may be we should create stand alone message
-        if ($opponent) {
-            $opponent->getConnection()->send(json_encode([
-                'type' => ResponseType::getBonus,
-                'source' => $conn->getSocketId(),
-                'target' => $target,
-                'bonus' => $bonus->value
-            ]));
-        }
-
-        // add message
-        $party->addChatMessage(sprintf('Player __%s__ sent __%s__ to __%s__', $player->getName(),  Helper::GetNiceBlockName($bonus), $opponent->getName()));
-        $party->sendChatToAllPlayers();
-    }
-
-    /**
+    /*
      * This is process special block Switch
      * @param string $partyId
      * @param string $sourcePlayerId
      * @param string $targetPlayerId
      * @return void
      */
-    private function processSwitchSpecial(string $partyId, string $sourcePlayerId, string $targetPlayerId): void
-    {
-        $this->info(__METHOD__, ['partyId' => $partyId, 'sourcePlayerId' => $sourcePlayerId, 'targetPlayerId' => $targetPlayerId]);
-        $party = $this->partiesPool->getPartyById($partyId);
-        if (!$party) return;
-        // $this->info("party: ".$party->partyId);
+//    private function processSwitchSpecial(string $partyId, string $sourcePlayerId, string $targetPlayerId): void
+//    {
+//        $this->info(__METHOD__, ['partyId' => $partyId, 'sourcePlayerId' => $sourcePlayerId, 'targetPlayerId' => $targetPlayerId]);
+//        $party = $this->partiesPool->getPartyById($partyId);
+//        if (!$party) return;
+//        // $this->info("party: ".$party->partyId);
+//
+//        $sourcePlayer = $party->getPlayerById($sourcePlayerId);
+//        if (!$sourcePlayer) return;
+//        // $this->info('source player: '.$sourcePlayer->getConnectionId());
+//
+//        $targetPlayer = $party->getPlayerById($targetPlayerId);
+//        if (!$targetPlayer) return;
+//        // $this->info('target: '.$targetPlayer->getConnectionId());
+//
+//        // split cups
+//        $targetPlayerCup = $targetPlayer->getCup();
+//
+//        $targetPlayer->setCup($sourcePlayer->getCup());
+//        $sourcePlayer->setCup($targetPlayerCup);
+//
+//        $m = new SwitchCupsMessage($party);
+//
+//        // sens new cup to target player
+//        $m->setSwitchData($targetPlayerId, $sourcePlayerId, $targetPlayer->getCup());
+//        $targetPlayer->getConnection()->send($m->getDataAsString());
+//
+//        // sens new cup to target player
+//        $m->setSwitchData($targetPlayerId, $sourcePlayerId, $sourcePlayer->getCup());
+//        $sourcePlayer->getConnection()->send($m->getDataAsString());
+//
+//        // send message to chat
+//        $party->addChatMessage(sprintf('Player __%s__ switch cup with __%s__', $sourcePlayer->getName(), $targetPlayer->getName()));
+//        $party->sendChatToAllPlayers();
+//    }
 
-        $sourcePlayer = $party->getPlayerById($sourcePlayerId);
-        if (!$sourcePlayer) return;
-        // $this->info('source player: '.$sourcePlayer->getConnectionId());
-
-        $targetPlayer = $party->getPlayerById($targetPlayerId);
-        if (!$targetPlayer) return;
-        // $this->info('target: '.$targetPlayer->getConnectionId());
-
-        // split cups
-        $targetPlayerCup = $targetPlayer->getCup();
-
-        $targetPlayer->setCup($sourcePlayer->getCup());
-        $sourcePlayer->setCup($targetPlayerCup);
-
-        $m = new SwitchCupsMessage($party);
-
-        // sens new cup to target player
-        $m->setSwitchData($targetPlayerId, $sourcePlayerId, $targetPlayer->getCup());
-        $targetPlayer->getConnection()->send($m->getDataAsString());
-
-        // sens new cup to target player
-        $m->setSwitchData($targetPlayerId, $sourcePlayerId, $sourcePlayer->getCup());
-        $sourcePlayer->getConnection()->send($m->getDataAsString());
-
-        // send message to chat
-        $party->addChatMessage(sprintf('Player __%s__ switch cup with __%s__', $sourcePlayer->getName(), $targetPlayer->getName()));
-        $party->sendChatToAllPlayers();
-    }
-
-    /**
+    /*
      * Process chat message
      * @param Connection $conn
      * @param array $data
      * @return void
      */
-    private function processChatMessage(Connection $conn, array $data): void
-    {
-        // party
-        $partyId = $data['partyId'] ?? '';
-        if (!$partyId) return;
-        $party = $this->partiesPool->getPartyById($partyId);
-        if (!$party) return;
-
-
-        // player
-        $playerId = $data['playerId'] ?? '';
-        if (!$playerId) return;
-        $player = $party->findPlayerById($playerId);
-        if (!$player) return;
-
-        $this->info('new chat message', [
-            'partyId' => $partyId,
-            'playerId' => $playerId
-        ]);
-
-        $message = $data['message'] ?? '';
-
-        // add message
-        $party->addChatMessage($message, $player->getName(), $playerId);
-        $party->sendChatToAllPlayers();
-    }
-
-    /**
-     * Process chat message
-     * @param Connection $conn
-     * @param array $data
-     * @return void
-     */
-    private function processSpeedUpMessage(Connection $conn, array $data): void
-    {
-
-        $this->info('data from speed up request', $data);
-
-        // party
-        $partyId = $data['partyId'] ?? '';
-        if (!$partyId) return;
-
-        $party = $this->partiesPool->getPartyById($partyId);
-        if (!$party) return;
-
-        $newSpeed = $data['speed'] ?? null;
-        if ($newSpeed === null) {
-            $this->error('speed not received from request');
-            return;
-        }
-
-        // increase speed
-        // $party->speedUp();
-        if (!$party->setSpeed($newSpeed)){
-            $this->info('speed was not updated, ignore it');
-            return;
-        }
-
-        // player
+//    private function processChatMessage(Connection $conn, array $data): void
+//    {
+//        // party
+//        $partyId = $data['partyId'] ?? '';
+//        if (!$partyId) return;
+//        $party = $this->partiesPool->getPartyById($partyId);
+//        if (!$party) return;
+//
+//
+//        // player
 //        $playerId = $data['playerId'] ?? '';
 //        if (!$playerId) return;
 //        $player = $party->findPlayerById($playerId);
 //        if (!$player) return;
+//
+//        $this->info('new chat message', [
+//            'partyId' => $partyId,
+//            'playerId' => $playerId
+//        ]);
+//
+//        $message = $data['message'] ?? '';
+//
+//        // add message
+//        $party->addChatMessage($message, $player->getName(), $playerId);
+//        $party->sendChatToAllPlayers();
+//    }
 
-        $this->info('speed up', [
-            'partyId' => $partyId,
-            'speed' => $party->getSpeed()
-        ]);
-
-        $m = sprintf('Speed has increased to: %s', $party->getSpeed());
-
-        $party->addChatMessage($m);
-        $party->sendChatToAllPlayers();
-
-        $party->sendMessageToAllPlayers(new SpeedupMessage($party, $party->getSpeed()));
-
-    }
+    /*
+     * Process chat message
+     * @param Connection $conn
+     * @param array $data
+     * @return void
+     */
+//    private function processSpeedUpMessage(Connection $conn, array $data): void
+//    {
+//
+//        $this->info('data from speed up request', $data);
+//
+//        // party
+//        $partyId = $data['partyId'] ?? '';
+//        if (!$partyId) return;
+//
+//        $party = $this->partiesPool->getPartyById($partyId);
+//        if (!$party) return;
+//
+//        $newSpeed = $data['speed'] ?? null;
+//        if ($newSpeed === null) {
+//            $this->error('speed not received from request');
+//            return;
+//        }
+//
+//        // increase speed
+//        // $party->speedUp();
+//        if (!$party->setSpeed($newSpeed)){
+//            $this->info('speed was not updated, ignore it');
+//            return;
+//        }
+//
+//        // player
+////        $playerId = $data['playerId'] ?? '';
+////        if (!$playerId) return;
+////        $player = $party->findPlayerById($playerId);
+////        if (!$player) return;
+//
+//        $this->info('speed up', [
+//            'partyId' => $partyId,
+//            'speed' => $party->getSpeed()
+//        ]);
+//
+//        $m = sprintf('Speed has increased to: %s', $party->getSpeed());
+//
+//        $party->addChatMessage($m);
+//        $party->sendChatToAllPlayers();
+//
+//        $party->sendMessageToAllPlayers(new SpeedupMessage($party, $party->getSpeed()));
+//
+//    }
 }
