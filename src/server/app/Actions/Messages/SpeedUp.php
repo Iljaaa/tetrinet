@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Actions\Messages;
+namespace App\Actions\Messages;
 
 use App\Common\Messages\SpeedupMessage;
 use App\Common\SocketLogTrait;

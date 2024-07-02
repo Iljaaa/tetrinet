@@ -10,7 +10,7 @@ use App\Actions\Messages\Pause;
 use App\Actions\Messages\Resume;
 use App\Actions\Messages\SendBonus;
 use App\Actions\Messages\SetCup;
-use app\Actions\Messages\SpeedUp;
+use App\Actions\Messages\SpeedUp;
 use App\Common\SocketLogTrait;
 use App\Common\Types\MessageType;
 use Domain\Game\Contracts\PoolOfParties;
