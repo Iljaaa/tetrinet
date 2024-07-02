@@ -5,6 +5,8 @@ namespace App\Actions;
 use app\Actions\Messages\BackToParty;
 use App\Actions\Messages\JoinToParty;
 use App\Actions\Messages\LeaveParty;
+use App\Actions\Messages\Pause;
+use App\Actions\Messages\Resume;
 use App\Actions\Messages\SetCup;
 use App\Common\Messages\GameOverMessage;
 use App\Common\Messages\PausedMessage;
@@ -65,8 +67,14 @@ class OnMessage
             case MessageType::leave:
                 // $this->processLeaveToParty($connection, $data); break;
                 (new LeaveParty($this->partiesPool))($connection, $data); break;
-            case MessageType::pause: $this->processPause($connection, $data); break;
-            case MessageType::resume: $this->processResume($connection, $data); break;
+            case MessageType::pause:
+                // $this->processPause($connection, $data); break;
+                (new Pause($this->partiesPool))($connection, $data);
+                break;
+            case MessageType::resume:
+                // $this->processResume($connection, $data); break;
+                (new Resume($this->partiesPool))($connection, $data);
+                break;
             case MessageType::set:
                 // $this->processSet($connection, $data); break;
                 (new SetCup($this->partiesPool))($data);
@@ -230,83 +238,76 @@ class OnMessage
 //        $this->determineGameOverInSet($party);
 //    }
 
-    /**
+    /*
      * @param Connection $conn
      * @param array $data
      * @return void
      */
-    private function processPause(Connection $conn, array $data): void
-    {
-        $this->info(__METHOD__);
+//    private function processPause(Connection $conn, array $data): void
+//    {
+//        $this->info(__METHOD__);
+//
+//        $partyId = $data['partyId'] ?? '';
+//        if (!$partyId) return;
+//
+//        // pause game
+//        $party = $this->partiesPool->getPartyById($partyId);
+//        if (!$party) return;
+//
+//        /** @var Player $player */
+//        $player = $party->getPlayerById($conn->getSocketId());
+//        if (!$player) return;
+//
+//        //
+//        if ($player->getPauses() <= 0) return;
+//
+//        // set pause
+//        $party->setPause();
+//
+//        // decrease user pauses count
+//        $player->decreasePause();;
+//
+//        //
+//        $party->sendMessageToAllPlayers(new PausedMessage($party));
+//
+//        // send chat message
+//        $intent = $data['intent'] ?? '';
+//        $s = ($intent)
+//            ? sprintf('Player __%s__ paused the game, because: %s. Left: %d', $player->getName(), $intent, $player->getPauses())
+//            : sprintf('Player __%s__ paused the game. Left: %d', $player->getName(), $player->getPauses());
+//        $party->addChatMessage($s);
+//        $party->sendChatToAllPlayers();
+//
+//    }
 
-        $partyId = $data['partyId'] ?? '';
-        if (!$partyId) return;
-
-        // pause game
-        $party = $this->partiesPool->getPartyById($partyId);
-        if (!$party) return;
-
-        /** @var Player $player */
-        $player = $party->getPlayerById($conn->getSocketId());
-        if (!$player) return;
-
-        //
-        if ($player->getPauses() <= 0) return;
-
-        // set pause
-        $party->setPause();
-
-        // decrease user pauses count
-        $player->decreasePause();;
-
-        //
-        $party->sendMessageToAllPlayers(new PausedMessage($party));
-
-        // send chat message
-        $intent = $data['intent'] ?? '';
-        $s = ($intent)
-            ? sprintf('Player __%s__ paused the game, because: %s. Left: %d', $player->getName(), $intent, $player->getPauses())
-            : sprintf('Player __%s__ paused the game. Left: %d', $player->getName(), $player->getPauses());
-        $party->addChatMessage($s);
-        $party->sendChatToAllPlayers();
-//        $party->sendToAllPlayers([
-//            'type' => ResponseType::paused,
-//            'state' => $party->getGameState(),
-//        ]);
-    }
-
-    /**
+    /*
      * @param Connection $conn
      * @param array $data
      * @return void
      */
-    private function processResume(Connection $conn, array $data): void
-    {
-        $this->info(__METHOD__);
-
-        $partyId = $data['partyId'] ?? '';
-
-        // resume game
-        $party = $this->partiesPool->getPartyById($partyId);
-        $party->setGameRunning();
-
-        // send data to all connections
-//        $party->sendToAllPlayers([
-//            'type' => ResponseType::resumed,
-//            'state' => $party->getGameState(),
-//        ]);
-        $party->sendMessageToAllPlayers(new ResumeMessage($party));
-
-        // send chat message
-        /** @var Player $player */
-        $player = $party->getPlayerById($conn->getSocketId());
-        $intent = $data['intent'] ?? '';
-        $s = ($intent)
-            ? sprintf('Player __%s__ resumed the game because: %s', $player->getName(), $intent)
-            : sprintf('Player __%s__ resumed the game', $player->getName());
-        $party->addChatMessage($s);
-        $party->sendChatToAllPlayers();
-    }
+//    private function processResume(Connection $conn, array $data): void
+//    {
+//        $this->info(__METHOD__);
+//
+//        $partyId = $data['partyId'] ?? '';
+//
+//        // resume game
+//        $party = $this->partiesPool->getPartyById($partyId);
+//        $party->setGameRunning();
+//
+//
+//        $party->sendMessageToAllPlayers(new ResumeMessage($party));
+//
+//        // send chat message
+//        /** @var Player $player */
+//        $player = $party->getPlayerById($conn->getSocketId());
+//        $intent = $data['intent'] ?? '';
+//        $s = ($intent)
+//            ? sprintf('Player __%s__ resumed the game because: %s', $player->getName(), $intent)
+//            : sprintf('Player __%s__ resumed the game', $player->getName());
+//        $party->addChatMessage($s);
+//        $party->sendChatToAllPlayers();
+//    }
 
     /*
      * @param Connection $conn
@@ -356,45 +357,45 @@ class OnMessage
 //        $party->sendMessageToAllPlayers(new AfterSetMessage($party));
 //    }
 
-    /**
+    /*
      * @deprecated this method should be in tha party
      * check and set game over
      * @param Party $party
      * @return void
      */
-    private function determineGameOverInSet(Party $party): void
-    {
-        if (!in_array($party->getGameState(), [GameState::running, GameState::paused])){
-            return;
-        }
-
-        // check game over
-        $activeCups = array_filter($party->getPlayers(), fn(Player $p) => $p->getCup()->getState() == CupState::online);
-
-        // this is global game over
-        if (count($activeCups) <= 1)
-        {
-            // $this->party->setGameState(GameState::over);
-            $party->setGameOver();
-
-            // mar winner
-            $winner = null;
-            foreach ($party->getPlayers() as $p) {
-                if ($p->getCup()->getState() == CupState::online) {
-                    $winner = $p;
-                    $winner->getCup()->setCupAsWinner();
-                    break;
-                }
-            }
-
-            $party->addChatMessage(sprintf('End of the game, winner: __%s__', $winner->getName()));
-            $party->sendChatToAllPlayers();
-
-            // inform all players
-            $party->sendMessageToAllPlayers(new GameOverMessage($party));
-        }
-
-    }
+//    private function determineGameOverInSet(Party $party): void
+//    {
+//        if (!in_array($party->getGameState(), [GameState::running, GameState::paused])){
+//            return;
+//        }
+//
+//        // check game over
+//        $activeCups = array_filter($party->getPlayers(), fn(Player $p) => $p->getCup()->getState() == CupState::online);
+//
+//        // this is global game over
+//        if (count($activeCups) <= 1)
+//        {
+//            // $this->party->setGameState(GameState::over);
+//            $party->setGameOver();
+//
+//            // mar winner
+//            $winner = null;
+//            foreach ($party->getPlayers() as $p) {
+//                if ($p->getCup()->getState() == CupState::online) {
+//                    $winner = $p;
+//                    $winner->getCup()->setCupAsWinner();
+//                    break;
+//                }
+//            }
+//
+//            $party->addChatMessage(sprintf('End of the game, winner: __%s__', $winner->getName()));
+//            $party->sendChatToAllPlayers();
+//
+//            // inform all players
+//            $party->sendMessageToAllPlayers(new GameOverMessage($party));
+//        }
+//
+//    }
 
     /**
      * @param Connection $conn
