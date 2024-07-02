@@ -5,8 +5,7 @@ namespace App\Actions;
 use app\Actions\Messages\BackToParty;
 use App\Actions\Messages\JoinToParty;
 use App\Actions\Messages\LeaveParty;
-use App\Common\Messages\AfterSetMessage;
-use App\Common\Messages\BackToPartyMessage;
+use App\Actions\Messages\SetCup;
 use App\Common\Messages\GameOverMessage;
 use App\Common\Messages\PausedMessage;
 use App\Common\Messages\ResumeMessage;
@@ -66,10 +65,12 @@ class OnMessage
             case MessageType::leave:
                 // $this->processLeaveToParty($connection, $data); break;
                 (new LeaveParty($this->partiesPool))($connection, $data); break;
-
             case MessageType::pause: $this->processPause($connection, $data); break;
             case MessageType::resume: $this->processResume($connection, $data); break;
-            case MessageType::set: $this->processSet($connection, $data); break;
+            case MessageType::set:
+                // $this->processSet($connection, $data); break;
+                (new SetCup($this->partiesPool))($data);
+                break;
             // case MessageType::addLine: $this->processAddLine($conn, $data); break;
             case MessageType::sendBonus: $this->processSendBonus($connection, $data); break;
             case MessageType::chatMessage: $this->processChatMessage($connection, $data); break;
@@ -307,53 +308,53 @@ class OnMessage
         $party->sendChatToAllPlayers();
     }
 
-    /**
+    /*
      * @param Connection $conn
      * @param array $data
      * @return void
      */
-    private function processSet (Connection $conn, array $data): void
-    {
-        $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
-        $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';
-        $this->info("set", [
-            'partyId' => $partyId,
-            'playerId' => $playerId
-        ]);
-        // $this->info("received", ['data.cup' => $data['cup']]);
-
-        if (empty($partyId)) {
-            $this->info("Party id is empty, ignore request");
-            return;
-        }
-
-        if (empty($playerId)){
-            $this->info("Player id is empty, ignore request");
-            return;
-        }
-
-        $party = $this->partiesPool->getPartyById($partyId);
-        if (!$party) {
-            $this->info(sprintf('Party %s not found', $partyId));
-            return;
-        }
-
-        //
-        $cupData = $data['cup'] ?? null;
-        if (!$cupData){
-            $this->info('Cup data not received');
-            return;
-        }
-
-        // save cup info
-        $party->updateCupByPlayerId($playerId, $data['cup']);
-
-        // try to determine game over
-        $this->determineGameOverInSet($party);
-
-        // todo: may be we should refactor this method and send only one cup instead of all party
-        $party->sendMessageToAllPlayers(new AfterSetMessage($party));
-    }
+//    private function processSet (Connection $conn, array $data): void
+//    {
+//        $partyId = (isset($data['partyId'])) ? $data['partyId'] : '';
+//        $playerId = (isset($data['playerId'])) ? $data['playerId'] : '';
+//        $this->info("set", [
+//            'partyId' => $partyId,
+//            'playerId' => $playerId
+//        ]);
+//        // $this->info("received", ['data.cup' => $data['cup']]);
+//
+//        if (empty($partyId)) {
+//            $this->info("Party id is empty, ignore request");
+//            return;
+//        }
+//
+//        if (empty($playerId)){
+//            $this->info("Player id is empty, ignore request");
+//            return;
+//        }
+//
+//        $party = $this->partiesPool->getPartyById($partyId);
+//        if (!$party) {
+//            $this->info(sprintf('Party %s not found', $partyId));
+//            return;
+//        }
+//
+//        //
+//        $cupData = $data['cup'] ?? null;
+//        if (!$cupData){
+//            $this->info('Cup data not received');
+//            return;
+//        }
+//
+//        // save cup info
+//        $party->updateCupByPlayerId($playerId, $data['cup']);
+//
+//        // try to determine game over
+//        $this->determineGameOverInSet($party);
+//
+//        // todo: may be we should refactor this method and send only one cup instead of all party
+//        $party->sendMessageToAllPlayers(new AfterSetMessage($party));
+//    }
 
     /**
      * @deprecated this method should be in tha party

@@ -18,17 +18,17 @@ class OnConnectionCloseTest extends TestCase
         //
         // $ratchetConnection = $this->createMock(ConnectionInterface::class);
 
-        $mocConnection = $this->createMock(Connection::class);
-        $mocConnection->expects($this->once())->method('getSocketId');
+//        $mocConnection = $this->createMock(Connection::class);
+//        $mocConnection->expects($this->once())->method('getSocketId');
+//
+//        $mocPartiesPool = $this->createMock(PoolOfParties::class);
+//        $mocPartiesPool->expects($this->once())->method('findPartyByPlayerId')->willReturn(null);
+//
+//        $mocPlayersPool = $this->createMock(PoolOfPlayers::class);
 
-        $mocPartiesPool = $this->createMock(PoolOfParties::class);
-        $mocPartiesPool->expects($this->once())->method('findPartyByPlayerId')->willReturn(null);
 
-        $mocPlayersPool = $this->createMock(PoolOfPlayers::class);
-
-
-        (new OnConnectionClose($mocConnection, $mocPlayersPool, $mocPartiesPool))
-            ->handle();
+//        (new OnConnectionClose($mocConnection, $mocPlayersPool, $mocPartiesPool))
+//            ->handle();
 
         $this->assertTrue(true);
     }

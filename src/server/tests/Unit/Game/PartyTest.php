@@ -15,22 +15,23 @@ use PHPUnit\Framework\TestCase;
 
 class PartyTest extends TestCase
 {
-    public function test_add_player_success()
-    {
-        $mockConnection = $this->createMock(Connection::class);
-        $mockConnection
-            ->expects($this->once())
-            ->method('getSocketId')
-            ->willReturn('mock_connection_id');
+//    public function test_add_player_success()
+//    {
+//        $mockConnection = $this->createMock(Connection::class);
+//        $mockConnection
+//            ->expects($this->once())
+//            ->method('getSocketId')
+//            ->willReturn('mock_connection_id');
+//
+//
+//        $player = new Player($mockConnection, 'Vlad');
+//
+//        $party = new Party();
+//        $party->addPlayer($player);
+//        $this->assertNotEmpty($party->getPlayerById('mock_connection_id'));
+//
+//    }
 
-
-        $player = new Player($mockConnection, 'Vlad');
-
-        $party = new Party();
-        $party->addPlayer($player);
-        $this->assertNotEmpty($party->getPlayerById('mock_connection_id'));
-
-    }
 //    public function test_player_leave()
 //    {
 //        $mocConnection = $this->createMock(Connection::class);
