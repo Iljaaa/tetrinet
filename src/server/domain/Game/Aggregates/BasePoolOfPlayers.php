@@ -128,6 +128,7 @@ class BasePoolOfPlayers implements PoolOfPlayers
 
     /**
      * When connection close we search it in pools
+     * todo: simplify to connection id
      * @param Connection $c
      * @return void
      */

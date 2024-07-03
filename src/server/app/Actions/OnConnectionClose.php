@@ -2,58 +2,59 @@
 
 namespace App\Actions;
 
-use App\Common\Connection;
+use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
-use Domain\Game\Entities\Player;
+use Domain\Game\Services\ConnectionClose;
 
 /**
- * todo: move connection from constructor
+ * Action when connection closed
  */
 class OnConnectionClose
 {
     public function __construct(
-        private readonly Connection $connection,
         private readonly PoolOfPlayers $playersPool,
         private readonly PoolOfParties $partiesPool,
     ){}
 
-    public function handle(): void
+    public function handle(Connection $connection): void
     {
-        // if connection was in search pool
-        $this->playersPool->onConnectionClose($this->connection);
+        (new ConnectionClose($this->playersPool, $this->partiesPool))($connection);
 
-        // when connection closed we mark party as paused
-        $party = $this->partiesPool->findPartyByPlayerId($this->connection->getSocketId());
-        if (!$party) return;
-
-        // double check that user exists
-        $player = $party->getPlayerById($this->connection->getSocketId());
-        if (!$player) return;
-
-        // player may be offline if he leaves game before
-        if (!$player->isOffLine())
-        {
-            // notify all players
-            $party->addChatMessage(sprintf('Connection with the user __%s__ was lost', $player->getName()));
-            $party->sendChatToAllPlayers();
-
-            // set player is offline
-            $player->setOffline();
-
-            // set cup as over
-            $player->getCup()->setCupAsOver();
-
-            // determine end of the game
-            // $this->determineGameOverInSetItOver($party);
-            $party->determineGameOverInSetItOver();
-        }
-
-        // if all players offline we party should be terminated
-        $partyPlayers = $party->getPlayers();
-        $onLinePlayers = array_filter($partyPlayers, fn(Player $p) => $p->isOnLine());
-        if (count($onLinePlayers) == 0) {
-            $this->partiesPool->terminatePartyByPartyId($party->partyId);
-        }
+//        // if connection was in search pool
+//        $this->playersPool->onConnectionClose($connection);
+//
+//        // when connection closed we mark party as paused
+//        $party = $this->partiesPool->findPartyByPlayerId($connection->getSocketId());
+//        if (!$party) return;
+//
+//        // double check that user exists
+//        $player = $party->getPlayerById($connection->getSocketId());
+//        if (!$player) return;
+//
+//        // player may be offline if he leaves game before
+//        if (!$player->isOffLine())
+//        {
+//            // notify all players
+//            $party->addChatMessage(sprintf('Connection with the user __%s__ was lost', $player->getName()));
+//            $party->sendChatToAllPlayers();
+//
+//            // set player is offline
+//            $player->setOffline();
+//
+//            // set cup as over
+//            $player->getCup()->setCupAsOver();
+//
+//            // determine end of the game
+//            // $this->determineGameOverInSetItOver($party);
+//            $party->determineGameOverInSetItOver();
+//        }
+//
+//        // if all players offline we party should be terminated
+//        $partyPlayers = $party->getPlayers();
+//        $onLinePlayers = array_filter($partyPlayers, fn(Player $p) => $p->isOnLine());
+//        if (count($onLinePlayers) == 0) {
+//            $this->partiesPool->terminatePartyByPartyId($party->partyId);
+//        }
     }
 }

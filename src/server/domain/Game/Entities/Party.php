@@ -185,25 +185,6 @@ class Party
         $this->state = GameState::running;
     }
 
-    /*
-     * @param GameState $state
-     * @return void
-     */
-//    public function setGameState(GameState $state): void {
-//        $this->state = $state;
-//    }
-
-    /**
-     * @deprecated use getPlayerById
-     * @param string $playerId
-     * @return Player|null
-     */
-    public function findPlayerById (string $playerId):? Player
-    {
-        // return $opponentConnection;
-        return $this->players[$playerId];
-    }
-
     /**
      * @param string $playerId
      * @return Player|null
