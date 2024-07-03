@@ -3,13 +3,8 @@
 namespace tests\Unit\Game\Services;
 
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
-use Domain\Game\Entities\Player;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\SetCupService;
 use Domain\Game\Services\SpeedUpService;
-use Domain\Game\Services\SwitchCupsBonusService;
-use Domain\Game\ValueObjects\Connection;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 

@@ -11,12 +11,12 @@ use App\Actions\Messages\Resume;
 use App\Actions\Messages\SendBonus;
 use App\Actions\Messages\SetCup;
 use App\Actions\Messages\SpeedUp;
+use App\Common\Connection;
 use App\Common\SocketLogTrait;
 use App\Common\Types\MessageType;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\ValueObjects\Connection;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 
 /**

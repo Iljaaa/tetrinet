@@ -5,11 +5,11 @@ namespace App\Actions\Messages;
 use App\Common\Messages\JoinToPartyMessage;
 use App\Common\Messages\LetsPlayMessage;
 use App\Common\SocketLogTrait;
+use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
-use Domain\Game\ValueObjects\Connection;
 
 /**
  * Message when player start search party
@@ -28,12 +28,14 @@ class JoinToParty
      * @param array $data
      * @return void
      */
-    public function __invoke(Connection $connection, array $data)
+    public function __invoke(Connection $connection, array $data): void
     {
         $this->info(__METHOD__);
 
         // in witch pool we should add user
         $pool = PartyType::from($data['partyType'] ?? 'duel');
+
+        // player name
         $playerName = trim($data['playerName']);
 
         $this->info('get request to add in pull', [
@@ -42,8 +44,13 @@ class JoinToParty
             'playerName' => $playerName]
         );
 
+        //
+
         // create new player
         $p = new Player($connection, $playerName);
+
+        // add player to pool
+        $this->playersPool->addPlayerToPull($pool, $p, [$this, 'onCreateParty']);
 
         // create handshake message
         $m = (new JoinToPartyMessage())
@@ -52,9 +59,6 @@ class JoinToParty
 
         // send answer to handshake with connection id
         $p->getConnection()->send($m->getDataAsString());
-
-        // add player to pool
-        $this->playersPool->addPlayerToPull($pool, $p, [$this, 'onCreateParty']);
     }
 
     /**

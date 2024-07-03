@@ -1,14 +1,15 @@
 <?php
 
-namespace Domain\Game\ValueObjects;
+namespace App\Common;
 
+use Domain\Game\Contracts\Connection as DomainConnection;
 use Random\RandomException;
 use Ratchet\ConnectionInterface as RatchetConnectionInterface;
 
 /**
  * This is wrap around rachet connection
  */
-class Connection
+class Connection implements DomainConnection
 {
     public function __construct(private readonly RatchetConnectionInterface $rConn)
     {
@@ -56,7 +57,7 @@ class Connection
      * @param string $data
      * @return void
      */
-    public function send(string $data)
+    public function send(string $data): void
     {
         $this->rConn->send($data);
     }

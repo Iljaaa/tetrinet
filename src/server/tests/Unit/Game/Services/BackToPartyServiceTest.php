@@ -2,12 +2,12 @@
 
 namespace tests\Unit\Game\Services;
 
+use App\Common\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\BackToPartyService;
-use Domain\Game\ValueObjects\Connection;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 

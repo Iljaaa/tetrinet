@@ -2,10 +2,10 @@
 
 namespace tests\Unit\Game;
 
+use App\Common\Connection;
 use Domain\Game\Aggregates\BasePoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
-use Domain\Game\ValueObjects\Connection;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 

@@ -3,8 +3,7 @@
 namespace Domain\Game\Entities;
 
 use App\Common\Types\PlayerState;
-use Domain\Game\ValueObjects\Connection;
-use Ratchet\ConnectionInterface;
+use Domain\Game\Contracts\Connection;
 
 /**
  * Player object it is,
@@ -14,7 +13,13 @@ use Ratchet\ConnectionInterface;
 class Player
 {
     /**
-     * todo: remove connection from here
+     * Uniq player id
+     * equals to socketId
+     * @var string
+     */
+    private string $id;
+
+    /**
      * @var Connection
      */
     private Connection $connection;
@@ -44,6 +49,8 @@ class Player
     public function __construct(Connection $connection, string $name)
     {
         $this->connection = $connection;
+        $this->id = $connection->getSocketId();
+
         $this->name = $name;
         $this->state = PlayerState::online;
         $this->cup = new Cup();

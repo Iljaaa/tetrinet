@@ -2,13 +2,12 @@
 
 namespace App\Actions\Messages;
 
+use App\Common\Connection;
 use App\Common\Messages\PausedMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Player;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\PauseService;
-use Domain\Game\ValueObjects\Connection;
 
 class Pause
 {

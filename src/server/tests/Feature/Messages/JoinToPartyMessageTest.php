@@ -3,11 +3,11 @@
 namespace tests\Feature\Messages;
 
 use App\Actions\Messages\JoinToParty;
+use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
-use Domain\Game\ValueObjects\Connection;
 use Tests\TestCase;
 
 class JoinToPartyMessageTest extends TestCase
@@ -54,13 +54,13 @@ class JoinToPartyMessageTest extends TestCase
 
         $m = new JoinToParty($mocPlayersPool, $mocPartiesPool);
 
-        $valisyMocConnection = $this->createMock(Connection::class);
-        $valisyMocConnection->expects($this->atLeastOnce())
+        $vasilyMockConnection = $this->createMock(Connection::class);
+        $vasilyMockConnection->expects($this->atLeastOnce())
             ->method('getSocketId')
-            ->willReturn('Vailiy_socket_id');
-        $valisyMocConnection->expects($this->once())->method('send');
+            ->willReturn('socket_id');
+        $vasilyMockConnection->expects($this->once())->method('send');
 
-        $m($valisyMocConnection, [
+        $m($vasilyMockConnection, [
             'partyType' => PartyType::duel->value,
             'playerName' => 'Vasily'
         ]);

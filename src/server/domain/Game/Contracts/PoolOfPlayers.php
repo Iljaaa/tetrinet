@@ -2,9 +2,9 @@
 
 namespace Domain\Game\Contracts;
 
+
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
-use Domain\Game\ValueObjects\Connection;
 
 interface PoolOfPlayers
 {

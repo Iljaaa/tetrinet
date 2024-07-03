@@ -2,12 +2,12 @@
 
 namespace App\Actions\Messages;
 
+use App\Common\Connection;
 use App\Common\Messages\BackToPartyMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\BackToPartyService;
-use Domain\Game\ValueObjects\Connection;
 
 /**
  * When player leave a game and then try to back

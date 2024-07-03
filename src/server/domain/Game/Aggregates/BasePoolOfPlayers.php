@@ -2,11 +2,11 @@
 
 namespace Domain\Game\Aggregates;
 
+
+use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
-use Domain\Game\ValueObjects\Connection;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Base pool of players

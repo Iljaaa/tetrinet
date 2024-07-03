@@ -4,10 +4,11 @@ namespace App\Sockets;
 
 use App\Actions\OnConnectionClose;
 use App\Actions\OnMessage;
+use App\Common\Connection;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
-use Domain\Game\ValueObjects\Connection;
+use Domain\Game\Exceptions\DomainException;
 use Ratchet\ConnectionInterface as RatchetConnectionInterface;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
@@ -20,7 +21,7 @@ class GameSocket implements MessageComponentInterface
     use SocketLogTrait;
 
     /**
-     * todo: move this objects
+     *
      */
     public function __construct(private readonly PoolOfPlayers $playersPool, private readonly PoolOfParties $partiesPool)
     {
@@ -69,6 +70,7 @@ class GameSocket implements MessageComponentInterface
      * @param RatchetConnectionInterface $conn
      * @param MessageInterface $msg
      * @return void
+     * @throws DomainException
      */
     public function onMessage(RatchetConnectionInterface $conn, MessageInterface $msg):void
     {

@@ -3,6 +3,7 @@
 namespace tests\Unit\Game\Services;
 
 
+use App\Common\Connection;
 use App\Common\Types\PlayerState;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;
@@ -10,7 +11,6 @@ use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\LeavePartyService;
-use Domain\Game\ValueObjects\Connection;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
