@@ -47,7 +47,8 @@ class JoinToParty
         //
 
         // create new player
-        $p = new Player($connection, $playerName);
+        // $p = new Player($connection, $playerName);
+        $p = Player::create($connection, $playerName);
 
         // add player to pool
         $this->playersPool->addPlayerToPull($pool, $p, [$this, 'onCreateParty']);

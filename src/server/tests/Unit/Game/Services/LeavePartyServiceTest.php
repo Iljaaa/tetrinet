@@ -4,11 +4,11 @@ namespace tests\Unit\Game\Services;
 
 
 use App\Common\Connection;
-use App\Common\Types\PlayerState;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
+use Domain\Game\Enums\PlayerState;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\LeavePartyService;
 use PHPUnit\Framework\MockObject\Exception;
@@ -79,7 +79,7 @@ class LeavePartyServiceTest extends TestCase
 
         $party = (new LeavePartyService($mockPartiesPool))('123', '123');
 
-        $this->assertEquals(PlayerState::offline, $player->state);
+        $this->assertTrue($player->isOffLine()); // should it
         $this->assertEquals(CupState::over, $player->getCup()->getState());
         // $this->assertEquals(GameState::over, $party->getGameState());
     }

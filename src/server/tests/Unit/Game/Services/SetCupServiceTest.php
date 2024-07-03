@@ -4,11 +4,11 @@ namespace tests\Unit\Game\Services;
 
 
 use App\Common\Connection;
-use App\Common\Types\PlayerState;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
+use Domain\Game\Enums\PlayerState;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\SetCupService;
 use PHPUnit\Framework\MockObject\Exception;
@@ -82,7 +82,7 @@ class SetCupServiceTest extends TestCase
 
         $party = (new SetCupService($mockPartiesPool))('123', '123', []);
 
-        $this->assertEquals(PlayerState::online, $player->state);
+        $this->assertTrue($player->isOnLine());
         $this->assertEquals(CupState::online, $player->getCup()->getState());
         // $this->assertEquals(GameState::over, $party->getGameState());
     }

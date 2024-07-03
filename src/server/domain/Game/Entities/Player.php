@@ -2,8 +2,8 @@
 
 namespace Domain\Game\Entities;
 
-use App\Common\Types\PlayerState;
 use Domain\Game\Contracts\Connection;
+use Domain\Game\Enums\PlayerState;
 
 /**
  * Player object it is,
@@ -12,6 +12,8 @@ use Domain\Game\Contracts\Connection;
  */
 class Player
 {
+    const START_PAUSES_COUNT = 5;
+
     /**
      * Uniq player id
      * equals to socketId
@@ -39,12 +41,12 @@ class Player
      * Player state
      * @var PlayerState
      */
-    public PlayerState $state;
+    private PlayerState $state;
 
     /**
      * Pauses limit
      */
-    private int $pauses = 5;
+    private int $pauses;
 
     public function __construct(Connection $connection, string $name)
     {
@@ -54,6 +56,18 @@ class Player
         $this->name = $name;
         $this->state = PlayerState::online;
         $this->cup = new Cup();
+
+        $this->pauses = self::START_PAUSES_COUNT;
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string $name
+     * @return Player
+     */
+    public static function create(Connection $connection, string $name): Player
+    {
+        return new self($connection, $name);
     }
 
     /**
@@ -127,6 +141,14 @@ class Player
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
     public function getPauses(): int
     {
         return $this->pauses;
@@ -134,7 +156,9 @@ class Player
 
     public function decreasePause (): void
     {
-        $this->pauses--;
+        if ($this->pauses > 0) {
+            $this->pauses--;
+        }
     }
 
 }
