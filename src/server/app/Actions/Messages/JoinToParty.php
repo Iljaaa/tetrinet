@@ -2,7 +2,7 @@
 
 namespace App\Actions\Messages;
 
-use App\Common\Messages\JoinToPartyMessage;
+use App\Common\ResponseMessages\JoinToPartyMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;

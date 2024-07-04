@@ -2,8 +2,8 @@
 
 namespace App\Actions\Messages;
 
-use App\Common\Messages\AfterSetMessage;
-use App\Common\Messages\BackToPartyMessage;
+use App\Common\ResponseMessages\AfterSetMessage;
+use App\Common\ResponseMessages\BackToPartyMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;

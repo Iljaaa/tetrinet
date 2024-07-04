@@ -3,7 +3,7 @@
 namespace App\Actions\Messages;
 
 use App\Common\Connection;
-use App\Common\Messages\PausedMessage;
+use App\Common\ResponseMessages\PausedMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;

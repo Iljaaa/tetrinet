@@ -2,7 +2,7 @@
 
 namespace App\Actions\Messages;
 
-use App\Common\Messages\SpeedupMessage;
+use App\Common\ResponseMessages\SpeedupMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;

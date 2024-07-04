@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Common\Messages;
+namespace App\Common\ResponseMessages;
 
-use domain\Game\Enums\PartyType;
+use Domain\Game\Enums\PartyType;
 
 class JoinToPartyMessage extends Message
 {

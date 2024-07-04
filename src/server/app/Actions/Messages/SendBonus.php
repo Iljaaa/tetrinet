@@ -2,7 +2,7 @@
 
 namespace App\Actions\Messages;
 
-use App\Common\Messages\SwitchCupsMessage;
+use App\Common\ResponseMessages\SwitchCupsMessage;
 use App\Common\SocketLogTrait;
 use App\Common\Types\BonusType;
 use App\Common\Types\ResponseType;

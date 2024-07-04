@@ -3,7 +3,7 @@
 namespace App\Actions\Messages;
 
 use App\Common\Connection;
-use App\Common\Messages\ResumeMessage;
+use App\Common\ResponseMessages\ResumeMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Player;

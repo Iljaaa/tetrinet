@@ -3,9 +3,9 @@
 namespace Domain\Game\Entities;
 
 use App\Common\ChatMessage;
-use App\Common\Messages\GameOverMessage;
-use App\Common\Messages\Message;
-use App\Common\Messages\UpdateChatMessage;
+use App\Common\ResponseMessages\GameOverMessage;
+use App\Common\ResponseMessages\Message;
+use App\Common\ResponseMessages\UpdateChatMessage;
 use Domain\Game\Enums\CupState;
 use Domain\Game\Enums\GameState;
 

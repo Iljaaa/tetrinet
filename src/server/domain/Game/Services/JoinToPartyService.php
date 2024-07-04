@@ -2,7 +2,7 @@
 
 namespace Domain\Game\Services;
 
-use App\Common\Messages\LetsPlayMessage;
+use App\Common\ResponseMessages\LetsPlayMessage;
 use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
