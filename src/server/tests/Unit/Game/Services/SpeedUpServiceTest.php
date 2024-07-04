@@ -4,7 +4,7 @@ namespace tests\Unit\Game\Services;
 
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\SpeedUpService;
+use Domain\Game\Services\GameEvents\SpeedUpService;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 

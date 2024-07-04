@@ -8,7 +8,7 @@ use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Player;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\ResumeService;
+use Domain\Game\Services\GameEvents\ResumeService;
 
 class Resume
 {

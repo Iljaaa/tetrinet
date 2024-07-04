@@ -1,24 +1,27 @@
 <?php
 
-namespace Domain\Game\Services;
+namespace Domain\Game\Services\GameEvents;
 
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;
 use Domain\Game\Exceptions\DomainException;
 
-class LeavePartyService
+class SetCupService
 {
-    public function __construct(private readonly PoolOfParties $partiesPool)
+    public function __construct(
+        private readonly PoolOfParties $partiesPool,
+    )
     {
     }
 
     /**
      * @param string $partyId
      * @param string $playerId
+     * @param array $cupData
      * @return Party
      * @throws DomainException
      */
-    public function __invoke(string $partyId, string $playerId): Party
+    public function __invoke(string $partyId, string $playerId, array $cupData): Party
     {
         $party = $this->partiesPool->getPartyById($partyId);
         if (!$party) {
@@ -27,21 +30,16 @@ class LeavePartyService
 
         // find player in the party
         $player = $party->getPlayerById($playerId);
-        if (!$player){
+        if (!$player) {
             throw new DomainException('Player not found in the party');
         }
 
-        // mark player as offline
-        $player->setOffline();
+        // save cup info
+        $party->updateCupByPlayerId($playerId, $cupData);
 
-        // set cup as over
-        $player->getCup()->setCupAsOver();
-
-        // if it was last player
+        // try to determine game over
         $party->determineGameOverInSetItOver();
 
-
-        //
         return $party;
     }
 }

@@ -1,18 +1,16 @@
 <?php
 
-namespace Domain\Game\Services;
+namespace Domain\Game\Services\GameEvents;
 
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;
 use Domain\Game\Exceptions\DomainException;
 
-class PauseService
+class LeavePartyService
 {
-
     public function __construct(private readonly PoolOfParties $partiesPool)
     {
     }
-
 
     /**
      * @param string $partyId
@@ -29,18 +27,19 @@ class PauseService
 
         // find player in the party
         $player = $party->getPlayerById($playerId);
-        if (!$player) {
+        if (!$player){
             throw new DomainException('Player not found in the party');
         }
 
-        // if player does have pauses
-        if ($player->getPauses() <= 0) return $party;
+        // mark player as offline
+        $player->setOffline();
 
-        // set pause
-        $party->setPause();
+        // set cup as over
+        $player->getCup()->setCupAsOver();
 
-        // decrease user pauses count
-        $player->decreasePause();
+        // if it was last player
+        $party->determineGameOverInSetItOver();
+
 
         //
         return $party;

@@ -6,7 +6,7 @@ use App\Common\ResponseMessages\SpeedupMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\SpeedUpService;
+use Domain\Game\Services\GameEvents\SpeedUpService;
 
 class SpeedUp
 {

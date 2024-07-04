@@ -9,7 +9,7 @@ use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
-use Domain\Game\Services\JoinToPartyService;
+use Domain\Game\Services\GameEvents\JoinToPartyService;
 
 /**
  * Message when player start search party

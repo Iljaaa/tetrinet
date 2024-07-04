@@ -9,7 +9,7 @@ use App\Common\Types\ResponseType;
 use App\Helper;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\SwitchCupsBonusService;
+use Domain\Game\Services\GameEvents\SwitchCupsBonusService;
 
 /**
  * Send bonus

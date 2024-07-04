@@ -3,13 +3,12 @@
 namespace tests\Unit\Game\Services;
 
 
-use App\Actions\Messages\JoinToParty;
 use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
-use Domain\Game\Services\JoinToPartyService;
+use Domain\Game\Services\GameEvents\JoinToPartyService;
 use PHPUnit\Framework\MockObject\Exception;
 use Tests\TestCase;
 

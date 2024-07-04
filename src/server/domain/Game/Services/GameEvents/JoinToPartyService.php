@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Game\Services;
+namespace Domain\Game\Services\GameEvents;
 
 use App\Common\ResponseMessages\LetsPlayMessage;
 use Domain\Game\Contracts\Connection;

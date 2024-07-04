@@ -7,7 +7,7 @@ use App\Common\ResponseMessages\BackToPartyMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\LeavePartyService;
+use Domain\Game\Services\GameEvents\LeavePartyService;
 
 class LeaveParty
 {

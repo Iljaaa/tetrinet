@@ -7,7 +7,7 @@ use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\BackToPartyService;
+use Domain\Game\Services\GameEvents\BackToPartyService;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 

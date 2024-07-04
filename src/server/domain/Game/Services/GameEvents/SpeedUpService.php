@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Game\Services;
+namespace Domain\Game\Services\GameEvents;
 
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;

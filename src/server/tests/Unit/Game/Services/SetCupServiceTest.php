@@ -8,9 +8,8 @@ use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
-use Domain\Game\Enums\PlayerState;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\SetCupService;
+use Domain\Game\Services\GameEvents\SetCupService;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 

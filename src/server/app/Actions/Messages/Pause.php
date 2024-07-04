@@ -7,7 +7,7 @@ use App\Common\ResponseMessages\PausedMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
-use Domain\Game\Services\PauseService;
+use Domain\Game\Services\GameEvents\PauseService;
 
 class Pause
 {
