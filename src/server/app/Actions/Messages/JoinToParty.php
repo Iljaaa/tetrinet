@@ -49,6 +49,8 @@ class JoinToParty
 
         // send handshake
         $this->sendHandShake($player, $pool);
+
+
     }
 
     private function sendHandShake(Player $player, PartyType $pool): void

@@ -16,6 +16,7 @@ class Party
 {
     /**
      * Party is generated when game starts
+     * todo: make it private
      * @var string
      */
     public string $partyId = '';
@@ -51,7 +52,7 @@ class Party
     // public array $cups = [];
 
     /**
-     *
+     * todo: create party with id
      */
     public function __construct ()
     {
@@ -63,6 +64,12 @@ class Party
         // fixme: and this not S from solid
         $this->addChatMessage(sprintf('Party %s created', $this->partyId));
     }
+
+    public function getId(): string
+    {
+        return $this->partyId;
+    }
+
 
 //    public function __destruct()
 //    {
@@ -107,10 +114,11 @@ class Party
 
     /**
      * Is player in this party
+     * todo: rename it to isPlayerExists
      * @param string $playerId
      * @return bool
      */
-    public function isPartyHasPlayerById (string$playerId): bool
+    public function isPartyHasPlayerById(string $playerId): bool
     {
         return array_key_exists($playerId, $this->players);
     }
