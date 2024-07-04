@@ -1,6 +1,7 @@
 <?php
 
-namespace tests\Feature\Messages;
+namespace tests\Unit\Game\Services;
+
 
 use App\Actions\Messages\JoinToParty;
 use Domain\Game\Contracts\Connection;
@@ -8,24 +9,27 @@ use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
+use Domain\Game\Services\JoinToPartyService;
 use PHPUnit\Framework\MockObject\Exception;
 use Tests\TestCase;
 
-class JoinToPartyMessageTest extends TestCase
+class JoinToPartyServiceTest extends TestCase
 {
-    protected function setUp():void
+
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->fakePlayersPool = new class implements PoolOfPlayers
-        {
+        $this->fakePlayersPool = new class implements PoolOfPlayers {
             private array $pool = [];
-            public function onConnectionClose(Connection $c): void {}
+
+            public function onConnectionClose(Connection $c): void
+            {
+            }
 
             public function addPlayerToPull(PartyType $party, Player $player, callable $playersEnoughToMakeParty): void
             {
                 $this->pool[$player->getConnection()->getSocketId()] = $player;
-                // dd($this->pool);
 
                 if (count($this->pool) == 2) {
                     $playersEnoughToMakeParty($this->pool);
@@ -40,6 +44,7 @@ class JoinToPartyMessageTest extends TestCase
         };
     }
 
+
     /**
      * @return void
      * @throws Exception
@@ -52,24 +57,17 @@ class JoinToPartyMessageTest extends TestCase
         $mocPlayersPool->expects($this->once())->method('addPlayerToPull');
         $mocPlayersPool->method('getPullSize')->willReturn(1);
 
-        $m = new JoinToParty($mocPlayersPool, $mocPartiesPool);
+        $m = new JoinToPartyService($mocPlayersPool, $mocPartiesPool);
 
         $vasilyMockConnection = $this->createMock(Connection::class);
         $vasilyMockConnection->expects($this->atLeastOnce())
             ->method('getSocketId')
             ->willReturn('socket_id');
 
-        // this method must be called when we send handshake to player
-        $vasilyMockConnection->expects($this->once())->method('send');
+        $m->handle($vasilyMockConnection, PartyType::duel, 'Vasily');
 
-        $m($vasilyMockConnection, [
-            'partyType' => PartyType::duel->value,
-            'playerName' => 'Vasily'
-        ]);
-
-        //
-        // $this->assertEquals(1, $mocPlayersPool->getPullSize(PartyType::duel));
     }
+
 
     /**
      * @return void
@@ -78,40 +76,33 @@ class JoinToPartyMessageTest extends TestCase
     public function test_party_create()
     {
         $mocPartiesPool = $this->createMock(PoolOfParties::class);
+
+        // this two methods must be called when count player in pool enough to create party
         $mocPartiesPool->expects($this->once())->method('createParty');
         $mocPartiesPool->expects($this->once())->method('addParty');
 
-        $m = new JoinToParty($this->fakePlayersPool, $mocPartiesPool);
+        $m = new JoinToPartyService($this->fakePlayersPool, $mocPartiesPool);
+
+        // add first player
 
         $vasilyMocConnection = $this->createMock(Connection::class);
         $vasilyMocConnection->expects($this->atLeastOnce())
             ->method('getSocketId')
             ->willReturn('Vasiliy_socket_id');
 
-        // this method must be called when we send handshake to player
-        $vasilyMocConnection->expects($this->once())->method('send');
-
-        $m($vasilyMocConnection, [
-            'partyType' => PartyType::duel->value,
-            'playerName' => 'Petr'
-        ]);
+        $m->handle($vasilyMocConnection, PartyType::duel, 'Petr');
 
         //
         $this->assertEquals(1, $this->fakePlayersPool->getPullSize(PartyType::duel));
 
+        // add second player
 
         $mocConnection = $this->createMock(Connection::class);
         $mocConnection->expects($this->atLeastOnce())
             ->method('getSocketId')
             ->willReturn('petr_socket');
-        $mocConnection->expects($this->once())->method('send');
 
-        $m($mocConnection, [
-            'partyType' => PartyType::duel->value,
-            'playerName' => 'Petr'
-        ]);
-
+        $m->handle($mocConnection, PartyType::duel, 'Petr');
     }
 
-    // party creates
 }

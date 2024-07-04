@@ -89,6 +89,8 @@ class Player
     /**
      * @param Cup $cup
      * @return Player
+     * @deprecated
+     * todo: this method broke information expert principe, make set method inside cup
      */
     public function setCup(Cup $cup): static
     {

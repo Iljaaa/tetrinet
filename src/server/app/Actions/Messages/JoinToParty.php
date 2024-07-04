@@ -3,13 +3,13 @@
 namespace App\Actions\Messages;
 
 use App\Common\Messages\JoinToPartyMessage;
-use App\Common\Messages\LetsPlayMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
+use Domain\Game\Services\JoinToPartyService;
 
 /**
  * Message when player start search party
@@ -44,49 +44,24 @@ class JoinToParty
             'playerName' => $playerName]
         );
 
-        //
+        $player = (new JoinToPartyService($this->playersPool, $this->partiesPool))
+            ->handle($connection, $pool, $playerName);
 
-        // create new player
-        // $p = new Player($connection, $playerName);
-        $p = Player::create($connection, $playerName);
+        // send handshake
+        $this->sendHandShake($player, $pool);
+    }
 
-        // add player to pool
-        $this->playersPool->addPlayerToPull($pool, $p, [$this, 'onCreateParty']);
-
+    private function sendHandShake(Player $player, PartyType $pool): void
+    {
         // create handshake message
         $m = (new JoinToPartyMessage())
             ->setPartyType($pool)
-            ->setYourPlayerId($p->getConnection()->getSocketId());
+            // ->setYourPlayerId($player->getConnection()->getSocketId());
+            ->setYourPlayerId($player->getId());
 
         // send answer to handshake with connection id
-        $p->getConnection()->send($m->getDataAsString());
+        $player->getConnection()->send($m->getDataAsString());
     }
 
-    /**
-     * Callback method when players enough to make a party
-     * @param Player[] $players
-     * @return void
-     */
-    public function onCreateParty(array $players)
-    {
-        // create party
-        $party = $this->partiesPool->createParty();
-
-        // move players to party
-        foreach ($players as $p) $party->addPlayer($p);
-
-        //
-        $this->partiesPool->addParty($party);
-
-        // run game
-        $party->setGameRunning();
-
-        // create message
-        $m = new LetsPlayMessage($party);
-        $party->sendMessageToAllPlayers($m);
-
-        // send chat message to all
-        $party->sendChatToAllPlayers();
-    }
 
 }

@@ -58,6 +58,7 @@ class LeaveParty
         $party->sendChatToAllPlayers();
 
         // detect end game
+        // todo: move this method into Service
         // $this->determineGameOverInSet($party);
         $party->determineGameOverInSetItOver();
 

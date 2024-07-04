@@ -15,6 +15,10 @@ class BasePoolOfParties implements PoolOfParties
      */
     private array $parties = [];
 
+    /**
+     * Create party from constructor
+     * @return Party
+     */
     public function createParty(): Party
     {
         return new Party();
@@ -35,19 +39,31 @@ class BasePoolOfParties implements PoolOfParties
         return null;
     }
 
+    /**
+     * @param string $partyId
+     * @return Party|null
+     */
     public function getPartyById(string $partyId): Party|null
     {
         return $this->parties[$partyId] ?? null;
     }
 
-    public function addParty (Party $p): void
+    /**
+     * @param Party $party
+     * @return void
+     */
+    public function addParty(Party $party): void
     {
-        $this->parties[$p->partyId] = $p;
+        $this->parties[$party->partyId] = $party;
     }
 
+    /**
+     * @param string $partyId
+     * @return void
+     */
     public function terminatePartyByPartyId (string $partyId): void
     {
-        if (isset($this->parties[$partyId])){
+        if (isset($this->parties[$partyId])) {
             unset($this->parties[$partyId]);
         }
     }

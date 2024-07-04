@@ -9,6 +9,7 @@ use Domain\Game\Entities\Player;
 
 /**
  * When connection close something happen
+ * todo: rename to service
  */
 class ConnectionClose
 {

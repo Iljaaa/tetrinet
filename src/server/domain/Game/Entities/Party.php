@@ -8,7 +8,6 @@ use App\Common\Messages\Message;
 use App\Common\Messages\UpdateChatMessage;
 use Domain\Game\Enums\CupState;
 use Domain\Game\Enums\GameState;
-use Illuminate\Support\Facades\Log;
 
 /**
  * @version 0.1.3
@@ -65,10 +64,10 @@ class Party
         $this->addChatMessage(sprintf('Party %s created', $this->partyId));
     }
 
-    public function __destruct()
-    {
-        Log::channel('socket')->info('party '.$this->partyId.' terminated');
-    }
+//    public function __destruct()
+//    {
+//        // Log::channel('socket')->info('party '.$this->partyId.' terminated');
+//    }
 
 
     /**
@@ -255,7 +254,7 @@ class Party
 
     /**
      * Here we check end of the game
-     * todo: add callback tat party is ends
+     * todo: add callback tat party is ends and move there add chat message
      * @return void
      */
     public function determineGameOverInSetItOver (): void
