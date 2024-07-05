@@ -14,7 +14,7 @@ class SwitchCupsMessage extends Message
     {
         $this->setData('type', ResponseType::getBonus);
         $this->setData('bonus', BonusType::switch);
-        $this->setPartyId($party->partyId);
+        $this->setPartyId($party->getId());
     }
 
     public function setSwitchData(string $target, string $source, Cup $yourCup): static

@@ -14,7 +14,7 @@ class LetsPlayMessage extends Message
     public function __construct(Party $party)
     {
         $this->setData('type', ResponseType::letsPlay);
-        $this->setPartyId($party->partyId);
+        $this->setPartyId($party->getId());
 
         // create party info
         $partyResponse = [];

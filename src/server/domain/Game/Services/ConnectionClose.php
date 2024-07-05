@@ -54,7 +54,7 @@ class ConnectionClose
         $partyPlayers = $party->getPlayers();
         $onLinePlayers = array_filter($partyPlayers, fn(Player $p) => $p->isOnLine());
         if (count($onLinePlayers) == 0) {
-            $this->partiesPool->terminatePartyByPartyId($party->partyId);
+            $this->partiesPool->terminatePartyByPartyId($party->getId());
         }
     }
 }

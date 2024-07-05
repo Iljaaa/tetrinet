@@ -54,7 +54,7 @@ class BasePoolOfParties implements PoolOfParties
      */
     public function addParty(Party $party): void
     {
-        $this->parties[$party->partyId] = $party;
+        $this->parties[$party->getId()] = $party;
     }
 
     /**

@@ -16,10 +16,9 @@ class Party
 {
     /**
      * Party is generated when game starts
-     * todo: make it private
      * @var string
      */
-    public string $partyId = '';
+    private string $partyId = '';
 
     /**
      * Global game state
@@ -62,7 +61,7 @@ class Party
 
         // add chat message
         // fixme: and this not S from solid
-        $this->addChatMessage(sprintf('Party %s created', $this->partyId));
+        $this->addChatMessage(sprintf('Party %s created', $this->getId()));
     }
 
     public function getId(): string
@@ -237,7 +236,7 @@ class Party
      */
     public function sendChatToAllPlayers(): void
     {
-        $this->sendMessageToAllPlayers(new UpdateChatMessage($this->partyId, $this->chat));
+        $this->sendMessageToAllPlayers(new UpdateChatMessage($this->getId(), $this->chat));
     }
 
     /**
