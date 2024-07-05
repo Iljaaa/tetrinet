@@ -20,7 +20,7 @@ class PartyImp implements Party
      * Party is generated when game starts
      * @var string
      */
-    private string $partyId = '';
+    // private string $partyId = '';
 
     /**
      * Global game state
@@ -53,9 +53,9 @@ class PartyImp implements Party
     // public array $cups = [];
 
     /**
-     *
+     * @param string $partyId
      */
-    public function __construct(string $partyId)
+    public function __construct(private readonly string $partyId)
     {
         // add chat message
         // fixme: and this not S from solid

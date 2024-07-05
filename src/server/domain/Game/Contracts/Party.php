@@ -38,6 +38,12 @@ interface Party
     public function getPlayers(): array;
 
     /**
+     * Current game state
+     * @return GameState
+     */
+    public function getGameState(): GameState;
+
+    /**
      * Set game to pause state
      * @return void
      */
