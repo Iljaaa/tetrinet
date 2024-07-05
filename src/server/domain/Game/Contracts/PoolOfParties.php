@@ -2,8 +2,6 @@
 
 namespace Domain\Game\Contracts;
 
-use Domain\Game\Entities\Party;
-
 interface PoolOfParties
 {
 

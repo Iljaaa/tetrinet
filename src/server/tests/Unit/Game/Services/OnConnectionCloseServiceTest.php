@@ -2,10 +2,10 @@
 
 namespace tests\Unit\Game\Services;
 
+use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
-use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Services\ConnectionClose;
 use PHPUnit\Framework\TestCase;
@@ -60,7 +60,7 @@ class OnConnectionCloseServiceTest extends TestCase
             ->expects($this->once())
             ->method('setOffline');
 
-        $party = $this->createMock(Party::class);
+        $party = $this->createMock(PartyImp::class);
         $party
             ->method('getPlayerById')
             ->willReturn($player);

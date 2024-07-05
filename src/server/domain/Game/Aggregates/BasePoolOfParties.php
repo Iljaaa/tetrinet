@@ -2,8 +2,9 @@
 
 namespace Domain\Game\Aggregates;
 
+use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
+use Random\RandomException;
 
 class BasePoolOfParties implements PoolOfParties
 {
@@ -11,24 +12,25 @@ class BasePoolOfParties implements PoolOfParties
     /**
      * Pool of parties
      * where id is a PartyId and value is the party instance
-     * @var Party[]
+     * @var PartyImp[]
      */
     private array $parties = [];
 
     /**
      * Create party from constructor
-     * @return Party
+     * @return PartyImp
+     * @throws RandomException
      */
-    public function createParty(): Party
+    public function createParty(): PartyImp
     {
-        return new Party();
+        return new PartyImp(generateRandomPlayerId());
     }
 
     /**
      * @param string $playerId
-     * @return Party|null
+     * @return PartyImp|null
      */
-    public function findPartyByPlayerId (string $playerId): Party|null
+    public function findPartyByPlayerId(string $playerId): PartyImp|null
     {
         foreach ($this->parties as $p) {
             if ($p->isPartyHasPlayerById($playerId)) {
@@ -41,9 +43,9 @@ class BasePoolOfParties implements PoolOfParties
 
     /**
      * @param string $partyId
-     * @return Party|null
+     * @return PartyImp|null
      */
-    public function getPartyById(string $partyId): Party|null
+    public function getPartyById(string $partyId): PartyImp|null
     {
         return $this->parties[$partyId] ?? null;
     }

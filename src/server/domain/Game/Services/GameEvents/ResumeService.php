@@ -2,8 +2,8 @@
 
 namespace Domain\Game\Services\GameEvents;
 
+use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
 use Domain\Game\Exceptions\DomainException;
 
 class ResumeService
@@ -15,10 +15,10 @@ class ResumeService
 
     /**
      * @param string $partyId
-     * @return Party
+     * @return PartyImp
      * @throws DomainException
      */
-    public function __invoke(string $partyId): Party
+    public function __invoke(string $partyId): PartyImp
     {
         $party = $this->partiesPool->getPartyById($partyId);
         if (!$party) {

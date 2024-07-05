@@ -3,8 +3,8 @@
 namespace tests\Unit\Game\Services;
 
 use App\Common\Connection;
+use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\GameEvents\BackToPartyService;
@@ -34,7 +34,7 @@ class BackToPartyServiceTest extends TestCase
     {
         // todo: fix it to party object when you fix oll solid problems from there
         // $party = new Party();
-        $mockParty = $this->createMock(Party::class);
+        $mockParty = $this->createMock(PartyImp::class);
         $mockParty->method('getPlayerById')->willReturn(null);
 
         $mockPartiesPool = $this->createMock(PoolOfParties::class);
@@ -56,7 +56,7 @@ class BackToPartyServiceTest extends TestCase
 
         // todo: fix it to party object when you fix oll solid problems from there
         // $party = new Party();
-        $mockParty = $this->createMock(Party::class);
+        $mockParty = $this->createMock(PartyImp::class);
         $mockParty->expects($this->once())->method('getPlayerById')->willReturn($player);
 
         $mockPartiesPool = $this->createMock(PoolOfParties::class);

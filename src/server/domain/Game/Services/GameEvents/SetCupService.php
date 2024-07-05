@@ -2,8 +2,8 @@
 
 namespace Domain\Game\Services\GameEvents;
 
+use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
 use Domain\Game\Exceptions\DomainException;
 
 class SetCupService
@@ -18,10 +18,10 @@ class SetCupService
      * @param string $partyId
      * @param string $playerId
      * @param array $cupData
-     * @return Party
+     * @return PartyImp
      * @throws DomainException
      */
-    public function __invoke(string $partyId, string $playerId, array $cupData): Party
+    public function __invoke(string $partyId, string $playerId, array $cupData): PartyImp
     {
         $party = $this->partiesPool->getPartyById($partyId);
         if (!$party) {

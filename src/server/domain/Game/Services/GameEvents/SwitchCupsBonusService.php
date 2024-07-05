@@ -2,8 +2,8 @@
 
 namespace Domain\Game\Services\GameEvents;
 
+use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
 use Domain\Game\Exceptions\DomainException;
 
 class SwitchCupsBonusService
@@ -19,10 +19,10 @@ class SwitchCupsBonusService
      * @param string $partyId
      * @param string $sourcePlayerId
      * @param string $targetPlayerId
-     * @return Party
+     * @return PartyImp
      * @throws DomainException
      */
-    public function __invoke(string $partyId, string $sourcePlayerId, string $targetPlayerId): Party
+    public function __invoke(string $partyId, string $sourcePlayerId, string $targetPlayerId): PartyImp
     {
         $party = $this->partiesPool->getPartyById($partyId);
         if (!$party) {

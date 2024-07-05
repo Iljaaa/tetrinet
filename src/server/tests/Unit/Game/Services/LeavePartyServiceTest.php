@@ -4,8 +4,8 @@ namespace tests\Unit\Game\Services;
 
 
 use App\Common\Connection;
+use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
 use Domain\Game\Exceptions\DomainException;
@@ -37,7 +37,7 @@ class LeavePartyServiceTest extends TestCase
     {
         // todo: fix it to party object when you fix oll solid problems from there
         // $party = new Party();
-        $mockParty = $this->createMock(Party::class);
+        $mockParty = $this->createMock(PartyImp::class);
         $mockParty->method('getPlayerById')->willReturn(null);
 
         $mockPartiesPool = $this->createMock(PoolOfParties::class);
@@ -69,7 +69,7 @@ class LeavePartyServiceTest extends TestCase
 
         // todo: fix it to party object when you fix oll solid problems from there
         // $party = new Party();
-        $mockParty = $this->createMock(Party::class);
+        $mockParty = $this->createMock(PartyImp::class);
         $mockParty->expects($this->once())->method('getPlayerById')->willReturn($player);
         $mockParty->expects($this->once())->method('determineGameOverInSetItOver');
 

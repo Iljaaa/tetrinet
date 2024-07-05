@@ -1,18 +1,20 @@
 <?php
 
-namespace Domain\Game\Entities;
+namespace Domain\Game\Aggregates;
 
 use App\Common\ChatMessage;
 use App\Common\ResponseMessages\GameOverMessage;
 use App\Common\ResponseMessages\Message;
 use App\Common\ResponseMessages\UpdateChatMessage;
+use Domain\Game\Contracts\Party;
+use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
 use Domain\Game\Enums\GameState;
 
 /**
  * @version 0.1.3
  */
-class Party
+class PartyImp implements Party
 {
     /**
      * Party is generated when game starts
@@ -51,14 +53,10 @@ class Party
     // public array $cups = [];
 
     /**
-     * todo: create party with id
+     *
      */
-    public function __construct ()
+    public function __construct(string $partyId)
     {
-        // generate party id
-        // fixme: OMG! this is not valid to D from SOLID
-        $this->partyId = generateRandomPlayerId();
-
         // add chat message
         // fixme: and this not S from solid
         $this->addChatMessage(sprintf('Party %s created', $this->getId()));
@@ -167,6 +165,7 @@ class Party
     public function getPlayers (): array {
         return $this->players;
     }
+
     /**
      * Pause game
      * @return void

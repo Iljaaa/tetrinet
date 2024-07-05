@@ -2,8 +2,8 @@
 
 namespace tests\Unit\Game\Services;
 
+use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\GameEvents\PauseService;
 use PHPUnit\Framework\MockObject\Exception;
@@ -32,7 +32,7 @@ class PauseServiceTest extends TestCase
     {
         // todo: fix it to party object when you fix oll solid problems from there
         // $party = new Party();
-        $mockParty = $this->createMock(Party::class);
+        $mockParty = $this->createMock(PartyImp::class);
         $mockParty->method('getPlayerById')->willReturn(null);
 
         $mockPartiesPool = $this->createMock(PoolOfParties::class);

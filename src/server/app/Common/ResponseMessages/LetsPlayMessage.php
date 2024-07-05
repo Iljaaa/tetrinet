@@ -3,7 +3,8 @@
 namespace App\Common\ResponseMessages;
 
 use App\Common\Types\ResponseType;
-use Domain\Game\Entities\Party;
+use Domain\Game\Aggregates\PartyImp;
+use Domain\Game\Contracts\Party;
 
 class LetsPlayMessage extends Message
 {

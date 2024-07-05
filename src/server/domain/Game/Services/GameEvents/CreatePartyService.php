@@ -3,8 +3,9 @@
 namespace Domain\Game\Services\GameEvents;
 
 use App\Common\ResponseMessages\LetsPlayMessage;
+use Domain\Game\Aggregates\PartyImp;
+use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;
-use Domain\Game\Entities\Party;
 
 /**
  * When players enough in pool they marrged into party
