@@ -50,8 +50,8 @@ class GameSocket implements MessageComponentInterface
     {
         $this->info(__METHOD__, ['socketId' =>  $conn->socketId]);
 
-        (new OnConnectionClose(Connection::factory($conn), $this->playersPool, $this->partiesPool))
-            ->handle();
+        (new OnConnectionClose($this->playersPool, $this->partiesPool))
+            ->handle(Connection::factory($conn));
     }
 
     /**
