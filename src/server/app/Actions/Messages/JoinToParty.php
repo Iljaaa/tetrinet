@@ -7,6 +7,7 @@ use App\Common\ResponseMessages\LetsPlayMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\CreatePartyObserver;
+use Domain\Game\Contracts\JoinPartyObserver;
 use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
@@ -17,7 +18,7 @@ use Domain\Game\Services\GameEvents\JoinToPartyService;
 /**
  * Message when player start search party
  */
-class JoinToParty implements CreatePartyObserver
+class JoinToParty implements JoinPartyObserver
 {
     use SocketLogTrait;
 
@@ -47,25 +48,13 @@ class JoinToParty implements CreatePartyObserver
             'playerName' => $playerName]
         );
 
-        $player = (new JoinToPartyService($this->playersPool, $this->partiesPool, $this))
+        (new JoinToPartyService($this->playersPool, $this->partiesPool, $this))
             ->handle($connection, $pool, $playerName);
-
-        // send handshake
-        $this->sendHandShake($player, $pool);
-
-
     }
 
-    private function sendHandShake(Player $player, PartyType $pool): void
+    public function onPlayerCreated(Player $player, PartyType $partyType): void
     {
-        // create handshake message
-        $m = (new JoinToPartyMessage())
-            ->setPartyType($pool)
-            // ->setYourPlayerId($player->getConnection()->getSocketId());
-            ->setYourPlayerId($player->getId());
-
-        // send answer to handshake with connection id
-        $player->getConnection()->send($m->getDataAsString());
+        $this->sendHandShake($player, $partyType);
     }
 
     /**
@@ -82,5 +71,21 @@ class JoinToParty implements CreatePartyObserver
         $party->sendChatToAllPlayers();
     }
 
+    /**
+     * Send hand shate to player
+     * @param Player $player
+     * @param PartyType $pool
+     * @return void
+     */
+    private function sendHandShake(Player $player, PartyType $pool): void
+    {
+        // create handshake message
+        $m = (new JoinToPartyMessage())
+            ->setPartyType($pool)
+            // ->setYourPlayerId($player->getConnection()->getSocketId());
+            ->setYourPlayerId($player->getId());
 
+        // send answer to handshake with connection id
+        $player->getConnection()->send($m->getDataAsString());
+    }
 }

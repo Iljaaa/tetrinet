@@ -7,5 +7,11 @@ namespace Domain\Game\Contracts;
  */
 interface CreatePartyObserver
 {
+
+    /**
+     * Calls when party was created
+     * @param Party $party
+     * @return void
+     */
     public function onPartyCreated(Party $party): void;
 }
