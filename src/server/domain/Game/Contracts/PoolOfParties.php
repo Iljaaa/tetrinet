@@ -9,7 +9,7 @@ interface PoolOfParties
      * Create new party
      * @return Party
      */
-    public function createParty(): Party;
+    public function createParty(\Closure $partyIdGenerator): Party;
 
     /**
      * Add party to pull

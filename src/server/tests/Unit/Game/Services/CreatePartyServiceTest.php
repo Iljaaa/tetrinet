@@ -7,17 +7,19 @@ use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Player;
 use Domain\Game\Services\GameEvents\CreatePartyService;
 use PHPUnit\Framework\MockObject\Exception;
-use Tests\TestCase;
+
+// use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * todo: change this test to Unit after that party will get generator of ids
  */
 class CreatePartyServiceTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
+//    protected function setUp(): void
+//    {
+//        parent::setUp();
+//    }
 
 
     /**

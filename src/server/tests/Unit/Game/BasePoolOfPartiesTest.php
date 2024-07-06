@@ -4,13 +4,11 @@ namespace tests\Unit\Game;
 
 use Domain\Game\Aggregates\BasePoolOfParties;
 
-// use PHPUnit\Framework\TestCase;
 use Domain\Game\Contracts\Party;
 use Domain\Game\Entities\Player;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
- * todo: after that generator will exported from pool change extended class to phpunit
  *
  * @property BasePoolOfParties $pool
  */
@@ -26,7 +24,7 @@ class BasePoolOfPartiesTest extends TestCase
 
     public function test_create_party()
     {
-        $party = $this->pool->createParty();
+        $party = $this->pool->createParty(fn() => "test_party");
 
         $this->assertInstanceOf(Party::class, $party);
         $this->assertNotEmpty($party->getId());
@@ -34,7 +32,7 @@ class BasePoolOfPartiesTest extends TestCase
 
     public function test_add_party_and_then_get()
     {
-        $party = $this->pool->createParty();
+        $party = $this->pool->createParty(fn() => "test_party");
         $this->pool->addParty($party);
         $this->assertNotEmpty($this->pool->getPartyById($party->getId()));
     }
@@ -47,7 +45,7 @@ class BasePoolOfPartiesTest extends TestCase
             ->method('getId')
             ->willReturn('test_player_id');
 
-        $party = $this->pool->createParty();
+        $party = $this->pool->createParty(fn() => "test_party");
         $party->addPlayer($playerMock);
 
         $this->pool->addParty($party);
@@ -57,7 +55,7 @@ class BasePoolOfPartiesTest extends TestCase
 
     public function test_terminate_party()
     {
-        $party = $this->pool->createParty();
+        $party = $this->pool->createParty(fn() => "test_party");
         $this->pool->addParty($party);
         $this->pool->terminatePartyByPartyId($party->getId());
 

@@ -25,7 +25,7 @@ class CreatePartyService
     public function handle(array $players): Party
     {
         // create party
-        $party = $this->partiesPool->createParty();
+        $party = $this->partiesPool->createParty(generateRandomPlayerId(...));
 
         // move players to party
         foreach ($players as $p) $party->addPlayer($p);

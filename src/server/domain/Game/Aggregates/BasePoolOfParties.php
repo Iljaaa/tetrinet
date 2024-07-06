@@ -4,7 +4,6 @@ namespace Domain\Game\Aggregates;
 
 use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;
-use Random\RandomException;
 
 class BasePoolOfParties implements PoolOfParties
 {
@@ -12,18 +11,18 @@ class BasePoolOfParties implements PoolOfParties
     /**
      * Pool of parties
      * where id is a PartyId and value is the party instance
-     * @var PartyImp[]
+     * @var Party[]
      */
     private array $parties = [];
 
     /**
      * Create party from constructor
-     * @return PartyImp
-     * @throws RandomException
+     * @param \Closure $partyIdGenerator
+     * @return Party
      */
-    public function createParty(): Party
+    public function createParty(\Closure $partyIdGenerator): Party
     {
-        return new PartyImp(generateRandomPlayerId());
+        return new PartyImp($partyIdGenerator());
     }
 
     /**
