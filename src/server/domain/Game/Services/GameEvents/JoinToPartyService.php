@@ -3,6 +3,7 @@
 namespace Domain\Game\Services\GameEvents;
 
 use Domain\Game\Contracts\Connection;
+use Domain\Game\Contracts\CreatePartyObserver;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
@@ -17,6 +18,7 @@ class JoinToPartyService
     public function __construct(
         private readonly PoolOfPlayers $playersPool,
         private readonly PoolOfParties $partiesPool,
+        private readonly CreatePartyObserver $createPartyObserver
     )
     {
     }
@@ -34,7 +36,7 @@ class JoinToPartyService
 
         // add player to pool
         $this->playersPool->addPlayerToPull($pollToAdd, $p, function (array $players) {
-            $party = (new CreatePartyService($this->partiesPool))
+            (new CreatePartyService($this->partiesPool, $this->createPartyObserver))
                 ->handle($players);
 
         });

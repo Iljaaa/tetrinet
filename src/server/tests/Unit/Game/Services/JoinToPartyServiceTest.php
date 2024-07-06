@@ -4,14 +4,21 @@ namespace tests\Unit\Game\Services;
 
 
 use Domain\Game\Contracts\Connection;
+use Domain\Game\Contracts\CreatePartyObserver;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
 use Domain\Game\Services\GameEvents\JoinToPartyService;
 use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ *
+ * @property PoolOfPlayers fakePlayersPool
+ * @property CreatePartyObserver|MockObject mockOfCreatePartyObserver
+ */
 class JoinToPartyServiceTest extends TestCase
 {
 
@@ -41,6 +48,15 @@ class JoinToPartyServiceTest extends TestCase
                 return count($this->pool);
             }
         };
+
+        $this->mockOfCreatePartyObserver = $this->createMock(CreatePartyObserver::class);
+
+        /*$this->fakeCreatePartyObserver = new class implements CreatePartyObserver
+        {
+            public function onPartyCreated(Party $party): void
+            {
+            }
+        };*/
     }
 
 
@@ -50,13 +66,17 @@ class JoinToPartyServiceTest extends TestCase
      */
     public function test_join_player_to_pool()
     {
+        $this->mockOfCreatePartyObserver
+            ->expects($this->never())
+            ->method('onPartyCreated');
+
         $mocPartiesPool = $this->createMock(PoolOfParties::class);
 
         $mocPlayersPool = $this->createMock(PoolOfPlayers::class);
         $mocPlayersPool->expects($this->once())->method('addPlayerToPull');
         $mocPlayersPool->method('getPullSize')->willReturn(1);
 
-        $m = new JoinToPartyService($mocPlayersPool, $mocPartiesPool);
+        $m = new JoinToPartyService($mocPlayersPool, $mocPartiesPool, $this->mockOfCreatePartyObserver);
 
         $vasilyMockConnection = $this->createMock(Connection::class);
         $vasilyMockConnection->expects($this->atLeastOnce())
@@ -74,13 +94,17 @@ class JoinToPartyServiceTest extends TestCase
      */
     public function test_party_create()
     {
+        $this->mockOfCreatePartyObserver
+            ->expects($this->once())
+            ->method('onPartyCreated');
+
         $mocPartiesPool = $this->createMock(PoolOfParties::class);
 
         // this two methods must be called when count player in pool enough to create party
         $mocPartiesPool->expects($this->once())->method('createParty');
         $mocPartiesPool->expects($this->once())->method('addParty');
 
-        $m = new JoinToPartyService($this->fakePlayersPool, $mocPartiesPool);
+        $m = new JoinToPartyService($this->fakePlayersPool, $mocPartiesPool, $this->mockOfCreatePartyObserver);
 
         // add first player
 

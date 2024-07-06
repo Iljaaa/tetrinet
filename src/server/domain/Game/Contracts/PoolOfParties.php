@@ -7,6 +7,7 @@ interface PoolOfParties
 
     /**
      * Create new party
+     * @param \Closure $partyIdGenerator
      * @return Party
      */
     public function createParty(\Closure $partyIdGenerator): Party;

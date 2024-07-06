@@ -17,7 +17,8 @@ interface PoolOfPlayers
 
     /**
      * Add player to waining pool
-     *  todo: may be it will be the good idea to make a class with __invoke method for callback function it would allow describe function params
+     * todo: may be it will be the good idea to make a class with __invoke method for callback function it would allow describe function params
+     * fixme: the good idea is observer
      * @param PartyType $party
      * @param Player $player
      * @param callable $playersEnoughToMakeParty callback method when players enough to start party

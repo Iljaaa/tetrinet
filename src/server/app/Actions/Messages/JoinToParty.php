@@ -3,8 +3,11 @@
 namespace App\Actions\Messages;
 
 use App\Common\ResponseMessages\JoinToPartyMessage;
+use App\Common\ResponseMessages\LetsPlayMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\Connection;
+use Domain\Game\Contracts\CreatePartyObserver;
+use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
@@ -14,7 +17,7 @@ use Domain\Game\Services\GameEvents\JoinToPartyService;
 /**
  * Message when player start search party
  */
-class JoinToParty
+class JoinToParty implements CreatePartyObserver
 {
     use SocketLogTrait;
 
@@ -44,7 +47,7 @@ class JoinToParty
             'playerName' => $playerName]
         );
 
-        $player = (new JoinToPartyService($this->playersPool, $this->partiesPool))
+        $player = (new JoinToPartyService($this->playersPool, $this->partiesPool, $this))
             ->handle($connection, $pool, $playerName);
 
         // send handshake
@@ -63,6 +66,20 @@ class JoinToParty
 
         // send answer to handshake with connection id
         $player->getConnection()->send($m->getDataAsString());
+    }
+
+    /**
+     * @param Party $party
+     * @return void
+     */
+    public function onPartyCreated(Party $party): void
+    {
+        // create message
+        $m = new LetsPlayMessage($party);
+        $party->sendMessageToAllPlayers($m);
+
+        // send chat message to all
+        $party->sendChatToAllPlayers();
     }
 
 

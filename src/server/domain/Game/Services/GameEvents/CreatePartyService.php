@@ -3,6 +3,7 @@
 namespace Domain\Game\Services\GameEvents;
 
 use App\Common\ResponseMessages\LetsPlayMessage;
+use Domain\Game\Contracts\CreatePartyObserver;
 use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;
 
@@ -13,7 +14,7 @@ class CreatePartyService
 {
     public function __construct(
         private readonly PoolOfParties $partiesPool,
-        // private readonly \Collectable $onPartyCreated
+        private readonly CreatePartyObserver $createPartyObserver
     )
     {
     }
@@ -36,13 +37,8 @@ class CreatePartyService
         // run game
         $party->setGameRunning();
 
-        // todo: move this to
-        // create message
-        $m = new LetsPlayMessage($party);
-        $party->sendMessageToAllPlayers($m);
-
-        // send chat message to all
-        $party->sendChatToAllPlayers();
+        // call observer
+        $this->createPartyObserver->onPartyCreated($party);
 
         return $party;
     }
