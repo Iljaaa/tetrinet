@@ -10,7 +10,7 @@ use Domain\Game\Entities\Player;
 use Domain\Game\Enums\PartyType;
 use Domain\Game\Services\GameEvents\JoinToPartyService;
 use PHPUnit\Framework\MockObject\Exception;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class JoinToPartyServiceTest extends TestCase
 {
