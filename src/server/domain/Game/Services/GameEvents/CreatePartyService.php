@@ -3,7 +3,6 @@
 namespace Domain\Game\Services\GameEvents;
 
 use App\Common\ResponseMessages\LetsPlayMessage;
-use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;
 

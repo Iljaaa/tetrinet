@@ -80,7 +80,8 @@ class PartyImp implements Party
      */
     public function addPlayer (Player $p): void
     {
-        $this->players[$p->getConnection()->getSocketId()] = $p;
+        $this->players[$p->getId()] = $p;
+        // $this->players[$p->getConnection()->getSocketId()] = $p;
         // return array_search($connection, $this->players);
     }
 

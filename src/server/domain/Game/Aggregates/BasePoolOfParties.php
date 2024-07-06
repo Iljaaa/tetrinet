@@ -21,16 +21,16 @@ class BasePoolOfParties implements PoolOfParties
      * @return PartyImp
      * @throws RandomException
      */
-    public function createParty(): PartyImp
+    public function createParty(): Party
     {
         return new PartyImp(generateRandomPlayerId());
     }
 
     /**
      * @param string $playerId
-     * @return PartyImp|null
+     * @return Party|null
      */
-    public function findPartyByPlayerId(string $playerId): PartyImp|null
+    public function findPartyByPlayerId(string $playerId): ?Party
     {
         foreach ($this->parties as $p) {
             if ($p->isPartyHasPlayerById($playerId)) {
@@ -43,9 +43,9 @@ class BasePoolOfParties implements PoolOfParties
 
     /**
      * @param string $partyId
-     * @return PartyImp|null
+     * @return Party|null
      */
-    public function getPartyById(string $partyId): PartyImp|null
+    public function getPartyById(string $partyId): ?Party
     {
         return $this->parties[$partyId] ?? null;
     }
