@@ -36,8 +36,7 @@ class BasePoolOfPlayers implements PoolOfPlayers
         // fixme: this is bad code, may be you should refactor to pool objects
         if ($party == PartyType::party && count($this->pools[$party->value]) == static::DEADMATH_PARTY_SIZE) {
             $this->processFullParty($party, static::DEADMATH_PARTY_SIZE, $playersEnoughToMakeParty);
-        }
-
+        } // fixme: this is bad code, may be you should refactor to pool objects
         elseif ($party == PartyType::duel && count($this->pools[$party->value]) == static::DUEL_PARTY_SIZE) {
             $this->processFullParty($party, static::DUEL_PARTY_SIZE, $playersEnoughToMakeParty);
         }
@@ -46,7 +45,7 @@ class BasePoolOfPlayers implements PoolOfPlayers
 
     /**
      * Create play part
-     * fixme: this method not good because it receive size
+     * fixme: this method not good because it receive size is should take it from pool
      * @param PartyType $partyType
      * @param int $partySize
      * @param callable $playersEnoughToMakeParty
@@ -128,14 +127,14 @@ class BasePoolOfPlayers implements PoolOfPlayers
 
     /**
      * When connection close we search it in pools
-     * todo: simplify to connection id
      * @param Connection $c
      * @return void
      */
     public function onConnectionClose(Connection $c): void
     {
         foreach ($this->pools as $poolKey => $pool) {
-            $this->pools[$poolKey] = array_filter($this->pools[$poolKey], fn (Player $p) =>  $p->getConnection()->getSocketId() != $c->getSocketId());
+            // $this->pools[$poolKey] = array_filter($this->pools[$poolKey], fn (Player $p) =>  $p->getConnection()->getSocketId() != $c->getSocketId());
+            $this->pools[$poolKey] = array_filter($this->pools[$poolKey], fn(Player $p) => $p->getId() != $c->getSocketId());
         }
 
         // looking for connection in players pool
