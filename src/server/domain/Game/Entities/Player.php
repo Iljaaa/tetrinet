@@ -49,6 +49,8 @@ class Player
     public function __construct(Connection $connection, string $name)
     {
         $this->connection = $connection;
+
+        // write player id from connection id
         $this->id = $connection->getSocketId();
 
         $this->name = $name;

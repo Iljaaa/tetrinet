@@ -35,7 +35,8 @@ class JoinToPartyServiceTest extends TestCase
 
             public function addPlayerToPull(PartyType $party, Player $player, callable $playersEnoughToMakeParty): void
             {
-                $this->pool[$player->getConnection()->getSocketId()] = $player;
+                // $this->pool[$player->getConnection()->getSocketId()] = $player;
+                $this->pool[$player->getId()] = $player;
 
                 if (count($this->pool) == 2) {
                     $playersEnoughToMakeParty($this->pool);
