@@ -3,7 +3,7 @@
 namespace App\Actions\Messages;
 
 use App\Common\Connection;
-use App\Common\ResponseMessages\PausedMessage;
+use App\Common\ResponseMessages\PausedResponseMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
@@ -51,7 +51,7 @@ class Pause
         $party = (new PauseService($this->partiesPool))($partyId, $playerId);
 
         //
-        $party->sendMessageToAllPlayers(new PausedMessage($party));
+        $party->sendMessageToAllPlayers(new PausedResponseMessage($party));
 
         $player = $party->getPlayerById($playerId);
 

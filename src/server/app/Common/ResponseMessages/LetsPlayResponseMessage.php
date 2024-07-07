@@ -6,7 +6,7 @@ use App\Common\Types\ResponseType;
 use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\Party;
 
-class LetsPlayMessage extends Message
+class LetsPlayResponseMessage extends ResponseMessage
 {
 
     /**

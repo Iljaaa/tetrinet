@@ -3,7 +3,7 @@
 namespace App\Actions\Messages;
 
 use App\Common\Connection;
-use App\Common\ResponseMessages\BackToPartyMessage;
+use App\Common\ResponseMessages\BackToPartyResponseMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
@@ -58,7 +58,7 @@ class BackToParty
             $party = (new BackToPartyService($this->partiesPool))($partyId, $playerId);
         }
         catch (DomainException $ex) {
-            $m = new BackToPartyMessage();
+            $m = new BackToPartyResponseMessage();
             $m->partyNotFound($ex->getMessage());
             $connection->send($m->getDataAsString());
             return;
@@ -71,7 +71,7 @@ class BackToParty
         // $party->addChatMessage('Player return to game');
 
         // return cups info
-        $m = new BackToPartyMessage();
+        $m = new BackToPartyResponseMessage();
         $m->setCupsResponseData($party->getCupsResponse());
 
         //

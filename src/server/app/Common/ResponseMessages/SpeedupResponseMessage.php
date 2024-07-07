@@ -5,7 +5,7 @@ namespace App\Common\ResponseMessages;
 use App\Common\Types\ResponseType;
 use Domain\Game\Aggregates\PartyImp;
 
-class SpeedupMessage extends Message
+class SpeedupResponseMessage extends ResponseMessage
 {
 
     /**

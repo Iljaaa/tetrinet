@@ -2,7 +2,6 @@
 
 namespace Domain\Game\Services\GameEvents;
 
-use App\Common\ResponseMessages\LetsPlayMessage;
 use Domain\Game\Contracts\CreatePartyObserver;
 use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;

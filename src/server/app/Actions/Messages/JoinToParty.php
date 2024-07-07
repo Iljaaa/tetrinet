@@ -2,11 +2,10 @@
 
 namespace App\Actions\Messages;
 
-use App\Common\ResponseMessages\JoinToPartyMessage;
-use App\Common\ResponseMessages\LetsPlayMessage;
+use App\Common\ResponseMessages\JoinToPartyResponseMessage;
+use App\Common\ResponseMessages\LetsPlayResponseMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\Connection;
-use Domain\Game\Contracts\CreatePartyObserver;
 use Domain\Game\Contracts\JoinPartyObserver;
 use Domain\Game\Contracts\Party;
 use Domain\Game\Contracts\PoolOfParties;
@@ -64,7 +63,7 @@ class JoinToParty implements JoinPartyObserver
     public function onPartyCreated(Party $party): void
     {
         // create message
-        $m = new LetsPlayMessage($party);
+        $m = new LetsPlayResponseMessage($party);
         $party->sendMessageToAllPlayers($m);
 
         // send chat message to all
@@ -80,7 +79,7 @@ class JoinToParty implements JoinPartyObserver
     private function sendHandShake(Player $player, PartyType $pool): void
     {
         // create handshake message
-        $m = (new JoinToPartyMessage())
+        $m = (new JoinToPartyResponseMessage())
             ->setPartyType($pool)
             // ->setYourPlayerId($player->getConnection()->getSocketId());
             ->setYourPlayerId($player->getId());

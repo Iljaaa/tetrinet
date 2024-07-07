@@ -4,7 +4,7 @@ namespace App\Common\ResponseMessages;
 
 use Domain\Game\Enums\PartyType;
 
-class JoinToPartyMessage extends Message
+class JoinToPartyResponseMessage extends ResponseMessage
 {
     /**
      *

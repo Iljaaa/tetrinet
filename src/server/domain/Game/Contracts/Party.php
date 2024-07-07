@@ -3,7 +3,7 @@
 namespace Domain\Game\Contracts;
 
 
-use App\Common\ResponseMessages\Message;
+use App\Common\ResponseMessages\ResponseMessage;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\GameState;
 
@@ -62,12 +62,12 @@ interface Party
     public function setGameRunning(): void;
 
     /**
-     * @param Message $m
+     * @param ResponseMessage $m
      * @return void
      * @deprecated this method must be moved from here to somewhere else
      * todo: move this method to stand alone service
      */
-    public function sendMessageToAllPlayers(Message $m): void;
+    public function sendMessageToAllPlayers(ResponseMessage $m): void;
 
     /**
      * @deprecated this method must be moved from here to somewhere else

@@ -5,13 +5,15 @@ namespace App\Common\ResponseMessages;
 use App\Common\Types\ResponseType;
 use Domain\Game\Aggregates\PartyImp;
 
-class AfterSetMessage extends Message
+class PausedResponseMessage extends ResponseMessage
 {
 
+    /**
+     *
+     */
     public function __construct(PartyImp $party)
     {
-        $this->setData('type', ResponseType::afterSet);
+        $this->setData('type', ResponseType::paused);
         $this->setData('state', $party->getGameState());
-        $this->setData('cups', $party->getCupsResponse());
     }
 }

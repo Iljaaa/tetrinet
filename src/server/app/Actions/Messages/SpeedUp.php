@@ -2,7 +2,7 @@
 
 namespace App\Actions\Messages;
 
-use App\Common\ResponseMessages\SpeedupMessage;
+use App\Common\ResponseMessages\SpeedupResponseMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
@@ -42,6 +42,6 @@ class SpeedUp
         $party->addChatMessage($m);
         $party->sendChatToAllPlayers();
 
-        $party->sendMessageToAllPlayers(new SpeedupMessage($party, $party->getSpeed()));
+        $party->sendMessageToAllPlayers(new SpeedupResponseMessage($party, $party->getSpeed()));
     }
 }

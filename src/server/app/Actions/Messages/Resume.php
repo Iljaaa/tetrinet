@@ -3,7 +3,7 @@
 namespace App\Actions\Messages;
 
 use App\Common\Connection;
-use App\Common\ResponseMessages\ResumeMessage;
+use App\Common\ResponseMessages\ResumeResponseMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Player;
@@ -42,7 +42,7 @@ class Resume
         $party = (new ResumeService($this->partiesPool))($partyId);
 
         // send resume command to all
-        $party->sendMessageToAllPlayers(new ResumeMessage($party));
+        $party->sendMessageToAllPlayers(new ResumeResponseMessage($party));
 
         // send chat message
         /** @var Player $player */

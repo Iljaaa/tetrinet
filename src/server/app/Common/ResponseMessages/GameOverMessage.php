@@ -5,7 +5,7 @@ namespace App\Common\ResponseMessages;
 use App\Common\Types\ResponseType;
 use Domain\Game\Aggregates\PartyImp;
 
-class GameOverMessage extends AfterSetMessage
+class GameOverMessage extends AfterSetResponseMessage
 {
 
     public function __construct(PartyImp $party)

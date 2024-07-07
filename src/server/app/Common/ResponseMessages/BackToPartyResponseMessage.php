@@ -4,7 +4,7 @@ namespace App\Common\ResponseMessages;
 
 use App\Common\Types\ResponseType;
 
-class BackToPartyMessage extends Message
+class BackToPartyResponseMessage extends ResponseMessage
 {
 
     /**

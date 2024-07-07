@@ -4,8 +4,8 @@ namespace Domain\Game\Aggregates;
 
 use App\Common\ChatMessage;
 use App\Common\ResponseMessages\GameOverMessage;
-use App\Common\ResponseMessages\Message;
-use App\Common\ResponseMessages\UpdateChatMessage;
+use App\Common\ResponseMessages\ResponseMessage;
+use App\Common\ResponseMessages\UpdateChatResponseMessage;
 use Domain\Game\Contracts\Party;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
@@ -149,10 +149,10 @@ class PartyImp implements Party
     /**
      * todo: this method must be in action
      * Send data to all players
-     * @param Message $m
+     * @param ResponseMessage $m
      * @return void
      */
-    public function sendMessageToAllPlayers(Message $m): void
+    public function sendMessageToAllPlayers(ResponseMessage $m): void
     {
         $mString = $m->getDataAsString();
         foreach ($this->players as $p) {
@@ -236,7 +236,7 @@ class PartyImp implements Party
      */
     public function sendChatToAllPlayers(): void
     {
-        $this->sendMessageToAllPlayers(new UpdateChatMessage($this->getId(), $this->chat));
+        $this->sendMessageToAllPlayers(new UpdateChatResponseMessage($this->getId(), $this->chat));
     }
 
     /**

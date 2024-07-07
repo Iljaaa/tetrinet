@@ -2,10 +2,8 @@
 
 namespace App\Common\ResponseMessages;
 
-use app\Common\ChatMessage;
-// use App\Common\Party;
 
-class Message
+class ResponseMessage
 {
     /**
      * @var array
@@ -45,12 +43,12 @@ class Message
     }
 
     /**
-     * @param UpdateChatMessage[] $chatItems
-     * @return Message
+     * @param UpdateChatResponseMessage[] $chatItems
+     * @return ResponseMessage
      *
-    public function setChat(array $chatItems): static {
-        return $this->setData('chat', array_map( fn (ChatMessage $c) => $c->asArray(), $chatItems));
-    }*/
+     * public function setChat(array $chatItems): static {
+     * return $this->setData('chat', array_map( fn (ChatMessage $c) => $c->asArray(), $chatItems));
+     * }*/
 
     /*
      * @return void

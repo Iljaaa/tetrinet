@@ -5,7 +5,7 @@ namespace App\Common\ResponseMessages;
 use App\Common\ChatMessage;
 use App\Common\Types\ResponseType;
 
-class UpdateChatMessage extends Message
+class UpdateChatResponseMessage extends ResponseMessage
 {
 
     /**

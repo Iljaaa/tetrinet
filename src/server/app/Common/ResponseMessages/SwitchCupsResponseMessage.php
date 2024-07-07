@@ -7,7 +7,7 @@ use App\Common\Types\ResponseType;
 use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Entities\Cup;
 
-class SwitchCupsMessage extends Message
+class SwitchCupsResponseMessage extends ResponseMessage
 {
 
     public function __construct(PartyImp $party)

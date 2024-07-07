@@ -2,8 +2,8 @@
 
 namespace App\Actions\Messages;
 
-use App\Common\ResponseMessages\AfterSetMessage;
-use App\Common\ResponseMessages\BackToPartyMessage;
+use App\Common\ResponseMessages\AfterSetResponseMessage;
+use App\Common\ResponseMessages\BackToPartyResponseMessage;
 use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
@@ -64,12 +64,12 @@ class SetCup
         try {
             $party = (new SetCupService($this->partiesPool))($partyId, $playerId, $cupData);
         } catch (DomainException $ex) {
-            $m = new BackToPartyMessage();
+            $m = new BackToPartyResponseMessage();
             $m->partyNotFound($ex->getMessage());
             return;
         }
 
         // todo: may be we should refactor this method and send only one cup instead of all party
-        $party->sendMessageToAllPlayers(new AfterSetMessage($party));
+        $party->sendMessageToAllPlayers(new AfterSetResponseMessage($party));
     }
 }

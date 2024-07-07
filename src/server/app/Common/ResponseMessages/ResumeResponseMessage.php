@@ -5,7 +5,7 @@ namespace App\Common\ResponseMessages;
 use App\Common\Types\ResponseType;
 use Domain\Game\Aggregates\PartyImp;
 
-class PausedMessage extends Message
+class ResumeResponseMessage extends ResponseMessage
 {
 
     /**
@@ -13,7 +13,7 @@ class PausedMessage extends Message
      */
     public function __construct(PartyImp $party)
     {
-        $this->setData('type', ResponseType::paused);
+        $this->setData('type', ResponseType::resumed);
         $this->setData('state', $party->getGameState());
     }
 }

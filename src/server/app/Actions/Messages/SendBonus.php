@@ -2,7 +2,7 @@
 
 namespace App\Actions\Messages;
 
-use App\Common\ResponseMessages\SwitchCupsMessage;
+use App\Common\ResponseMessages\SwitchCupsResponseMessage;
 use App\Common\SocketLogTrait;
 use App\Common\Types\BonusType;
 use App\Common\Types\ResponseType;
@@ -111,7 +111,7 @@ class SendBonus
         $sourcePlayer = $party->getPlayerById($sourcePlayerId);
         $targetPlayer = $party->getPlayerById($targetPlayerId);
 
-        $m = new SwitchCupsMessage($party);
+        $m = new SwitchCupsResponseMessage($party);
 
         // sens new cup to target player
         $m->setSwitchData($targetPlayerId, $sourcePlayerId, $targetPlayer->getCup());
