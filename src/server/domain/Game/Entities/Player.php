@@ -6,9 +6,7 @@ use Domain\Game\Contracts\Connection;
 use Domain\Game\Enums\PlayerState;
 
 /**
- * Player object it is,
- * todo: refactor player to aggregate with connection and player
- * todo: make factory method
+ * Player object
  */
 class Player
 {

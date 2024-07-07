@@ -9,6 +9,7 @@ use Domain\Game\Enums\GameState;
 
 /**
  * Main game unit
+ * fixme: maybe this class violates the single responsibility principle
  */
 interface Party
 {
@@ -36,6 +37,13 @@ interface Party
      * @return array
      */
     public function getPlayers(): array;
+
+    /**
+     * Get player by id
+     * @param string $playerId
+     * @return Player|null
+     */
+    public function getPlayerById(string $playerId): ?Player;
 
     /**
      * Current game state
@@ -68,6 +76,15 @@ interface Party
      * todo: move this method to stand alone service
      */
     public function sendMessageToAllPlayers(Message $m): void;
+
+
+    /**
+     * This method adds message to chat
+     * todo: move this method to stane alone object chant when it be ready
+     * @param string $message
+     * @return void
+     */
+    public function addChatMessage(string $message): void;
 
     /**
      * @deprecated this method must be moved from here to somewhere else

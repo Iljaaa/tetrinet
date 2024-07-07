@@ -86,6 +86,15 @@ class PartyImp implements Party
     }
 
     /**
+     * @param string $playerId
+     * @return Player|null
+     */
+    public function getPlayerById(string $playerId): ?Player
+    {
+        return $this->players[$playerId] ?? null;
+    }
+
+    /**
      * Set part host who will check the speed
      * @return void
      */
@@ -189,14 +198,6 @@ class PartyImp implements Party
      */
     public function setGameRunning ():void {
         $this->state = GameState::running;
-    }
-
-    /**
-     * @param string $playerId
-     * @return Player|null
-     */
-    public function getPlayerById (string $playerId): ?Player {
-        return $this->players[$playerId] ?? null;
     }
 
 

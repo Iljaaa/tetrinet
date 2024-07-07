@@ -2,6 +2,7 @@
 
 namespace App\Actions\Messages;
 
+use App\Common\ResponseMessages\SendBonusMessage;
 use App\Common\ResponseMessages\SwitchCupsMessage;
 use App\Common\SocketLogTrait;
 use App\Common\Types\BonusType;
@@ -51,27 +52,27 @@ class SendBonus
         $party = $this->partiesPool->getPartyById($partyId);
 
         $player = $party->getPlayerById($playerId);
-        $opponent = $party->getPlayerById($target);
+        $targetPlayer = $party->getPlayerById($target);
 
         $this->info("send bonus", [
-            'opponent' => $opponent->getConnection()->getSocketId(),
+            'opponent' => $player->getId(),
             'target' => $target,
             'bonus' => $bonus,
         ]);
 
-        // send command to opponent
-        // todo: think about chat may be we should create stand alone message
-        if ($opponent) {
-            $opponent->getConnection()->send(json_encode([
-                'type' => ResponseType::getBonus,
-                'source' => $playerId,
-                'target' => $target,
-                'bonus' => $bonus->value
-            ]));
+        // send command with bonus to target player
+        if ($targetPlayer) {
+//            $targetPlayer->getConnection()->send(json_encode([
+//                'type' => ResponseType::getBonus,
+//                'source' => $playerId,
+//                'target' => $target,
+//                'bonus' => $bonus->value
+//            ]));
+            $party->sendMessageToAllPlayers((new SendBonusMessage($playerId, $target, $bonus)));
         }
 
         // add message
-        $party->addChatMessage(sprintf('Player __%s__ sent __%s__ to __%s__', $player->getName(), Helper::GetNiceBlockName($bonus), $opponent->getName()));
+        $party->addChatMessage(sprintf('Player __%s__ sent __%s__ to __%s__', $player->getName(), Helper::GetNiceBlockName($bonus), $targetPlayer->getName()));
         $party->sendChatToAllPlayers();
     }
 
@@ -113,11 +114,11 @@ class SendBonus
 
         $m = new SwitchCupsMessage($party);
 
-        // sens new cup to target player
+        // send new cup to target player
         $m->setSwitchData($targetPlayerId, $sourcePlayerId, $targetPlayer->getCup());
         $targetPlayer->getConnection()->send($m->getDataAsString());
 
-        // sens new cup to target player
+        // send new cup to source player
         $m->setSwitchData($targetPlayerId, $sourcePlayerId, $sourcePlayer->getCup());
         $sourcePlayer->getConnection()->send($m->getDataAsString());
 

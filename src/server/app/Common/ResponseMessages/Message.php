@@ -2,9 +2,6 @@
 
 namespace App\Common\ResponseMessages;
 
-use app\Common\ChatMessage;
-// use App\Common\Party;
-
 class Message
 {
     /**
@@ -12,17 +9,6 @@ class Message
      */
     protected array $data = [];
 
-    /*
-     * this is chat
-     * @var array
-     *
-    // protected array $chat = [];
-
-//    public function setPartyData(Party $party): static
-//    {
-//        $this->setData();
-//        return $this;
-//    }*/
 
     /**
      * @param string $key
@@ -43,22 +29,6 @@ class Message
         $this->data['partyId'] = $party;
         return $this;
     }
-
-    /**
-     * @param UpdateChatMessage[] $chatItems
-     * @return Message
-     *
-    public function setChat(array $chatItems): static {
-        return $this->setData('chat', array_map( fn (ChatMessage $c) => $c->asArray(), $chatItems));
-    }*/
-
-    /*
-     * @return void
-     */
-//    public function setData ()
-//    {
-//
-//    }
 
     /**
      * @return string
