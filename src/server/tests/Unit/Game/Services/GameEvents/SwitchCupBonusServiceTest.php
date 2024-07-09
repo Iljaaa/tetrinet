@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\Unit\Game\Services;
+namespace tests\Unit\Game\Services\GameEvents;
 
 use App\Common\Connection;
 use Domain\Game\Aggregates\PartyImp;

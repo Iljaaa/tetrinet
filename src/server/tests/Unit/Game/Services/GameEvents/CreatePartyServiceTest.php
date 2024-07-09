@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\Unit\Game\Services;
+namespace tests\Unit\Game\Services\GameEvents;
 
 use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\CreatePartyObserver;
