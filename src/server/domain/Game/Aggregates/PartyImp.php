@@ -210,6 +210,7 @@ class PartyImp implements Party
 
     /**
      * Data for response to client
+     * todo: move this method to cup object
      * @return array
      */
     public function getCupsResponse (): array

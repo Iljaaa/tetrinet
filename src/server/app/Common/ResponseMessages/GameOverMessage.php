@@ -4,11 +4,12 @@ namespace App\Common\ResponseMessages;
 
 use App\Common\Types\ResponseType;
 use Domain\Game\Aggregates\PartyImp;
+use Domain\Game\Contracts\Party;
 
 class GameOverMessage extends AfterSetMessage
 {
 
-    public function __construct(PartyImp $party)
+    public function __construct(Party $party)
     {
         parent::__construct($party);
 

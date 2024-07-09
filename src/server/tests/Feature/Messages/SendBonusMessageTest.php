@@ -115,6 +115,14 @@ class SendBonusMessageTest extends TestCase
             public function addChatMessage(string $message): void
             {
             }
+
+
+            #[\Override]
+            public function getCupsResponse(): array
+            {
+                return [];
+            }
+
         };
 
     }

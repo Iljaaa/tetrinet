@@ -77,7 +77,6 @@ interface Party
      */
     public function sendMessageToAllPlayers(Message $m): void;
 
-
     /**
      * This method adds message to chat
      * todo: move this method to stane alone object chant when it be ready
@@ -91,4 +90,10 @@ interface Party
      * todo: move this method to stand alone service
      */
     public function sendChatToAllPlayers(): void;
+
+    /**
+     * Data for response to client
+     * todo: move this method to cup object
+     */
+    public function getCupsResponse(): array;
 }
