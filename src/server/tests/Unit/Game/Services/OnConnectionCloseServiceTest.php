@@ -7,6 +7,7 @@ use Domain\Game\Contracts\Connection;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Contracts\PoolOfPlayers;
 use Domain\Game\Entities\Player;
+use Domain\Game\Enums\GameState;
 use Domain\Game\Services\ConnectionClose;
 use PHPUnit\Framework\TestCase;
 
@@ -64,6 +65,9 @@ class OnConnectionCloseServiceTest extends TestCase
         $party
             ->method('getPlayerById')
             ->willReturn($player);
+
+        $party->method('getGameState')
+            ->willReturn(GameState::paused);
 
         $this->partiesPool
             ->method('findPartyByPlayerId')

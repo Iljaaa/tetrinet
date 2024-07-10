@@ -46,8 +46,8 @@ class ConnectionClose
             $player->getCup()->setCupAsOver();
 
             // determine end of the game
-            // $this->determineGameOverInSetItOver($party);
-            $party->determineGameOverInSetItOver();
+            // $party->determineGameOverInSetItOver();
+            (new ProcessGameOver($party))();
         }
 
         // if all players offline we party should be terminated
