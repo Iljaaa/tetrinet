@@ -8,6 +8,7 @@ use App\Common\SocketLogTrait;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\GameEvents\LeavePartyService;
+use Domain\Game\Services\ProcessGameOver;
 
 class LeaveParty
 {
@@ -60,7 +61,9 @@ class LeaveParty
         // detect end game
         // todo: move this method into Service
         // $this->determineGameOverInSet($party);
-        $party->determineGameOverInSetItOver();
+
+        // $party->determineGameOverInSetItOver();
+        (new ProcessGameOver($party))();
 
     }
 }
