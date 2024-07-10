@@ -265,40 +265,40 @@ class PartyImp implements Party
      * Here we check end of the game
      * todo: add callback tat party is ends and move there add chat message
      * @return void
-     */
-    public function determineGameOverInSetItOver (): void
-    {
-        //
-        if (!in_array($this->getGameState(), [GameState::running, GameState::paused])){
-            return;
-        }
-
-        // check players with active cups
-        $activeCups = array_filter($this->getPlayers(), fn(Player $p) => $p->getCup()->getState() == CupState::online);
-
-        // this is global game over
-        if (count($activeCups) <= 1)
-        {
-            // $this->party->setGameState(GameState::over);
-            $this->setGameOver();
-
-            // searching winner
-            $winner = null;
-            foreach ($this->getPlayers() as $p) {
-                if ($p->getCup()->getState() == CupState::online) {
-                    $winner = $p;
-                    $winner->getCup()->setCupAsWinner();
-                    break;
-                }
-            }
-
-            // this must be in callback
-            $this->addChatMessage(sprintf('End of the game, winner: __%s__', $winner->getName()));
-            $this->sendChatToAllPlayers();
-
-            // inform all players
-            $this->sendMessageToAllPlayers(new GameOverMessage($this));
-        }
-    }
+     *
+     * public function determineGameOverInSetItOver (): void
+    * {
+        * //
+        * if (!in_array($this->getGameState(), [GameState::running, GameState::paused])){
+            * return;
+        * }
+ *
+* // check players with active cups
+        * $activeCups = array_filter($this->getPlayers(), fn(Player $p) => $p->getCup()->getState() == CupState::online);
+ *
+* // this is global game over
+        * if (count($activeCups) <= 1)
+        * {
+            * // $this->party->setGameState(GameState::over);
+            * $this->setGameOver();
+ *
+* // searching winner
+            * $winner = null;
+            * foreach ($this->getPlayers() as $p) {
+                * if ($p->getCup()->getState() == CupState::online) {
+                    * $winner = $p;
+                    * $winner->getCup()->setCupAsWinner();
+                    * break;
+                * }
+            * }
+ *
+* // this must be in callback
+            * $this->addChatMessage(sprintf('End of the game, winner: __%s__', $winner->getName()));
+            * $this->sendChatToAllPlayers();
+ *
+* // inform all players
+            * $this->sendMessageToAllPlayers(new GameOverMessage($this));
+     * }
+    * }*/
 
 }
