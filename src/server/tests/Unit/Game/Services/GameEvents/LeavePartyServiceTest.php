@@ -8,6 +8,7 @@ use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Entities\Player;
 use Domain\Game\Enums\CupState;
+use Domain\Game\Enums\GameState;
 use Domain\Game\Exceptions\DomainException;
 use Domain\Game\Services\GameEvents\LeavePartyService;
 use PHPUnit\Framework\MockObject\Exception;
@@ -71,7 +72,8 @@ class LeavePartyServiceTest extends TestCase
         // $party = new Party();
         $mockParty = $this->createMock(PartyImp::class);
         $mockParty->expects($this->once())->method('getPlayerById')->willReturn($player);
-        $mockParty->expects($this->once())->method('determineGameOverInSetItOver');
+        // $mockParty->expects($this->once())->method('determineGameOverInSetItOver');
+        $mockParty->expects($this->exactly(2))->method('getGameState')->willReturn(GameState::running);
 
         $mockPartiesPool = $this->createMock(PoolOfParties::class);
         $mockPartiesPool->method('getPartyById')->willReturn($mockParty);

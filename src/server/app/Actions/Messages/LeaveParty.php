@@ -48,22 +48,22 @@ class LeaveParty
             $party = (new LeavePartyService($this->partiesPool))($partyId, $playerId);
         }
         catch (DomainException $ex) {
+            // todo: make something with this place
             $m = new BackToPartyMessage();
             $m->partyNotFound($ex->getMessage());
             return;
         }
 
         // notify users about
+        // todo: move it to the service because this message must be before message about end of the game
         $player = $party->getPlayerById($playerId);
         $party->addChatMessage(sprintf('Player __%s__ leave the game', $player->getName()));
         $party->sendChatToAllPlayers();
 
         // detect end game
-        // todo: move this method into Service
         // $this->determineGameOverInSet($party);
-
         // $party->determineGameOverInSetItOver();
-        (new ProcessGameOver($party))();
+        // (new ProcessGameOver($party))();
 
     }
 }
