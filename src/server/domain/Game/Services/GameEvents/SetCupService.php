@@ -5,6 +5,7 @@ namespace Domain\Game\Services\GameEvents;
 use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\PoolOfParties;
 use Domain\Game\Exceptions\DomainException;
+use Domain\Game\Services\ProcessGameOver;
 
 class SetCupService
 {
@@ -38,7 +39,8 @@ class SetCupService
         $party->updateCupByPlayerId($playerId, $cupData);
 
         // try to determine game over
-        $party->determineGameOverInSetItOver();
+        // $party->determineGameOverInSetItOver();
+        (new ProcessGameOver($party))();
 
         return $party;
     }
