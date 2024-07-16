@@ -3,9 +3,11 @@
 namespace App\Common\ResponseMessages;
 
 use App\Common\Types\ResponseType;
-use Domain\Game\Aggregates\PartyImp;
 use Domain\Game\Contracts\Party;
 
+/**
+ * When one cup in party was updated we should send it to all players
+ */
 class AfterSetMessage extends Message
 {
 

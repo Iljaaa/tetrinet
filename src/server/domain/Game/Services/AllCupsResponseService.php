@@ -11,7 +11,7 @@ use Domain\Game\Entities\Player;
  */
 class AllCupsResponseService
 {
-    public function __construct(private Party $party)
+    public function __construct(private readonly Party $party)
     {
     }
 

@@ -58,23 +58,18 @@ class BackToParty
             $party = (new BackToPartyService($this->partiesPool))($partyId, $playerId);
         }
         catch (DomainException $ex) {
+            // todo: do something with connection
             $m = new BackToPartyMessage();
             $m->partyNotFound($ex->getMessage());
             $connection->send($m->getDataAsString());
             return;
         }
 
-        // change socket id
-        // $conn->socketId = $playerId;
-
-        // todo: add log message
-        // $party->addChatMessage('Player return to game');
-
         // return cups info
         $m = new BackToPartyMessage();
         $m->setCupsResponseData($party->getCupsResponse());
 
-        //
+        // i'm not sure but maybe we shold create special class to send message
         $this->info('party found');
         $party->sendMessageToAllPlayers($m);
     }

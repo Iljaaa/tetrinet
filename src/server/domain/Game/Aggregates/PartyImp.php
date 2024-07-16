@@ -157,6 +157,7 @@ class PartyImp implements Party
 
     /**
      * todo: this method must be in action
+     * fixme: now this method have a service
      * Send data to all players
      * @param Message $m
      * @return void
@@ -263,7 +264,6 @@ class PartyImp implements Party
 
     /**
      * Here we check end of the game
-     * todo: add callback tat party is ends and move there add chat message
      * @return void
      *
      * public function determineGameOverInSetItOver (): void
